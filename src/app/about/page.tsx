@@ -15,32 +15,32 @@ export default function AboutPage() {
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(59,130,246,0.08),transparent_70%)]" />
 
-                <div className="relative container mx-auto px-6 py-20 md:py-28">
-                    <div className="flex flex-col-reverse md:flex-row items-center gap-12 md:gap-16">
+                <div className="relative w-full max-w-7xl mx-auto px-8 lg:px-16 py-20 lg:py-28">
+                    <div className="flex flex-col-reverse lg:flex-row items-center gap-10 lg:gap-20">
                         {/* Left: Text */}
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                             {/* Name */}
                             <div className="mb-6">
-                                <h1 className="text-5xl md:text-7xl font-bold text-white mb-2">
+                                <h1 className="font-bold text-white mb-2" style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', lineHeight: 1.1 }}>
                                     {profile.name}
                                 </h1>
-                                <p className="text-xl md:text-2xl text-slate-400 font-light">
+                                <p className="text-slate-400 font-light" style={{ fontSize: 'clamp(1.1rem, 2vw, 1.5rem)' }}>
                                     {profile.nameEn}
                                 </p>
                             </div>
 
                             {/* Title */}
                             <div className="mb-6">
-                                <p className="text-2xl md:text-3xl text-white font-semibold mb-2">
+                                <p className="text-white font-semibold mb-2" style={{ fontSize: 'clamp(1.3rem, 2.5vw, 2rem)' }}>
                                     {profile.title}
                                 </p>
-                                <p className="text-lg text-slate-400">
+                                <p className="text-slate-400" style={{ fontSize: 'clamp(0.95rem, 1.5vw, 1.125rem)' }}>
                                     {profile.titleEn}
                                 </p>
                             </div>
 
                             {/* Tagline */}
-                            <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-2xl mb-10">
+                            <p className="text-slate-300 leading-relaxed mb-10 max-w-xl" style={{ fontSize: 'clamp(0.95rem, 1.5vw, 1.125rem)' }}>
                                 {profile.tagline}
                             </p>
 
@@ -48,13 +48,13 @@ export default function AboutPage() {
                             <div className="flex flex-wrap gap-4">
                                 <a
                                     href={`mailto:${profile.contact.email}`}
-                                    className="px-8 py-3 bg-white text-slate-900 rounded-lg font-medium hover:bg-slate-100 transition-colors"
+                                    className="px-8 py-3 bg-white text-slate-900 rounded-lg font-medium hover:bg-slate-100 transition-colors text-sm lg:text-base"
                                 >
                                     📧 {profile.contact.email}
                                 </a>
                                 <a
                                     href={`tel:${profile.contact.phone}`}
-                                    className="px-8 py-3 bg-white/10 text-white border border-white/20 rounded-lg font-medium hover:bg-white/20 transition-colors"
+                                    className="px-8 py-3 bg-white/10 text-white border border-white/20 rounded-lg font-medium hover:bg-white/20 transition-colors text-sm lg:text-base"
                                 >
                                     📱 联系我
                                 </a>
@@ -63,7 +63,8 @@ export default function AboutPage() {
 
                         {/* Right: Avatar */}
                         <div className="flex-shrink-0">
-                            <div className="relative w-48 h-48 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-full overflow-hidden border-4 border-white/10 shadow-2xl">
+                            <div className="relative rounded-full overflow-hidden border-4 border-white/10 shadow-2xl"
+                                style={{ width: 'clamp(180px, 20vw, 288px)', height: 'clamp(180px, 20vw, 288px)' }}>
                                 <Image
                                     src={profile.avatar}
                                     alt={profile.name}
