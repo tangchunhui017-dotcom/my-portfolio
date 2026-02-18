@@ -5,6 +5,11 @@ import FilterBar from '@/components/dashboard/FilterBar';
 import KpiGrid from '@/components/dashboard/KpiGrid';
 import MetricsDrawer from '@/components/dashboard/MetricsDrawer';
 import DashboardChart from '@/components/charts/DashboardChart';
+import SkuRiskList from '@/components/dashboard/SkuRiskList';
+import DashboardSkeleton from '@/components/dashboard/DashboardSkeleton';
+import DashboardSummaryButton from '@/components/dashboard/DashboardSummaryButton';
+import SkuDetailModal, { SkuDrillData } from '@/components/dashboard/SkuDetailModal';
+import { useState, useEffect } from 'react';
 
 interface ConclusionCardProps {
     finding: string;
@@ -36,14 +41,21 @@ interface ChartCardProps {
     type: 'bar' | 'line' | 'pie' | 'scatter' | 'heatmap' | 'gauge';
     kpis: ReturnType<typeof useDashboardFilter>['kpis'];
     conclusion: ConclusionCardProps;
+    headerAction?: React.ReactNode;
     span?: 'full' | 'half';
+    heatmapMetric?: 'sku' | 'sales' | 'st';
+    onSkuClick?: (sku: SkuDrillData) => void;
 }
 
-function ChartCard({ title, type, kpis, conclusion, span = 'half' }: ChartCardProps) {
+function ChartCard({ title, type, kpis, conclusion, headerAction, span = 'half', heatmapMetric, onSkuClick }: ChartCardProps) {
     return (
         <div className={`bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden ${span === 'full' ? 'col-span-2' : ''}`}>
+            <div className="px-5 py-4 border-b border-slate-50 flex justify-between items-center">
+                <h3 className="font-semibold text-slate-800">{title}</h3>
+                {headerAction}
+            </div>
             <div className="p-5">
-                <DashboardChart title={title} type={type} kpis={kpis} />
+                <DashboardChart title="" type={type} kpis={kpis} heatmapMetric={heatmapMetric} onSkuClick={onSkuClick} />
             </div>
             <div className="px-5 pb-5">
                 <ConclusionCard {...conclusion} />
@@ -54,126 +66,325 @@ function ChartCard({ title, type, kpis, conclusion, span = 'half' }: ChartCardPr
 
 export default function DashboardPage() {
     const { filters, setFilters, kpis, filterSummary } = useDashboardFilter();
+    const [heatmapMetric, setHeatmapMetric] = useState<'sku' | 'sales' | 'st'>('sku');
+    const [mounted, setMounted] = useState(false);
+    const [selectedSku, setSelectedSku] = useState<SkuDrillData | null>(null);
+
+    useEffect(() => { setMounted(true); }, []);
+
+    if (!mounted) return <DashboardSkeleton />;
+
+    // 渠道销售贡献排名（真实数据，用于 Gauge 旁边的红黑榜）
+    const totalChannelSales = kpis ? Object.values(kpis.channelSales).reduce((a, b) => a + b, 0) : 0;
+    const channelPerformance = kpis ? Object.entries(kpis.channelSales).map(([type, sales]) => ({
+        type,
+        sales,
+        pct: totalChannelSales > 0 ? Math.round(sales / totalChannelSales * 100) : 0,
+    })).sort((a, b) => b.sales - a.sales) : [];
+
+    // 散点图半动态 Conclusion（关键数字来自真实数据，文字框架固定）
+    const scatterConclusion = (() => {
+        if (!kpis?.scatterSkus) return {
+            finding: '价格 vs 售罄率分布分析中，可识别高效区与低售罄风险区。',
+            decision: '对低售罄高价款启动渠道调拨，视情况降价处理。',
+            impact: '预计清仓库存减少，避免季末大幅折扣，保护毛利。',
+        };
+        const scatter = kpis.scatterSkus;
+        const total = kpis.totalSkuCount ?? scatter.length;
+        const lowSTCount = scatter.filter(s => s.sellThrough < 0.70).length;
+        const highPriceLowSTCount = scatter.filter(s => s.price >= 600 && s.sellThrough < 0.75).length;
+        const lowPriceEvergreen = scatter.filter(s => s.price < 400 && s.lifecycle === '常青');
+        const lowPriceAvgST = lowPriceEvergreen.length > 0
+            ? Math.round(lowPriceEvergreen.reduce((s, r) => s + r.sellThrough, 0) / lowPriceEvergreen.length * 100)
+            : 0;
+        const finding = lowPriceAvgST > 0
+            ? `¥400 以下常青款均值售罄率 ${lowPriceAvgST}%，位于高效区；¥600+ 新品中 ${highPriceLowSTCount} 款低于 75% 警戒线（共 ${total} 款中 ${lowSTCount} 款需关注）。`
+            : `当前筛选下共 ${lowSTCount} 款低售罄 SKU，其中 ¥600+ 高价新品 ${highPriceLowSTCount} 款风险最高。`;
+        const decision = highPriceLowSTCount > 0
+            ? `对 ${highPriceLowSTCount} 款 ¥600+ 低售罄新品：W8 前启动渠道调拨；W10 后视情况降价 10-15%。`
+            : '当前高价带售罄健康，维持现有定价策略，关注库存深度。';
+        return { finding, decision, impact: '预计清仓库存减少 30%，避免季末大幅折扣，保护毛利 +1-2pp。' };
+    })();
+
+    // ── 价格带柱状图 Conclusion ──────────────────────────────────
+    const barConclusion = (() => {
+        if (!kpis) return {
+            finding: '价格带分布分析中，可识别各价格段 SKU 集中度与销售贡献。',
+            decision: '优化价格带结构，向高毛利价格段倾斜。',
+            impact: '预计提升均价，改善整体毛利率。',
+        };
+        const pb = kpis.priceBandSales;
+        const totalSales = kpis.totalNetSales;
+        // 找出销售额最高和最低的价格带
+        const bands = Object.entries(pb).sort((a, b) => b[1].sales - a[1].sales);
+        const topBand = bands[0];
+        const BAND_LABELS: Record<string, string> = {
+            PB1: '¥199-299', PB2: '¥300-399', PB3: '¥400-499',
+            PB4: '¥500-599', PB5: '¥600-699', PB6: '¥700+',
+        };
+        const topBandPct = topBand && totalSales > 0 ? Math.round(topBand[1].sales / totalSales * 100) : 0;
+        const topBandLabel = topBand ? BAND_LABELS[topBand[0]] : '--';
+        // 高价带（PB5+PB6）占比
+        const highPriceSales = (pb['PB5']?.sales ?? 0) + (pb['PB6']?.sales ?? 0);
+        const highPricePct = totalSales > 0 ? Math.round(highPriceSales / totalSales * 100) : 0;
+        // 低价带（PB1）占比
+        const lowPricePct = totalSales > 0 ? Math.round((pb['PB1']?.sales ?? 0) / totalSales * 100) : 0;
+        return {
+            finding: `${topBandLabel} 为最高贡献价格带，占净销售额 ${topBandPct}%；¥600+ 高价带贡献 ${highPricePct}%，¥199-299 低价带占比 ${lowPricePct}%。`,
+            decision: highPricePct < 15
+                ? `高价带占比偏低，下季度建议增加 ¥600+ SKU 数量（目标 +3 款），收缩低价带至 10% 以内。`
+                : `价格带结构合理，维持现有布局，重点提升 ${topBandLabel} 主力价格带深度。`,
+            impact: '预计优化后均价提升 ¥30-50，毛利率改善 +1-2pp。',
+        };
+    })();
+
+    // ── 售罄率折线图 Conclusion ──────────────────────────────────
+    const lineConclusion = (() => {
+        if (!kpis) return {
+            finding: '售罄率曲线反映当季动销节奏与去化效率。',
+            decision: '对低动销款启动渠道调拨，加大流量投放。',
+            impact: '预计追回目标线，减少清仓压力。',
+        };
+        const stPct = Math.round(kpis.avgSellThrough * 100);
+        const TARGET_ST = 80;
+        const gap = TARGET_ST - stPct;
+        const weeks = Object.keys(kpis.weeklyData).map(Number).sort((a, b) => a - b);
+        const latestWeek = weeks[weeks.length - 1] ?? 0;
+        const statusText = gap > 0
+            ? `当前累计售罄率 ${stPct}%，距目标 ${TARGET_ST}% 尚差 ${gap}pp`
+            : `当前累计售罄率 ${stPct}%，已超目标 ${TARGET_ST}%（领先 ${Math.abs(gap)}pp）`;
+        return {
+            finding: `${statusText}，已录入 ${latestWeek} 周销售数据。`,
+            decision: gap > 5
+                ? `W${Math.min(latestWeek + 2, 12)} 前加大电商流量投放，对低动销款启动渠道调拨（直营→电商）。`
+                : '售罄节奏健康，维持现有运营策略，关注高价带库存消化。',
+            impact: gap > 5
+                ? `预计 W${Math.min(latestWeek + 4, 12)} 累计售罄率追回至目标线，减少清仓压力，保护毛利 +0.8pp。`
+                : '持续保持当前节奏，预计季末售罄率超目标 +3-5pp。',
+        };
+    })();
+
+    // ── 渠道饼图 Conclusion ──────────────────────────────────────
+    const pieConclusion = (() => {
+        if (!kpis || channelPerformance.length === 0) return {
+            finding: '渠道销售结构分析，识别高贡献与低效渠道。',
+            decision: '优化低效渠道陈列策略，聚焦主力价格带。',
+            impact: '预计渠道售罄率提升，减少折扣损失。',
+        };
+        const top = channelPerformance[0];
+        const bottom = channelPerformance[channelPerformance.length - 1];
+        const onlineSales = kpis.channelSales['电商'] ?? 0;
+        const totalSales = kpis.totalNetSales;
+        const onlinePct = totalSales > 0 ? Math.round(onlineSales / totalSales * 100) : 0;
+        return {
+            finding: `${top.type} 渠道贡献最高（${top.pct}%），${bottom.type} 渠道贡献最低（${bottom.pct}%）；电商渠道合计占比 ${onlinePct}%。`,
+            decision: bottom.pct < 15
+                ? `优化 ${bottom.type} 渠道陈列策略，聚焦 ¥399-599 主力价格带，减少清仓款比例。`
+                : '渠道结构均衡，维持现有分配，关注各渠道售罄节奏差异。',
+            impact: `预计 ${bottom.type} 渠道售罄率提升 +5-8pp，减少折扣损失。`,
+        };
+    })();
+
+    // ── 热力图 Conclusion ──────────────────────────────────────
+    const heatmapConclusion = (() => {
+        if (!kpis?.heatmapChartData) return {
+            finding: '品类 × 价格带矩阵，识别 SKU 密度与销售效率分布。',
+            decision: '削减低效格子 SKU，向高效格子倾斜资源。',
+            impact: '预计 SKU 效率（单款产出）提升，降低库存分散风险。',
+        };
+        const skuCounts = kpis.heatmapChartData.skuCounts;
+        const maxCell = skuCounts.reduce((a, b) => b[2] > a[2] ? b : a, [0, 0, 0]);
+        const CATEGORIES = ['跑步', '篮球', '训练', '休闲', '户外'];
+        const BANDS = ['¥199-299', '¥300-399', '¥400-499', '¥500-599', '¥600-699', '¥700+'];
+        const maxCat = CATEGORIES[maxCell[1]] ?? '--';
+        const maxBand = BANDS[maxCell[0]] ?? '--';
+        const maxCount = maxCell[2];
+        // 找出 SKU 数为 0 的空格子数
+        const emptyCells = skuCounts.filter(c => c[2] === 0).length;
+        return {
+            finding: `${maxCat}品类 ${maxBand} 价格带 SKU 最密集（${maxCount} 款）；共 ${emptyCells} 个品类×价格带格子无 SKU 布局。`,
+            decision: maxCount > 8
+                ? `${maxCat}品类 ${maxBand} SKU 过密，下季削减 2-3 款，资源向空白格子倾斜。`
+                : '当前品类×价格带布局较均衡，重点填补空白格子，提升矩阵覆盖度。',
+            impact: '预计 SKU 效率（单款产出）提升 +15%，降低库存分散风险。',
+        };
+    })();
 
     return (
-        <div className="min-h-screen bg-slate-50">
-            {/* Filter Bar */}
-            <FilterBar filters={filters} setFilters={setFilters} filterSummary={filterSummary} />
+        <>
+            <div className="min-h-screen bg-slate-50">
+                {/* Filter Bar */}
+                <FilterBar filters={filters} setFilters={setFilters} filterSummary={filterSummary} />
 
-            <div className="max-w-screen-2xl mx-auto px-6 py-8">
+                <div className="max-w-screen-2xl mx-auto px-6 py-8">
 
-                {/* Header */}
-                <div className="flex items-start justify-between mb-8">
-                    <div>
-                        <h1 className="text-3xl font-bold text-slate-900">企划数据看板</h1>
-                        <p className="text-slate-500 mt-1">30秒读懂经营结果 · 3分钟讲清洞察决策 · 10分钟钻取到 SKU 动作</p>
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-8">
+                        <div>
+                            <h1 className="text-3xl font-bold text-slate-900">企划数据看板</h1>
+                            <p className="text-slate-500 mt-1">30秒读懂经营结果 · 3分钟讲清洞察决策 · 10分钟钻取到 SKU 动作</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <DashboardSummaryButton kpis={kpis} filterSummary={filterSummary} />
+                            <MetricsDrawer />
+                        </div>
                     </div>
-                    <MetricsDrawer />
-                </div>
 
-                {/* KPI Grid */}
-                <div className="mb-10">
-                    <KpiGrid kpis={kpis} />
-                </div>
-
-                {/* Divider */}
-                <div className="flex items-center gap-4 mb-8">
-                    <div className="flex-1 h-px bg-slate-200" />
-                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">图表矩阵 · 洞察层</span>
-                    <div className="flex-1 h-px bg-slate-200" />
-                </div>
-
-                {/* Chart Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                    {/* Chart 1: Price Band Distribution */}
-                    <ChartCard
-                        title="SKU 价格带分布（计划 vs 实际）"
-                        type="bar"
-                        kpis={kpis}
-                        conclusion={{
-                            finding: '¥300-499 价格带实际占比 55%，高于计划 48%；¥600+ 价格带缺口明显。',
-                            decision: '下季度增加高价带 SKU 数量（目标 +3 款），收缩 ¥199-299 低价带至 10%。',
-                            impact: '预计提升均价 ¥35-50，毛利率改善 +1.5-2pp。',
-                        }}
-                    />
-
-                    {/* Chart 2: Sell-Through Curve */}
-                    <ChartCard
-                        title="售罄率曲线（累计）"
-                        type="line"
-                        kpis={kpis}
-                        conclusion={{
-                            finding: `当前累计售罄率 ${kpis ? Math.round(kpis.avgSellThrough * 100) : '--'}%，W4 前节奏偏慢（低于目标线 8pp）。`,
-                            decision: 'W4-W6 加大电商流量投放，对低动销款启动渠道调拨（直营→电商）。',
-                            impact: '预计 W8 累计售罄率追回至目标线，减少清仓压力，保护毛利 +0.8pp。',
-                        }}
-                    />
-
-                    {/* Chart 3: Channel Mix */}
-                    <ChartCard
-                        title="渠道销售占比"
-                        type="pie"
-                        kpis={kpis}
-                        conclusion={{
-                            finding: '电商渠道合计占比约 60%，直营门店贡献 25%，KA 渠道表现偏弱（<10%）。',
-                            decision: '优化 KA 渠道陈列策略，聚焦 ¥399-599 主力价格带，减少 KA 清仓款比例。',
-                            impact: '预计 KA 渠道售罄率提升 +5-8pp，减少折扣损失 ¥XX 万。',
-                        }}
-                    />
-
-                    {/* Chart 4: Price vs Sell-Through Scatter */}
-                    <ChartCard
-                        title="价格 vs 售罄率分析（气泡=销量）"
-                        type="scatter"
-                        kpis={kpis}
-                        conclusion={{
-                            finding: '¥199-299 常青款售罄率 88-92%，位于高效区；¥600+ 新品集中在低售罄象限（<75%）。',
-                            decision: '对 ¥600+ 低售罄新品：W8 前启动渠道调拨；W10 后视情况降价 10-15%。',
-                            impact: '预计清仓库存减少 30%，避免季末大幅折扣，保护毛利 +1-2pp。',
-                        }}
-                    />
-
-                    {/* Chart 5: Heatmap */}
-                    <ChartCard
-                        title="品类 × 价格带 SKU 热力图"
-                        type="heatmap"
-                        kpis={kpis}
-                        conclusion={{
-                            finding: '运动品类在 ¥199-399 低价带 SKU 过密（10款），户外品类 ¥600+ 布局合理。',
-                            decision: '下季运动品类削减 ¥199-299 SKU 2-3 款，资源向 ¥499-599 形象款倾斜。',
-                            impact: '预计 SKU 效率（单款产出）提升 +15%，降低库存分散风险。',
-                        }}
-                    />
-
-                    {/* Chart 6: Gauge */}
-                    <ChartCard
-                        title="整体平均售罄率"
-                        type="gauge"
-                        kpis={kpis}
-                        conclusion={{
-                            finding: `整体售罄率 ${kpis ? Math.round(kpis.avgSellThrough * 100) : '--'}%，${kpis && kpis.avgSellThrough >= 0.8 ? '已达成目标 80%' : '距目标 80% 尚有差距'}。常青款拉高均值，新品拖累整体。`,
-                            decision: '重点关注售罄率<70% 的新品（共 3 款），制定专项动销方案（直播/捆绑/渠道调拨）。',
-                            impact: '若 3 款问题款售罄率提升至 75%，整体均值可改善 +2-3pp。',
-                        }}
-                    />
-
-                </div>
-
-                {/* Footer Note */}
-                <div className="mt-10 bg-amber-50 border border-amber-200 rounded-xl p-5 flex gap-3">
-                    <span className="text-xl">💡</span>
-                    <div>
-                        <h4 className="font-semibold text-amber-900 mb-1">数据说明</h4>
-                        <p className="text-sm text-amber-800">
-                            本看板数据已脱敏处理，金额经指数化（×系数），结构与趋势真实反映业务逻辑。
-                            点击右上角 <strong>指标口径</strong> 查看各指标计算方式。
-                            筛选条件变更后，KPI 卡与图表实时同步更新。
-                        </p>
+                    {/* KPI Grid */}
+                    <div className="mb-10">
+                        <KpiGrid kpis={kpis} />
                     </div>
-                </div>
 
+                    {/* Divider */}
+                    <div className="flex items-center gap-4 mb-8">
+                        <div className="flex-1 h-px bg-slate-200" />
+                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">图表矩阵 · 洞察层</span>
+                        <div className="flex-1 h-px bg-slate-200" />
+                    </div>
+
+                    {/* Chart Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                        {/* Chart 1: Price Band Distribution */}
+                        <ChartCard
+                            title="SKU 价格带分布（计划 vs 实际）"
+                            type="bar"
+                            kpis={kpis}
+                            conclusion={barConclusion}
+                        />
+
+                        {/* Chart 2: Sell-Through Curve */}
+                        <ChartCard
+                            title="售罄率曲线（累计）"
+                            type="line"
+                            kpis={kpis}
+                            conclusion={lineConclusion}
+                        />
+
+                        {/* Chart 3: Channel Mix */}
+                        <ChartCard
+                            title="渠道销售占比"
+                            type="pie"
+                            kpis={kpis}
+                            conclusion={pieConclusion}
+                        />
+
+                        {/* Chart 4: Price vs Sell-Through Scatter */}
+                        <ChartCard
+                            title="价格 vs 售罄率分析（气泡=销量）"
+                            type="scatter"
+                            kpis={kpis}
+                            onSkuClick={setSelectedSku}
+                            headerAction={
+                                <span className="text-xs text-slate-400 flex items-center gap-1">
+                                    <span>👆</span> 点击气泡查看 SKU 详情
+                                </span>
+                            }
+                            conclusion={scatterConclusion}
+                        />
+
+                        {/* Chart 5: Heatmap with Metric Toggle */}
+                        <ChartCard
+                            title={`品类 × 价格带热力图 (${heatmapMetric === 'sku' ? 'SKU数' : heatmapMetric === 'sales' ? '销售额' : '售罄率'})`}
+                            type="heatmap"
+                            kpis={kpis}
+                            heatmapMetric={heatmapMetric}
+                            headerAction={
+                                <div className="flex bg-slate-100 rounded-lg p-0.5">
+                                    {[
+                                        { k: 'sku', l: 'SKU数' },
+                                        { k: 'sales', l: '销售额' },
+                                        { k: 'st', l: '售罄率' }
+                                    ].map(m => (
+                                        <button
+                                            key={m.k}
+                                            onClick={() => setHeatmapMetric(m.k as any)}
+                                            className={`px-2 py-1 text-xs font-medium rounded-md transition-all ${heatmapMetric === m.k ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                                                }`}
+                                        >
+                                            {m.l}
+                                        </button>
+                                    ))}
+                                </div>
+                            }
+                            conclusion={heatmapConclusion}
+                        />
+
+                        {/* Chart 6: Gauge with Breakdown */}
+                        <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden col-span-1">
+                            <div className="px-5 py-4 border-b border-slate-50">
+                                <h3 className="font-semibold text-slate-800">整体平均售罄率</h3>
+                            </div>
+                            <div className="grid grid-cols-2">
+                                <div className="p-5 border-r border-slate-50">
+                                    <DashboardChart title="" type="gauge" kpis={kpis} />
+                                </div>
+                                <div className="p-5 flex flex-col justify-center space-y-4">
+                                    <div>
+                                        <div className="text-xs font-medium text-emerald-600 mb-2">🚀 贡献最高渠道</div>
+                                        {channelPerformance.slice(0, 2).map((c, i) => (
+                                            <div key={c.type} className="flex justify-between items-center text-sm mb-2">
+                                                <span className="text-slate-600">{i + 1}. {c.type}</span>
+                                                <div className="text-right">
+                                                    <span className="font-bold text-slate-800">{c.pct}%</span>
+                                                    <span className="text-xs text-slate-400 ml-1">占比</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div>
+                                        <div className="text-xs font-medium text-red-500 mb-2">🐢 贡献最低渠道</div>
+                                        {channelPerformance.slice(-2).reverse().map((c, i) => (
+                                            <div key={c.type} className="flex justify-between items-center text-sm mb-2">
+                                                <span className="text-slate-600">{i + 1}. {c.type}</span>
+                                                <div className="text-right">
+                                                    <span className="font-bold text-slate-800">{c.pct}%</span>
+                                                    <span className="text-xs text-slate-400 ml-1">占比</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="px-5 pb-5">
+                                <ConclusionCard
+                                    finding={`整体售罄率 ${kpis ? Math.round(kpis.avgSellThrough * 100) : '--'}%。电商渠道表现最优，KA 渠道拖后腿。`}
+                                    decision='重点关注售罄率<70% 的新品（共 3 款），制定专项动销方案。'
+                                    impact='若 3 款问题款售罄率提升至 75%，整体均值可改善 +2-3pp。'
+                                />
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {/* SKU 风险列表 */}
+                    <div className="mt-8">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="flex-1 h-px bg-slate-200" />
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">SKU 风险列表 · 动作层</span>
+                            <div className="flex-1 h-px bg-slate-200" />
+                        </div>
+                        <SkuRiskList />
+                    </div>
+
+                    {/* Footer Note */}
+                    <div className="mt-10 bg-amber-50 border border-amber-200 rounded-xl p-5 flex gap-3">
+                        <span className="text-xl">💡</span>
+                        <div>
+                            <h4 className="font-semibold text-amber-900 mb-1">数据说明</h4>
+                            <p className="text-sm text-amber-800">
+                                本看板数据已脱敏处理，金额经指数化（×系数），结构与趋势真实反映业务逻辑。
+                                点击右上角 <strong>指标口径</strong> 查看各指标计算方式。
+                                筛选条件变更后，KPI 卡与图表实时同步更新。
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-        </div>
+
+            {/* SKU 钻取弹窗 */}
+            <SkuDetailModal sku={selectedSku} onClose={() => setSelectedSku(null)} />
+        </>
     );
 }

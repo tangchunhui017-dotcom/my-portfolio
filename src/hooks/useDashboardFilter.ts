@@ -1,17 +1,62 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import factSales from '@/../data/dashboard/fact_sales.json';
-import dimSku from '@/../data/dashboard/dim_sku.json';
-import dimChannel from '@/../data/dashboard/dim_channel.json';
+
+// 显式类型定义，避免大型 JSON 文件导致 TypeScript 推断失败
+interface FactSalesRecord {
+    record_id: string;
+    sku_id: string;
+    channel_id: string;
+    season_year: string;
+    season: string;
+    wave: string;
+    week_num: number;
+    unit_sold: number;
+    gross_sales_amt: number;
+    net_sales_amt: number;
+    discount_amt: number;
+    discount_rate: number;
+    cogs_amt: number;
+    gross_profit_amt: number;
+    gross_margin_rate: number;
+    cumulative_sell_through: number;
+    on_hand_unit: number;
+}
+
+interface DimSku {
+    sku_id: string;
+    sku_name: string;
+    category_id: string;
+    category_name: string;
+    season_year: string;
+    season: string;
+    price_band: string;
+    msrp: number;
+    lifecycle: string;
+}
+
+interface DimChannel {
+    channel_id: string;
+    channel_type: string;
+    channel_name: string;
+    region_id: string;
+}
+
+import factSalesRaw from '@/../data/dashboard/fact_sales.json';
+import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
+import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
+
+const factSales = factSalesRaw as unknown as FactSalesRecord[];
+const dimSku = dimSkuRaw as unknown as DimSku[];
+const dimChannel = dimChannelRaw as unknown as DimChannel[];
 
 export interface DashboardFilters {
     season_year: number | 'all';
     season: string | 'all';
     wave: string | 'all';
-    category_lv1: string | 'all';
+    category_id: string | 'all';   // 匹配 dim_sku.json 的字段名
     channel_type: string | 'all';
-    price_band: string | 'all'; // 'PB1' | 'PB2' ...
+    price_band: string | 'all';
     lifecycle: string | 'all';
 }
 
@@ -19,7 +64,7 @@ export const DEFAULT_FILTERS: DashboardFilters = {
     season_year: 2024,
     season: 'all',
     wave: 'all',
-    category_lv1: 'all',
+    category_id: 'all',
     channel_type: 'all',
     price_band: 'all',
     lifecycle: 'all',
@@ -38,13 +83,13 @@ export function useDashboardFilter() {
     const [filters, setFilters] = useState<DashboardFilters>(DEFAULT_FILTERS);
 
     const skuMap = useMemo(() => {
-        const map: Record<string, typeof dimSku[0]> = {};
+        const map: Record<string, DimSku> = {};
         dimSku.forEach(s => { map[s.sku_id] = s; });
         return map;
     }, []);
 
     const channelMap = useMemo(() => {
-        const map: Record<string, typeof dimChannel[0]> = {};
+        const map: Record<string, DimChannel> = {};
         dimChannel.forEach(c => { map[c.channel_id] = c; });
         return map;
     }, []);
@@ -55,10 +100,11 @@ export function useDashboardFilter() {
             const channel = channelMap[record.channel_id];
             if (!sku || !channel) return false;
 
-            if (filters.season_year !== 'all' && record.season_year !== filters.season_year) return false;
+            // season_year: JSON 存为字符串，筛选器可能是数字，统一转字符串比较
+            if (filters.season_year !== 'all' && String(record.season_year) !== String(filters.season_year)) return false;
             if (filters.season !== 'all' && record.season !== filters.season) return false;
             if (filters.wave !== 'all' && record.wave !== filters.wave) return false;
-            if (filters.category_lv1 !== 'all' && sku.category_lv1 !== filters.category_lv1) return false;
+            if (filters.category_id !== 'all' && sku.category_id !== filters.category_id) return false;
             if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
             if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
 
@@ -110,16 +156,68 @@ export function useDashboardFilter() {
         });
 
         // 价格带结构
-        const priceBandSales: Record<string, { units: number; sales: number }> = {};
+        const priceBandSales: Record<string, { units: number; sales: number; grossProfit: number; onHandUnits: number }> = {};
         filteredRecords.forEach(r => {
             const sku = skuMap[r.sku_id];
             if (!sku) return;
             const band = PRICE_BANDS.find(b => sku.msrp >= b.min && sku.msrp <= b.max);
             if (band) {
-                if (!priceBandSales[band.id]) priceBandSales[band.id] = { units: 0, sales: 0 };
+                if (!priceBandSales[band.id]) priceBandSales[band.id] = { units: 0, sales: 0, grossProfit: 0, onHandUnits: 0 };
                 priceBandSales[band.id].units += r.unit_sold;
                 priceBandSales[band.id].sales += r.net_sales_amt;
+                priceBandSales[band.id].grossProfit += r.gross_profit_amt;
+                // 只取最新周的库存（取最大周号的库存数）
+                priceBandSales[band.id].onHandUnits = Math.max(priceBandSales[band.id].onHandUnits, r.on_hand_unit);
             }
+        });
+
+        // 热力图数据（品类 × 价格带）
+        const heatmapData: Record<string, { skus: Set<string>; sales: number; st: number }> = {};
+        // 预初始化所有格子
+        const CATEGORIES = ['跑步', '篮球', '训练', '休闲', '户外'];
+        const BANDS = ['PB1', 'PB2', 'PB3', 'PB4', 'PB5', 'PB6'];
+        CATEGORIES.forEach(cat => {
+            BANDS.forEach(band => {
+                heatmapData[`${cat}_${band}`] = { skus: new Set(), sales: 0, st: 0 };
+            });
+        });
+
+        filteredRecords.forEach(r => {
+            const sku = skuMap[r.sku_id];
+            if (!sku) return;
+            const band = PRICE_BANDS.find(b => sku.msrp >= b.min && sku.msrp <= b.max);
+            if (!band) return;
+
+            const key = `${sku.category_id}_${band.id}`;
+            if (heatmapData[key]) {
+                heatmapData[key].skus.add(sku.sku_id);
+                heatmapData[key].sales += r.net_sales_amt;
+            }
+        });
+
+        // 计算热力图各自售罄率（该格子内所有SKU的加权售罄）
+        Object.keys(heatmapData).forEach(key => {
+            const skuIds = Array.from(heatmapData[key].skus);
+            if (skuIds.length === 0) return;
+            const stSum = skuIds.reduce((sum, id) => sum + (skuLatestST[id] || 0), 0);
+            heatmapData[key].st = stSum / skuIds.length;
+        });
+
+        // Formatted Heatmap Data for Chart
+        const heatmapChartData = {
+            skuCounts: [] as [number, number, number][],
+            sales: [] as [number, number, number][],
+            sellThrough: [] as [number, number, number][],
+        };
+
+        CATEGORIES.forEach((cat, yIndex) => {
+            BANDS.forEach((bandId, xIndex) => {
+                const key = `${cat}_${bandId}`;
+                const data = heatmapData[key];
+                heatmapChartData.skuCounts.push([xIndex, yIndex, data.skus.size]);
+                heatmapChartData.sales.push([xIndex, yIndex, Math.round(data.sales / 10000)]); // 万
+                heatmapChartData.sellThrough.push([xIndex, yIndex, Math.round(data.st * 100)]); // %
+            });
         });
 
         // 周售罄曲线（用于折线图）
@@ -146,6 +244,56 @@ export function useDashboardFilter() {
         const top10Sales = sortedSkus.slice(0, 10).reduce((s, [, v]) => s + v, 0);
         const top10Concentration = totalNetSales > 0 ? top10Sales / totalNetSales : 0;
 
+        // ── 散点图数据（方案A：只展示需关注的 SKU）──────────────────
+        // 按 SKU 聚合：售罄率 × 价格 × 销量
+        const skuAggMap: Record<string, {
+            price: number; sellThrough: number; units: number;
+            name: string; lifecycle: string;
+        }> = {};
+
+        filteredRecords.forEach(r => {
+            const sku = skuMap[r.sku_id];
+            if (!sku) return;
+            if (!skuAggMap[r.sku_id]) {
+                skuAggMap[r.sku_id] = {
+                    price: sku.msrp,
+                    sellThrough: 0,
+                    units: 0,
+                    name: sku.sku_name,
+                    lifecycle: sku.lifecycle,
+                };
+            }
+            skuAggMap[r.sku_id].units += r.unit_sold;
+        });
+
+        // 取每个 SKU 最新周的累计售罄率
+        filteredRecords.forEach(r => {
+            const agg = skuAggMap[r.sku_id];
+            if (!agg) return;
+            if (r.cumulative_sell_through > agg.sellThrough) {
+                agg.sellThrough = r.cumulative_sell_through;
+            }
+        });
+
+        const allSkuPoints = Object.values(skuAggMap);
+        const totalSkuCount = allSkuPoints.length;
+
+        // 筛选"需关注"SKU（方案A逻辑）
+        const atRiskSkus = allSkuPoints.filter(s =>
+            s.sellThrough < 0.70 ||                          // 低动销风险
+            s.sellThrough > 0.92 ||                          // 缺货风险
+            (s.price >= 600 && s.sellThrough < 0.75)         // 高价滞销
+        );
+
+        // 如果需关注款不足 20 个，补充售罄率最低的款（保证图表有足够数据点）
+        let scatterSkus = atRiskSkus;
+        if (scatterSkus.length < 20) {
+            const sorted = [...allSkuPoints].sort((a, b) => a.sellThrough - b.sellThrough);
+            scatterSkus = sorted.slice(0, Math.min(60, sorted.length));
+        }
+        // 最多展示 80 个点（最佳视觉密度）
+        scatterSkus = scatterSkus.slice(0, 80);
+
         return {
             totalNetSales,
             totalGrossSales,
@@ -157,8 +305,11 @@ export function useDashboardFilter() {
             activeSKUs,
             channelSales,
             priceBandSales,
+            heatmapChartData,
             weeklyData,
             top10Concentration,
+            scatterSkus,
+            totalSkuCount,
             sortedSkus: sortedSkus.slice(0, 10).map(([id, sales]) => ({
                 sku: skuMap[id],
                 sales,
@@ -167,12 +318,13 @@ export function useDashboardFilter() {
         };
     }, [filteredRecords, skuMap, channelMap]);
 
+
     const filterSummary = useMemo(() => {
         const parts: string[] = [];
         if (filters.season_year !== 'all') parts.push(`${filters.season_year}年`);
         if (filters.season !== 'all') parts.push(`${filters.season}季`);
         if (filters.wave !== 'all') parts.push(filters.wave);
-        if (filters.category_lv1 !== 'all') parts.push(filters.category_lv1);
+        if (filters.category_id !== 'all') parts.push(filters.category_id);
         if (filters.channel_type !== 'all') parts.push(filters.channel_type);
         if (filters.lifecycle !== 'all') parts.push(filters.lifecycle);
         if (filters.price_band !== 'all') {

@@ -9,9 +9,9 @@ interface FilterBarProps {
 }
 
 const YEARS = [2024, 2023];
-const SEASONS = ['春', '夏', '秋', '冬'];
-const WAVES = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10', 'W11', 'W12'];
-const CATEGORIES = ['运动', '休闲', '户外'];
+const SEASONS = ['Q1', 'Q2', 'Q3', 'Q4'];
+const WAVES = ['W01', 'W02', 'W03', 'W04', 'W05', 'W06', 'W07', 'W08', 'W09', 'W10', 'W11', 'W12'];
+const CATEGORIES = ['跑步', '篮球', '训练', '休闲', '户外'];
 const CHANNEL_TYPES = ['电商', '直营', '加盟', 'KA'];
 const PRICE_BANDS = [
     { id: 'PB1', label: '¥199-299' },
@@ -64,8 +64,8 @@ export default function FilterBar({ filters, setFilters, filterSummary }: Filter
                     {/* Category */}
                     <FilterSelect
                         label="品类"
-                        value={filters.category_lv1}
-                        onChange={v => update('category_lv1', v)}
+                        value={filters.category_id}
+                        onChange={v => update('category_id', v)}
                         options={[{ value: 'all', label: '全品类' }, ...CATEGORIES.map(c => ({ value: c, label: c }))]}
                     />
 
