@@ -194,8 +194,8 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
             }
 
             case 'heatmap': {
-                // SKU × 价格带热力图
-                const categories = ['运动', '休闲', '户外'];
+                // SKU × 价格带热力图（匹配 useDashboardFilter 的实际数据）
+                const categories = ['跳步', '篮球', '训练', '休闲', '户外'];
                 const bands = ['¥199-299', '¥300-399', '¥400-499', '¥500-599', '¥600-699', '¥700+'];
 
                 const data = kpis.heatmapChartData ? (
@@ -214,7 +214,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                         position: 'top',
                         formatter: (p: any) => `${categories[p.data[1]]} × ${bands[p.data[0]]}<br/>${label}: ${p.data[2]}${unit}`
                     },
-                    grid: { height: '55%', top: '15%' },
+                    grid: { height: '60%', top: '12%' },
                     xAxis: { type: 'category', data: bands, splitArea: { show: true }, axisLabel: { fontSize: 10 } },
                     yAxis: { type: 'category', data: categories, splitArea: { show: true } },
                     visualMap: {
@@ -223,7 +223,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                         calculable: true,
                         orient: 'horizontal',
                         left: 'center',
-                        bottom: '5%',
+                        bottom: '3%',
                         inRange: { color: ['#f0f9ff', '#3b82f6', '#1d4ed8'] },
                     },
                     series: [{
@@ -418,6 +418,33 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
         return () => { window.removeEventListener('resize', handleResize); chart.dispose(); };
     }, [title, type, kpis, heatmapMetric, onSkuClick, sellThroughCaliber]);
 
+    // 热力图行列合计 + 结构空缺清单
+    const heatmapTotals = (() => {
+        if (type !== 'heatmap' || !kpis?.heatmapChartData) return null;
+        const CATS = ['跳步', '篮球', '训练', '休闲', '户外'];
+        const BANDS = ['¥199-299', '¥300-399', '¥400-499', '¥500-599', '¥600-699', '¥700+'];
+        const raw = heatmapMetric === 'sales' ? kpis.heatmapChartData.sales
+            : heatmapMetric === 'st' ? kpis.heatmapChartData.sellThrough
+                : kpis.heatmapChartData.skuCounts;
+
+        // 构建 5×6 矩阵
+        const matrix: number[][] = CATS.map(() => BANDS.map(() => 0));
+        raw.forEach(([xIdx, yIdx, val]) => {
+            if (yIdx < CATS.length && xIdx < BANDS.length) matrix[yIdx][xIdx] = val;
+        });
+
+        // 行合计（每个品类合计）
+        const rowTotals = matrix.map(row => row.reduce((s, v) => s + v, 0));
+        // 列合计（每个价格带合计）
+        const colTotals = BANDS.map((_, ci) => matrix.reduce((s, row) => s + row[ci], 0));
+        // 结构空缺：对于 SKU数指标，找出为 0 的格子
+        const gaps = heatmapMetric === 'sku'
+            ? CATS.flatMap((cat, yi) => BANDS.filter((_, xi) => matrix[yi][xi] === 0).map(band => `${cat} × ${band}`))
+            : [];
+
+        return { matrix, rowTotals, colTotals, gaps, cats: CATS, bands: BANDS };
+    })();
+
     // 散点图四象限统计（在 render 阶段计算，避免 useEffect 内无法访问）
     const scatterQuadrants = (() => {
         if (type !== 'scatter' || !kpis?.scatterSkus) return null;
@@ -496,19 +523,49 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
             ) : (
                 <div ref={chartRef} className="flex-1" />
             )}
+            {type === 'heatmap' && heatmapTotals && (
+                <div className="mt-3 px-1 space-y-2">
+                    {/* 列合计（价格带合计行） */}
+                    <div className="flex items-center gap-1 text-xs">
+                        <span className="w-12 text-slate-400 flex-shrink-0 text-right">合计</span>
+                        {heatmapTotals.colTotals.map((total, i) => (
+                            <div key={i} className="flex-1 text-center font-semibold text-slate-700 bg-slate-100 rounded py-0.5">
+                                {total > 0 ? total : '—'}
+                            </div>
+                        ))}
+                        <div className="w-10 text-center font-bold text-slate-800 bg-blue-50 rounded py-0.5">
+                            {heatmapTotals.colTotals.reduce((s, v) => s + v, 0)}
+                        </div>
+                    </div>
+                    {/* 结构空缺清单（仅 SKU 数指标时显示） */}
+                    {heatmapTotals.gaps.length > 0 && (
+                        <div className="flex flex-wrap gap-1 pt-1 border-t border-slate-100">
+                            <span className="text-xs text-slate-400 mr-1">结构空缺：</span>
+                            {heatmapTotals.gaps.slice(0, 8).map(gap => (
+                                <span key={gap} className="text-xs px-1.5 py-0.5 bg-red-50 text-red-600 rounded border border-red-100">
+                                    {gap}
+                                </span>
+                            ))}
+                            {heatmapTotals.gaps.length > 8 && (
+                                <span className="text-xs text-slate-400">+{heatmapTotals.gaps.length - 8} 项</span>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
             {type === 'line' && (
                 <div className="flex justify-center gap-2 mt-2 pb-2">
                     {[
-                        { key: 'cohort' as const, label: 'Cohort' },
-                        { key: 'active' as const, label: 'Active' },
-                        { key: 'stage' as const, label: 'Stage' },
+                        { key: 'cohort' as const, label: '同期群' },
+                        { key: 'active' as const, label: '在售' },
+                        { key: 'stage' as const, label: '分阶段' },
                     ].map(({ key, label }) => (
                         <button
                             key={key}
                             onClick={() => setSellThroughCaliber(key)}
                             className={`px-3 py-1 text-xs rounded-md transition-colors ${sellThroughCaliber === key
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                                 }`}
                         >
                             {label}
