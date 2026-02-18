@@ -33,6 +33,7 @@ interface DimSku {
     price_band: string;
     msrp: number;
     lifecycle: string;
+    launch_date?: string;  // 上市日期，格式 YYYY-MM-DD
 }
 
 interface DimChannel {
@@ -221,9 +222,9 @@ export function useDashboardFilter() {
         });
 
         // 周售罄曲线（用于折线图）
-        const weeklyData: Record<number, { units: number; sales: number; st: number }> = {};
+        const weeklyData: Record<number, { units: number; sales: number; st: number; marginRate: number }> = {};
         filteredRecords.forEach(r => {
-            if (!weeklyData[r.week_num]) weeklyData[r.week_num] = { units: 0, sales: 0, st: 0 };
+            if (!weeklyData[r.week_num]) weeklyData[r.week_num] = { units: 0, sales: 0, st: 0, marginRate: 0 };
             weeklyData[r.week_num].units += r.unit_sold;
             weeklyData[r.week_num].sales += r.net_sales_amt;
         });
@@ -233,6 +234,81 @@ export function useDashboardFilter() {
             const weekRecords = filteredRecords.filter(r => r.week_num === week);
             const stVals = weekRecords.map(r => r.cumulative_sell_through);
             weeklyData[week].st = stVals.length > 0 ? stVals.reduce((a, b) => a + b, 0) / stVals.length : 0;
+            // 计算该周的毛利率
+            const weekSales = weekRecords.reduce((s, r) => s + r.net_sales_amt, 0);
+            const weekProfit = weekRecords.reduce((s, r) => s + r.gross_profit_amt, 0);
+            weeklyData[week].marginRate = weekSales > 0 ? weekProfit / weekSales : 0;
+        });
+
+        // ── 三种口径的售罄率曲线 ──────────────────────────────────
+        // 1. Cohort（同期群）：按上市时间分组，只看同一批次的 SKU
+        const cohortData: Record<number, { st: number; skuCount: number }> = {};
+        const skuLaunchWeek: Record<string, number> = {};
+
+        // 计算每个 SKU 的上市周（基于 launch_date）
+        // 季度对应的基准日期（用于计算周龄）
+        const SEASON_BASE: Record<string, string> = {
+            Q1: '2024-02-01', Q2: '2024-05-01',
+            Q3: '2024-08-01', Q4: '2024-11-01',
+        };
+        Object.values(skuMap).forEach(sku => {
+            const launchDate = sku.launch_date;
+            if (launchDate) {
+                const launch = new Date(launchDate);
+                // 以该 SKU 所属季度的基准日期计算周龄
+                const seasonBase = SEASON_BASE[sku.season] || '2024-02-01';
+                const seasonStart = new Date(seasonBase);
+                const diffDays = Math.floor((launch.getTime() - seasonStart.getTime()) / (1000 * 60 * 60 * 24));
+                skuLaunchWeek[sku.sku_id] = Math.max(1, Math.floor(diffDays / 7) + 1);
+            }
+        });
+
+        filteredRecords.forEach(r => {
+            const launchWeek = skuLaunchWeek[r.sku_id] || 1;
+            const weeksSinceLaunch = r.week_num - launchWeek + 1;
+            if (weeksSinceLaunch > 0) {
+                if (!cohortData[weeksSinceLaunch]) cohortData[weeksSinceLaunch] = { st: 0, skuCount: 0 };
+            }
+        });
+
+        Object.keys(cohortData).forEach(w => {
+            const weekAge = parseInt(w);
+            const records = filteredRecords.filter(r => {
+                const launchWeek = skuLaunchWeek[r.sku_id] || 1;
+                return r.week_num - launchWeek + 1 === weekAge;
+            });
+            const stVals = records.map(r => r.cumulative_sell_through);
+            cohortData[weekAge].st = stVals.length > 0 ? stVals.reduce((a, b) => a + b, 0) / stVals.length : 0;
+            cohortData[weekAge].skuCount = new Set(records.map(r => r.sku_id)).size;
+        });
+
+        // 2. Active（在售）：每周所有在售 SKU 的平均售罄率
+        const activeData: Record<number, { st: number; skuCount: number }> = {};
+        Object.keys(weeklyData).forEach(w => {
+            const week = parseInt(w);
+            const weekRecords = filteredRecords.filter(r => r.week_num === week);
+            const stVals = weekRecords.map(r => r.cumulative_sell_through);
+            activeData[week] = {
+                st: stVals.length > 0 ? stVals.reduce((a, b) => a + b, 0) / stVals.length : 0,
+                skuCount: new Set(weekRecords.map(r => r.sku_id)).size,
+            };
+        });
+
+        // 3. Stage（分阶段）：按生命周期阶段分组
+        const stageData: Record<number, { st: number; skuCount: number }> = {};
+        Object.keys(weeklyData).forEach(w => {
+            const week = parseInt(w);
+            const weekRecords = filteredRecords.filter(r => r.week_num === week);
+            // 只看"新品"阶段的 SKU（前 8 周）
+            const newSkuRecords = weekRecords.filter(r => {
+                const sku = skuMap[r.sku_id];
+                return sku && sku.lifecycle === '新品';
+            });
+            const stVals = newSkuRecords.map(r => r.cumulative_sell_through);
+            stageData[week] = {
+                st: stVals.length > 0 ? stVals.reduce((a, b) => a + b, 0) / stVals.length : 0,
+                skuCount: new Set(newSkuRecords.map(r => r.sku_id)).size,
+            };
         });
 
         // Top SKU
@@ -307,6 +383,10 @@ export function useDashboardFilter() {
             priceBandSales,
             heatmapChartData,
             weeklyData,
+            // 三种口径的售罄率曲线数据
+            cohortData,
+            activeData,
+            stageData,
             top10Concentration,
             scatterSkus,
             totalSkuCount,

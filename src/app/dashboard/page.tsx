@@ -9,7 +9,9 @@ import SkuRiskList from '@/components/dashboard/SkuRiskList';
 import DashboardSkeleton from '@/components/dashboard/DashboardSkeleton';
 import DashboardSummaryButton from '@/components/dashboard/DashboardSummaryButton';
 import SkuDetailModal, { SkuDrillData } from '@/components/dashboard/SkuDetailModal';
-import { useState, useEffect } from 'react';
+import ChartMenu from '@/components/dashboard/ChartMenu';
+import InsightsBanner from '@/components/dashboard/InsightsBanner';
+import { useState, useEffect, useRef } from 'react';
 
 interface ConclusionCardProps {
     finding: string;
@@ -45,16 +47,28 @@ interface ChartCardProps {
     span?: 'full' | 'half';
     heatmapMetric?: 'sku' | 'sales' | 'st';
     onSkuClick?: (sku: SkuDrillData) => void;
+    containerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-function ChartCard({ title, type, kpis, conclusion, headerAction, span = 'half', heatmapMetric, onSkuClick }: ChartCardProps) {
+function ChartCard({ title, type, kpis, conclusion, headerAction, span = 'half', heatmapMetric, onSkuClick, containerRef }: ChartCardProps) {
+    const chartRef = useRef<HTMLDivElement>(null);
+
+    const conclusionText = `${conclusion.finding} ${conclusion.decision} ${conclusion.impact}`;
+
     return (
-        <div className={`bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden ${span === 'full' ? 'col-span-2' : ''}`}>
+        <div ref={containerRef} className={`bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden ${span === 'full' ? 'col-span-2' : ''}`}>
             <div className="px-5 py-4 border-b border-slate-50 flex justify-between items-center">
                 <h3 className="font-semibold text-slate-800">{title}</h3>
-                {headerAction}
+                <div className="flex items-center gap-2">
+                    {headerAction}
+                    <ChartMenu
+                        chartTitle={title}
+                        chartRef={chartRef}
+                        conclusion={conclusionText}
+                    />
+                </div>
             </div>
-            <div className="p-5">
+            <div className="p-5" ref={chartRef}>
                 <DashboardChart title="" type={type} kpis={kpis} heatmapMetric={heatmapMetric} onSkuClick={onSkuClick} />
             </div>
             <div className="px-5 pb-5">
@@ -70,7 +84,18 @@ export default function DashboardPage() {
     const [mounted, setMounted] = useState(false);
     const [selectedSku, setSelectedSku] = useState<SkuDrillData | null>(null);
 
+    // Refs for scroll targets
+    const lineChartRef = useRef<HTMLDivElement>(null);
+    const scatterChartRef = useRef<HTMLDivElement>(null);
+    const pieChartRef = useRef<HTMLDivElement>(null);
+    const skuListRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => { setMounted(true); }, []);
+
+    // 滚动到指定区域
+    const scrollToSection = (ref: React.RefObject<HTMLDivElement | null>) => {
+        ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
 
     if (!mounted) return <DashboardSkeleton />;
 
@@ -232,7 +257,18 @@ export default function DashboardPage() {
 
                     {/* KPI Grid */}
                     <div className="mb-10">
-                        <KpiGrid kpis={kpis} />
+                        <KpiGrid
+                            kpis={kpis}
+                            onSellThroughClick={() => scrollToSection(lineChartRef)}
+                            onDiscountClick={() => scrollToSection(skuListRef)}
+                            onChannelClick={() => scrollToSection(pieChartRef)}
+                            onMarginClick={() => scrollToSection(skuListRef)}
+                        />
+                    </div>
+
+                    {/* Insights Banner */}
+                    <div className="mb-8">
+                        <InsightsBanner kpis={kpis} />
                     </div>
 
                     {/* Divider */}
@@ -259,6 +295,7 @@ export default function DashboardPage() {
                             type="line"
                             kpis={kpis}
                             conclusion={lineConclusion}
+                            containerRef={lineChartRef}
                         />
 
                         {/* Chart 3: Channel Mix */}
@@ -267,6 +304,7 @@ export default function DashboardPage() {
                             type="pie"
                             kpis={kpis}
                             conclusion={pieConclusion}
+                            containerRef={pieChartRef}
                         />
 
                         {/* Chart 4: Price vs Sell-Through Scatter */}
@@ -358,7 +396,7 @@ export default function DashboardPage() {
                     </div>
 
                     {/* SKU 风险列表 */}
-                    <div className="mt-8">
+                    <div className="mt-8" ref={skuListRef}>
                         <div className="flex items-center gap-4 mb-6">
                             <div className="flex-1 h-px bg-slate-200" />
                             <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">SKU 风险列表 · 动作层</span>

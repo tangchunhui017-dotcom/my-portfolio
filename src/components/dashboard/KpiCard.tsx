@@ -11,6 +11,7 @@ interface KpiCardProps {
     hintType?: 'warning' | 'opportunity' | 'neutral';
     onClick?: () => void;
     group?: 'outcome' | 'efficiency' | 'structure';
+    sparklineData?: number[]; // 12周趋势数据
 }
 
 const GROUP_COLORS = {
@@ -33,8 +34,26 @@ const HINT_STYLES = {
 
 export default function KpiCard({
     label, value, delta, deltaPositive, gap, gapPositive,
-    hint, hintType = 'neutral', onClick, group = 'outcome',
+    hint, hintType = 'neutral', onClick, group = 'outcome', sparklineData,
 }: KpiCardProps) {
+    // 生成 SVG Sparkline 路径
+    const generateSparkline = (data: number[]) => {
+        if (!data || data.length === 0) return '';
+        const width = 80;
+        const height = 24;
+        const max = Math.max(...data);
+        const min = Math.min(...data);
+        const range = max - min || 1;
+
+        const points = data.map((val, i) => {
+            const x = (i / (data.length - 1)) * width;
+            const y = height - ((val - min) / range) * height;
+            return `${x},${y}`;
+        });
+
+        return `M ${points.join(' L ')}`;
+    };
+
     return (
         <div
             onClick={onClick}
@@ -55,8 +74,22 @@ export default function KpiCard({
                 )}
             </div>
 
-            {/* Main Value */}
-            <div className="text-2xl font-bold text-slate-900 mb-2">{value}</div>
+            {/* Main Value + Sparkline */}
+            <div className="flex items-center justify-between mb-2">
+                <div className="text-2xl font-bold text-slate-900">{value}</div>
+                {sparklineData && sparklineData.length > 0 && (
+                    <svg width="80" height="24" className="opacity-60">
+                        <path
+                            d={generateSparkline(sparklineData)}
+                            fill="none"
+                            stroke={group === 'outcome' ? '#3b82f6' : group === 'efficiency' ? '#f59e0b' : '#10b981'}
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                )}
+            </div>
 
             {/* Delta & Gap Row */}
             <div className="flex items-center gap-3 mb-2">

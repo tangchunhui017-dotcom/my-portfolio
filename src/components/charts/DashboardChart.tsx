@@ -1,13 +1,19 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as echarts from 'echarts';
+import { THRESHOLDS } from '@/config/thresholds';
+
+type SellThroughCaliber = 'cohort' | 'active' | 'stage';
 
 interface DashboardChartProps {
     title: string;
     type: 'bar' | 'line' | 'pie' | 'scatter' | 'heatmap' | 'gauge';
     kpis: {
         weeklyData: Record<number, { units: number; sales: number; st: number }>;
+        cohortData?: Record<number, { st: number; skuCount: number }>;
+        activeData?: Record<number, { st: number; skuCount: number }>;
+        stageData?: Record<number, { st: number; skuCount: number }>;
         channelSales: Record<string, number>;
         priceBandSales: Record<string, { units: number; sales: number; grossProfit: number; onHandUnits: number }>;
         heatmapChartData?: {
@@ -33,6 +39,7 @@ const CHART_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#0
 
 export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku', onSkuClick }: DashboardChartProps) {
     const chartRef = useRef<HTMLDivElement>(null);
+    const [sellThroughCaliber, setSellThroughCaliber] = useState<SellThroughCaliber>('cohort');
 
     useEffect(() => {
         if (!chartRef.current) return;
@@ -108,21 +115,43 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
             }
 
             case 'line': {
-                // 售罄率曲线（当周动销 + 累计售罄 + 目标线）
-                const weeks = Object.keys(kpis.weeklyData).map(Number).sort((a, b) => a - b);
-                const stData = weeks.map(w => Math.round(kpis.weeklyData[w].st * 100));
+                // 售罄率曲线（三种口径：Cohort / Active / Stage）
+                const calibers = [
+                    { key: 'cohort', label: 'Cohort（同期群）', data: kpis.cohortData },
+                    { key: 'active', label: 'Active（在售）', data: kpis.activeData },
+                    { key: 'stage', label: 'Stage（分阶段）', data: kpis.stageData },
+                ];
+
+                const currentCaliber = calibers.find(c => c.key === sellThroughCaliber) || calibers[0];
+                const data = currentCaliber.data || {};
+
+                const weeks = Object.keys(data).map(Number).sort((a, b) => a - b);
+                const stData = weeks.map(w => Math.round(data[w].st * 100));
                 const weekLabels = weeks.map(w => `W${w}`);
 
+                // 从配置读取目标线和警戒线
+                const targetLine = Math.round(THRESHOLDS.sellThrough.target * 100);
+                const warningLine = Math.round(THRESHOLDS.sellThrough.warning * 100);
+
                 option = {
-                    title: { text: title, left: 'center', textStyle: { fontSize: 13, fontWeight: 'bold', color: '#1e293b' } },
+                    title: {
+                        text: title,
+                        subtext: `口径: ${currentCaliber.label}`,
+                        left: 'center',
+                        textStyle: { fontSize: 13, fontWeight: 'bold', color: '#1e293b' },
+                        subtextStyle: { fontSize: 11, color: '#64748b' }
+                    },
                     tooltip: {
                         trigger: 'axis', formatter: (params: any) => {
                             const p = Array.isArray(params) ? params : [params];
-                            return p.map((item: any) => `${item.seriesName}: ${item.value}%`).join('<br/>');
+                            const weekIdx = p[0]?.dataIndex;
+                            const skuCount = weekIdx !== undefined ? data[weeks[weekIdx]]?.skuCount : 0;
+                            return p.map((item: any) => `${item.seriesName}: ${item.value}%`).join('<br/>') +
+                                (skuCount ? `<br/>SKU数: ${skuCount}` : '');
                         }
                     },
                     legend: { bottom: 0, data: ['累计售罄率', '目标线', '警戒线'] },
-                    xAxis: { type: 'category', data: weekLabels },
+                    xAxis: { type: 'category', data: weekLabels, name: '周龄（Weeks Since Launch）' },
                     yAxis: { type: 'value', name: '售罄率 %', max: 100 },
                     series: [
                         {
@@ -132,8 +161,8 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                             markLine: {
                                 silent: true,
                                 data: [
-                                    { yAxis: 80, name: '目标线', lineStyle: { color: '#3b82f6', type: 'dashed' }, label: { formatter: '目标 80%', color: '#3b82f6' } },
-                                    { yAxis: 60, name: '警戒线', lineStyle: { color: '#ef4444', type: 'dashed' }, label: { formatter: '警戒 60%', color: '#ef4444' } },
+                                    { yAxis: targetLine, name: '目标线', lineStyle: { color: '#3b82f6', type: 'dashed' }, label: { formatter: `目标 ${targetLine}%`, color: '#3b82f6' } },
+                                    { yAxis: warningLine, name: '警戒线', lineStyle: { color: '#ef4444', type: 'dashed' }, label: { formatter: `警戒 ${warningLine}%`, color: '#ef4444' } },
                                 ],
                             },
                         },
@@ -387,7 +416,71 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
         const handleResize = () => chart.resize();
         window.addEventListener('resize', handleResize);
         return () => { window.removeEventListener('resize', handleResize); chart.dispose(); };
-    }, [title, type, kpis, heatmapMetric, onSkuClick]);
+    }, [title, type, kpis, heatmapMetric, onSkuClick, sellThroughCaliber]);
 
-    return <div ref={chartRef} className="w-full h-full min-h-[320px]" />;
+    return (
+        <div className="w-full h-full min-h-[320px] flex flex-col">
+            {type === 'pie' && kpis ? (
+                // 渠道图：甜甜圈 + 右侧质量榜
+                <div className="flex gap-4 h-full min-h-[320px]">
+                    {/* 左：ECharts 甜甜圈 */}
+                    <div ref={chartRef} className="flex-1 min-w-0" />
+                    {/* 右：渠道质量榜 */}
+                    <div className="w-52 flex-shrink-0 flex flex-col justify-center py-2 pr-2">
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">渠道贡献排行</div>
+                        {Object.entries(kpis.channelSales)
+                            .sort((a, b) => b[1] - a[1])
+                            .map(([channel, sales], i) => {
+                                const total = Object.values(kpis.channelSales).reduce((s, v) => s + v, 0);
+                                const pct = total > 0 ? Math.round(sales / total * 100) : 0;
+                                const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+                                const color = colors[i % colors.length];
+                                const salesWan = (sales / 10000).toFixed(0);
+                                return (
+                                    <div key={channel} className="mb-3">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <span className="text-xs text-slate-700 font-medium truncate">{channel}</span>
+                                            <span className="text-xs text-slate-500 ml-1 flex-shrink-0">¥{salesWan}万</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div
+                                                    className="h-full rounded-full transition-all duration-500"
+                                                    style={{ width: `${pct}%`, backgroundColor: color }}
+                                                />
+                                            </div>
+                                            <span className="text-xs font-semibold w-8 text-right flex-shrink-0" style={{ color }}>
+                                                {pct}%
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                    </div>
+                </div>
+            ) : (
+                <div ref={chartRef} className="flex-1" />
+            )}
+            {type === 'line' && (
+                <div className="flex justify-center gap-2 mt-2 pb-2">
+                    {[
+                        { key: 'cohort' as const, label: 'Cohort' },
+                        { key: 'active' as const, label: 'Active' },
+                        { key: 'stage' as const, label: 'Stage' },
+                    ].map(({ key, label }) => (
+                        <button
+                            key={key}
+                            onClick={() => setSellThroughCaliber(key)}
+                            className={`px-3 py-1 text-xs rounded-md transition-colors ${sellThroughCaliber === key
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                }`}
+                        >
+                            {label}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
 }

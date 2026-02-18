@@ -15,7 +15,12 @@ interface KpiGridProps {
         top10Concentration: number;
         channelSales: Record<string, number>;
         priceBandSales: Record<string, { units: number; sales: number }>;
+        weeklyData?: Record<number, { units: number; sales: number; st: number; marginRate: number }>;
     } | null;
+    onSellThroughClick?: () => void;
+    onDiscountClick?: () => void;
+    onChannelClick?: () => void;
+    onMarginClick?: () => void;
 }
 
 function fmtSales(n: number) {
@@ -28,7 +33,7 @@ function fmtPct(n: number) {
     return `${(n * 100).toFixed(1)}%`;
 }
 
-export default function KpiGrid({ kpis }: KpiGridProps) {
+export default function KpiGrid({ kpis, onSellThroughClick, onDiscountClick, onChannelClick, onMarginClick }: KpiGridProps) {
     if (!kpis) {
         return (
             <div className="flex items-center justify-center h-40 text-slate-400">
@@ -53,6 +58,19 @@ export default function KpiGrid({ kpis }: KpiGridProps) {
         PB4: '¥500-599', PB5: '¥600-699', PB6: '¥700+',
     };
 
+    // 生成 Sparkline 数据（12周趋势）
+    const salesSparkline = kpis.weeklyData
+        ? Object.keys(kpis.weeklyData).sort((a, b) => Number(a) - Number(b)).map(w => kpis.weeklyData![Number(w)].sales / 10000)
+        : undefined;
+
+    const stSparkline = kpis.weeklyData
+        ? Object.keys(kpis.weeklyData).sort((a, b) => Number(a) - Number(b)).map(w => kpis.weeklyData![Number(w)].st * 100)
+        : undefined;
+
+    const marginSparkline = kpis.weeklyData
+        ? Object.keys(kpis.weeklyData).sort((a, b) => Number(a) - Number(b)).map(w => kpis.weeklyData![Number(w)].marginRate * 100)
+        : undefined;
+
     return (
         <div>
             {/* Group A: 结果 */}
@@ -72,6 +90,7 @@ export default function KpiGrid({ kpis }: KpiGridProps) {
                         gapPositive={true}
                         hint="✅ 超额完成季度目标"
                         hintType="opportunity"
+                        sparklineData={salesSparkline}
                     />
                     <KpiCard
                         group="outcome"
@@ -83,6 +102,8 @@ export default function KpiGrid({ kpis }: KpiGridProps) {
                         gapPositive={kpis.avgSellThrough >= 0.80}
                         hint={kpis.avgSellThrough >= 0.80 ? '✅ 达成目标 80%' : '⚠️ 未达目标 80%，关注滞销款'}
                         hintType={kpis.avgSellThrough >= 0.80 ? 'opportunity' : 'warning'}
+                        sparklineData={stSparkline}
+                        onClick={onSellThroughClick}
                     />
                     <KpiCard
                         group="outcome"
@@ -94,6 +115,8 @@ export default function KpiGrid({ kpis }: KpiGridProps) {
                         gapPositive={true}
                         hint="✅ 折扣管控有效"
                         hintType="opportunity"
+                        sparklineData={marginSparkline}
+                        onClick={onMarginClick}
                     />
                     <KpiCard
                         group="outcome"
@@ -131,6 +154,7 @@ export default function KpiGrid({ kpis }: KpiGridProps) {
                         gapPositive={kpis.avgDiscountDepth <= 0.12}
                         hint={kpis.avgDiscountDepth > 0.15 ? '⚠️ 折扣偏深，关注毛利侵蚀' : '✅ 折扣管控在合理区间'}
                         hintType={kpis.avgDiscountDepth > 0.15 ? 'warning' : 'opportunity'}
+                        onClick={onDiscountClick}
                     />
                     <KpiCard
                         group="efficiency"
@@ -173,6 +197,7 @@ export default function KpiGrid({ kpis }: KpiGridProps) {
                         gapPositive={true}
                         hint={topChannelPct > 0.6 ? '⚠️ 渠道过度集中' : '✅ 渠道结构健康'}
                         hintType={topChannelPct > 0.6 ? 'warning' : 'opportunity'}
+                        onClick={onChannelClick}
                     />
                     <KpiCard
                         group="structure"

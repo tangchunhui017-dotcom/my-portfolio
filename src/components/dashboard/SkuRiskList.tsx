@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { calcRiskPriority, getActionSuggestion, getEstimatedImpact } from '@/config/thresholds';
 
 // 显式类型定义，避免大型 JSON 文件导致 TypeScript 推断失败
 interface DimSkuRecord {
@@ -56,6 +57,9 @@ interface SkuRiskRow {
     avgMarginRate: number;
     onHandUnit: number;
     risks: string[];
+    priority: 'P0' | 'P1' | 'P2';
+    actionSuggestion: string;
+    estimatedImpact: string;
 }
 
 type SortKey = keyof Pick<SkuRiskRow, 'msrp' | 'totalUnits' | 'totalStockIn' | 'avgSellThrough' | 'avgDiscountDepth' | 'avgMarginRate' | 'onHandUnit' | 'totalSales'>;
@@ -101,6 +105,11 @@ export default function SkuRiskList() {
             if (avgDiscountDepth > 0.20) risks.push('折扣异常');
             if (risks.length === 0) risks.push('健康');
 
+            // 计算优先级和建议动作
+            const priority = calcRiskPriority(risks);
+            const actionSuggestion = getActionSuggestion(risks, avgSellThrough, onHandUnit);
+            const estimatedImpact = getEstimatedImpact(risks, avgSellThrough, onHandUnit, sku.msrp);
+
             return {
                 sku_id: sku.sku_id,
                 sku_name: sku.sku_name,
@@ -116,6 +125,9 @@ export default function SkuRiskList() {
                 avgMarginRate,
                 onHandUnit,
                 risks,
+                priority,
+                actionSuggestion,
+                estimatedImpact,
             };
         }).filter(Boolean) as SkuRiskRow[];
     }, []);
@@ -141,14 +153,14 @@ export default function SkuRiskList() {
 
     // CSV 导出
     const exportCsv = () => {
-        const headers = ['款号', '商品名', '品类', '生命周期', '吊牌价', '季节', '进货量', '销量', '净销售额', '售罄率', '折扣深度', '毛利率', '剩余库存', '风险标签'];
+        const headers = ['款号', '商品名', '品类', '生命周期', '吊牌价', '季节', '进货量', '销量', '净销售额', '售罄率', '折扣深度', '毛利率', '剩余库存', '风险标签', '优先级', '建议动作', '预估收益'];
         const rows = filtered.map(r => [
             r.sku_id, r.sku_name, r.category_id, r.lifecycle, r.msrp, r.season,
             r.totalStockIn, r.totalUnits, r.totalSales,
             `${(r.avgSellThrough * 100).toFixed(1)}%`,
             `${(r.avgDiscountDepth * 100).toFixed(1)}%`,
             `${(r.avgMarginRate * 100).toFixed(1)}%`,
-            r.onHandUnit, r.risks.join('|'),
+            r.onHandUnit, r.risks.join('|'), r.priority, r.actionSuggestion, r.estimatedImpact,
         ]);
         const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
         const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -246,6 +258,9 @@ export default function SkuRiskList() {
                                 剩余库存 <SortIcon k="onHandUnit" />
                             </th>
                             <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap">风险标签</th>
+                            <th className="text-center px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap">优先级</th>
+                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap">建议动作</th>
+                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap">预估收益</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">
@@ -292,6 +307,21 @@ export default function SkuRiskList() {
                                             </span>
                                         ))}
                                     </div>
+                                </td>
+                                <td className="px-4 py-3 text-center">
+                                    <span className={`text-xs px-2 py-1 rounded-md font-bold ${
+                                        row.priority === 'P0' ? 'bg-red-100 text-red-700' :
+                                        row.priority === 'P1' ? 'bg-orange-100 text-orange-700' :
+                                        'bg-slate-100 text-slate-600'
+                                    }`}>
+                                        {row.priority}
+                                    </span>
+                                </td>
+                                <td className="px-4 py-3">
+                                    <div className="text-xs text-slate-700 max-w-xs">{row.actionSuggestion}</div>
+                                </td>
+                                <td className="px-4 py-3">
+                                    <div className="text-xs text-slate-500">{row.estimatedImpact}</div>
                                 </td>
                             </tr>
                         ))}
