@@ -1,0 +1,261 @@
+{
+    "name": "汤春晖",
+    "nameEn": "Tang Chunhui",
+    "avatar": "/我的照片.jpg",
+    "title": "鞋类品牌企划设计总监",
+    "titleEn": "Footwear Brand Planning & Design Director",
+    "tagline": "从趋势洞察到商品企划，从设计开发到上市复盘 —— 打造商业闭环的全链路操盘手",
+    "yearsOfExperience": 16,
+    "location": "温州",
+    "contact": {
+        "phone": "15355920031",
+        "email": "260081140@qq.com",
+        "linkedin": "",
+        "wechat": ""
+    },
+    "stats": [
+        {
+            "value": "16+",
+            "label": "年行业深耕",
+            "labelEn": "Years Experience"
+        },
+        {
+            "value": "200万+",
+            "label": "双累计投产",
+            "labelEn": "Pairs Produced"
+        },
+        {
+            "value": "35万",
+            "label": "双单年产量峰值",
+            "labelEn": "Peak Annual Output"
+        },
+        {
+            "value": "2x",
+            "label": "业绩翻倍增长",
+            "labelEn": "Revenue Growth"
+        }
+    ],
+    "skills": [
+        {
+            "name": "商品企划",
+            "nameEn": "Merchandising",
+            "weight": 100
+        },
+        {
+            "name": "OTB预算管理",
+            "nameEn": "OTB Management",
+            "weight": 95
+        },
+        {
+            "name": "产品设计",
+            "nameEn": "Product Design",
+            "weight": 90
+        },
+        {
+            "name": "趋势研究",
+            "nameEn": "Trend Research",
+            "weight": 85
+        },
+        {
+            "name": "供应链协同",
+            "nameEn": "Supply Chain",
+            "weight": 80
+        },
+        {
+            "name": "数据分析",
+            "nameEn": "Data Analytics",
+            "weight": 78
+        },
+        {
+            "name": "团队管理",
+            "nameEn": "Team Leadership",
+            "weight": 75
+        },
+        {
+            "name": "IP跨界企划",
+            "nameEn": "IP Collaboration",
+            "weight": 72
+        },
+        {
+            "name": "成本控制",
+            "nameEn": "Cost Control",
+            "weight": 70
+        },
+        {
+            "name": "数字化研发",
+            "nameEn": "Digital R&D",
+            "weight": 68
+        },
+        {
+            "name": "品牌定位",
+            "nameEn": "Brand Positioning",
+            "weight": 65
+        },
+        {
+            "name": "消费者洞察",
+            "nameEn": "Consumer Insight",
+            "weight": 62
+        },
+        {
+            "name": "视觉营销",
+            "nameEn": "Visual Merchandising",
+            "weight": 58
+        },
+        {
+            "name": "3D建模打印",
+            "nameEn": "3D Modeling",
+            "weight": 55
+        },
+        {
+            "name": "AI赋能设计",
+            "nameEn": "AI-Powered Design",
+            "weight": 52
+        },
+        {
+            "name": "电商运营",
+            "nameEn": "E-commerce",
+            "weight": 50
+        }
+    ],
+    "experience": [
+        {
+            "period": "2023.03 - 至今",
+            "role": "设计经理 / 主管",
+            "company": "浙江中胤时尚股份有限公司",
+            "companyType": "时尚鞋企",
+            "highlights": [
+                "主导制定品牌年度及季度的 OTB 採购预算与销售预测，拆解各品类目标",
+                "科学规划商品结构表和波段，明确引流款、利润款、形象款的占比，有效控制库存风险",
+                "精准定义品牌消费者画像（Persona），制定价格带分层策略",
+                "建立高效的供应商管理体系，优化供应链成本与配合度",
+                "统筹从概念立项到大货投产的全生命周期，确保波段上市节奏",
+                "协同销售团队推动季度目标达成，输出《系列预览及搭配指南》"
+            ],
+            "tags": [
+                "OTB管理",
+                "商品企划",
+                "供应链",
+                "全案操盘"
+            ]
+        },
+        {
+            "period": "2014.03 - 2023.02",
+            "role": "品牌设计师 → 设计师组长 → 设计经理",
+            "company": "浙江奥康鞋业股份有限公司",
+            "companyType": "A股上市鞋企",
+            "highlights": [
+                "协助品牌与漫威 (Marvel)、皮卡丘 (Pokémon) 等国际IP联名合作全案管理",
+                "2020年带领女鞋电商团队实现业绩同比翻倍，单年产量突破 35 万双",
+                "累计操盘产品投产订单量超 200 万双，市场转化率极高",
+                "推行 3D打印+数字化制版 研发流程，大幅缩短首版确认周期",
+                "制定设计与企划团队人才发展计划，搭建内部人才梯队"
+            ],
+            "achievements": [
+                {
+                    "metric": "200万+双",
+                    "description": "累计投产订单量"
+                },
+                {
+                    "metric": "35万双/年",
+                    "description": "单年产量峰值"
+                },
+                {
+                    "metric": "2x增长",
+                    "description": "2020年业绩翻倍"
+                }
+            ],
+            "tags": [
+                "爆款打造",
+                "IP跨界",
+                "数字化转型",
+                "团队建设"
+            ]
+        },
+        {
+            "period": "2009.10 - 2012.12",
+            "role": "鞋靴设计师",
+            "company": "广州曼仙妮鞋业有限公司",
+            "companyType": "品牌鞋企",
+            "highlights": [
+                "负责品牌鞋靴产品的绘图、配色及样板开发",
+                "协助工厂完成样品落地，积累扎实的制鞋工艺与材料学基础"
+            ],
+            "tags": [
+                "产品设计",
+                "工艺基础",
+                "材料学"
+            ]
+        }
+    ],
+    "education": [
+        {
+            "school": "广州美术学院城市学院",
+            "degree": "大专",
+            "major": "服装设计"
+        },
+        {
+            "school": "邢台职业技术学院",
+            "degree": "大专",
+            "major": "鞋靴设计"
+        }
+    ],
+    "approach": [
+        {
+            "number": "01",
+            "title": "商业优先",
+            "titleEn": "Business First",
+            "description": "设计是商业目标的实现手段。用 OTB、售罄率、毛利率说话，而非主观判断"
+        },
+        {
+            "number": "02",
+            "title": "数据驱动",
+            "titleEn": "Data Driven",
+            "description": "基于历史销售/库存结构做出科学决策，用数据分析制定精准商品企划"
+        },
+        {
+            "number": "03",
+            "title": "全链路操盘",
+            "titleEn": "End-to-End",
+            "description": "从趋势洞察到上市复盘的每个环节，确保品牌、运营、销售、设计、生产高效协同"
+        },
+        {
+            "number": "04",
+            "title": "技术赋能",
+            "titleEn": "Tech Enabled",
+            "description": "善用 AI、3D打印、数字化工具提升研发效能与降低成本"
+        }
+    ],
+    "toolbox": [
+        {
+            "category": "设计工具",
+            "items": [
+                "手绘",
+                "Photoshop",
+                "AI"
+            ]
+        },
+        {
+            "category": "数据工具",
+            "items": [
+                "Excel",
+                "数据分析"
+            ]
+        },
+        {
+            "category": "新兴技术",
+            "items": [
+                "AI人工智能",
+                "3D建模",
+                "3D打印"
+            ]
+        },
+        {
+            "category": "管理技能",
+            "items": [
+                "OTB管理",
+                "供应链管理",
+                "团队管理"
+            ]
+        }
+    ]
+}
