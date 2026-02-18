@@ -418,14 +418,32 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
         return () => { window.removeEventListener('resize', handleResize); chart.dispose(); };
     }, [title, type, kpis, heatmapMetric, onSkuClick, sellThroughCaliber]);
 
+    // 散点图四象限统计（在 render 阶段计算，避免 useEffect 内无法访问）
+    const scatterQuadrants = (() => {
+        if (type !== 'scatter' || !kpis?.scatterSkus) return null;
+        const skus = kpis.scatterSkus;
+        const PRICE_MID = 500;  // 价格分界线
+        const ST_MID = 75;      // 售罄率分界线（%）
+        const q = [
+            { label: '⭐ 明星区', desc: '高价高售罄', color: '#10b981', skus: skus.filter(s => s.price >= PRICE_MID && s.sellThrough * 100 >= ST_MID) },
+            { label: '🔥 走量区', desc: '低价高售罄', color: '#3b82f6', skus: skus.filter(s => s.price < PRICE_MID && s.sellThrough * 100 >= ST_MID) },
+            { label: '⚠️ 风险区', desc: '高价低售罄', color: '#ef4444', skus: skus.filter(s => s.price >= PRICE_MID && s.sellThrough * 100 < ST_MID) },
+            { label: '📦 滞销区', desc: '低价低售罄', color: '#f59e0b', skus: skus.filter(s => s.price < PRICE_MID && s.sellThrough * 100 < ST_MID) },
+        ];
+        const totalUnits = skus.reduce((s, r) => s + r.units, 0);
+        return q.map(quad => ({
+            ...quad,
+            count: quad.skus.length,
+            unitShare: totalUnits > 0 ? Math.round(quad.skus.reduce((s, r) => s + r.units, 0) / totalUnits * 100) : 0,
+        }));
+    })();
+
     return (
         <div className="w-full h-full min-h-[320px] flex flex-col">
             {type === 'pie' && kpis ? (
                 // 渠道图：甜甜圈 + 右侧质量榜
                 <div className="flex gap-4 h-full min-h-[320px]">
-                    {/* 左：ECharts 甜甜圈 */}
                     <div ref={chartRef} className="flex-1 min-w-0" />
-                    {/* 右：渠道质量榜 */}
                     <div className="w-52 flex-shrink-0 flex flex-col justify-center py-2 pr-2">
                         <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">渠道贡献排行</div>
                         {Object.entries(kpis.channelSales)
@@ -444,18 +462,35 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                                <div
-                                                    className="h-full rounded-full transition-all duration-500"
-                                                    style={{ width: `${pct}%`, backgroundColor: color }}
-                                                />
+                                                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: color }} />
                                             </div>
-                                            <span className="text-xs font-semibold w-8 text-right flex-shrink-0" style={{ color }}>
-                                                {pct}%
-                                            </span>
+                                            <span className="text-xs font-semibold w-8 text-right flex-shrink-0" style={{ color }}>{pct}%</span>
                                         </div>
                                     </div>
                                 );
                             })}
+                    </div>
+                </div>
+            ) : type === 'scatter' && scatterQuadrants ? (
+                // 散点图：ECharts + 右侧四象限统计卡
+                <div className="flex gap-3 h-full min-h-[320px]">
+                    <div ref={chartRef} className="flex-1 min-w-0" />
+                    <div className="w-44 flex-shrink-0 flex flex-col justify-center gap-2 py-2 pr-1">
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">四象限分布</div>
+                        {scatterQuadrants.map((q) => (
+                            <div key={q.label} className="rounded-lg border border-slate-100 p-2.5 bg-slate-50">
+                                <div className="flex items-center gap-1.5 mb-1">
+                                    <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: q.color }} />
+                                    <span className="text-xs font-semibold text-slate-700 truncate">{q.label}</span>
+                                </div>
+                                <div className="text-xs text-slate-400 mb-1.5">{q.desc}</div>
+                                <div className="flex justify-between">
+                                    <span className="text-lg font-bold" style={{ color: q.color }}>{q.count}</span>
+                                    <span className="text-xs text-slate-400 self-end mb-0.5">款</span>
+                                    <span className="text-xs font-medium text-slate-500 self-end mb-0.5">{q.unitShare}% 销量</span>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             ) : (
