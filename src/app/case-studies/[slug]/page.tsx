@@ -1,6 +1,8 @@
 import ConclusionCard from '@/components/blocks/ConclusionCard';
 import MetricCard from '@/components/blocks/MetricCard';
 
+export const runtime = 'edge';
+
 export default function CaseStudyDetailPage() {
     return (
         <div className="min-h-screen bg-white">
