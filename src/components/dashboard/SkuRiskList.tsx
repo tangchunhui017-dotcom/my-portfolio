@@ -76,6 +76,8 @@ export default function SkuRiskList() {
     const [sortKey, setSortKey] = useState<SortKey>('avgSellThrough');
     const [sortAsc, setSortAsc] = useState(true);
     const [filterRisk, setFilterRisk] = useState<string>('全部');
+    const [expanded, setExpanded] = useState(false);
+    const COLLAPSED_COUNT = 10;
 
     const skuRows = useMemo<SkuRiskRow[]>(() => {
         return dimSku.map(sku => {
@@ -264,7 +266,7 @@ export default function SkuRiskList() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">
-                        {filtered.map(row => (
+                        {(expanded ? filtered : filtered.slice(0, COLLAPSED_COUNT)).map(row => (
                             <tr key={row.sku_id} className="hover:bg-slate-50 transition-colors">
                                 <td className="px-4 py-3">
                                     <div className="font-medium text-slate-900 text-xs">{row.sku_name}</div>
@@ -330,8 +332,16 @@ export default function SkuRiskList() {
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-3 bg-slate-50 border-t border-slate-100 text-xs text-slate-400">
-                共 {filtered.length} 款 SKU · 风险判断标准：售罄率&lt;70% | 剩余库存&gt;200双 | 毛利率&lt;38% | 折扣深度&gt;20%
+            <div className="px-6 py-3 bg-slate-50 border-t border-slate-100 text-xs text-slate-400 flex items-center justify-between">
+                <span>共 {filtered.length} 款 SKU · 风险判断标准：售罄率&lt;70% | 剩余库存&gt;200双 | 毛利率&lt;38% | 折扣深度&gt;20%</span>
+                {filtered.length > COLLAPSED_COUNT && (
+                    <button
+                        onClick={() => setExpanded(!expanded)}
+                        className="ml-4 px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors flex-shrink-0"
+                    >
+                        {expanded ? `收起 ▲` : `展开全部 ${filtered.length} 款 ▼`}
+                    </button>
+                )}
             </div>
         </div>
     );

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Portfolio | Footwear Design & Product Planning Director",
+  title: "Tang-Design Project | Footwear Design & Product Planning",
   description: "鞋类企划设计总监作品集 - 从趋势洞察到商品企划，从设计开发到上市复盘",
 };
 

@@ -81,27 +81,21 @@ export default function KpiGrid({ kpis, onSellThroughClick, onDiscountClick, onC
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <KpiCard
+                        variant="highlight"
                         group="outcome"
                         label="净销售额"
                         value={fmtSales(kpis.totalNetSales)}
                         delta="+12.3%"
                         deltaPositive={true}
-                        gap="+5.2%"
-                        gapPositive={true}
-                        hint="✅ 超额完成季度目标"
-                        hintType="opportunity"
                         sparklineData={salesSparkline}
                     />
                     <KpiCard
+                        variant="highlight"
                         group="outcome"
                         label="累计售罄率"
                         value={fmtPct(kpis.avgSellThrough)}
                         delta="+3.1pp"
                         deltaPositive={true}
-                        gap={kpis.avgSellThrough >= 0.80 ? '+' + fmtPct(kpis.avgSellThrough - 0.80) : fmtPct(kpis.avgSellThrough - 0.80)}
-                        gapPositive={kpis.avgSellThrough >= 0.80}
-                        hint={kpis.avgSellThrough >= 0.80 ? '✅ 达成目标 80%' : '⚠️ 未达目标 80%，关注滞销款'}
-                        hintType={kpis.avgSellThrough >= 0.80 ? 'opportunity' : 'warning'}
                         sparklineData={stSparkline}
                         onClick={onSellThroughClick}
                     />
@@ -138,39 +132,33 @@ export default function KpiGrid({ kpis, onSellThroughClick, onDiscountClick, onC
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <KpiCard
+                        variant="compact"
                         group="efficiency"
                         label="动销 SKU 数"
                         value={`${kpis.activeSKUs} 款`}
-                        hint={kpis.activeSKUs > 0 ? '✅ 全部款式有动销' : '⚠️ 存在零动销款'}
-                        hintType={kpis.activeSKUs > 0 ? 'opportunity' : 'warning'}
                     />
                     <KpiCard
+                        variant="compact"
                         group="efficiency"
                         label="平均折扣深度"
                         value={fmtPct(kpis.avgDiscountDepth)}
                         delta="-0.5pp"
                         deltaPositive={true}
-                        gap={kpis.avgDiscountDepth <= 0.12 ? '正常' : '偏高'}
-                        gapPositive={kpis.avgDiscountDepth <= 0.12}
-                        hint={kpis.avgDiscountDepth > 0.15 ? '⚠️ 折扣偏深，关注毛利侵蚀' : '✅ 折扣管控在合理区间'}
-                        hintType={kpis.avgDiscountDepth > 0.15 ? 'warning' : 'opportunity'}
                         onClick={onDiscountClick}
                     />
                     <KpiCard
+                        variant="compact"
                         group="efficiency"
                         label="毛利额"
                         value={fmtSales(kpis.totalGrossProfit)}
                         delta="+14.1%"
                         deltaPositive={true}
-                        hint="💰 毛利额同比改善"
-                        hintType="opportunity"
                     />
                     <KpiCard
+                        variant="compact"
                         group="efficiency"
                         label="吊牌总额"
                         value={fmtSales(kpis.totalGrossSales)}
-                        hint="📋 含折扣前原价"
-                        hintType="neutral"
                     />
                 </div>
             </div>
@@ -181,47 +169,48 @@ export default function KpiGrid({ kpis, onSellThroughClick, onDiscountClick, onC
                     <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
                     C · 结构 Structure
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <KpiCard
-                        group="structure"
-                        label="Top10 SKU 集中度"
-                        value={fmtPct(kpis.top10Concentration)}
-                        hint={kpis.top10Concentration > 0.7 ? '⚠️ 集中度偏高，长尾风险' : '✅ SKU 结构分散合理'}
-                        hintType={kpis.top10Concentration > 0.7 ? 'warning' : 'opportunity'}
-                    />
-                    <KpiCard
-                        group="structure"
-                        label="最强渠道"
-                        value={topChannel ? topChannel[0] : '-'}
-                        gap={topChannel ? fmtPct(topChannelPct) : '-'}
-                        gapPositive={true}
-                        hint={topChannelPct > 0.6 ? '⚠️ 渠道过度集中' : '✅ 渠道结构健康'}
-                        hintType={topChannelPct > 0.6 ? 'warning' : 'opportunity'}
-                        onClick={onChannelClick}
-                    />
-                    <KpiCard
-                        group="structure"
-                        label="核心价格带"
-                        value={topPriceBand ? PRICE_BAND_NAMES[topPriceBand[0]] : '-'}
-                        gap={topPriceBand ? fmtPct(topPriceBand[1].sales / kpis.totalNetSales) : '-'}
-                        gapPositive={true}
-                        hint="📊 销售额最高价格带"
-                        hintType="neutral"
-                    />
-                    <KpiCard
-                        group="structure"
-                        label="折扣损失额"
-                        value={fmtSales(kpis.totalGrossSales - kpis.totalNetSales)}
-                        hint={
-                            (kpis.totalGrossSales - kpis.totalNetSales) / kpis.totalGrossSales > 0.15
-                                ? '⚠️ 折扣损失超15%，需审查促销策略'
-                                : '✅ 折扣损失可控'
-                        }
-                        hintType={
-                            (kpis.totalGrossSales - kpis.totalNetSales) / kpis.totalGrossSales > 0.15
-                                ? 'warning' : 'opportunity'
-                        }
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* 左框：集中度 + 渠道 */}
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 grid grid-cols-2 gap-3">
+                        <KpiCard
+                            variant="minimal"
+                            group="structure"
+                            label="Top10 集中度"
+                            value={fmtPct(kpis.top10Concentration)}
+                            hint={kpis.top10Concentration > 0.7 ? '⚠️ 集中度偏高' : '✅ 结构合理'}
+                        />
+                        <KpiCard
+                            variant="minimal"
+                            group="structure"
+                            label="最强渠道"
+                            value={topChannel ? topChannel[0] : '-'}
+                            delta={topChannel ? fmtPct(topChannelPct) : '-'}
+                            deltaPositive={true}
+                            hint={topChannelPct > 0.6 ? '⚠️ 渠道过度集中' : '✅ 渠道健康'}
+                            onClick={onChannelClick}
+                        />
+                    </div>
+                    {/* 右框：价格带 + 折扣损失 */}
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 grid grid-cols-2 gap-3">
+                        <KpiCard
+                            variant="minimal"
+                            group="structure"
+                            label="核心价格带"
+                            value={topPriceBand ? PRICE_BAND_NAMES[topPriceBand[0]] : '-'}
+                            hint="📊 销售额最高价格带"
+                        />
+                        <KpiCard
+                            variant="minimal"
+                            group="structure"
+                            label="折扣损失额"
+                            value={fmtSales(kpis.totalGrossSales - kpis.totalNetSales)}
+                            hint={
+                                (kpis.totalGrossSales - kpis.totalNetSales) / kpis.totalGrossSales > 0.15
+                                    ? '⚠️ 折扣损失超15%'
+                                    : '✅ 折扣损失可控'
+                            }
+                        />
+                    </div>
                 </div>
             </div>
         </div>

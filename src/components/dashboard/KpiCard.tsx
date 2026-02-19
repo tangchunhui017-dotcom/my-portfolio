@@ -146,13 +146,13 @@ export default function KpiCard({
             <div
                 onClick={onClick}
                 className={`
-                    bg-slate-50 rounded-lg p-4 hover:bg-slate-100 transition-all duration-200
+                    bg-emerald-50/60 rounded-lg p-4 border border-emerald-100 hover:bg-emerald-50 transition-all duration-200
                     ${onClick ? 'cursor-pointer' : ''}
                 `}
             >
-                <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">{label}</div>
+                <div className="text-xs text-emerald-600 font-medium uppercase tracking-wide mb-1">{label}</div>
                 <div className="flex items-baseline gap-2">
-                    <div className="text-2xl font-bold text-slate-900">{value}</div>
+                    <div className="text-2xl font-bold text-slate-800">{value}</div>
                     {delta && (
                         <span className={`text-sm ${deltaPositive ? 'text-emerald-600' : 'text-red-500'}`}>
                             {deltaPositive ? '+' : ''}{delta}
@@ -160,7 +160,7 @@ export default function KpiCard({
                     )}
                 </div>
                 {hint && (
-                    <div className="text-xs text-slate-500 mt-2">{hint}</div>
+                    <div className="text-xs text-slate-600 mt-2">{hint}</div>
                 )}
             </div>
         );
