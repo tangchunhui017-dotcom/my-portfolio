@@ -269,13 +269,9 @@ export default function DashboardPage() {
                         />
                     )}
 
-                    {/* NarrativeSummary - 叙事层 */}
-                    {kpis && (
-                        <NarrativeSummary kpis={kpis} filterSummary={filterSummary} />
-                    )}
 
                     {/* KPI Grid */}
-                    <div className="mb-10">
+                    <div className="mb-6">
                         <KpiGrid
                             kpis={kpis}
                             onSellThroughClick={() => scrollToSection(lineChartRef)}
@@ -284,6 +280,13 @@ export default function DashboardPage() {
                             onMarginClick={() => scrollToSection(skuListRef)}
                         />
                     </div>
+
+                    {/* NarrativeSummary - 叙事层（KPI数字读完后再看结论）*/}
+                    {kpis && (
+                        <div className="mb-8">
+                            <NarrativeSummary kpis={kpis} filterSummary={filterSummary} />
+                        </div>
+                    )}
 
                     <div className="flex items-center gap-4 mb-8">
                         <div className="flex-1 h-px bg-slate-200" />
