@@ -81,25 +81,6 @@ export default function KpiGrid({ kpis, onSellThroughClick, onDiscountClick, onC
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <KpiCard
-                        variant="highlight"
-                        group="outcome"
-                        label="净销售额"
-                        value={fmtSales(kpis.totalNetSales)}
-                        delta="+12.3%"
-                        deltaPositive={true}
-                        sparklineData={salesSparkline}
-                    />
-                    <KpiCard
-                        variant="highlight"
-                        group="outcome"
-                        label="累计售罄率"
-                        value={fmtPct(kpis.avgSellThrough)}
-                        delta="+3.1pp"
-                        deltaPositive={true}
-                        sparklineData={stSparkline}
-                        onClick={onSellThroughClick}
-                    />
-                    <KpiCard
                         group="outcome"
                         label="毛利率"
                         value={fmtPct(kpis.avgMarginRate)}
