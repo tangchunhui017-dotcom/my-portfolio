@@ -477,7 +477,6 @@ export default function DashboardPage() {
                             <div className="flex-1 h-px bg-slate-200" />
                         </div>
                         <SkuRiskList
-                            skuWosData={kpis?.skuWosData}
                             filterSummary={filterSummary}
                         />
                     </div>
