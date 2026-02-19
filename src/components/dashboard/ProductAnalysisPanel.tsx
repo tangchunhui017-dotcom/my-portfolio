@@ -98,7 +98,7 @@ function ColorTreemapContent(props: {
 }
 
 export default function ProductAnalysisPage() {
-    const { colorStats, ageStats, ageTotals, lineStats } = useProductAnalysis();
+    const { colorStats, ageStats, ageTotals, lineStats, catColorCells } = useProductAnalysis();
 
     // 年龄段堆叠条形图数据
     const productLines = [...new Set(ageStats.map(a => a.product_line))];
@@ -252,6 +252,126 @@ export default function ProductAnalysisPage() {
                     </div>
                 </div>
             </div>
+
+            {/* ── Section 3: 色系 × 品类 热力图 ────────────────────── */}
+            {(() => {
+                const colors = [...new Set(catColorCells.map(c => c.color))].sort();
+                const categories = [...new Set(catColorCells.map(c => c.category))].sort();
+                const maxSales = Math.max(...catColorCells.map(c => c.netSales), 1);
+
+                const COLOR_DOT: Record<string, string> = {
+                    '黑色': '#1e293b', '白色': '#94a3b8', '灰色': '#64748b',
+                    '彩色·柔': '#f472b6', '彩色·鲜': '#ec4899', '中性色': '#a78bfa',
+                };
+
+                function getBg(sales: number) {
+                    const r = sales / maxSales;
+                    if (r > 0.6) return 'rgba(236,72,153,0.80)';
+                    if (r > 0.4) return 'rgba(236,72,153,0.55)';
+                    if (r > 0.2) return 'rgba(236,72,153,0.30)';
+                    if (r > 0.05) return 'rgba(236,72,153,0.12)';
+                    return '#f8f9fb';
+                }
+                function getFg(sales: number) { return sales / maxSales > 0.45 ? '#fff' : '#1e293b'; }
+                function getCell(color: string, cat: string) {
+                    return catColorCells.find(c => c.color === color && c.category === cat);
+                }
+
+                return (
+                    <div>
+                        <div className="flex items-center gap-2 mb-4">
+                            <span className="w-1 h-5 rounded-full bg-pink-400 inline-block" />
+                            <h2 className="text-base font-bold text-slate-900">色系 × 品类 热力图</h2>
+                            <span className="text-xs text-slate-400 ml-1">— 颜色深度 = 净销售额，格内文字 = 售罄率</span>
+                        </div>
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 overflow-x-auto">
+                            <table className="w-full text-xs border-collapse" style={{ minWidth: 480 }}>
+                                <thead>
+                                    <tr>
+                                        <th className="text-left text-slate-400 font-semibold pb-2 pr-3 w-24">色系</th>
+                                        {categories.map(cat => (
+                                            <th key={cat} className="text-center text-slate-500 font-semibold pb-2 px-1">{cat}</th>
+                                        ))}
+                                        <th className="text-right text-slate-400 font-semibold pb-2 pl-2">行合计</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {colors.map(color => {
+                                        const rowTotal = categories.reduce(
+                                            (s, cat) => s + (getCell(color, cat)?.netSales || 0), 0
+                                        );
+                                        return (
+                                            <tr key={color}>
+                                                <td className="pr-3 py-1">
+                                                    <div className="flex items-center gap-1.5 font-medium text-slate-700">
+                                                        <span className="w-2 h-2 rounded-full flex-shrink-0"
+                                                            style={{ background: COLOR_DOT[color] || '#e2e8f0' }} />
+                                                        {color}
+                                                    </div>
+                                                </td>
+                                                {categories.map(cat => {
+                                                    const cell = getCell(color, cat);
+                                                    const sales = cell?.netSales || 0;
+                                                    const st = cell?.sellThrough || 0;
+                                                    return (
+                                                        <td key={cat} className="px-1 py-1">
+                                                            <div className="rounded-lg p-2 text-center transition-all duration-150 hover:scale-105 cursor-default"
+                                                                style={{ background: getBg(sales), color: getFg(sales), minWidth: 54 }}>
+                                                                {sales > 0 ? (
+                                                                    <>
+                                                                        <div className="font-semibold leading-tight">
+                                                                            {(sales / 10000).toFixed(0)}万
+                                                                        </div>
+                                                                        <div className="opacity-80 text-[10px] mt-0.5">
+                                                                            {(st * 100).toFixed(0)}%
+                                                                        </div>
+                                                                    </>
+                                                                ) : <span className="text-slate-200">—</span>}
+                                                            </div>
+                                                        </td>
+                                                    );
+                                                })}
+                                                <td className="pl-2 text-right font-semibold text-slate-700">
+                                                    {rowTotal > 0 ? `${(rowTotal / 10000).toFixed(0)}万` : '—'}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                                <tfoot>
+                                    <tr className="border-t border-slate-100">
+                                        <td className="pt-2 text-slate-400 font-semibold">列合计</td>
+                                        {categories.map(cat => {
+                                            const catTotal = catColorCells.filter(c => c.category === cat)
+                                                .reduce((s, c) => s + c.netSales, 0);
+                                            return (
+                                                <td key={cat} className="pt-2 px-1 text-center font-semibold text-slate-700">
+                                                    {(catTotal / 10000).toFixed(0)}万
+                                                </td>
+                                            );
+                                        })}
+                                        <td />
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                            {/* 图例 */}
+                            <div className="flex items-center gap-3 mt-4 pt-3 border-t border-slate-100 flex-wrap">
+                                <span className="text-xs text-slate-400">销售额强度</span>
+                                {([0.12, 0.30, 0.55, 0.80] as number[]).map((v, i) => (
+                                    <div key={i} className="flex items-center gap-1">
+                                        <div className="w-5 h-3 rounded" style={{ background: `rgba(236,72,153,${v})` }} />
+                                        <span className="text-[10px] text-slate-400">
+                                            {['低', '中低', '中高', '高'][i]}
+                                        </span>
+                                    </div>
+                                ))}
+                                <span className="text-[10px] text-slate-400 ml-1">· 格内数字 = 该色系+品类的平均售罄率</span>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })()}
         </div>
     );
 }

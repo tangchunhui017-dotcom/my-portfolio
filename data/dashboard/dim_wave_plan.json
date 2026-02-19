@@ -1,0 +1,200 @@
+[
+  {
+    "id": "2024-SS-W1",
+    "season": "2024-SS",
+    "wave": "W1",
+    "launch_date": "2024-02-10",
+    "theme": "春日轻运动",
+    "temp_zone": "全国",
+    "sku_plan": 59,
+    "sku_actual": 53,
+    "new_ratio": 0.75,
+    "old_ratio": 0.25,
+    "units_plan": 51761,
+    "revenue_plan": 15354901,
+    "category_mix": {
+      "跑步": 15,
+      "训练": 9,
+      "户外": 12,
+      "休闲": 12,
+      "潮流": 9,
+      "童鞋": 2
+    }
+  },
+  {
+    "id": "2024-SS-W2",
+    "season": "2024-SS",
+    "wave": "W2",
+    "launch_date": "2024-03-20",
+    "theme": "户外机能",
+    "temp_zone": "华北/华东先",
+    "sku_plan": 70,
+    "sku_actual": 66,
+    "new_ratio": 0.7,
+    "old_ratio": 0.3,
+    "units_plan": 62072,
+    "revenue_plan": 18413659,
+    "category_mix": {
+      "跑步": 18,
+      "训练": 11,
+      "户外": 14,
+      "休闲": 14,
+      "潮流": 11,
+      "童鞋": 2
+    }
+  },
+  {
+    "id": "2024-SS-W3",
+    "season": "2024-SS",
+    "wave": "W3",
+    "launch_date": "2024-04-28",
+    "theme": "夏日潮流",
+    "temp_zone": "全国",
+    "sku_plan": 77,
+    "sku_actual": 73,
+    "new_ratio": 0.55,
+    "old_ratio": 0.45,
+    "units_plan": 71235,
+    "revenue_plan": 21131863,
+    "category_mix": {
+      "跑步": 19,
+      "训练": 12,
+      "户外": 15,
+      "休闲": 15,
+      "潮流": 12,
+      "童鞋": 4
+    }
+  },
+  {
+    "id": "2024-AW-W1",
+    "season": "2024-AW",
+    "wave": "W1",
+    "launch_date": "2024-08-10",
+    "theme": "开学返校",
+    "temp_zone": "华东先",
+    "sku_plan": 68,
+    "sku_actual": 55,
+    "new_ratio": 0.75,
+    "old_ratio": 0.25,
+    "units_plan": 58147,
+    "revenue_plan": 21203304,
+    "category_mix": {
+      "跑步": 10,
+      "训练": 17,
+      "户外": 20,
+      "休闲": 10,
+      "潮流": 7,
+      "童鞋": 4
+    }
+  },
+  {
+    "id": "2024-AW-W2",
+    "season": "2024-AW",
+    "wave": "W2",
+    "launch_date": "2024-09-18",
+    "theme": "秋季训练",
+    "temp_zone": "全国",
+    "sku_plan": 83,
+    "sku_actual": 72,
+    "new_ratio": 0.7,
+    "old_ratio": 0.3,
+    "units_plan": 73161,
+    "revenue_plan": 26678159,
+    "category_mix": {
+      "跑步": 12,
+      "训练": 21,
+      "户外": 25,
+      "休闲": 12,
+      "潮流": 8,
+      "童鞋": 5
+    }
+  },
+  {
+    "id": "2024-AW-W3",
+    "season": "2024-AW",
+    "wave": "W3",
+    "launch_date": "2024-10-20",
+    "theme": "双11主推",
+    "temp_zone": "全国",
+    "sku_plan": 60,
+    "sku_actual": 50,
+    "new_ratio": 0.55,
+    "old_ratio": 0.45,
+    "units_plan": 48824,
+    "revenue_plan": 17803672,
+    "category_mix": {
+      "跑步": 9,
+      "训练": 15,
+      "户外": 18,
+      "休闲": 9,
+      "潮流": 6,
+      "童鞋": 3
+    }
+  },
+  {
+    "id": "2024-AW-W4",
+    "season": "2024-AW",
+    "wave": "W4",
+    "launch_date": "2024-11-28",
+    "theme": "年底清仓",
+    "temp_zone": "电商为主",
+    "sku_plan": 41,
+    "sku_actual": 37,
+    "new_ratio": 0.55,
+    "old_ratio": 0.45,
+    "units_plan": 22082,
+    "revenue_plan": 8052201,
+    "category_mix": {
+      "跑步": 6,
+      "训练": 10,
+      "户外": 12,
+      "休闲": 6,
+      "潮流": 4,
+      "童鞋": 3
+    }
+  },
+  {
+    "id": "2025-SS-W1",
+    "season": "2025-SS",
+    "wave": "W1",
+    "launch_date": "2025-02-08",
+    "theme": "新春首发",
+    "temp_zone": "华南先",
+    "sku_plan": 64,
+    "sku_actual": 55,
+    "new_ratio": 0.75,
+    "old_ratio": 0.25,
+    "units_plan": 60173,
+    "revenue_plan": 17850320,
+    "category_mix": {
+      "跑步": 16,
+      "训练": 10,
+      "户外": 13,
+      "休闲": 13,
+      "潮流": 10,
+      "童鞋": 2
+    }
+  },
+  {
+    "id": "2025-SS-W2",
+    "season": "2025-SS",
+    "wave": "W2",
+    "launch_date": "2025-03-22",
+    "theme": "马拉松季",
+    "temp_zone": "全国",
+    "sku_plan": 74,
+    "sku_actual": 65,
+    "new_ratio": 0.7,
+    "old_ratio": 0.3,
+    "units_plan": 65217,
+    "revenue_plan": 19346623,
+    "category_mix": {
+      "跑步": 19,
+      "训练": 11,
+      "户外": 15,
+      "休闲": 15,
+      "潮流": 11,
+      "童鞋": 3
+    }
+  }
+]

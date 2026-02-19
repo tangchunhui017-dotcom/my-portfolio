@@ -13,6 +13,7 @@ import ChartMenu from '@/components/dashboard/ChartMenu';
 import OverviewKpiBar from '@/components/dashboard/OverviewKpiBar';
 import NarrativeSummary from '@/components/dashboard/NarrativeSummary';
 import ProductAnalysisPanel from '@/components/dashboard/ProductAnalysisPanel';
+import WavePlanningPanel from '@/components/dashboard/WavePlanningPanel';
 import { useState, useEffect, useRef } from 'react';
 
 type DashboardTab = 'overview' | 'product' | 'planning';
@@ -302,13 +303,9 @@ export default function DashboardPage() {
                         <ProductAnalysisPanel />
                     )}
 
-                    {/* ── 波段企划 Tab（占位，P2后半段实现）──────────── */}
+                    {/* ── 波段企划 Tab ──────────────────────────────── */}
                     {activeTab === 'planning' && (
-                        <div className="flex flex-col items-center justify-center py-24 text-slate-400">
-                            <div className="text-4xl mb-4">📅</div>
-                            <div className="text-base font-semibold text-slate-600 mb-1">波段企划模块</div>
-                            <div className="text-sm">即将上线 · 包含上市日历、波段容量规划、新旧货占比分析</div>
-                        </div>
+                        <WavePlanningPanel />
                     )}
 
 
