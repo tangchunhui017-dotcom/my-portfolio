@@ -48,23 +48,23 @@ function generateSummary(kpis: SummaryProps['kpis'], filterSummary: string): str
     const discountStatus = discount <= 15 ? '折扣控制良好' : discount <= 25 ? '折扣略深' : '折扣过深，需控制';
 
     const lines = [
-        `📊 **经营摘要** | 筛选范围：${filterSummary}`,
+        `📊 **鞋类经营摘要** | 筛选范围：${filterSummary}`,
         ``,
         `**① 结果层**`,
-        `本期净销售额 ${sales}，动销 SKU ${kpis.activeSKUs} 款，Top 10 SKU 集中度 ${top10}%（${top10 > 60 ? '集中度偏高，存在断货风险' : '结构健康'}）。`,
+        `本期净销售额 ${sales}，动销 SKU ${kpis.activeSKUs} 款（色码维度），Top 10 SKU 集中度 ${top10}%（${top10 > 60 ? '集中度偏高，存在断货/结构失衡风险' : '结构健康'}）。`,
         ``,
         `**② 效率层**`,
-        `整体售罄率 ${st}%，${stStatus}。平均毛利率 ${margin}%（${marginStatus}），平均折扣深度 ${discount}%（${discountStatus}）。`,
+        `整体售罄率 ${st}%，${stStatus}。平均毛利率 ${margin}%（${marginStatus}），平均折扣深度 ${discount}%（${discountStatus}）。重点关注波段节奏与配色结构是否匹配销量。`,
         ``,
         `**③ 结构层**`,
-        `渠道贡献：${topChannel} 渠道占比最高（${topChannelPct}%），是核心动销渠道。价格带表现：${topBand} 价格带销售额最强，建议下季度加大该价格带 SKU 深度。`,
+        `渠道贡献：${topChannel} 渠道占比最高（${topChannelPct}%），是核心动销渠道。价格带表现：${topBand} 价格带销售额最强，建议下季度在该价格带增加核心鞋型 SKU 深度。`,
         ``,
         `**④ 行动建议**`,
         st < 70
-            ? `⚡ 售罄率低于 70%，建议立即启动动销方案：对低动销款进行渠道调拨（直营→电商），并在 W8 前评估是否需要折扣促销。`
+            ? `⚡ 售罄率低于 70%，建议立即启动动销方案：对低动销鞋款进行渠道调拨（直营→电商/奥莱），并在 W8 前评估是否需要分波段折扣促销。`
             : discount > 20
-                ? `⚡ 折扣深度超过 20%，建议收紧下季度促销力度，优先通过渠道调拨和捆绑销售消化库存，保护毛利率。`
-                : `✅ 当前经营状态良好，建议聚焦 ${topBand} 价格带的深度补货，并提前锁定下季度 OTB 预算。`,
+                ? `⚡ 折扣深度超过 20%，建议收紧下季度促销力度，优先通过渠道调拨和配色优化消化库存，保护毛利率。`
+                : `✅ 当前经营状态良好，建议聚焦 ${topBand} 价格带的核心鞋型深度补货，并提前锁定下季度 OTB 预算。`,
     ];
 
     return lines.join('\n');

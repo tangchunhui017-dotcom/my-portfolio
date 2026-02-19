@@ -1,6 +1,7 @@
 'use client';
 
 import { THRESHOLDS } from '@/config/thresholds';
+import { FOOTWEAR_ANALYSIS_MODULES } from '@/config/footwearLanguage';
 
 interface NarrativeSummaryProps {
     kpis: {
@@ -54,30 +55,31 @@ export default function NarrativeSummary({
     const stDelta = plan ? ((kpis.avgSellThrough - plan.plan_avg_sell_through) * 100).toFixed(1) : null;
     const salesMillion = (kpis.totalNetSales / 10000).toFixed(0);
     const salesPlanAchieve = plan ? ((kpis.totalNetSales / plan.plan_total_sales) * 100).toFixed(0) : null;
+    const focusModules = FOOTWEAR_ANALYSIS_MODULES.map(m => m.title).slice(0, 3).join(' / ');
 
     const getPerformanceSentence = () => {
         if (health === 'strong') {
-            return `当前筛选条件（${filterSummary}）下，整体经营表现**优于计划**。净销售额 ¥${salesMillion}万，计划达成率 ${salesPlanAchieve}%；累计售罄率 ${st}%，${stDelta && parseFloat(stDelta) > 0 ? `超出目标 +${stDelta}pp` : `达成目标`}，库存结构健康（WOS ${kpis.wos} 周）。`;
+            return `当前筛选条件（${filterSummary}）下，鞋类大商品盘经营表现**优于计划**。净销售额 ¥${salesMillion}万，计划达成率 ${salesPlanAchieve}%；季内累计售罄率 ${st}%，${stDelta && parseFloat(stDelta) > 0 ? `超出目标 +${stDelta}pp` : `达成目标`}，库存结构健康（WOS ${kpis.wos} 周）。`;
         }
         if (health === 'moderate') {
-            return `当前筛选条件（${filterSummary}）下，整体经营表现**接近计划线**。净销售额 ¥${salesMillion}万${salesPlanAchieve ? `（达成率 ${salesPlanAchieve}%）` : ''}；售罄率 ${st}% 处于警戒线附近（目标 ${stTarget}%），${stDelta ? `偏差 ${stDelta}pp` : ''}，需关注折扣深度（${discount}%）是否继续扩大。`;
+            return `当前筛选条件（${filterSummary}）下，鞋类经营表现**接近计划线**。净销售额 ¥${salesMillion}万${salesPlanAchieve ? `（达成率 ${salesPlanAchieve}%）` : ''}；售罄率 ${st}% 处于警戒线附近（目标 ${stTarget}%），${stDelta ? `偏差 ${stDelta}pp` : ''}，需关注折扣深度（${discount}%）和波段节奏匹配度。`;
         }
-        return `当前筛选条件（${filterSummary}）下，整体经营表现**低于计划预期**。售罄率 ${st}% 显著低于目标 ${stTarget}%${stDelta ? `（差距 ${Math.abs(parseFloat(stDelta)).toFixed(1)}pp）` : ''}，毛利率 ${margin}% 承压，需立即启动库存优化行动。`;
+        return `当前筛选条件（${filterSummary}）下，鞋类经营表现**低于计划预期**。售罄率 ${st}% 显著低于目标 ${stTarget}%${stDelta ? `（差距 ${Math.abs(parseFloat(stDelta)).toFixed(1)}pp）` : ''}，毛利率 ${margin}% 承压，需立即启动库存与渠道协同动作。`;
     };
 
     const getRiskSentence = () => {
         const risks: string[] = [];
-        if (kpis.avgSellThrough < THRESHOLDS.sellThrough.warning) risks.push('售罄率偏低，高价格带SKU清货压力大');
-        if (kpis.avgDiscountDepth > THRESHOLDS.discountDepth.danger) risks.push('折扣深度已超警戒线，毛利空间受损');
-        if (kpis.wos > 12) risks.push(`WOS ${kpis.wos} 周，积压风险高`);
-        if (kpis.wos < 4) risks.push(`WOS ${kpis.wos} 周偏低，明星款有断货风险`);
+        if (kpis.avgSellThrough < THRESHOLDS.sellThrough.warning) risks.push('售罄率偏低，后波段及高价格带鞋款去化压力偏大');
+        if (kpis.avgDiscountDepth > THRESHOLDS.discountDepth.danger) risks.push('折扣深度已超警戒线，鞋款毛利空间受损');
+        if (kpis.wos > 12) risks.push(`WOS ${kpis.wos} 周，库存积压风险高，需关注渠道与城市层级分布`);
+        if (kpis.wos < 4) risks.push(`WOS ${kpis.wos} 周偏低，核心鞋型存在断货风险`);
         return risks.length > 0 ? risks.slice(0, 2).join('；') : null;
     };
 
     const getActionSentence = () => {
-        if (health === 'strong') return '维持当前节奏，聚焦补深 Top 款，提前锁定下波上市预算分配。';
-        if (health === 'moderate') return '对售罄率低于 70% 的 SKU 启动组合促销（搭赠或限时折扣），同时审查折扣上限策略，避免毛利进一步摊薄。';
-        return '立即开启 P0 级库存处置——定向渠道调拨（B2B/奥莱）+ 组合清仓，并冻结下期同品类追加预算，直至售罄达到警戒线以上。';
+        if (health === 'strong') return '维持当前节奏，聚焦跑步/训练主力鞋型补深，提前锁定下一波段上市货量与预算。';
+        if (health === 'moderate') return '对售罄率低于 70% 的鞋款启动组合促销与渠道调拨，同时审查配色结构与折扣上限，避免毛利进一步摊薄。';
+        return '立即开启 P0 级库存处置：分渠道调拨（直营/加盟/电商/奥莱）+ 波段清货，并冻结低效鞋品类追加预算，直至售罄回到警戒线以上。';
     };
 
     const healthConfig = {
@@ -138,8 +140,8 @@ export default function NarrativeSummary({
                         <div className="flex items-center gap-3">
                             <span className="text-3xl leading-none">{hc.badge}</span>
                             <div>
-                                <h2 className="text-lg font-bold text-slate-900 leading-tight">本季经营结论</h2>
-                                <p className="text-xs text-slate-400 mt-0.5">{filterSummary}</p>
+                                <h2 className="text-lg font-bold text-slate-900 leading-tight">本季鞋类经营结论</h2>
+                                <p className="text-xs text-slate-400 mt-0.5">{filterSummary} · {focusModules}</p>
                             </div>
                         </div>
                         <span className={`text-sm font-bold px-3 py-1 rounded-full border ${hc.badgeBg}`}>

@@ -1,26 +1,92 @@
 @import "tailwindcss";
 
+/* ====================================================
+   设计令牌 (Design Tokens)
+   Dashboard 5.0 — Light Mode · Pink Brand System
+   与网站主色保持一致 (Nav Logo: bg-pink-300)
+   ==================================================== */
+
 :root {
-  --background: #f8fafc;
-  --foreground: #171717;
+  --background: #f8f9fb;
+  --foreground: #1a1d1f;
+
+  /* 品牌主色：Pink（与 Logo 一致） */
+  --brand-50: #fdf2f8;
+  --brand-100: #fce7f3;
+  --brand-200: #fbcfe8;
+  --brand-300: #f9a8d4;
+  /* Logo 色 */
+  --brand-400: #f472b6;
+  --brand-500: #ec4899;
+  /* 主交互色 */
+  --brand-600: #db2777;
+  --brand-700: #be185d;
+
+  /* 功能色：状态系统（保持与网站一致）*/
+  --color-success: #059669;
+  /* emerald-600 */
+  --color-success-bg: #ecfdf5;
+  /* emerald-50  */
+  --color-warning: #d97706;
+  /* amber-600   */
+  --color-warning-bg: #fffbeb;
+  /* amber-50    */
+  --color-danger: #dc2626;
+  /* red-600     */
+  --color-danger-bg: #fef2f2;
+  /* red-50      */
+
+  /* 界面层次 */
+  --surface-page: #f8f9fb;
+  --surface-card: #ffffff;
+  --surface-muted: #f1f5f9;
+  /* slate-100 */
+  --border-soft: #e2e8f0;
+  /* slate-200 */
+
+  /* 文字层次（与 Navigation 一致）*/
+  --text-primary: #0f172a;
+  /* slate-900 */
+  --text-secondary: #475569;
+  /* slate-600 */
+  --text-muted: #94a3b8;
+  /* slate-400 */
+
+  /* 阴影 */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, .06), 0 4px 16px rgba(0, 0, 0, .04);
+  --shadow-hover: 0 4px 12px rgba(236, 72, 153, .15), 0 8px 24px rgba(0, 0, 0, .06);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--surface-page);
+  --color-foreground: var(--text-primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* 基础重置 */
+body {
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans, Arial, Helvetica, sans-serif);
+  -webkit-font-smoothing: antialiased;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ====================================================
+   看板通用组件样式 (Dashboard Utilities)
+   ==================================================== */
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-soft);
+  border-radius: 999px;
 }

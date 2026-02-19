@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { THRESHOLDS } from '@/config/thresholds';
+import { FOOTWEAR_ANALYSIS_MODULES } from '@/config/footwearLanguage';
 
 type CompareMode = 'none' | 'yoy' | 'mom' | 'plan';
 
@@ -17,17 +18,18 @@ interface KpiItem {
 }
 
 function KpiMiniCard({ item }: { item: KpiItem }) {
+    // good 状态改用紫色，符合新主题
     const statusColors = {
-        good: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700' },
+        good: { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-700' },
         warn: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700' },
         danger: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700' },
-        neutral: { bg: 'bg-slate-50', border: 'border-slate-200', text: 'text-slate-700' },
+        neutral: { bg: 'bg-slate-50', border: 'border-slate-200', text: 'text-slate-600' },
     };
     const c = statusColors[item.status];
 
     return (
         <div
-            className={`rounded-xl border ${c.bg} ${c.border} p-4 flex flex-col gap-1.5 transition-all duration-200 ${item.onClick ? 'cursor-pointer hover:shadow-md hover:-translate-y-0.5' : ''}`}
+            className={`rounded-2xl border ${c.bg} ${c.border} p-4 flex flex-col gap-1.5 transition-all duration-200 ${item.onClick ? 'cursor-pointer hover:shadow-md hover:-translate-y-1' : ''}`}
             onClick={item.onClick}
         >
             <div className="flex items-center justify-between">
@@ -39,8 +41,8 @@ function KpiMiniCard({ item }: { item: KpiItem }) {
                 )}
             </div>
             <div className={`text-2xl font-bold ${c.text} leading-none`}>{item.value}</div>
-            {item.subValue && <div className="text-xs text-slate-500">{item.subValue}</div>}
-            <div className="text-xs font-medium text-slate-500 mt-0.5">{item.label}</div>
+            {item.subValue && <div className="text-xs text-slate-400">{item.subValue}</div>}
+            <div className="text-xs font-medium text-slate-400 mt-0.5">{item.label}</div>
         </div>
     );
 }
@@ -62,8 +64,6 @@ interface OverviewKpiBarProps {
             };
         };
     };
-    compareMode: CompareMode;
-    onCompareModeChange: (mode: CompareMode) => void;
     onKpiClick?: (kpi: string) => void;
 }
 
@@ -73,7 +73,8 @@ function fmt万(n: number) {
     return `¥${n.toLocaleString()}`;
 }
 
-export default function OverviewKpiBar({ kpis, compareMode, onCompareModeChange, onKpiClick }: OverviewKpiBarProps) {
+export default function OverviewKpiBar({ kpis, onKpiClick }: OverviewKpiBarProps) {
+    const [compareMode, setCompareMode] = useState<CompareMode>('plan');
 
     const plan = kpis.planData?.overall_plan;
 
@@ -83,7 +84,7 @@ export default function OverviewKpiBar({ kpis, compareMode, onCompareModeChange,
 
         return [
             {
-                label: '净销售额',
+                label: '净销售额（鞋）',
                 value: fmt万(kpis.totalNetSales),
                 subValue: plan ? `计划 ${fmt万(plan.plan_total_sales)}` : undefined,
                 delta: compareMode === 'plan' && plan
@@ -98,7 +99,7 @@ export default function OverviewKpiBar({ kpis, compareMode, onCompareModeChange,
                 onClick: () => onKpiClick?.('sales'),
             },
             {
-                label: '累计售罄率',
+                label: '季内累计售罄率',
                 value: `${(st * 100).toFixed(1)}%`,
                 subValue: plan
                     ? `计划 ${(plan.plan_avg_sell_through * 100).toFixed(0)}%`
@@ -122,7 +123,7 @@ export default function OverviewKpiBar({ kpis, compareMode, onCompareModeChange,
                 onClick: () => onKpiClick?.('inventory'),
             },
             {
-                label: 'WOS（周转周数）',
+                label: '库存周转 WOS',
                 value: `${wos} 周`,
                 subValue: plan ? `目标 ${plan.plan_wos} 周` : '健康区间 5-8 周',
                 delta: compareMode === 'plan' && plan ? -(wos - plan.plan_wos) : undefined,
@@ -131,7 +132,7 @@ export default function OverviewKpiBar({ kpis, compareMode, onCompareModeChange,
                 icon: '🔄',
             },
             {
-                label: 'DOS（天数）',
+                label: '库存可售天数 DOS',
                 value: `${kpis.dos.toFixed(0)} 天`,
                 subValue: `≈ ${wos} 周 × 7`,
                 status: kpis.dos >= 28 && kpis.dos <= 70 ? 'good' : kpis.dos < 28 ? 'danger' : 'warn',
@@ -142,15 +143,15 @@ export default function OverviewKpiBar({ kpis, compareMode, onCompareModeChange,
     }, [kpis, compareMode]);
 
     return (
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5 mb-6">
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 mb-6">
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <div>
-                    <h2 className="text-base font-bold text-slate-900">经营总览</h2>
+                    <h2 className="text-base font-bold text-slate-900">鞋类经营总览</h2>
                     <p className="text-xs text-slate-400 mt-0.5">库存健康快照 — 点击指标卡联动下方图表</p>
                 </div>
                 {/* 对比方式切换 */}
-                <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+                <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
                     {([
                         { key: 'none', label: '无对比' },
                         { key: 'plan', label: 'vs 计划' },
@@ -159,9 +160,9 @@ export default function OverviewKpiBar({ kpis, compareMode, onCompareModeChange,
                     ] as { key: CompareMode; label: string }[]).map(({ key, label }) => (
                         <button
                             key={key}
-                            onClick={() => onCompareModeChange(key)}
-                            className={`px-3 py-1.5 text-xs rounded-md transition-colors font-medium ${compareMode === key
-                                ? 'bg-white text-slate-800 shadow-sm'
+                            onClick={() => setCompareMode(key)}
+                            className={`px-3 py-1.5 text-xs rounded-lg transition-all font-medium ${compareMode === key
+                                ? 'bg-white text-pink-600 shadow-sm font-semibold'
                                 : 'text-slate-500 hover:text-slate-700'
                                 }`}
                         >
@@ -182,8 +183,8 @@ export default function OverviewKpiBar({ kpis, compareMode, onCompareModeChange,
             {compareMode === 'plan' && (
                 <div className="flex items-center gap-4 mt-3 text-xs text-slate-400">
                     <span>▲/▼ = 实际 vs 计划偏差</span>
-                    <span className="text-emerald-600">●</span><span>达成目标</span>
-                    <span className="text-amber-600">●</span><span>轻微偏差</span>
+                    <span className="text-pink-500">●</span><span>达成目标</span>
+                    <span className="text-amber-500">●</span><span>轻微偏差</span>
                     <span className="text-red-500">●</span><span>显著偏差</span>
                 </div>
             )}
@@ -192,6 +193,13 @@ export default function OverviewKpiBar({ kpis, compareMode, onCompareModeChange,
                     ⚠️ 同比/环比对比需历史期数据，当前以 vs 计划模式呈现
                 </div>
             )}
+            <div className="flex flex-wrap gap-1.5 mt-3">
+                {FOOTWEAR_ANALYSIS_MODULES.map((m) => (
+                    <span key={m.id} className="text-[10px] px-2 py-1 rounded-full bg-pink-50 text-pink-500 font-medium">
+                        {m.title}
+                    </span>
+                ))}
+            </div>
         </div>
     );
 }

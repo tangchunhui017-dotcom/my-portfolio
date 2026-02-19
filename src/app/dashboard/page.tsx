@@ -12,7 +12,6 @@ import SkuDetailModal, { SkuDrillData } from '@/components/dashboard/SkuDetailMo
 import ChartMenu from '@/components/dashboard/ChartMenu';
 import OverviewKpiBar from '@/components/dashboard/OverviewKpiBar';
 import NarrativeSummary from '@/components/dashboard/NarrativeSummary';
-import InventoryHealth from '@/components/dashboard/InventoryHealth';
 import { useState, useEffect, useRef } from 'react';
 
 interface ConclusionCardProps {
@@ -86,7 +85,6 @@ export default function DashboardPage() {
     const [heatmapMetric, setHeatmapMetric] = useState<'sku' | 'sales' | 'st'>('sku');
     const [mounted, setMounted] = useState(false);
     const [selectedSku, setSelectedSku] = useState<SkuDrillData | null>(null);
-    const [compareMode, setCompareMode] = useState<'none' | 'plan' | 'mom' | 'yoy'>('plan');
 
     // Refs for scroll targets
     const lineChartRef = useRef<HTMLDivElement>(null);
@@ -259,12 +257,10 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    {/* OverviewKpiBar - 比较模式由此控制，同步给 KpiGrid */}
+                    {/* OverviewKpiBar - P0 新增 */}
                     {kpis && (
                         <OverviewKpiBar
                             kpis={kpis}
-                            compareMode={compareMode}
-                            onCompareModeChange={setCompareMode}
                             onKpiClick={(kpiKey) => {
                                 if (kpiKey === 'sellThrough') scrollToSection(lineChartRef);
                                 else if (kpiKey === 'discount' || kpiKey === 'margin') scrollToSection(skuListRef);
@@ -278,7 +274,6 @@ export default function DashboardPage() {
                     <div className="mb-6">
                         <KpiGrid
                             kpis={kpis}
-                            compareMode={compareMode}
                             onSellThroughClick={() => scrollToSection(lineChartRef)}
                             onDiscountClick={() => scrollToSection(skuListRef)}
                             onChannelClick={() => scrollToSection(pieChartRef)}
@@ -300,6 +295,7 @@ export default function DashboardPage() {
                             />
                         </div>
                     )}
+
 
                     <div className="flex items-center gap-4 mb-8">
                         <div className="flex-1 h-px bg-slate-200" />
@@ -457,18 +453,6 @@ export default function DashboardPage() {
                         />
                     </div>
 
-                    {/* 库存健康分布 */}
-                    <div className="mt-8">
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="flex-1 h-px bg-slate-200" />
-                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">库存健康 · 结构层</span>
-                            <div className="flex-1 h-px bg-slate-200" />
-                        </div>
-                        {kpis && kpis.skuWosData && (
-                            <InventoryHealth skuWosData={kpis.skuWosData} />
-                        )}
-                    </div>
-
                     {/* SKU 风险列表 */}
                     <div className="mt-8" ref={skuListRef}>
                         <div className="flex items-center gap-4 mb-6">
@@ -476,9 +460,7 @@ export default function DashboardPage() {
                             <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">SKU 风险列表 · 动作层</span>
                             <div className="flex-1 h-px bg-slate-200" />
                         </div>
-                        <SkuRiskList
-                            filterSummary={filterSummary}
-                        />
+                        <SkuRiskList />
                     </div>
 
                     {/* Footer Note */}
@@ -502,3 +484,4 @@ export default function DashboardPage() {
         </>
     );
 }
+
