@@ -281,10 +281,18 @@ export default function DashboardPage() {
                         />
                     </div>
 
-                    {/* NarrativeSummary - 叙事层（KPI数字读完后再看结论）*/}
+                    {/* NarrativeSummary - 叙事层（KPI数字读完后再看结论，底部数据联动）*/}
                     {kpis && (
                         <div className="mb-8">
-                            <NarrativeSummary kpis={kpis} filterSummary={filterSummary} />
+                            <NarrativeSummary
+                                kpis={kpis}
+                                filterSummary={filterSummary}
+                                onSellThroughClick={() => scrollToSection(lineChartRef)}
+                                onMarginClick={() => scrollToSection(skuListRef)}
+                                onDiscountClick={() => scrollToSection(skuListRef)}
+                                onInventoryClick={() => scrollToSection(skuListRef)}
+                                onSkuClick={() => scrollToSection(skuListRef)}
+                            />
                         </div>
                     )}
 
