@@ -115,11 +115,11 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
             }
 
             case 'line': {
-                // 售罄率曲线（三种口径：Cohort / Active / Stage）
+                // 售罄率曲线（三种口径：同期群 / 在售 / 分阶段）
                 const calibers = [
-                    { key: 'cohort', label: 'Cohort（同期群）', data: kpis.cohortData },
-                    { key: 'active', label: 'Active（在售）', data: kpis.activeData },
-                    { key: 'stage', label: 'Stage（分阶段）', data: kpis.stageData },
+                    { key: 'cohort', label: '同期群', data: kpis.cohortData },
+                    { key: 'active', label: '在售', data: kpis.activeData },
+                    { key: 'stage', label: '分阶段', data: kpis.stageData },
                 ];
 
                 const currentCaliber = calibers.find(c => c.key === sellThroughCaliber) || calibers[0];
