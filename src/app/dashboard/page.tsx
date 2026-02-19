@@ -85,6 +85,7 @@ export default function DashboardPage() {
     const [heatmapMetric, setHeatmapMetric] = useState<'sku' | 'sales' | 'st'>('sku');
     const [mounted, setMounted] = useState(false);
     const [selectedSku, setSelectedSku] = useState<SkuDrillData | null>(null);
+    const [compareMode, setCompareMode] = useState<'none' | 'plan' | 'mom' | 'yoy'>('plan');
 
     // Refs for scroll targets
     const lineChartRef = useRef<HTMLDivElement>(null);
@@ -257,10 +258,12 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    {/* OverviewKpiBar - P0 新增 */}
+                    {/* OverviewKpiBar - 比较模式由此控制，同步给 KpiGrid */}
                     {kpis && (
                         <OverviewKpiBar
                             kpis={kpis}
+                            compareMode={compareMode}
+                            onCompareModeChange={setCompareMode}
                             onKpiClick={(kpiKey) => {
                                 if (kpiKey === 'sellThrough') scrollToSection(lineChartRef);
                                 else if (kpiKey === 'discount' || kpiKey === 'margin') scrollToSection(skuListRef);
@@ -274,6 +277,7 @@ export default function DashboardPage() {
                     <div className="mb-6">
                         <KpiGrid
                             kpis={kpis}
+                            compareMode={compareMode}
                             onSellThroughClick={() => scrollToSection(lineChartRef)}
                             onDiscountClick={() => scrollToSection(skuListRef)}
                             onChannelClick={() => scrollToSection(pieChartRef)}

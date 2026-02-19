@@ -62,6 +62,8 @@ interface OverviewKpiBarProps {
             };
         };
     };
+    compareMode: CompareMode;
+    onCompareModeChange: (mode: CompareMode) => void;
     onKpiClick?: (kpi: string) => void;
 }
 
@@ -71,8 +73,7 @@ function fmt万(n: number) {
     return `¥${n.toLocaleString()}`;
 }
 
-export default function OverviewKpiBar({ kpis, onKpiClick }: OverviewKpiBarProps) {
-    const [compareMode, setCompareMode] = useState<CompareMode>('plan');
+export default function OverviewKpiBar({ kpis, compareMode, onCompareModeChange, onKpiClick }: OverviewKpiBarProps) {
 
     const plan = kpis.planData?.overall_plan;
 
@@ -158,7 +159,7 @@ export default function OverviewKpiBar({ kpis, onKpiClick }: OverviewKpiBarProps
                     ] as { key: CompareMode; label: string }[]).map(({ key, label }) => (
                         <button
                             key={key}
-                            onClick={() => setCompareMode(key)}
+                            onClick={() => onCompareModeChange(key)}
                             className={`px-3 py-1.5 text-xs rounded-md transition-colors font-medium ${compareMode === key
                                 ? 'bg-white text-slate-800 shadow-sm'
                                 : 'text-slate-500 hover:text-slate-700'
