@@ -1,347 +1,281 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { calcRiskPriority, getActionSuggestion, getEstimatedImpact } from '@/config/thresholds';
 
-// 显式类型定义，避免大型 JSON 文件导致 TypeScript 推断失败
-interface DimSkuRecord {
-    sku_id: string;
-    sku_name: string;
-    category_id: string;
-    category_name: string;
-    season_year: string;
-    season: string;
-    price_band: string;
-    msrp: number;
-    lifecycle: string;
-}
-
-interface FactSalesRecord {
-    record_id: string;
-    sku_id: string;
-    channel_id: string;
-    season_year: string;
-    season: string;
-    wave: string;
-    week_num: number;
-    unit_sold: number;
-    gross_sales_amt: number;
-    net_sales_amt: number;
-    discount_amt: number;
-    discount_rate: number;
-    cogs_amt: number;
-    gross_profit_amt: number;
-    gross_margin_rate: number;
-    cumulative_sell_through: number;
-    on_hand_unit: number;
-}
-
-import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
-import factSalesRaw from '@/../data/dashboard/fact_sales.json';
-
-const dimSku = dimSkuRaw as unknown as DimSkuRecord[];
-const factSales = factSalesRaw as unknown as FactSalesRecord[];
-
-interface SkuRiskRow {
-    sku_id: string;
-    sku_name: string;
-    category_id: string;
+type SkuWosItem = {
+    skuId: string;
+    name: string;
+    category: string;
+    wos: number;
+    onHandUnits: number;
+    sellThrough: number;
     lifecycle: string;
     msrp: number;
-    season: string;
-    totalUnits: number;
-    totalStockIn: number; // calculated: totalUnits + onHandUnit
-    totalSales: number;
-    avgSellThrough: number;
-    avgDiscountDepth: number;
-    avgMarginRate: number;
-    onHandUnit: number;
-    risks: string[];
-    priority: 'P0' | 'P1' | 'P2';
-    actionSuggestion: string;
-    estimatedImpact: string;
-}
-
-type SortKey = keyof Pick<SkuRiskRow, 'msrp' | 'totalUnits' | 'totalStockIn' | 'avgSellThrough' | 'avgDiscountDepth' | 'avgMarginRate' | 'onHandUnit' | 'totalSales'>;
-
-const RISK_STYLES: Record<string, string> = {
-    '低售罄': 'bg-red-100 text-red-700',
-    '高库存': 'bg-orange-100 text-orange-700',
-    '低毛利': 'bg-yellow-100 text-yellow-700',
-    '折扣异常': 'bg-purple-100 text-purple-700',
-    '健康': 'bg-emerald-100 text-emerald-700',
 };
 
-export default function SkuRiskList() {
-    const [sortKey, setSortKey] = useState<SortKey>('avgSellThrough');
-    const [sortAsc, setSortAsc] = useState(true);
-    const [filterRisk, setFilterRisk] = useState<string>('全部');
-    const [expanded, setExpanded] = useState(false);
-    const COLLAPSED_COUNT = 10;
+type ActionType = '紧急补货' | '适量补货' | '折扣促销' | '组合促销' | '清仓处置' | '调拨处理' | '补深追加' | '持续观察';
+type StatusType = '待处理' | '进行中' | '已完成' | '已搁置';
 
-    const skuRows = useMemo<SkuRiskRow[]>(() => {
-        return dimSku.map(sku => {
-            const records = factSales.filter(r => r.sku_id === sku.sku_id);
-            if (records.length === 0) return null;
+const ACTION_OPTIONS: ActionType[] = ['紧急补货', '适量补货', '折扣促销', '组合促销', '清仓处置', '调拨处理', '补深追加', '持续观察'];
+const STATUS_OPTIONS: StatusType[] = ['待处理', '进行中', '已完成', '已搁置'];
 
-            const totalUnits = records.reduce((s, r) => s + r.unit_sold, 0);
-            const totalSales = records.reduce((s, r) => s + r.net_sales_amt, 0);
-            const totalGrossProfit = records.reduce((s, r) => s + r.gross_profit_amt, 0);
-            const totalGrossSales = records.reduce((s, r) => s + r.gross_sales_amt, 0);
+const STATUS_STYLE: Record<StatusType, string> = {
+    '待处理': 'bg-red-50 text-red-700 border-red-200',
+    '进行中': 'bg-blue-50 text-blue-700 border-blue-200',
+    '已完成': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    '已搁置': 'bg-slate-100 text-slate-500 border-slate-200',
+};
 
-            // 最新周售罄率
-            const latestRecord = records.reduce((a, b) => a.week_num > b.week_num ? a : b);
-            const avgSellThrough = latestRecord.cumulative_sell_through;
+const ACTION_STYLE: Record<ActionType, string> = {
+    '紧急补货': 'text-red-600 font-bold',
+    '适量补货': 'text-orange-600 font-semibold',
+    '折扣促销': 'text-amber-600 font-semibold',
+    '组合促销': 'text-amber-500 font-semibold',
+    '清仓处置': 'text-purple-600 font-bold',
+    '调拨处理': 'text-purple-500 font-semibold',
+    '补深追加': 'text-emerald-600 font-semibold',
+    '持续观察': 'text-slate-500',
+};
 
-            const avgDiscountDepth = totalGrossSales > 0
-                ? (totalGrossSales - totalSales) / totalGrossSales
-                : 0;
-            const avgMarginRate = totalSales > 0 ? totalGrossProfit / totalSales : 0;
-            const onHandUnit = latestRecord.on_hand_unit;
+// 自动推导动作类型
+function inferAction(sku: SkuWosItem): { action: ActionType; params: string; impact: string } {
+    const { wos, sellThrough, msrp } = sku;
 
-            // 风险标签（阈值按企业级体量调整）
-            const risks: string[] = [];
-            if (avgSellThrough < 0.70) risks.push('低售罄');
-            if (onHandUnit > 200) risks.push('高库存');   // 企业级：200双以上才算高库存
-            if (avgMarginRate < 0.38) risks.push('低毛利');
-            if (avgDiscountDepth > 0.20) risks.push('折扣异常');
-            if (risks.length === 0) risks.push('健康');
+    if (wos < 2 && sellThrough < 0.92) {
+        return { action: '紧急补货', params: '补货量 = 4周安全库存 × 2', impact: '避免断货，维持销售动力' };
+    }
+    if (wos < 4 && sellThrough < 0.92) {
+        return { action: '适量补货', params: '补货量 = 2-3周安全库存', impact: '稳定在售，防止短缺' };
+    }
+    if (wos > 16 && sellThrough < 0.45) {
+        return { action: '清仓处置', params: `折扣 7折或以下，或调拨奥莱`, impact: '加速去化，回笼现金' };
+    }
+    if (wos > 12 && sellThrough < 0.60) {
+        return { action: '调拨处理', params: '调拨至 B2B / 奥莱渠道', impact: '降低库龄，减少库存损耗' };
+    }
+    if (wos > 10 && msrp >= 600) {
+        return { action: '折扣促销', params: `限时折扣 8.5-9折`, impact: '提升高价位转化，降低积压风险' };
+    }
+    if (wos > 8 && sellThrough < 0.65) {
+        return { action: '折扣促销', params: '折扣 8-9折，配合主推推荐位', impact: '预计提升售罄 +3-5pp / 月' };
+    }
+    if (sellThrough > 0.88 && wos < 8) {
+        return { action: '补深追加', params: '追加下期采购 Top 款深度', impact: '锁定强势款，延长贡献期' };
+    }
+    if (wos >= 4 && wos <= 8 && sellThrough < 0.65) {
+        return { action: '组合促销', params: '搭赠或满额折扣，主推带动', impact: '提升连带率，加速售罄' };
+    }
+    return { action: '持续观察', params: '每周复盘，关注趋势变化', impact: '维持当前节奏' };
+}
 
-            // 计算优先级和建议动作
-            const priority = calcRiskPriority(risks);
-            const actionSuggestion = getActionSuggestion(risks, avgSellThrough, onHandUnit);
-            const estimatedImpact = getEstimatedImpact(risks, avgSellThrough, onHandUnit, sku.msrp);
+// 风险优先级排序权重
+function riskScore(sku: SkuWosItem): number {
+    if (sku.wos < 2) return 100;
+    if (sku.wos < 4) return 80;
+    if (sku.wos > 16 && sku.sellThrough < 0.45) return 90;
+    if (sku.wos > 12) return 70 + (sku.wos - 12) * 0.5;
+    if (sku.sellThrough < 0.50) return 60;
+    return 10;
+}
 
-            return {
-                sku_id: sku.sku_id,
-                sku_name: sku.sku_name,
-                category_id: sku.category_id,
-                lifecycle: sku.lifecycle,
-                msrp: sku.msrp,
-                season: sku.season,
-                totalUnits,
-                totalStockIn: totalUnits + onHandUnit,
-                totalSales,
-                avgSellThrough,
-                avgDiscountDepth,
-                avgMarginRate,
-                onHandUnit,
-                risks,
-                priority,
-                actionSuggestion,
-                estimatedImpact,
-            };
-        }).filter(Boolean) as SkuRiskRow[];
-    }, []);
+interface SkuRiskListProps {
+    skuWosData?: SkuWosItem[];
+    filterSummary?: string;
+}
+
+export default function SkuRiskList({ skuWosData, filterSummary = '全部数据' }: SkuRiskListProps) {
+    const [actionOverrides, setActionOverrides] = useState<Record<string, ActionType>>({});
+    const [statusMap, setStatusMap] = useState<Record<string, StatusType>>({});
+    const [filter, setFilter] = useState<'all' | 'stockout' | 'overstock' | 'lowST'>('all');
+    const [exported, setExported] = useState(false);
+
+    // 构建行动列表（合并推导结果）
+    const rows = useMemo(() => {
+        if (!skuWosData || skuWosData.length === 0) return [];
+        return [...skuWosData]
+            .sort((a, b) => riskScore(b) - riskScore(a))
+            .slice(0, 50) // 最多展示 50 行
+            .map(sku => ({
+                ...sku,
+                ...inferAction(sku),
+                action: actionOverrides[sku.skuId] ?? inferAction(sku).action,
+                status: statusMap[sku.skuId] ?? '待处理' as StatusType,
+            }));
+    }, [skuWosData, actionOverrides, statusMap]);
 
     const filtered = useMemo(() => {
-        const rows = filterRisk === '全部' ? skuRows : skuRows.filter(r => r.risks.includes(filterRisk));
-        return [...rows].sort((a, b) => {
-            const diff = a[sortKey] - b[sortKey];
-            return sortAsc ? diff : -diff;
-        });
-    }, [skuRows, sortKey, sortAsc, filterRisk]);
+        if (filter === 'stockout') return rows.filter(r => r.wos < 4);
+        if (filter === 'overstock') return rows.filter(r => r.wos > 12);
+        if (filter === 'lowST') return rows.filter(r => r.sellThrough < 0.55);
+        return rows;
+    }, [rows, filter]);
 
-    const handleSort = (key: SortKey) => {
-        if (sortKey === key) setSortAsc(!sortAsc);
-        else { setSortKey(key); setSortAsc(true); }
-    };
+    if (!skuWosData || skuWosData.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-40 text-slate-400">
+                <div className="text-center"><div className="text-4xl mb-2">📋</div><div>无SKU数据</div></div>
+            </div>
+        );
+    }
 
-    const SortIcon = ({ k }: { k: SortKey }) => (
-        <span className="ml-1 text-slate-300">
-            {sortKey === k ? (sortAsc ? '↑' : '↓') : '↕'}
-        </span>
-    );
+    // CSV 导出（带筛选条件 header）
+    const handleExportCsv = () => {
+        const now = new Date().toLocaleString('zh-CN');
+        const header = [
+            `# SKU 行动列表导出`,
+            `# 导出时间：${now}`,
+            `# 筛选条件：${filterSummary}`,
+            `# 字段说明：SKU编号 | SKU名称 | 品类 | 生命周期 | 吊牌价 | WOS(周) | 售罄率 | 在库(双) | 动作类型 | 动作参数 | 预期影响 | 状态`,
+            ``,
+        ].join('\n');
 
-    // CSV 导出
-    const exportCsv = () => {
-        const headers = ['款号', '商品名', '品类', '生命周期', '吊牌价', '季节', '进货量', '销量', '净销售额', '售罄率', '折扣深度', '毛利率', '剩余库存', '风险标签', '优先级', '建议动作', '预估收益'];
-        const rows = filtered.map(r => [
-            r.sku_id, r.sku_name, r.category_id, r.lifecycle, r.msrp, r.season,
-            r.totalStockIn, r.totalUnits, r.totalSales,
-            `${(r.avgSellThrough * 100).toFixed(1)}%`,
-            `${(r.avgDiscountDepth * 100).toFixed(1)}%`,
-            `${(r.avgMarginRate * 100).toFixed(1)}%`,
-            r.onHandUnit, r.risks.join('|'), r.priority, r.actionSuggestion, r.estimatedImpact,
-        ]);
-        const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+        const csvRows = filtered.map(r =>
+            [
+                r.skuId,
+                r.name,
+                r.category,
+                r.lifecycle,
+                r.msrp,
+                r.wos,
+                `${(r.sellThrough * 100).toFixed(1)}%`,
+                r.onHandUnits,
+                r.action,
+                r.params,
+                r.impact,
+                r.status,
+            ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')
+        ).join('\n');
+
+        const csv = header + 'SKU编号,SKU名称,品类,生命周期,吊牌价,WOS(周),售罄率,在库数(双),动作类型,动作参数,预期影响,状态\n' + csvRows;
         const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url; a.download = 'sku_risk_list.csv'; a.click();
+        a.href = url;
+        a.download = `SKU行动列表_${filterSummary}_${now.replace(/[/:\s]/g, '-')}.csv`;
+        a.click();
         URL.revokeObjectURL(url);
+        setExported(true);
+        setTimeout(() => setExported(false), 2000);
     };
 
-    const riskCounts = useMemo(() => {
-        const counts: Record<string, number> = { '全部': skuRows.length, '低售罄': 0, '高库存': 0, '低毛利': 0, '折扣异常': 0, '健康': 0 };
-        skuRows.forEach(r => r.risks.forEach(risk => { counts[risk] = (counts[risk] || 0) + 1; }));
-        return counts;
-    }, [skuRows]);
+    const pendingCount = rows.filter(r => (statusMap[r.skuId] ?? '待处理') === '待处理').length;
+    const doneCount = rows.filter(r => statusMap[r.skuId] === '已完成').length;
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-            {/* Header */}
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between flex-wrap gap-3">
+        <div className="rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+            {/* 头部 */}
+            <div className="bg-gradient-to-r from-slate-50 to-white px-5 pt-5 pb-4 flex items-center justify-between border-b border-slate-100">
                 <div>
-                    <h3 className="text-base font-bold text-slate-900">SKU 风险列表</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">点击列标题排序 · 可导出 CSV 用于动作清单</p>
+                    <h2 className="text-lg font-bold text-slate-900">SKU 行动列表</h2>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                        共 {rows.length} 款 · 待处理 <strong className="text-red-600">{pendingCount}</strong> 款 · 已完成 <strong className="text-emerald-600">{doneCount}</strong> 款
+                    </p>
                 </div>
-                <button
-                    onClick={exportCsv}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors"
-                >
-                    <span>↓</span> 导出 CSV
-                </button>
-            </div>
-
-            {/* Risk Filter Tabs */}
-            <div className="px-6 py-3 flex gap-2 flex-wrap border-b border-slate-100 bg-slate-50">
-                {Object.entries(riskCounts).map(([risk, count]) => (
-                    <button
-                        key={risk}
-                        onClick={() => setFilterRisk(risk)}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${filterRisk === risk
-                            ? 'bg-slate-800 text-white'
-                            : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-400'
-                            }`}
-                    >
-                        {risk} <span className="opacity-60">({count})</span>
+                <div className="flex items-center gap-2">
+                    {/* 快速筛选 */}
+                    <div className="flex rounded-lg border border-slate-200 overflow-hidden text-xs">
+                        {([['all', '全部'], ['stockout', '断货'], ['overstock', '积压'], ['lowST', '低动销']] as const).map(([k, label]) => (
+                            <button key={k} onClick={() => setFilter(k)}
+                                className={`px-3 py-1.5 font-medium transition-colors ${filter === k ? 'bg-slate-800 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}>
+                                {label}
+                            </button>
+                        ))}
+                    </div>
+                    {/* CSV 导出 */}
+                    <button onClick={handleExportCsv}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${exported ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-600'}`}>
+                        {exported ? '✅ 已导出' : '⬇ 导出 CSV'}
                     </button>
-                ))}
+                </div>
             </div>
 
-            {/* Table */}
+            {/* 表格 */}
             <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                     <thead>
-                        <tr className="bg-slate-50 border-b border-slate-100">
-                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap">商品</th>
-                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap">品类 / 周期</th>
-                            <th
-                                className="text-right px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap cursor-pointer hover:text-slate-800"
-                                onClick={() => handleSort('msrp')}
-                            >
-                                吊牌价 <SortIcon k="msrp" />
-                            </th>
-                            <th
-                                className="text-right px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap cursor-pointer hover:text-slate-800"
-                                onClick={() => handleSort('totalStockIn')}
-                            >
-                                进货量 <SortIcon k="totalStockIn" />
-                            </th>
-                            <th
-                                className="text-right px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap cursor-pointer hover:text-slate-800"
-                                onClick={() => handleSort('totalUnits')}
-                            >
-                                销量 <SortIcon k="totalUnits" />
-                            </th>
-                            <th
-                                className="text-right px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap cursor-pointer hover:text-slate-800"
-                                onClick={() => handleSort('avgSellThrough')}
-                            >
-                                售罄率 <SortIcon k="avgSellThrough" />
-                            </th>
-                            <th
-                                className="text-right px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap cursor-pointer hover:text-slate-800"
-                                onClick={() => handleSort('avgDiscountDepth')}
-                            >
-                                折扣深度 <SortIcon k="avgDiscountDepth" />
-                            </th>
-                            <th
-                                className="text-right px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap cursor-pointer hover:text-slate-800"
-                                onClick={() => handleSort('avgMarginRate')}
-                            >
-                                毛利率 <SortIcon k="avgMarginRate" />
-                            </th>
-                            <th
-                                className="text-right px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap cursor-pointer hover:text-slate-800"
-                                onClick={() => handleSort('onHandUnit')}
-                            >
-                                剩余库存 <SortIcon k="onHandUnit" />
-                            </th>
-                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap">风险标签</th>
-                            <th className="text-center px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap">优先级</th>
-                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap">建议动作</th>
-                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 whitespace-nowrap">预估收益</th>
+                        <tr className="bg-slate-50 border-b border-slate-100 text-xs text-slate-400 uppercase tracking-wide">
+                            <th className="text-left px-4 py-3 font-semibold min-w-[160px]">SKU</th>
+                            <th className="text-center px-3 py-3 font-semibold">WOS</th>
+                            <th className="text-center px-3 py-3 font-semibold">售罄率</th>
+                            <th className="text-center px-3 py-3 font-semibold">库存</th>
+                            <th className="text-left px-3 py-3 font-semibold min-w-[100px]">动作类型</th>
+                            <th className="text-left px-3 py-3 font-semibold min-w-[180px]">动作参数</th>
+                            <th className="text-left px-3 py-3 font-semibold min-w-[160px]">预期影响</th>
+                            <th className="text-center px-3 py-3 font-semibold min-w-[90px]">状态</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-50">
-                        {(expanded ? filtered : filtered.slice(0, COLLAPSED_COUNT)).map(row => (
-                            <tr key={row.sku_id} className="hover:bg-slate-50 transition-colors">
-                                <td className="px-4 py-3">
-                                    <div className="font-medium text-slate-900 text-xs">{row.sku_name}</div>
-                                    <div className="text-slate-400 text-xs mt-0.5">{row.sku_id} · {row.season}</div>
-                                </td>
-                                <td className="px-4 py-3">
-                                    <div className="text-xs text-slate-600">{row.category_id}</div>
-                                    <div className="text-xs text-slate-400">{row.lifecycle}</div>
-                                </td>
-                                <td className="px-4 py-3 text-right text-xs font-medium text-slate-700">¥{row.msrp}</td>
-                                <td className="px-4 py-3 text-right text-xs text-slate-600">{row.totalStockIn.toLocaleString()}</td>
-                                <td className="px-4 py-3 text-right text-xs text-slate-600">{row.totalUnits.toLocaleString()}</td>
-                                <td className="px-4 py-3 text-right">
-                                    <span className={`text-xs font-bold ${row.avgSellThrough >= 0.80 ? 'text-emerald-600' :
-                                        row.avgSellThrough >= 0.65 ? 'text-amber-600' : 'text-red-600'
-                                        }`}>
-                                        {(row.avgSellThrough * 100).toFixed(1)}%
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3 text-right">
-                                    <span className={`text-xs ${row.avgDiscountDepth > 0.20 ? 'text-red-600 font-bold' : 'text-slate-600'}`}>
-                                        {(row.avgDiscountDepth * 100).toFixed(1)}%
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3 text-right">
-                                    <span className={`text-xs ${row.avgMarginRate >= 0.50 ? 'text-emerald-600' : row.avgMarginRate >= 0.38 ? 'text-amber-600' : 'text-red-600'}`}>
-                                        {(row.avgMarginRate * 100).toFixed(1)}%
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3 text-right">
-                                    <span className={`text-xs font-medium ${row.onHandUnit > 200 ? 'text-orange-600' : 'text-slate-600'}`}>
-                                        {row.onHandUnit.toLocaleString()} 双
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3">
-                                    <div className="flex flex-wrap gap-1">
-                                        {row.risks.map(risk => (
-                                            <span key={risk} className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${RISK_STYLES[risk] ?? 'bg-slate-100 text-slate-600'}`}>
-                                                {risk}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </td>
-                                <td className="px-4 py-3 text-center">
-                                    <span className={`text-xs px-2 py-1 rounded-md font-bold ${
-                                        row.priority === 'P0' ? 'bg-red-100 text-red-700' :
-                                        row.priority === 'P1' ? 'bg-orange-100 text-orange-700' :
-                                        'bg-slate-100 text-slate-600'
-                                    }`}>
-                                        {row.priority}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3">
-                                    <div className="text-xs text-slate-700 max-w-xs">{row.actionSuggestion}</div>
-                                </td>
-                                <td className="px-4 py-3">
-                                    <div className="text-xs text-slate-500">{row.estimatedImpact}</div>
-                                </td>
-                            </tr>
-                        ))}
+                    <tbody>
+                        {filtered.length === 0 && (
+                            <tr><td colSpan={8} className="text-center py-10 text-slate-400 text-xs">当前筛选条件无数据</td></tr>
+                        )}
+                        {filtered.map((row, i) => {
+                            const currentAction = actionOverrides[row.skuId] ?? row.action;
+                            const currentStatus = statusMap[row.skuId] ?? '待处理';
+                            const derived = inferAction(row);
+                            return (
+                                <tr key={row.skuId} className={`border-b border-slate-50 hover:bg-slate-50 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}>
+                                    {/* SKU 信息 */}
+                                    <td className="px-4 py-3">
+                                        <div className="font-semibold text-slate-800 truncate max-w-[160px]" title={row.name}>{row.name}</div>
+                                        <div className="text-[10px] text-slate-400 mt-0.5">{row.category} · {row.lifecycle} · ¥{row.msrp}</div>
+                                    </td>
+                                    {/* WOS */}
+                                    <td className="px-3 py-3 text-center">
+                                        <span className={`font-bold text-sm ${row.wos < 4 ? 'text-red-600' : row.wos > 12 ? 'text-purple-600' : 'text-slate-800'}`}>
+                                            {row.wos}W
+                                        </span>
+                                    </td>
+                                    {/* 售罄率 */}
+                                    <td className="px-3 py-3 text-center">
+                                        <span className={`text-sm font-semibold ${row.sellThrough < 0.55 ? 'text-red-500' : row.sellThrough > 0.85 ? 'text-emerald-600' : 'text-slate-700'}`}>
+                                            {(row.sellThrough * 100).toFixed(0)}%
+                                        </span>
+                                    </td>
+                                    {/* 库存 */}
+                                    <td className="px-3 py-3 text-center text-xs text-slate-600">
+                                        {row.onHandUnits.toLocaleString()} 双
+                                    </td>
+                                    {/* 动作类型 - 可编辑 */}
+                                    <td className="px-3 py-3">
+                                        <select
+                                            value={currentAction}
+                                            onChange={e => setActionOverrides(prev => ({ ...prev, [row.skuId]: e.target.value as ActionType }))}
+                                            className={`text-xs font-semibold bg-transparent border-b border-dashed border-slate-300 focus:outline-none cursor-pointer hover:border-blue-400 ${ACTION_STYLE[currentAction]}`}
+                                        >
+                                            {ACTION_OPTIONS.map(opt => (
+                                                <option key={opt} value={opt}>{opt}</option>
+                                            ))}
+                                        </select>
+                                    </td>
+                                    {/* 动作参数 */}
+                                    <td className="px-3 py-3 text-xs text-slate-600">{derived.params}</td>
+                                    {/* 预期影响 */}
+                                    <td className="px-3 py-3 text-xs text-slate-500">{derived.impact}</td>
+                                    {/* 状态 - 可编辑 */}
+                                    <td className="px-3 py-3 text-center">
+                                        <select
+                                            value={currentStatus}
+                                            onChange={e => setStatusMap(prev => ({ ...prev, [row.skuId]: e.target.value as StatusType }))}
+                                            className={`text-xs font-semibold px-2 py-0.5 rounded-full border cursor-pointer focus:outline-none ${STATUS_STYLE[currentStatus]}`}
+                                        >
+                                            {STATUS_OPTIONS.map(opt => (
+                                                <option key={opt} value={opt}>{opt}</option>
+                                            ))}
+                                        </select>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
 
-            {/* Footer */}
-            <div className="px-6 py-3 bg-slate-50 border-t border-slate-100 text-xs text-slate-400 flex items-center justify-between">
-                <span>共 {filtered.length} 款 SKU · 风险判断标准：售罄率&lt;70% | 剩余库存&gt;200双 | 毛利率&lt;38% | 折扣深度&gt;20%</span>
-                {filtered.length > COLLAPSED_COUNT && (
-                    <button
-                        onClick={() => setExpanded(!expanded)}
-                        className="ml-4 px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors flex-shrink-0"
-                    >
-                        {expanded ? `收起 ▲` : `展开全部 ${filtered.length} 款 ▼`}
-                    </button>
-                )}
+            {/* 底部说明 */}
+            <div className="bg-slate-50 px-5 py-2.5 border-t border-slate-100 text-xs text-slate-400 flex flex-wrap items-center gap-4">
+                <span>动作类型和状态均可手动修改</span>
+                <span>·</span>
+                <span>CSV 导出包含筛选条件注释</span>
+                <span className="ml-auto">仅显示前 50 款高风险 SKU · 按风险优先级排序</span>
             </div>
         </div>
     );

@@ -476,7 +476,10 @@ export default function DashboardPage() {
                             <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">SKU 风险列表 · 动作层</span>
                             <div className="flex-1 h-px bg-slate-200" />
                         </div>
-                        <SkuRiskList />
+                        <SkuRiskList
+                            skuWosData={kpis?.skuWosData}
+                            filterSummary={filterSummary}
+                        />
                     </div>
 
                     {/* Footer Note */}
