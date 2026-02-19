@@ -11,6 +11,8 @@ import DashboardSummaryButton from '@/components/dashboard/DashboardSummaryButto
 import SkuDetailModal, { SkuDrillData } from '@/components/dashboard/SkuDetailModal';
 import ChartMenu from '@/components/dashboard/ChartMenu';
 import InsightsBanner from '@/components/dashboard/InsightsBanner';
+import OverviewKpiBar from '@/components/dashboard/OverviewKpiBar';
+import NarrativeSummary from '@/components/dashboard/NarrativeSummary';
 import { useState, useEffect, useRef } from 'react';
 
 interface ConclusionCardProps {
@@ -40,7 +42,8 @@ function ConclusionCard({ finding, decision, impact }: ConclusionCardProps) {
 
 interface ChartCardProps {
     title: string;
-    type: 'bar' | 'line' | 'pie' | 'scatter' | 'heatmap' | 'gauge';
+    type: 'bar' | 'line' | 'pie' | 'scatter' | 'heatmap' | 'gauge' | 'bar-compare';
+    compareMode?: 'category' | 'channel';
     kpis: ReturnType<typeof useDashboardFilter>['kpis'];
     conclusion: ConclusionCardProps;
     headerAction?: React.ReactNode;
@@ -50,7 +53,7 @@ interface ChartCardProps {
     containerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-function ChartCard({ title, type, kpis, conclusion, headerAction, span = 'half', heatmapMetric, onSkuClick, containerRef }: ChartCardProps) {
+function ChartCard({ title, type, kpis, conclusion, headerAction, span = 'half', heatmapMetric, onSkuClick, containerRef, compareMode }: ChartCardProps) {
     const chartRef = useRef<HTMLDivElement>(null);
 
     const conclusionText = `${conclusion.finding} ${conclusion.decision} ${conclusion.impact}`;
@@ -69,7 +72,7 @@ function ChartCard({ title, type, kpis, conclusion, headerAction, span = 'half',
                 </div>
             </div>
             <div className="p-5" ref={chartRef}>
-                <DashboardChart title="" type={type} kpis={kpis} heatmapMetric={heatmapMetric} onSkuClick={onSkuClick} />
+                <DashboardChart title="" type={type} kpis={kpis} heatmapMetric={heatmapMetric} onSkuClick={onSkuClick} compareMode={compareMode} />
             </div>
             <div className="px-5 pb-5">
                 <ConclusionCard {...conclusion} />
@@ -255,6 +258,23 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
+                    {/* OverviewKpiBar - P0 新增 */}
+                    {kpis && (
+                        <OverviewKpiBar
+                            kpis={kpis}
+                            onKpiClick={(kpiKey) => {
+                                if (kpiKey === 'sellThrough') scrollToSection(lineChartRef);
+                                else if (kpiKey === 'discount' || kpiKey === 'margin') scrollToSection(skuListRef);
+                                else if (kpiKey === 'inventory') scrollToSection(skuListRef);
+                            }}
+                        />
+                    )}
+
+                    {/* NarrativeSummary - 叙事层 */}
+                    {kpis && (
+                        <NarrativeSummary kpis={kpis} filterSummary={filterSummary} />
+                    )}
+
                     {/* KPI Grid */}
                     <div className="mb-10">
                         <KpiGrid
@@ -266,7 +286,7 @@ export default function DashboardPage() {
                         />
                     </div>
 
-                    {/* Insights Banner */}
+                    {/* Insights Banner (compact version, retained) */}
                     <div className="mb-8">
                         <InsightsBanner kpis={kpis} />
                     </div>
@@ -393,6 +413,39 @@ export default function DashboardPage() {
                             </div>
                         </div>
 
+                    </div>
+
+                    {/* Plan vs Actual - Divider */}
+                    <div className="flex items-center gap-4 mt-8 mb-6">
+                        <div className="flex-1 h-px bg-slate-200" />
+                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">计划达成 · 结构对比</span>
+                        <div className="flex-1 h-px bg-slate-200" />
+                    </div>
+
+                    {/* Plan vs Actual Charts */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+                        <ChartCard
+                            title="品类结构计划 vs 实际（售罄率）"
+                            type="bar-compare"
+                            compareMode="category"
+                            kpis={kpis}
+                            conclusion={{
+                                finding: `当前品类中，休闲及跑步品类售罄率接近或超出计划目标；篮球/训练品类存在缺口。`,
+                                decision: '对低于计划 5pp 以上的品类启动针对性动销：组合促销或追加投放预算。',
+                                impact: '预计带动整体售罄率提升 +1.5-2pp，减少季末清仓压力。',
+                            }}
+                        />
+                        <ChartCard
+                            title="渠道结构计划 vs 实际（售罄率）"
+                            type="bar-compare"
+                            compareMode="channel"
+                            kpis={kpis}
+                            conclusion={{
+                                finding: `电商渠道表现相对计划较优；加盟和KA渠道售罄率明显低于目标，需重点关注。`,
+                                decision: '对加盟/KA渠道发起专项动销支持：追加联销或补贴政策，提升渠道动力。',
+                                impact: '预计提升加盟/KA渠道售罄率 +3-5pp，降低渠道库存积压。',
+                            }}
+                        />
                     </div>
 
                     {/* SKU 风险列表 */}

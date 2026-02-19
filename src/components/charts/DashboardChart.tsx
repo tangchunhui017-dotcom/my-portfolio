@@ -8,7 +8,8 @@ type SellThroughCaliber = 'cohort' | 'active' | 'stage';
 
 interface DashboardChartProps {
     title: string;
-    type: 'bar' | 'line' | 'pie' | 'scatter' | 'heatmap' | 'gauge';
+    type: 'bar' | 'line' | 'pie' | 'scatter' | 'heatmap' | 'gauge' | 'bar-compare';
+    compareMode?: 'category' | 'channel'; // used when type === 'bar-compare'
     kpis: {
         weeklyData: Record<number, { units: number; sales: number; st: number }>;
         cohortData?: Record<number, { st: number; skuCount: number }>;
@@ -25,6 +26,13 @@ interface DashboardChartProps {
         totalNetSales: number;
         scatterSkus?: { price: number; sellThrough: number; units: number; name: string; lifecycle: string }[];
         totalSkuCount?: number;
+        // plan vs actual
+        categoryActual?: Record<string, { actual_sales: number; actual_sell_through: number; actual_margin_rate: number }>;
+        channelActual?: Record<string, { actual_sales: number; actual_sell_through: number; actual_margin_rate: number }>;
+        planData?: {
+            category_plan: { category_id: string; plan_sales_amt: number; plan_sell_through: number; plan_margin_rate: number }[];
+            channel_plan: { channel_type: string; plan_sales_amt: number; plan_sell_through: number; plan_margin_rate: number }[];
+        };
     } | null;
     heatmapMetric?: 'sku' | 'sales' | 'st';
     onSkuClick?: (sku: { name: string; price: number; sellThrough: number; units: number; lifecycle: '新品' | '常青' | '清仓' }) => void;
@@ -37,7 +45,7 @@ const PRICE_BAND_NAMES: Record<string, string> = {
 
 const CHART_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
 
-export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku', onSkuClick }: DashboardChartProps) {
+export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku', onSkuClick, compareMode = 'category' }: DashboardChartProps) {
     const chartRef = useRef<HTMLDivElement>(null);
     const [sellThroughCaliber, setSellThroughCaliber] = useState<SellThroughCaliber>('cohort');
 
@@ -129,42 +137,138 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                 const stData = weeks.map(w => Math.round(data[w].st * 100));
                 const weekLabels = weeks.map(w => `W${w}`);
 
-                // 从配置读取目标线和警戒线
-                const targetLine = Math.round(THRESHOLDS.sellThrough.target * 100);
-                const warningLine = Math.round(THRESHOLDS.sellThrough.warning * 100);
+                // 分段目标线：W1-W8 新品期目标75%，W9-W12 折扣期目标92%
+                // 用 markArea 标注两个阶段背景，markLine 画分段目标
+                const newProductTarget = 75;  // W1-W8
+                const markdownTarget = 92;    // W9-W12
+                const w8Idx = weeks.findIndex(w => w >= 8);
+                const w9Idx = weeks.findIndex(w => w >= 9);
+                const w12Idx = weeks.findIndex(w => w >= 12);
 
                 option = {
                     title: {
                         text: title,
-                        subtext: `口径: ${currentCaliber.label}`,
+                        subtext: `口径: ${currentCaliber.label} · W1-W8新品期目标${newProductTarget}% · W9-W12折扣期目标${markdownTarget}%`,
                         left: 'center',
                         textStyle: { fontSize: 13, fontWeight: 'bold', color: '#1e293b' },
-                        subtextStyle: { fontSize: 11, color: '#64748b' }
+                        subtextStyle: { fontSize: 10, color: '#64748b' }
                     },
                     tooltip: {
                         trigger: 'axis', formatter: (params: any) => {
                             const p = Array.isArray(params) ? params : [params];
                             const weekIdx = p[0]?.dataIndex;
-                            const skuCount = weekIdx !== undefined ? data[weeks[weekIdx]]?.skuCount : 0;
-                            return p.map((item: any) => `${item.seriesName}: ${item.value}%`).join('<br/>') +
-                                (skuCount ? `<br/>SKU数: ${skuCount}` : '');
+                            const wk = weeks[weekIdx];
+                            const skuCount = weekIdx !== undefined ? data[wk]?.skuCount : 0;
+                            const phase = wk <= 8 ? `新品期（目标${newProductTarget}%）` : wk <= 12 ? `折扣期（目标${markdownTarget}%）` : '清仓期';
+                            return `<div style="font-weight:bold;margin-bottom:4px">W${wk} · ${phase}</div>` +
+                                p.filter((item: any) => item.seriesType !== 'effectScatter').map((item: any) => `${item.seriesName}: ${item.value}%`).join('<br/>') +
+                                (skuCount ? `<br/>SKU数: <b>${skuCount}</b>` : '');
                         }
                     },
-                    legend: { bottom: 0, data: ['累计售罄率', '目标线', '警戒线'] },
+                    legend: { bottom: 0, data: ['累计售罄率'] },
                     xAxis: { type: 'category', data: weekLabels, name: '周龄（Weeks Since Launch）' },
                     yAxis: { type: 'value', name: '售罄率 %', max: 100 },
                     series: [
                         {
                             name: '累计售罄率', type: 'line', data: stData, smooth: true,
+                            z: 3,
                             itemStyle: { color: '#10b981' },
-                            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(16,185,129,0.25)' }, { offset: 1, color: 'rgba(16,185,129,0.02)' }]) },
+                            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(16,185,129,0.20)' }, { offset: 1, color: 'rgba(16,185,129,0.02)' }]) },
                             markLine: {
                                 silent: true,
-                                data: [
-                                    { yAxis: targetLine, name: '目标线', lineStyle: { color: '#3b82f6', type: 'dashed' }, label: { formatter: `目标 ${targetLine}%`, color: '#3b82f6' } },
-                                    { yAxis: warningLine, name: '警戒线', lineStyle: { color: '#ef4444', type: 'dashed' }, label: { formatter: `警戒 ${warningLine}%`, color: '#ef4444' } },
-                                ],
+                                symbol: 'none',
+                                data: ([
+                                    // W1-W8 新品期目标（蓝色虚线）
+                                    ...(w8Idx >= 0 ? [[
+                                        { coord: [0, newProductTarget], name: 'W1-W8目标', lineStyle: { color: '#3b82f6', type: 'dashed', width: 1.5 }, label: { formatter: `新品期目标 ${newProductTarget}%`, color: '#3b82f6', fontSize: 10 } },
+                                        { coord: [Math.min(w8Idx, weekLabels.length - 1), newProductTarget] },
+                                    ]] : []),
+                                    // W9-W12 折扣期目标（橙色虚线）
+                                    ...(w9Idx >= 0 ? [[
+                                        { coord: [w9Idx, markdownTarget], name: 'W9-W12目标', lineStyle: { color: '#f59e0b', type: 'dashed', width: 1.5 }, label: { formatter: `折扣期目标 ${markdownTarget}%`, color: '#f59e0b', fontSize: 10 } },
+                                        { coord: [Math.min(w12Idx >= 0 ? w12Idx : weekLabels.length - 1, weekLabels.length - 1), markdownTarget] },
+                                    ]] : []),
+                                ]) as any,
                             },
+                            markArea: {
+                                silent: true,
+                                data: ([
+                                    [{ xAxis: weekLabels[0], itemStyle: { color: 'rgba(59,130,246,0.04)' }, label: { show: true, position: 'insideTopLeft', formatter: '新品期', color: '#3b82f6', fontSize: 10 } },
+                                    { xAxis: w8Idx >= 0 ? weekLabels[Math.min(w8Idx, weekLabels.length - 1)] : weekLabels[weekLabels.length - 1] }],
+                                    ...(w9Idx >= 0 ? [[
+                                        { xAxis: weekLabels[w9Idx], itemStyle: { color: 'rgba(245,158,11,0.04)' }, label: { show: true, position: 'insideTopLeft', formatter: '折扣期', color: '#f59e0b', fontSize: 10 } },
+                                        { xAxis: w12Idx >= 0 ? weekLabels[Math.min(w12Idx, weekLabels.length - 1)] : weekLabels[weekLabels.length - 1] },
+                                    ]] : []),
+                                    ...(w12Idx >= 0 && w12Idx < weekLabels.length - 1 ? [[
+                                        { xAxis: weekLabels[w12Idx + 1] ?? weekLabels[weekLabels.length - 1], itemStyle: { color: 'rgba(239,68,68,0.04)' }, label: { show: true, position: 'insideTopLeft', formatter: '清仓期', color: '#ef4444', fontSize: 10 } },
+                                        { xAxis: weekLabels[weekLabels.length - 1] },
+                                    ]] : []),
+                                ]) as any,
+                            },
+                        },
+                    ],
+                };
+                break;
+            }
+
+            case 'bar-compare': {
+                // 品类 / 渠道计划 vs 实际 分组柱状图
+                const isCategory = compareMode === 'category';
+                const planItems = isCategory
+                    ? (kpis.planData?.category_plan ?? [])
+                    : (kpis.planData?.channel_plan ?? []);
+                const actualMap = isCategory ? kpis.categoryActual ?? {} : kpis.channelActual ?? {};
+                const labels = planItems.map(p => isCategory ? (p as any).category_id : (p as any).channel_type);
+
+                const planST = planItems.map(p => Math.round(p.plan_sell_through * 100));
+                const actualST = labels.map(l => Math.round((actualMap[l]?.actual_sell_through ?? 0) * 100));
+                const planSales = planItems.map(p => Math.round(p.plan_sales_amt / 10000));    // 万
+                const actualSales = labels.map(l => Math.round((actualMap[l]?.actual_sales ?? 0) / 10000));
+                const planMargin = planItems.map(p => Math.round(p.plan_margin_rate * 100));
+                const actualMargin = labels.map(l => Math.round((actualMap[l]?.actual_margin_rate ?? 0) * 100));
+
+                option = {
+                    title: {
+                        text: title,
+                        subtext: '计划 vs 实际（售罄率%）',
+                        left: 'center',
+                        textStyle: { fontSize: 13, fontWeight: 'bold', color: '#1e293b' },
+                        subtextStyle: { fontSize: 10, color: '#64748b' },
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: { type: 'shadow' },
+                        formatter: (params: any) => {
+                            const p = Array.isArray(params) ? params : [params];
+                            const idx = p[0]?.dataIndex ?? 0;
+                            const label = labels[idx];
+                            const achST = actualST[idx];
+                            const planSTVal = planST[idx];
+                            const gap = achST - planSTVal;
+                            const gapColor = gap >= 0 ? '#10b981' : '#ef4444';
+                            return [
+                                `<div style="font-weight:bold;margin-bottom:6px">${label}</div>`,
+                                `<div>售罄率: 实际 <b>${achST}%</b> vs 计划 ${planSTVal}% <b style="color:${gapColor}">${gap >= 0 ? '+' : ''}${gap}pp</b></div>`,
+                                `<div>销售额: 实际 <b>¥${actualSales[idx]}万</b> vs 计划 ¥${planSales[idx]}万</div>`,
+                                `<div>毛利率: 实际 <b>${actualMargin[idx]}%</b> vs 计划 ${planMargin[idx]}%</div>`,
+                            ].join('');
+                        },
+                    },
+                    legend: { bottom: 0, data: ['实际售罄率%', '计划售罄率%'] },
+                    xAxis: { type: 'category', data: labels, axisLabel: { fontSize: 11 } },
+                    yAxis: [
+                        { type: 'value', name: '售罄率 %', max: 100, position: 'left' },
+                    ],
+                    series: [
+                        {
+                            name: '实际售罄率%', type: 'bar', data: actualST, barMaxWidth: 32,
+                            itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#3b82f6' }, { offset: 1, color: '#93c5fd' }]), borderRadius: [4, 4, 0, 0] },
+                            label: { show: true, position: 'top', formatter: '{c}%', fontSize: 10 },
+                        },
+                        {
+                            name: '计划售罄率%', type: 'bar', data: planST, barMaxWidth: 32,
+                            itemStyle: { color: '#e2e8f0', borderRadius: [4, 4, 0, 0] },
+                            label: { show: true, position: 'top', formatter: '{c}%', fontSize: 10, color: '#94a3b8' },
                         },
                     ],
                 };

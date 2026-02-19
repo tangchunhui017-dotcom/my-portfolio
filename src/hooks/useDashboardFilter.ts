@@ -46,10 +46,19 @@ interface DimChannel {
 import factSalesRaw from '@/../data/dashboard/fact_sales.json';
 import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
 import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
+import dimPlanRaw from '@/../data/dashboard/dim_plan.json';
 
 const factSales = factSalesRaw as unknown as FactSalesRecord[];
 const dimSku = dimSkuRaw as unknown as DimSku[];
 const dimChannel = dimChannelRaw as unknown as DimChannel[];
+
+interface DimPlan {
+    season_year: number;
+    category_plan: { category_id: string; plan_sales_amt: number; plan_units: number; plan_sell_through: number; plan_margin_rate: number; plan_sku_count: number }[];
+    channel_plan: { channel_type: string; plan_sales_amt: number; plan_sell_through: number; plan_margin_rate: number; plan_sales_share: number }[];
+    overall_plan: { plan_total_sales: number; plan_total_units: number; plan_avg_sell_through: number; plan_avg_margin_rate: number; plan_avg_discount_depth: number; plan_active_skus: number; plan_ending_inventory_units: number; plan_ending_inventory_amt: number; plan_wos: number };
+}
+const dimPlan = dimPlanRaw as unknown as DimPlan;
 
 export interface DashboardFilters {
     season_year: number | 'all';
@@ -370,6 +379,65 @@ export function useDashboardFilter() {
         // 最多展示 80 个点（最佳视觉密度）
         scatterSkus = scatterSkus.slice(0, 80);
 
+        // ── 在库存货（取各SKU最新周库存，用于WOS/DOS计算）
+        const skuLatestInventory: Record<string, { units: number; msrp: number }> = {};
+        filteredRecords.forEach(r => {
+            const sku = skuMap[r.sku_id];
+            if (!sku) return;
+            const existing = skuLatestInventory[r.sku_id];
+            if (!existing || r.week_num > (existing as any)._week) {
+                (skuLatestInventory[r.sku_id] as any) = { units: r.on_hand_unit, msrp: sku.msrp, _week: r.week_num };
+            }
+        });
+        const totalOnHandUnits = Object.values(skuLatestInventory).reduce((s, v) => s + v.units, 0);
+        const totalOnHandAmt = Object.values(skuLatestInventory).reduce((s, v) => s + v.units * v.msrp * 0.6, 0); // 按60%成本估算
+
+        // WOS（周转周数）：期末库存 / 周均销量
+        const weekCount = Object.keys(weeklyData).length || 1;
+        const avgWeeklySales = totalNetSales / weekCount;
+        const avgWeeklyUnits = totalUnits / weekCount;
+        const wos = avgWeeklyUnits > 0 ? Math.round((totalOnHandUnits / avgWeeklyUnits) * 10) / 10 : 0;
+        const dos = wos * 7; // 周转天数
+
+        // ── 品类实际销售数据（用于计划vs实际）
+        const categoryActual: Record<string, { actual_sales: number; actual_units: number; actual_sell_through: number; actual_margin_rate: number; sku_count: number }> = {};
+        filteredRecords.forEach(r => {
+            const sku = skuMap[r.sku_id];
+            if (!sku) return;
+            if (!categoryActual[sku.category_id]) categoryActual[sku.category_id] = { actual_sales: 0, actual_units: 0, actual_sell_through: 0, actual_margin_rate: 0, sku_count: 0 };
+            categoryActual[sku.category_id].actual_sales += r.net_sales_amt;
+            categoryActual[sku.category_id].actual_units += r.unit_sold;
+        });
+        // 填充品类售罄率和毛利率
+        Object.keys(categoryActual).forEach(cat => {
+            const catRecords = filteredRecords.filter(r => skuMap[r.sku_id]?.category_id === cat);
+            const catSkuIds = [...new Set(catRecords.map(r => r.sku_id))];
+            const latestSTs = catSkuIds.map(id => skuLatestST[id] || 0);
+            categoryActual[cat].actual_sell_through = latestSTs.length > 0 ? latestSTs.reduce((a, b) => a + b, 0) / latestSTs.length : 0;
+            const catSales = catRecords.reduce((s, r) => s + r.net_sales_amt, 0);
+            const catProfit = catRecords.reduce((s, r) => s + r.gross_profit_amt, 0);
+            categoryActual[cat].actual_margin_rate = catSales > 0 ? catProfit / catSales : 0;
+            categoryActual[cat].sku_count = catSkuIds.length;
+        });
+
+        // ── 渠道实际销售数据（用于计划vs实际）
+        const channelActual: Record<string, { actual_sales: number; actual_sell_through: number; actual_margin_rate: number }> = {};
+        filteredRecords.forEach(r => {
+            const ch = channelMap[r.channel_id];
+            if (!ch) return;
+            if (!channelActual[ch.channel_type]) channelActual[ch.channel_type] = { actual_sales: 0, actual_sell_through: 0, actual_margin_rate: 0 };
+            channelActual[ch.channel_type].actual_sales += r.net_sales_amt;
+        });
+        Object.keys(channelActual).forEach(chType => {
+            const chRecords = filteredRecords.filter(r => channelMap[r.channel_id]?.channel_type === chType);
+            const chSkuIds = [...new Set(chRecords.map(r => r.sku_id))];
+            const latestSTs = chSkuIds.map(id => skuLatestST[id] || 0);
+            channelActual[chType].actual_sell_through = latestSTs.length > 0 ? latestSTs.reduce((a, b) => a + b, 0) / latestSTs.length : 0;
+            const chSales = chRecords.reduce((s, r) => s + r.net_sales_amt, 0);
+            const chProfit = chRecords.reduce((s, r) => s + r.gross_profit_amt, 0);
+            channelActual[chType].actual_margin_rate = chSales > 0 ? chProfit / chSales : 0;
+        });
+
         return {
             totalNetSales,
             totalGrossSales,
@@ -390,6 +458,15 @@ export function useDashboardFilter() {
             top10Concentration,
             scatterSkus,
             totalSkuCount,
+            // 新增：库存健康 KPI
+            totalOnHandUnits,
+            totalOnHandAmt,
+            wos,
+            dos,
+            // 新增：计划 vs 实际
+            categoryActual,
+            channelActual,
+            planData: dimPlan,
             sortedSkus: sortedSkus.slice(0, 10).map(([id, sales]) => ({
                 sku: skuMap[id],
                 sales,
