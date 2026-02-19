@@ -12,7 +12,16 @@ import SkuDetailModal, { SkuDrillData } from '@/components/dashboard/SkuDetailMo
 import ChartMenu from '@/components/dashboard/ChartMenu';
 import OverviewKpiBar from '@/components/dashboard/OverviewKpiBar';
 import NarrativeSummary from '@/components/dashboard/NarrativeSummary';
+import ProductAnalysisPanel from '@/components/dashboard/ProductAnalysisPanel';
 import { useState, useEffect, useRef } from 'react';
+
+type DashboardTab = 'overview' | 'product' | 'planning';
+
+const TABS: { key: DashboardTab; label: string; labelEn: string; icon: string }[] = [
+    { key: 'overview', label: '总览', labelEn: 'Overview', icon: '📊' },
+    { key: 'product', label: '商品分析', labelEn: 'Product', icon: '👟' },
+    { key: 'planning', label: '波段企划', labelEn: 'Planning', icon: '📅' },
+];
 
 interface ConclusionCardProps {
     finding: string;
@@ -85,6 +94,7 @@ export default function DashboardPage() {
     const [heatmapMetric, setHeatmapMetric] = useState<'sku' | 'sales' | 'st'>('sku');
     const [mounted, setMounted] = useState(false);
     const [selectedSku, setSelectedSku] = useState<SkuDrillData | null>(null);
+    const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
 
     // Refs for scroll targets
     const lineChartRef = useRef<HTMLDivElement>(null);
@@ -257,8 +267,26 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    {/* OverviewKpiBar - P0 新增 */}
-                    {kpis && (
+                    {/* ── Tab 导航栏 ────────────────────────────────── */}
+                    <div className="flex items-center gap-1 mb-6 border-b border-slate-200">
+                        {TABS.map(tab => (
+                            <button
+                                key={tab.key}
+                                onClick={() => setActiveTab(tab.key)}
+                                className={`px-4 py-2.5 text-sm font-medium flex items-center gap-1.5 border-b-2 transition-all duration-150 ${activeTab === tab.key
+                                    ? 'border-pink-500 text-pink-600'
+                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                                    }`}
+                            >
+                                <span>{tab.icon}</span>
+                                <span>{tab.label}</span>
+                                <span className="text-xs text-slate-400 hidden sm:inline">{tab.labelEn}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* OverviewKpiBar - 始终显示（Overview Tab 内）*/}
+                    {activeTab === 'overview' && kpis && (
                         <OverviewKpiBar
                             kpis={kpis}
                             onKpiClick={(kpiKey) => {
@@ -269,218 +297,237 @@ export default function DashboardPage() {
                         />
                     )}
 
+                    {/* ── 商品分析 Tab ──────────────────────────────── */}
+                    {activeTab === 'product' && (
+                        <ProductAnalysisPanel />
+                    )}
 
-                    {/* KPI Grid */}
-                    <div className="mb-6">
-                        <KpiGrid
-                            kpis={kpis}
-                            onSellThroughClick={() => scrollToSection(lineChartRef)}
-                            onDiscountClick={() => scrollToSection(skuListRef)}
-                            onChannelClick={() => scrollToSection(pieChartRef)}
-                            onMarginClick={() => scrollToSection(skuListRef)}
-                        />
-                    </div>
-
-                    {/* NarrativeSummary - 叙事层（KPI数字读完后再看结论，底部数据联动）*/}
-                    {kpis && (
-                        <div className="mb-8">
-                            <NarrativeSummary
-                                kpis={kpis}
-                                filterSummary={filterSummary}
-                                onSellThroughClick={() => scrollToSection(lineChartRef)}
-                                onMarginClick={() => scrollToSection(skuListRef)}
-                                onDiscountClick={() => scrollToSection(skuListRef)}
-                                onInventoryClick={() => scrollToSection(skuListRef)}
-                                onSkuClick={() => scrollToSection(skuListRef)}
-                            />
+                    {/* ── 波段企划 Tab（占位，P2后半段实现）──────────── */}
+                    {activeTab === 'planning' && (
+                        <div className="flex flex-col items-center justify-center py-24 text-slate-400">
+                            <div className="text-4xl mb-4">📅</div>
+                            <div className="text-base font-semibold text-slate-600 mb-1">波段企划模块</div>
+                            <div className="text-sm">即将上线 · 包含上市日历、波段容量规划、新旧货占比分析</div>
                         </div>
                     )}
 
 
-                    <div className="flex items-center gap-4 mb-8">
-                        <div className="flex-1 h-px bg-slate-200" />
-                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">图表矩阵 · 洞察层</span>
-                        <div className="flex-1 h-px bg-slate-200" />
-                    </div>
+                    {/* ── Overview Tab 内容 ───────────────────────── */}
+                    {activeTab === 'overview' && (
+                        <div>
 
-                    {/* Chart Grid */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                        {/* Chart 1: Price Band Distribution */}
-                        <ChartCard
-                            title="SKU 价格带分布（计划 vs 实际）"
-                            type="bar"
-                            kpis={kpis}
-                            conclusion={barConclusion}
-                        />
-
-                        {/* Chart 2: Sell-Through Curve */}
-                        <ChartCard
-                            title="售罄率曲线（累计）"
-                            type="line"
-                            kpis={kpis}
-                            conclusion={lineConclusion}
-                            containerRef={lineChartRef}
-                        />
-
-                        {/* Chart 3: Channel Mix */}
-                        <ChartCard
-                            title="渠道销售占比"
-                            type="pie"
-                            kpis={kpis}
-                            conclusion={pieConclusion}
-                            containerRef={pieChartRef}
-                        />
-
-                        {/* Chart 4: Price vs Sell-Through Scatter */}
-                        <ChartCard
-                            title="价格 vs 售罄率分析（气泡=销量）"
-                            type="scatter"
-                            kpis={kpis}
-                            onSkuClick={setSelectedSku}
-                            headerAction={
-                                <span className="text-xs text-slate-400 flex items-center gap-1">
-                                    <span>👆</span> 点击气泡查看 SKU 详情
-                                </span>
-                            }
-                            conclusion={scatterConclusion}
-                        />
-
-                        {/* Chart 5: Heatmap with Metric Toggle */}
-                        <ChartCard
-                            title={`品类 × 价格带热力图 (${heatmapMetric === 'sku' ? 'SKU数' : heatmapMetric === 'sales' ? '销售额' : '售罄率'})`}
-                            type="heatmap"
-                            kpis={kpis}
-                            heatmapMetric={heatmapMetric}
-                            headerAction={
-                                <div className="flex bg-slate-100 rounded-lg p-0.5">
-                                    {[
-                                        { k: 'sku', l: 'SKU数' },
-                                        { k: 'sales', l: '销售额' },
-                                        { k: 'st', l: '售罄率' }
-                                    ].map(m => (
-                                        <button
-                                            key={m.k}
-                                            onClick={() => setHeatmapMetric(m.k as any)}
-                                            className={`px-2 py-1 text-xs font-medium rounded-md transition-all ${heatmapMetric === m.k ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-                                                }`}
-                                        >
-                                            {m.l}
-                                        </button>
-                                    ))}
-                                </div>
-                            }
-                            conclusion={heatmapConclusion}
-                        />
-
-                        {/* Chart 6: Gauge with Breakdown */}
-                        <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden col-span-1">
-                            <div className="px-5 py-4 border-b border-slate-50">
-                                <h3 className="font-semibold text-slate-800">整体平均售罄率</h3>
-                            </div>
-                            <div className="grid grid-cols-2">
-                                <div className="p-5 border-r border-slate-50">
-                                    <DashboardChart title="" type="gauge" kpis={kpis} />
-                                </div>
-                                <div className="p-5 flex flex-col justify-center space-y-4">
-                                    <div>
-                                        <div className="text-xs font-medium text-emerald-600 mb-2">🚀 贡献最高渠道</div>
-                                        {channelPerformance.slice(0, 2).map((c, i) => (
-                                            <div key={c.type} className="flex justify-between items-center text-sm mb-2">
-                                                <span className="text-slate-600">{i + 1}. {c.type}</span>
-                                                <div className="text-right">
-                                                    <span className="font-bold text-slate-800">{c.pct}%</span>
-                                                    <span className="text-xs text-slate-400 ml-1">占比</span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div>
-                                        <div className="text-xs font-medium text-red-500 mb-2">🐢 贡献最低渠道</div>
-                                        {channelPerformance.slice(-2).reverse().map((c, i) => (
-                                            <div key={c.type} className="flex justify-between items-center text-sm mb-2">
-                                                <span className="text-slate-600">{i + 1}. {c.type}</span>
-                                                <div className="text-right">
-                                                    <span className="font-bold text-slate-800">{c.pct}%</span>
-                                                    <span className="text-xs text-slate-400 ml-1">占比</span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="px-5 pb-5">
-                                <ConclusionCard
-                                    finding={`整体售罄率 ${kpis ? Math.round(kpis.avgSellThrough * 100) : '--'}%。电商渠道表现最优，KA 渠道拖后腿。`}
-                                    decision='重点关注售罄率<70% 的新品（共 3 款），制定专项动销方案。'
-                                    impact='若 3 款问题款售罄率提升至 75%，整体均值可改善 +2-3pp。'
+                            {/* KPI Grid */}
+                            <div className="mb-6">
+                                <KpiGrid
+                                    kpis={kpis}
+                                    onSellThroughClick={() => scrollToSection(lineChartRef)}
+                                    onDiscountClick={() => scrollToSection(skuListRef)}
+                                    onChannelClick={() => scrollToSection(pieChartRef)}
+                                    onMarginClick={() => scrollToSection(skuListRef)}
                                 />
                             </div>
-                        </div>
 
-                    </div>
+                            {/* NarrativeSummary */}
+                            {kpis && (
+                                <div className="mb-8">
+                                    <NarrativeSummary
+                                        kpis={kpis}
+                                        filterSummary={filterSummary}
+                                        onSellThroughClick={() => scrollToSection(lineChartRef)}
+                                        onMarginClick={() => scrollToSection(skuListRef)}
+                                        onDiscountClick={() => scrollToSection(skuListRef)}
+                                        onInventoryClick={() => scrollToSection(skuListRef)}
+                                        onSkuClick={() => scrollToSection(skuListRef)}
+                                    />
+                                </div>
+                            )}
 
-                    {/* Plan vs Actual - Divider */}
-                    <div className="flex items-center gap-4 mt-8 mb-6">
-                        <div className="flex-1 h-px bg-slate-200" />
-                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">计划达成 · 结构对比</span>
-                        <div className="flex-1 h-px bg-slate-200" />
-                    </div>
 
-                    {/* Plan vs Actual Charts */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-                        <ChartCard
-                            title="品类结构计划 vs 实际（售罄率）"
-                            type="bar-compare"
-                            compareMode="category"
-                            kpis={kpis}
-                            conclusion={{
-                                finding: `当前品类中，休闲及跑步品类售罄率接近或超出计划目标；篮球/训练品类存在缺口。`,
-                                decision: '对低于计划 5pp 以上的品类启动针对性动销：组合促销或追加投放预算。',
-                                impact: '预计带动整体售罄率提升 +1.5-2pp，减少季末清仓压力。',
-                            }}
-                        />
-                        <ChartCard
-                            title="渠道结构计划 vs 实际（售罄率）"
-                            type="bar-compare"
-                            compareMode="channel"
-                            kpis={kpis}
-                            conclusion={{
-                                finding: `电商渠道表现相对计划较优；加盟和KA渠道售罄率明显低于目标，需重点关注。`,
-                                decision: '对加盟/KA渠道发起专项动销支持：追加联销或补贴政策，提升渠道动力。',
-                                impact: '预计提升加盟/KA渠道售罄率 +3-5pp，降低渠道库存积压。',
-                            }}
-                        />
-                    </div>
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="flex-1 h-px bg-slate-200" />
+                                <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">图表矩阵 · 洞察层</span>
+                                <div className="flex-1 h-px bg-slate-200" />
+                            </div>
 
-                    {/* SKU 风险列表 */}
-                    <div className="mt-8" ref={skuListRef}>
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="flex-1 h-px bg-slate-200" />
-                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">SKU 风险列表 · 动作层</span>
-                            <div className="flex-1 h-px bg-slate-200" />
-                        </div>
-                        <SkuRiskList />
-                    </div>
+                            {/* Chart Grid */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                    {/* Footer Note */}
-                    <div className="mt-10 bg-amber-50 border border-amber-200 rounded-xl p-5 flex gap-3">
-                        <span className="text-xl">💡</span>
-                        <div>
-                            <h4 className="font-semibold text-amber-900 mb-1">数据说明</h4>
-                            <p className="text-sm text-amber-800">
-                                本看板数据已脱敏处理，金额经指数化（×系数），结构与趋势真实反映业务逻辑。
-                                点击右上角 <strong>指标口径</strong> 查看各指标计算方式。
-                                筛选条件变更后，KPI 卡与图表实时同步更新。
-                            </p>
-                        </div>
-                    </div>
+                                {/* Chart 1: Price Band Distribution */}
+                                <ChartCard
+                                    title="SKU 价格带分布（计划 vs 实际）"
+                                    type="bar"
+                                    kpis={kpis}
+                                    conclusion={barConclusion}
+                                />
 
+                                {/* Chart 2: Sell-Through Curve */}
+                                <ChartCard
+                                    title="售罄率曲线（累计）"
+                                    type="line"
+                                    kpis={kpis}
+                                    conclusion={lineConclusion}
+                                    containerRef={lineChartRef}
+                                />
+
+                                {/* Chart 3: Channel Mix */}
+                                <ChartCard
+                                    title="渠道销售占比"
+                                    type="pie"
+                                    kpis={kpis}
+                                    conclusion={pieConclusion}
+                                    containerRef={pieChartRef}
+                                />
+
+                                {/* Chart 4: Price vs Sell-Through Scatter */}
+                                <ChartCard
+                                    title="价格 vs 售罄率分析（气泡=销量）"
+                                    type="scatter"
+                                    kpis={kpis}
+                                    onSkuClick={setSelectedSku}
+                                    headerAction={
+                                        <span className="text-xs text-slate-400 flex items-center gap-1">
+                                            <span>👆</span> 点击气泡查看 SKU 详情
+                                        </span>
+                                    }
+                                    conclusion={scatterConclusion}
+                                />
+
+                                {/* Chart 5: Heatmap with Metric Toggle */}
+                                <ChartCard
+                                    title={`品类 × 价格带热力图 (${heatmapMetric === 'sku' ? 'SKU数' : heatmapMetric === 'sales' ? '销售额' : '售罄率'})`}
+                                    type="heatmap"
+                                    kpis={kpis}
+                                    heatmapMetric={heatmapMetric}
+                                    headerAction={
+                                        <div className="flex bg-slate-100 rounded-lg p-0.5">
+                                            {[
+                                                { k: 'sku', l: 'SKU数' },
+                                                { k: 'sales', l: '销售额' },
+                                                { k: 'st', l: '售罄率' }
+                                            ].map(m => (
+                                                <button
+                                                    key={m.k}
+                                                    onClick={() => setHeatmapMetric(m.k as any)}
+                                                    className={`px-2 py-1 text-xs font-medium rounded-md transition-all ${heatmapMetric === m.k ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                                                        }`}
+                                                >
+                                                    {m.l}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    }
+                                    conclusion={heatmapConclusion}
+                                />
+
+                                {/* Chart 6: Gauge with Breakdown */}
+                                <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden col-span-1">
+                                    <div className="px-5 py-4 border-b border-slate-50">
+                                        <h3 className="font-semibold text-slate-800">整体平均售罄率</h3>
+                                    </div>
+                                    <div className="grid grid-cols-2">
+                                        <div className="p-5 border-r border-slate-50">
+                                            <DashboardChart title="" type="gauge" kpis={kpis} />
+                                        </div>
+                                        <div className="p-5 flex flex-col justify-center space-y-4">
+                                            <div>
+                                                <div className="text-xs font-medium text-emerald-600 mb-2">🚀 贡献最高渠道</div>
+                                                {channelPerformance.slice(0, 2).map((c, i) => (
+                                                    <div key={c.type} className="flex justify-between items-center text-sm mb-2">
+                                                        <span className="text-slate-600">{i + 1}. {c.type}</span>
+                                                        <div className="text-right">
+                                                            <span className="font-bold text-slate-800">{c.pct}%</span>
+                                                            <span className="text-xs text-slate-400 ml-1">占比</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div>
+                                                <div className="text-xs font-medium text-red-500 mb-2">🐢 贡献最低渠道</div>
+                                                {channelPerformance.slice(-2).reverse().map((c, i) => (
+                                                    <div key={c.type} className="flex justify-between items-center text-sm mb-2">
+                                                        <span className="text-slate-600">{i + 1}. {c.type}</span>
+                                                        <div className="text-right">
+                                                            <span className="font-bold text-slate-800">{c.pct}%</span>
+                                                            <span className="text-xs text-slate-400 ml-1">占比</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="px-5 pb-5">
+                                        <ConclusionCard
+                                            finding={`整体售罄率 ${kpis ? Math.round(kpis.avgSellThrough * 100) : '--'}%。电商渠道表现最优，KA 渠道拖后腿。`}
+                                            decision='重点关注售罄率<70% 的新品（共 3 款），制定专项动销方案。'
+                                            impact='若 3 款问题款售罄率提升至 75%，整体均值可改善 +2-3pp。'
+                                        />
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            {/* Plan vs Actual - Divider */}
+                            <div className="flex items-center gap-4 mt-8 mb-6">
+                                <div className="flex-1 h-px bg-slate-200" />
+                                <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">计划达成 · 结构对比</span>
+                                <div className="flex-1 h-px bg-slate-200" />
+                            </div>
+
+                            {/* Plan vs Actual Charts */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+                                <ChartCard
+                                    title="品类结构计划 vs 实际（售罄率）"
+                                    type="bar-compare"
+                                    compareMode="category"
+                                    kpis={kpis}
+                                    conclusion={{
+                                        finding: `当前品类中，休闲及跑步品类售罄率接近或超出计划目标；篮球/训练品类存在缺口。`,
+                                        decision: '对低于计划 5pp 以上的品类启动针对性动销：组合促销或追加投放预算。',
+                                        impact: '预计带动整体售罄率提升 +1.5-2pp，减少季末清仓压力。',
+                                    }}
+                                />
+                                <ChartCard
+                                    title="渠道结构计划 vs 实际（售罄率）"
+                                    type="bar-compare"
+                                    compareMode="channel"
+                                    kpis={kpis}
+                                    conclusion={{
+                                        finding: `电商渠道表现相对计划较优；加盟和KA渠道售罄率明显低于目标，需重点关注。`,
+                                        decision: '对加盟/KA渠道发起专项动销支持：追加联销或补贴政策，提升渠道动力。',
+                                        impact: '预计提升加盟/KA渠道售罄率 +3-5pp，降低渠道库存积压。',
+                                    }}
+                                />
+                            </div>
+
+                            {/* SKU 风险列表 */}
+                            <div className="mt-8" ref={skuListRef}>
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="flex-1 h-px bg-slate-200" />
+                                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">SKU 风险列表 · 动作层</span>
+                                    <div className="flex-1 h-px bg-slate-200" />
+                                </div>
+                                <SkuRiskList />
+                            </div>
+
+                            {/* Footer Note */}
+                            <div className="mt-10 bg-amber-50 border border-amber-200 rounded-xl p-5 flex gap-3">
+                                <span className="text-xl">💡</span>
+                                <div>
+                                    <h4 className="font-semibold text-amber-900 mb-1">数据说明</h4>
+                                    <p className="text-sm text-amber-800">
+                                        本看板数据已脱敏处理，金额经指数化（×系数），结构与趋势真实反映业务逻辑。
+                                        点击右上角 <strong>指标口径</strong> 查看各指标计算方式。
+                                        筛选条件变更后，KPI 卡与图表实时同步更新。
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>)}
                 </div>
-            </div>
 
-            {/* SKU 钻取弹窗 */}
-            <SkuDetailModal sku={selectedSku} onClose={() => setSelectedSku(null)} />
+                {/* SKU 钻取弹窗 */}
+                <SkuDetailModal sku={selectedSku} onClose={() => setSelectedSku(null)} />
+            </div>
         </>
     );
 }
