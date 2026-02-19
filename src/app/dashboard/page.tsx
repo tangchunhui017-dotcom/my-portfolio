@@ -12,6 +12,7 @@ import SkuDetailModal, { SkuDrillData } from '@/components/dashboard/SkuDetailMo
 import ChartMenu from '@/components/dashboard/ChartMenu';
 import OverviewKpiBar from '@/components/dashboard/OverviewKpiBar';
 import NarrativeSummary from '@/components/dashboard/NarrativeSummary';
+import InventoryHealth from '@/components/dashboard/InventoryHealth';
 import { useState, useEffect, useRef } from 'react';
 
 interface ConclusionCardProps {
@@ -454,6 +455,18 @@ export default function DashboardPage() {
                                 impact: '预计提升加盟/KA渠道售罄率 +3-5pp，降低渠道库存积压。',
                             }}
                         />
+                    </div>
+
+                    {/* 库存健康分布 */}
+                    <div className="mt-8">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="flex-1 h-px bg-slate-200" />
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">库存健康 · 结构层</span>
+                            <div className="flex-1 h-px bg-slate-200" />
+                        </div>
+                        {kpis && kpis.skuWosData && (
+                            <InventoryHealth skuWosData={kpis.skuWosData} />
+                        )}
                     </div>
 
                     {/* SKU 风险列表 */}

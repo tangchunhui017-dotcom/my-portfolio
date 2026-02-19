@@ -399,6 +399,28 @@ export function useDashboardFilter() {
         const wos = avgWeeklyUnits > 0 ? Math.round((totalOnHandUnits / avgWeeklyUnits) * 10) / 10 : 0;
         const dos = wos * 7; // 周转天数
 
+        // ── 逐 SKU WOS 数据（供 InventoryHealth 使用）─────────────────
+        const skuWosData = Object.entries(skuLatestInventory).map(([skuId, inv]) => {
+            const sku = skuMap[skuId];
+            const skuRecords = filteredRecords.filter(r => r.sku_id === skuId);
+            const skuTotalUnits = skuRecords.reduce((s, r) => s + r.unit_sold, 0);
+            const skuWeekCount = new Set(skuRecords.map(r => r.week_num)).size || 1;
+            const skuAvgWeeklyUnits = skuTotalUnits / skuWeekCount;
+            const skuWos = skuAvgWeeklyUnits > 0
+                ? Math.round((inv.units / skuAvgWeeklyUnits) * 10) / 10
+                : 99; // 无销量的 SKU 设为极大值（积压）
+            return {
+                skuId,
+                name: sku?.sku_name || skuId,
+                category: sku?.category_name || '-',
+                wos: skuWos,
+                onHandUnits: inv.units,
+                sellThrough: skuLatestST[skuId] || 0,
+                lifecycle: sku?.lifecycle || '-',
+                msrp: sku?.msrp || 0,
+            };
+        }).filter(d => d.onHandUnits > 0); // 只展示有在库库存的 SKU
+
         // ── 品类实际销售数据（用于计划vs实际）
         const categoryActual: Record<string, { actual_sales: number; actual_units: number; actual_sell_through: number; actual_margin_rate: number; sku_count: number }> = {};
         filteredRecords.forEach(r => {
@@ -463,6 +485,8 @@ export function useDashboardFilter() {
             totalOnHandAmt,
             wos,
             dos,
+            // 新增：逐 SKU WOS（供 InventoryHealth 使用）
+            skuWosData,
             // 新增：计划 vs 实际
             categoryActual,
             channelActual,
