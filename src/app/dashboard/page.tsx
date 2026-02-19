@@ -10,7 +10,6 @@ import DashboardSkeleton from '@/components/dashboard/DashboardSkeleton';
 import DashboardSummaryButton from '@/components/dashboard/DashboardSummaryButton';
 import SkuDetailModal, { SkuDrillData } from '@/components/dashboard/SkuDetailModal';
 import ChartMenu from '@/components/dashboard/ChartMenu';
-import InsightsBanner from '@/components/dashboard/InsightsBanner';
 import OverviewKpiBar from '@/components/dashboard/OverviewKpiBar';
 import NarrativeSummary from '@/components/dashboard/NarrativeSummary';
 import { useState, useEffect, useRef } from 'react';
@@ -286,12 +285,6 @@ export default function DashboardPage() {
                         />
                     </div>
 
-                    {/* Insights Banner (compact version, retained) */}
-                    <div className="mb-8">
-                        <InsightsBanner kpis={kpis} />
-                    </div>
-
-                    {/* Divider */}
                     <div className="flex items-center gap-4 mb-8">
                         <div className="flex-1 h-px bg-slate-200" />
                         <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">图表矩阵 · 洞察层</span>
