@@ -4,6 +4,7 @@ interface KpiCardProps {
     label: string;
     value: string;
     delta?: string;
+    deltaLabel?: string;
     deltaPositive?: boolean;
     gap?: string;
     gapPositive?: boolean;
@@ -47,7 +48,7 @@ const HINT_STYLES = {
 };
 
 export default function KpiCard({
-    label, value, delta, deltaPositive, gap, gapPositive,
+    label, value, delta, deltaLabel, deltaPositive, gap, gapPositive,
     hint, hintType = 'neutral', onClick, group = 'outcome', sparklineData,
     variant = 'default',
 }: KpiCardProps) {
@@ -118,7 +119,7 @@ export default function KpiCard({
                     <div className="text-right">
                         {delta && (
                             <div className={`text-xs font-semibold ${deltaPositive ? 'text-emerald-600' : 'text-red-600'}`}>
-                                {deltaPositive ? '▲' : '▼'} {delta}
+                                {deltaPositive ? '▲' : '▼'} {delta} {deltaLabel}
                             </div>
                         )}
                         {sparklineData && (
@@ -193,7 +194,7 @@ export default function KpiCard({
             <div className="flex items-center gap-3 mb-2">
                 {delta && (
                     <span className={`text-xs font-semibold flex items-center gap-0.5 ${deltaPositive ? 'text-emerald-600' : 'text-red-600'}`}>
-                        {deltaPositive ? '▲' : '▼'} {delta} 同比
+                        {deltaPositive ? '▲' : '▼'} {delta} {deltaLabel || ''}
                     </span>
                 )}
                 {gap && (

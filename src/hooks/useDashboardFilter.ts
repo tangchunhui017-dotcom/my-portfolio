@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+
+export type CompareMode = 'none' | 'plan' | 'yoy' | 'mom';
 
 // 显式类型定义，避免大型 JSON 文件导致 TypeScript 推断失败
 interface FactSalesRecord {
@@ -89,7 +91,7 @@ const PRICE_BANDS = [
     { id: 'PB6', min: 700, max: 9999 },
 ];
 
-export function useDashboardFilter() {
+export function useDashboardFilter(compareMode: CompareMode = 'none') {
     const [filters, setFilters] = useState<DashboardFilters>(DEFAULT_FILTERS);
 
     const skuMap = useMemo(() => {
@@ -476,6 +478,95 @@ export function useDashboardFilter() {
     }, [filteredRecords, skuMap, channelMap]);
 
 
+    // ── 历史基线记录（用于 YoY / MoM 对比）────────────────────────
+    const baselineRecords = useMemo(() => {
+        if (compareMode === 'none' || compareMode === 'plan') return [];
+
+        // 确定基线期的年份/季度
+        const SEASON_ORDER = ['Q1', 'Q2', 'Q3', 'Q4'];
+        const currentYear = filters.season_year !== 'all' ? Number(filters.season_year) : 2024;
+        const currentSeasonIdx = filters.season !== 'all' ? SEASON_ORDER.indexOf(filters.season) : -1;
+
+        let baselineYear: number;
+        let baselineSeason: string | 'all';
+
+        if (compareMode === 'yoy') {
+            // 同比：去年同季度
+            baselineYear = currentYear - 1;
+            baselineSeason = filters.season;
+        } else {
+            // 环比：上一季度（MoM = 上一季）
+            if (currentSeasonIdx <= 0) {
+                baselineYear = currentYear - 1;
+                baselineSeason = currentSeasonIdx === 0 ? 'Q4' : 'all';
+            } else {
+                baselineYear = currentYear;
+                baselineSeason = SEASON_ORDER[currentSeasonIdx - 1];
+            }
+        }
+
+        return factSales.filter(record => {
+            const sku = skuMap[record.sku_id];
+            const channel = channelMap[record.channel_id];
+            if (!sku || !channel) return false;
+
+            if (String(record.season_year) !== String(baselineYear)) return false;
+            if (baselineSeason !== 'all' && record.season !== baselineSeason) return false;
+
+            // 复用其余筛选条件（品类/渠道/价格带/生命周期）
+            if (filters.category_id !== 'all' && sku.category_id !== filters.category_id) return false;
+            if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
+            if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
+            if (filters.price_band !== 'all') {
+                const band = PRICE_BANDS.find(b => b.id === filters.price_band);
+                if (band && (sku.msrp < band.min || sku.msrp > band.max)) return false;
+            }
+            return true;
+        });
+    }, [compareMode, filters, skuMap, channelMap]);
+
+    // ── 基线 KPI 计算（与 kpis 同构，供 delta 计算使用）────────────
+    const baselineKpis = useMemo(() => {
+        if (baselineRecords.length === 0) return null;
+
+        const totalNetSales = baselineRecords.reduce((s, r) => s + r.net_sales_amt, 0);
+        const totalGrossSales = baselineRecords.reduce((s, r) => s + r.gross_sales_amt, 0);
+        const totalUnits = baselineRecords.reduce((s, r) => s + r.unit_sold, 0);
+        const totalGrossProfit = baselineRecords.reduce((s, r) => s + r.gross_profit_amt, 0);
+        const totalDiscountAmt = baselineRecords.reduce((s, r) => s + r.discount_amt, 0);
+
+        const skuLatestST: Record<string, number> = {};
+        baselineRecords.forEach(r => {
+            if (!skuLatestST[r.sku_id] || r.week_num > (skuLatestST[r.sku_id + '_week'] ?? 0)) {
+                skuLatestST[r.sku_id] = r.cumulative_sell_through;
+                (skuLatestST as Record<string, number>)[r.sku_id + '_week'] = r.week_num;
+            }
+        });
+        const skuIds = Object.keys(skuLatestST).filter(k => !k.includes('_week'));
+        const avgSellThrough = skuIds.length > 0
+            ? skuIds.reduce((s, id) => s + skuLatestST[id], 0) / skuIds.length : 0;
+
+        const avgMarginRate = totalNetSales > 0 ? totalGrossProfit / totalNetSales : 0;
+        const avgDiscountDepth = totalGrossSales > 0 ? totalDiscountAmt / totalGrossSales : 0;
+        const activeSKUs = new Set(baselineRecords.map(r => r.sku_id)).size;
+
+        const skuLatestInventory: Record<string, { units: number; msrp: number }> = {};
+        baselineRecords.forEach(r => {
+            const sku = skuMap[r.sku_id];
+            if (!sku) return;
+            const existing = skuLatestInventory[r.sku_id];
+            if (!existing || r.week_num > (existing as any)._week) {
+                (skuLatestInventory[r.sku_id] as any) = { units: r.on_hand_unit, msrp: sku.msrp, _week: r.week_num };
+            }
+        });
+        const totalOnHandUnits = Object.values(skuLatestInventory).reduce((s, v) => s + v.units, 0);
+        const weekCount = new Set(baselineRecords.map(r => r.week_num)).size || 1;
+        const avgWeeklyUnits = totalUnits / weekCount;
+        const wos = avgWeeklyUnits > 0 ? Math.round((totalOnHandUnits / avgWeeklyUnits) * 10) / 10 : 0;
+
+        return { totalNetSales, totalGrossSales, totalUnits, totalGrossProfit, avgSellThrough, avgMarginRate, avgDiscountDepth, activeSKUs, totalOnHandUnits, wos };
+    }, [baselineRecords, skuMap]);
+
     const filterSummary = useMemo(() => {
         const parts: string[] = [];
         if (filters.season_year !== 'all') parts.push(`${filters.season_year}年`);
@@ -496,6 +587,7 @@ export function useDashboardFilter() {
         setFilters,
         filteredRecords,
         kpis,
+        baselineKpis,
         filterSummary,
         skuMap,
         channelMap,

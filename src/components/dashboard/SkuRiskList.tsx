@@ -37,10 +37,8 @@ interface FactSalesRecord {
 }
 
 import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
-import factSalesRaw from '@/../data/dashboard/fact_sales.json';
 
 const dimSku = dimSkuRaw as unknown as DimSkuRecord[];
-const factSales = factSalesRaw as unknown as FactSalesRecord[];
 
 interface SkuRiskRow {
     sku_id: string;
@@ -85,10 +83,11 @@ const STATUS_STYLE: Record<StatusType, string> = {
 };
 
 interface SkuRiskListProps {
+    filteredRecords: FactSalesRecord[];
     filterSummary?: string;
 }
 
-export default function SkuRiskList({ filterSummary = '全部数据' }: SkuRiskListProps) {
+export default function SkuRiskList({ filteredRecords, filterSummary = '全部数据' }: SkuRiskListProps) {
     const [sortKey, setSortKey] = useState<SortKey>('avgSellThrough');
     const [sortAsc, setSortAsc] = useState(true);
     const [filterRisk, setFilterRisk] = useState<string>('全部');
@@ -98,7 +97,7 @@ export default function SkuRiskList({ filterSummary = '全部数据' }: SkuRiskL
 
     const skuRows = useMemo<SkuRiskRow[]>(() => {
         return dimSku.map(sku => {
-            const records = factSales.filter(r => r.sku_id === sku.sku_id);
+            const records = filteredRecords.filter(r => r.sku_id === sku.sku_id);
             if (records.length === 0) return null;
 
             const totalUnits = records.reduce((s, r) => s + r.unit_sold, 0);
@@ -158,7 +157,7 @@ export default function SkuRiskList({ filterSummary = '全部数据' }: SkuRiskL
                 estimatedImpact,
             };
         }).filter(Boolean) as SkuRiskRow[];
-    }, []);
+    }, [filteredRecords]);
 
     const filtered = useMemo(() => {
         const rows = filterRisk === '全部' ? skuRows : skuRows.filter(r => r.risks.includes(filterRisk));
@@ -245,8 +244,8 @@ export default function SkuRiskList({ filterSummary = '全部数据' }: SkuRiskL
                         key={risk}
                         onClick={() => setFilterRisk(risk)}
                         className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${filterRisk === risk
-                                ? 'bg-slate-800 text-white border-slate-800'
-                                : 'bg-white border-slate-200 text-slate-600 hover:border-slate-400'
+                            ? 'bg-slate-800 text-white border-slate-800'
+                            : 'bg-white border-slate-200 text-slate-600 hover:border-slate-400'
                             }`}
                     >
                         {risk} <span className="opacity-60">({count})</span>
@@ -305,7 +304,7 @@ export default function SkuRiskList({ filterSummary = '全部数据' }: SkuRiskL
                                 <td className="px-4 py-3 text-right text-xs font-medium text-slate-700">{row.totalUnits.toLocaleString()}</td>
                                 <td className="px-4 py-3 text-right">
                                     <span className={`text-xs font-bold ${row.avgSellThrough >= 0.8 ? 'text-emerald-600' :
-                                            row.avgSellThrough >= 0.65 ? 'text-amber-600' : 'text-red-600'
+                                        row.avgSellThrough >= 0.65 ? 'text-amber-600' : 'text-red-600'
                                         }`}>
                                         {(row.avgSellThrough * 100).toFixed(0)}%
                                     </span>
@@ -316,7 +315,7 @@ export default function SkuRiskList({ filterSummary = '全部数据' }: SkuRiskL
                                 {/* WOS Data */}
                                 <td className="px-4 py-3 text-right">
                                     <span className={`text-xs font-bold ${row.wos < 4 ? 'text-red-600' :
-                                            row.wos > 12 ? 'text-purple-600' : 'text-slate-700'
+                                        row.wos > 12 ? 'text-purple-600' : 'text-slate-700'
                                         }`}>
                                         {row.wos}
                                     </span>
@@ -332,8 +331,8 @@ export default function SkuRiskList({ filterSummary = '全部数据' }: SkuRiskL
                                 </td>
                                 <td className="px-4 py-3 text-center">
                                     <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${row.priority === 'P0' ? 'bg-red-100 text-red-700' :
-                                            row.priority === 'P1' ? 'bg-orange-100 text-orange-700' :
-                                                'bg-slate-100 text-slate-500'
+                                        row.priority === 'P1' ? 'bg-orange-100 text-orange-700' :
+                                            'bg-slate-100 text-slate-500'
                                         }`}>
                                         {row.priority}
                                     </span>

@@ -1,10 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { THRESHOLDS } from '@/config/thresholds';
 import { FOOTWEAR_ANALYSIS_MODULES } from '@/config/footwearLanguage';
-
-type CompareMode = 'none' | 'yoy' | 'mom' | 'plan';
+import type { CompareMode } from '@/hooks/useDashboardFilter';
 
 interface KpiItem {
     label: string;
@@ -18,7 +17,6 @@ interface KpiItem {
 }
 
 function KpiMiniCard({ item }: { item: KpiItem }) {
-    // good 状态改用紫色，符合新主题
     const statusColors = {
         good: { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-700' },
         warn: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700' },
@@ -47,6 +45,16 @@ function KpiMiniCard({ item }: { item: KpiItem }) {
     );
 }
 
+type BaselineKpis = {
+    totalNetSales: number;
+    avgSellThrough: number;
+    totalOnHandUnits?: number;
+    wos?: number;
+    avgMarginRate?: number;
+    avgDiscountDepth?: number;
+    activeSKUs?: number;
+} | null;
+
 interface OverviewKpiBarProps {
     kpis: {
         totalNetSales: number;
@@ -64,6 +72,9 @@ interface OverviewKpiBarProps {
             };
         };
     };
+    compareMode: CompareMode;
+    onCompareModeChange: (mode: CompareMode) => void;
+    baselineKpis: BaselineKpis;
     onKpiClick?: (kpi: string) => void;
 }
 
@@ -73,23 +84,73 @@ function fmt万(n: number) {
     return `¥${n.toLocaleString()}`;
 }
 
-export default function OverviewKpiBar({ kpis, onKpiClick }: OverviewKpiBarProps) {
-    const [compareMode, setCompareMode] = useState<CompareMode>('plan');
-
+export default function OverviewKpiBar({ kpis, compareMode, onCompareModeChange, baselineKpis, onKpiClick }: OverviewKpiBarProps) {
     const plan = kpis.planData?.overall_plan;
+
+    const compareModeLabel: Record<CompareMode, string> = {
+        none: '无对比',
+        plan: 'vs 计划',
+        mom: '环比上季',
+        yoy: '同比去年',
+    };
 
     const kpiItems: KpiItem[] = useMemo(() => {
         const st = kpis.avgSellThrough;
         const wos = kpis.wos;
 
+        // 计算 delta 的辅助函数
+        const calcDeltaPct = (current: number, baseline: number | undefined): number | undefined => {
+            if (baseline === undefined || baseline === 0) return undefined;
+            return ((current - baseline) / Math.abs(baseline)) * 100;
+        };
+        const calcDeltaPp = (current: number, baseline: number | undefined): number | undefined => {
+            if (baseline === undefined) return undefined;
+            return (current - baseline) * 100;
+        };
+
+        // 根据 compareMode 决定 delta 来源
+        const salesDelta = (() => {
+            if (compareMode === 'plan' && plan)
+                return calcDeltaPct(kpis.totalNetSales, plan.plan_total_sales);
+            if ((compareMode === 'yoy' || compareMode === 'mom') && baselineKpis)
+                return calcDeltaPct(kpis.totalNetSales, baselineKpis.totalNetSales);
+            return undefined;
+        })();
+
+        const stDelta = (() => {
+            if (compareMode === 'plan' && plan)
+                return calcDeltaPp(st, plan.plan_avg_sell_through);
+            if ((compareMode === 'yoy' || compareMode === 'mom') && baselineKpis)
+                return calcDeltaPp(st, baselineKpis.avgSellThrough);
+            return undefined;
+        })();
+
+        const inventoryDelta = (() => {
+            if (compareMode === 'plan' && plan)
+                return -(kpis.totalOnHandUnits - plan.plan_ending_inventory_units) / plan.plan_ending_inventory_units * 100;
+            if ((compareMode === 'yoy' || compareMode === 'mom') && baselineKpis?.totalOnHandUnits)
+                return calcDeltaPct(kpis.totalOnHandUnits, baselineKpis.totalOnHandUnits);
+            return undefined;
+        })();
+
+        const wosDelta = (() => {
+            if (compareMode === 'plan' && plan) return -(wos - plan.plan_wos);
+            if ((compareMode === 'yoy' || compareMode === 'mom') && baselineKpis?.wos !== undefined)
+                return wos - baselineKpis.wos;
+            return undefined;
+        })();
+
+        // subValue 说明标签
+        const modeTag = compareMode !== 'none' ? compareModeLabel[compareMode] : undefined;
+        const baselineSales = compareMode === 'plan' ? plan?.plan_total_sales : baselineKpis?.totalNetSales;
+        const baselineST = compareMode === 'plan' ? plan?.plan_avg_sell_through : baselineKpis?.avgSellThrough;
+
         return [
             {
                 label: '净销售额（鞋）',
                 value: fmt万(kpis.totalNetSales),
-                subValue: plan ? `计划 ${fmt万(plan.plan_total_sales)}` : undefined,
-                delta: compareMode === 'plan' && plan
-                    ? ((kpis.totalNetSales - plan.plan_total_sales) / plan.plan_total_sales) * 100
-                    : undefined,
+                subValue: baselineSales !== undefined ? `${modeTag} ${fmt万(baselineSales)}` : undefined,
+                delta: salesDelta,
                 deltaLabel: '%',
                 status: plan
                     ? (kpis.totalNetSales >= plan.plan_total_sales * 0.95 ? 'good'
@@ -101,10 +162,10 @@ export default function OverviewKpiBar({ kpis, onKpiClick }: OverviewKpiBarProps
             {
                 label: '季内累计售罄率',
                 value: `${(st * 100).toFixed(1)}%`,
-                subValue: plan
-                    ? `计划 ${(plan.plan_avg_sell_through * 100).toFixed(0)}%`
+                subValue: baselineST !== undefined
+                    ? `${modeTag} ${(baselineST * 100).toFixed(0)}%`
                     : `目标 ${(THRESHOLDS.sellThrough.target * 100).toFixed(0)}%`,
-                delta: compareMode === 'plan' && plan ? (st - plan.plan_avg_sell_through) * 100 : undefined,
+                delta: stDelta,
                 deltaLabel: 'pp',
                 status: st >= THRESHOLDS.sellThrough.target ? 'good' : st >= THRESHOLDS.sellThrough.warning ? 'warn' : 'danger',
                 icon: '🎯',
@@ -114,9 +175,7 @@ export default function OverviewKpiBar({ kpis, onKpiClick }: OverviewKpiBarProps
                 label: '期末库存（双）',
                 value: `${kpis.totalOnHandUnits.toLocaleString()} 双`,
                 subValue: fmt万(kpis.totalOnHandAmt),
-                delta: compareMode === 'plan' && plan
-                    ? -(kpis.totalOnHandUnits - plan.plan_ending_inventory_units) / plan.plan_ending_inventory_units * 100
-                    : undefined,
+                delta: inventoryDelta,
                 deltaLabel: '%',
                 status: wos <= 4 ? 'danger' : wos <= 8 ? 'warn' : wos <= 12 ? 'good' : 'warn',
                 icon: '📦',
@@ -126,7 +185,7 @@ export default function OverviewKpiBar({ kpis, onKpiClick }: OverviewKpiBarProps
                 label: '库存周转 WOS',
                 value: `${wos} 周`,
                 subValue: plan ? `目标 ${plan.plan_wos} 周` : '健康区间 5-8 周',
-                delta: compareMode === 'plan' && plan ? -(wos - plan.plan_wos) : undefined,
+                delta: wosDelta,
                 deltaLabel: ' 周',
                 status: wos >= 4 && wos <= 10 ? 'good' : wos < 4 ? 'danger' : 'warn',
                 icon: '🔄',
@@ -140,7 +199,7 @@ export default function OverviewKpiBar({ kpis, onKpiClick }: OverviewKpiBarProps
             },
         ];
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [kpis, compareMode]);
+    }, [kpis, compareMode, baselineKpis]);
 
     return (
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 mb-6">
@@ -150,23 +209,18 @@ export default function OverviewKpiBar({ kpis, onKpiClick }: OverviewKpiBarProps
                     <h2 className="text-base font-bold text-slate-900">鞋类经营总览</h2>
                     <p className="text-xs text-slate-400 mt-0.5">库存健康快照 — 点击指标卡联动下方图表</p>
                 </div>
-                {/* 对比方式切换 */}
+                {/* 对比方式切换（受控） */}
                 <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-                    {([
-                        { key: 'none', label: '无对比' },
-                        { key: 'plan', label: 'vs 计划' },
-                        { key: 'mom', label: '环比' },
-                        { key: 'yoy', label: '同比' },
-                    ] as { key: CompareMode; label: string }[]).map(({ key, label }) => (
+                    {(['none', 'plan', 'mom', 'yoy'] as CompareMode[]).map((key) => (
                         <button
                             key={key}
-                            onClick={() => setCompareMode(key)}
+                            onClick={() => onCompareModeChange(key)}
                             className={`px-3 py-1.5 text-xs rounded-lg transition-all font-medium ${compareMode === key
                                 ? 'bg-white text-pink-600 shadow-sm font-semibold'
                                 : 'text-slate-500 hover:text-slate-700'
                                 }`}
                         >
-                            {label}
+                            {compareModeLabel[key]}
                         </button>
                     ))}
                 </div>
@@ -188,9 +242,14 @@ export default function OverviewKpiBar({ kpis, onKpiClick }: OverviewKpiBarProps
                     <span className="text-red-500">●</span><span>显著偏差</span>
                 </div>
             )}
-            {(compareMode === 'mom' || compareMode === 'yoy') && (
+            {compareMode === 'yoy' && (
                 <div className="text-xs text-slate-400 mt-3">
-                    ⚠️ 同比/环比对比需历史期数据，当前以 vs 计划模式呈现
+                    ▲/▼ = 当期 vs 去年同期偏差（基于同结构历史数据）
+                </div>
+            )}
+            {compareMode === 'mom' && (
+                <div className="text-xs text-slate-400 mt-3">
+                    ▲/▼ = 当期 vs 上一季度环比偏差
                 </div>
             )}
             <div className="flex flex-wrap gap-1.5 mt-3">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useDashboardFilter } from '@/hooks/useDashboardFilter';
+import { useDashboardFilter, CompareMode } from '@/hooks/useDashboardFilter';
 import FilterBar from '@/components/dashboard/FilterBar';
 import KpiGrid from '@/components/dashboard/KpiGrid';
 import MetricsDrawer from '@/components/dashboard/MetricsDrawer';
@@ -91,7 +91,8 @@ function ChartCard({ title, type, kpis, conclusion, headerAction, span = 'half',
 }
 
 export default function DashboardPage() {
-    const { filters, setFilters, kpis, filterSummary } = useDashboardFilter();
+    const [compareMode, setCompareMode] = useState<CompareMode>('plan');
+    const { filters, setFilters, kpis, filterSummary, baselineKpis, filteredRecords } = useDashboardFilter(compareMode);
     const [heatmapMetric, setHeatmapMetric] = useState<'sku' | 'sales' | 'st'>('sku');
     const [mounted, setMounted] = useState(false);
     const [selectedSku, setSelectedSku] = useState<SkuDrillData | null>(null);
@@ -290,6 +291,9 @@ export default function DashboardPage() {
                     {activeTab === 'overview' && kpis && (
                         <OverviewKpiBar
                             kpis={kpis}
+                            compareMode={compareMode}
+                            onCompareModeChange={setCompareMode}
+                            baselineKpis={baselineKpis}
                             onKpiClick={(kpiKey) => {
                                 if (kpiKey === 'sellThrough') scrollToSection(lineChartRef);
                                 else if (kpiKey === 'discount' || kpiKey === 'margin') scrollToSection(skuListRef);
@@ -317,6 +321,8 @@ export default function DashboardPage() {
                             <div className="mb-6">
                                 <KpiGrid
                                     kpis={kpis}
+                                    compareMode={compareMode}
+                                    baselineKpis={baselineKpis}
                                     onSellThroughClick={() => scrollToSection(lineChartRef)}
                                     onDiscountClick={() => scrollToSection(skuListRef)}
                                     onChannelClick={() => scrollToSection(pieChartRef)}
@@ -503,7 +509,10 @@ export default function DashboardPage() {
                                     <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">SKU 风险列表 · 动作层</span>
                                     <div className="flex-1 h-px bg-slate-200" />
                                 </div>
-                                <SkuRiskList />
+                                <SkuRiskList
+                                    filteredRecords={filteredRecords}
+                                    filterSummary={filterSummary}
+                                />
                             </div>
 
                             {/* Footer Note */}

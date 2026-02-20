@@ -1,6 +1,19 @@
 'use client';
 
 import KpiCard from './KpiCard';
+import type { CompareMode } from '@/hooks/useDashboardFilter';
+
+type BaselineKpis = {
+    totalNetSales: number;
+    totalGrossSales?: number;
+    totalUnits?: number;
+    totalGrossProfit?: number;
+    avgSellThrough: number;
+    avgMarginRate?: number;
+    avgDiscountDepth?: number;
+    activeSKUs?: number;
+    wos?: number;
+} | null;
 
 interface KpiGridProps {
     kpis: {
@@ -17,6 +30,8 @@ interface KpiGridProps {
         priceBandSales: Record<string, { units: number; sales: number }>;
         weeklyData?: Record<number, { units: number; sales: number; st: number; marginRate: number }>;
     } | null;
+    compareMode?: CompareMode;
+    baselineKpis?: BaselineKpis;
     onSellThroughClick?: () => void;
     onDiscountClick?: () => void;
     onChannelClick?: () => void;
@@ -33,7 +48,32 @@ function fmtPct(n: number) {
     return `${(n * 100).toFixed(1)}%`;
 }
 
-export default function KpiGrid({ kpis, onSellThroughClick, onDiscountClick, onChannelClick, onMarginClick }: KpiGridProps) {
+/** 计算百分比差值 delta（字符串格式，带正负号） */
+function pctDelta(current: number, baseline: number | undefined): string | undefined {
+    if (baseline === undefined || baseline === 0) return undefined;
+    const diff = ((current - baseline) / Math.abs(baseline)) * 100;
+    return `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%`;
+}
+
+/** 计算 pp 差值（百分点） */
+function ppDelta(current: number, baseline: number | undefined): string | undefined {
+    if (baseline === undefined) return undefined;
+    const diff = (current - baseline) * 100;
+    return `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}pp`;
+}
+
+function isPositiveDelta(delta: string | undefined): boolean {
+    if (!delta) return true;
+    return !delta.startsWith('-');
+}
+
+/** 折扣深度：delta 越小越好（反向） */
+function isPositiveDiscountDelta(delta: string | undefined): boolean {
+    if (!delta) return true;
+    return delta.startsWith('-');  // 折扣率下降 = 积极
+}
+
+export default function KpiGrid({ kpis, compareMode = 'none', baselineKpis, onSellThroughClick, onDiscountClick, onChannelClick, onMarginClick }: KpiGridProps) {
     if (!kpis) {
         return (
             <div className="flex items-center justify-center h-40 text-slate-400">
@@ -71,6 +111,20 @@ export default function KpiGrid({ kpis, onSellThroughClick, onDiscountClick, onC
         ? Object.keys(kpis.weeklyData).sort((a, b) => Number(a) - Number(b)).map(w => kpis.weeklyData![Number(w)].marginRate * 100)
         : undefined;
 
+    // 动态 delta（有 baselineKpis 时计算真实值）
+    const hasBaseline = (compareMode === 'yoy' || compareMode === 'mom') && !!baselineKpis;
+    const marginDelta = hasBaseline ? ppDelta(kpis.avgMarginRate, baselineKpis?.avgMarginRate) : '+1.2pp';
+    const unitsDelta = hasBaseline ? pctDelta(kpis.totalUnits, baselineKpis?.totalUnits) : '+8.5%';
+    const discountDelta = hasBaseline ? ppDelta(kpis.avgDiscountDepth, baselineKpis?.avgDiscountDepth) : '-0.5pp';
+    const profitDelta = hasBaseline ? pctDelta(kpis.totalGrossProfit, baselineKpis?.totalGrossProfit) : '+14.1%';
+
+    const marginDeltaPositive = hasBaseline ? isPositiveDelta(marginDelta) : true;
+    const unitsDeltaPositive = hasBaseline ? isPositiveDelta(unitsDelta) : true;
+    const discountDeltaPositive = hasBaseline ? isPositiveDiscountDelta(discountDelta) : true;
+    const profitDeltaPositive = hasBaseline ? isPositiveDelta(profitDelta) : true;
+
+    const modeLabel = compareMode === 'yoy' ? 'YoY' : compareMode === 'mom' ? 'MoM' : '';
+
     return (
         <div>
             {/* Group A: 结果 */}
@@ -78,18 +132,20 @@ export default function KpiGrid({ kpis, onSellThroughClick, onDiscountClick, onC
                 <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
                     A · 结果 Outcome
+                    {modeLabel && <span className="text-[10px] text-pink-400 bg-pink-50 px-1.5 py-0.5 rounded">{modeLabel} 对比</span>}
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <KpiCard
                         group="outcome"
                         label="毛利率"
                         value={fmtPct(kpis.avgMarginRate)}
-                        delta="+1.2pp"
-                        deltaPositive={true}
+                        delta={marginDelta}
+                        deltaLabel={modeLabel}
+                        deltaPositive={marginDeltaPositive}
                         gap="+0.8pp"
                         gapPositive={true}
-                        hint="✅ 折扣管控有效"
-                        hintType="opportunity"
+                        hint={marginDelta ? (marginDeltaPositive ? '✅ 折扣管控有效' : '⚠️ 毛利率承压') : undefined}
+                        hintType={marginDeltaPositive ? 'opportunity' : 'warning'}
                         sparklineData={marginSparkline}
                         onClick={onMarginClick}
                     />
@@ -97,8 +153,9 @@ export default function KpiGrid({ kpis, onSellThroughClick, onDiscountClick, onC
                         group="outcome"
                         label="总销量"
                         value={`${kpis.totalUnits.toLocaleString()} 双`}
-                        delta="+8.5%"
-                        deltaPositive={true}
+                        delta={unitsDelta}
+                        deltaLabel={modeLabel}
+                        deltaPositive={unitsDeltaPositive}
                         hint="📦 含全渠道出货"
                         hintType="neutral"
                     />
@@ -123,8 +180,9 @@ export default function KpiGrid({ kpis, onSellThroughClick, onDiscountClick, onC
                         group="efficiency"
                         label="平均折扣深度"
                         value={fmtPct(kpis.avgDiscountDepth)}
-                        delta="-0.5pp"
-                        deltaPositive={true}
+                        delta={discountDelta}
+                        deltaLabel={modeLabel}
+                        deltaPositive={discountDeltaPositive}
                         onClick={onDiscountClick}
                     />
                     <KpiCard
@@ -132,8 +190,9 @@ export default function KpiGrid({ kpis, onSellThroughClick, onDiscountClick, onC
                         group="efficiency"
                         label="毛利额"
                         value={fmtSales(kpis.totalGrossProfit)}
-                        delta="+14.1%"
-                        deltaPositive={true}
+                        delta={profitDelta}
+                        deltaLabel={modeLabel}
+                        deltaPositive={profitDeltaPositive}
                     />
                     <KpiCard
                         variant="compact"

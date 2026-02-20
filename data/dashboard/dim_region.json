@@ -1,0 +1,2668 @@
+[
+  {
+    "province": "上海",
+    "region_id": "R01",
+    "region_name": "华东",
+    "total_stores": 26,
+    "net_sales": 44562909,
+    "plan_sales": 48328476,
+    "achievement_rate": 0.92,
+    "sell_through": 0.81,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 4,
+        "net_sales": 16278988,
+        "plan_sales": 18069677,
+        "achievement_rate": 0.9
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 7,
+        "net_sales": 15550178,
+        "plan_sales": 16638690,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 6,
+        "net_sales": 6616668,
+        "plan_sales": 7013668,
+        "achievement_rate": 0.94
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 9,
+        "net_sales": 6117075,
+        "plan_sales": 6606441,
+        "achievement_rate": 0.93
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 10406453,
+        "total_sales": 20812906,
+        "avg_sell_through": 0.66
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 9,
+        "avg_store_sales": 4966851,
+        "total_sales": 44701659,
+        "avg_sell_through": 0.79
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 7,
+        "avg_store_sales": 1418085,
+        "total_sales": 9926595,
+        "avg_sell_through": 0.71
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 6,
+        "avg_store_sales": 1470176,
+        "total_sales": 8821056,
+        "avg_sell_through": 0.7
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 3,
+        "avg_store_sales": 1856141,
+        "total_sales": 5568423,
+        "avg_sell_through": 0.73
+      }
+    ]
+  },
+  {
+    "province": "江苏",
+    "region_id": "R01",
+    "region_name": "华东",
+    "total_stores": 22,
+    "net_sales": 36172310,
+    "plan_sales": 39534160,
+    "achievement_rate": 0.91,
+    "sell_through": 0.75,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 4,
+        "net_sales": 15820840,
+        "plan_sales": 17561132,
+        "achievement_rate": 0.9
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 6,
+        "net_sales": 10647510,
+        "plan_sales": 11286361,
+        "achievement_rate": 0.94
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 4646800,
+        "plan_sales": 4972076,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 8,
+        "net_sales": 5057160,
+        "plan_sales": 5714591,
+        "achievement_rate": 0.88
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 11589167,
+        "total_sales": 23178334,
+        "avg_sell_through": 0.72
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 8,
+        "avg_store_sales": 4927018,
+        "total_sales": 39416144,
+        "avg_sell_through": 0.81
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 6,
+        "avg_store_sales": 1417815,
+        "total_sales": 8506890,
+        "avg_sell_through": 0.77
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 5,
+        "avg_store_sales": 1418287,
+        "total_sales": 7091435,
+        "avg_sell_through": 0.72
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1546324,
+        "total_sales": 3092648,
+        "avg_sell_through": 0.78
+      }
+    ]
+  },
+  {
+    "province": "浙江",
+    "region_id": "R01",
+    "region_name": "华东",
+    "total_stores": 22,
+    "net_sales": 34520688,
+    "plan_sales": 37516123,
+    "achievement_rate": 0.92,
+    "sell_through": 0.74,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 11009757,
+        "plan_sales": 11560245,
+        "achievement_rate": 0.95
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 7,
+        "net_sales": 12748911,
+        "plan_sales": 13896313,
+        "achievement_rate": 0.92
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 5,
+        "net_sales": 5686180,
+        "plan_sales": 6425383,
+        "achievement_rate": 0.88
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 7,
+        "net_sales": 5075840,
+        "plan_sales": 5634182,
+        "achievement_rate": 0.9
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 9619482,
+        "total_sales": 19238964,
+        "avg_sell_through": 0.76
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 8,
+        "avg_store_sales": 4939237,
+        "total_sales": 39513896,
+        "avg_sell_through": 0.71
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 6,
+        "avg_store_sales": 1605753,
+        "total_sales": 9634518,
+        "avg_sell_through": 0.69
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 5,
+        "avg_store_sales": 1789016,
+        "total_sales": 8945080,
+        "avg_sell_through": 0.82
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1636103,
+        "total_sales": 3272206,
+        "avg_sell_through": 0.86
+      }
+    ]
+  },
+  {
+    "province": "安徽",
+    "region_id": "R01",
+    "region_name": "华东",
+    "total_stores": 26,
+    "net_sales": 39522132,
+    "plan_sales": 43527010,
+    "achievement_rate": 0.91,
+    "sell_through": 0.82,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 4,
+        "net_sales": 15291172,
+        "plan_sales": 17126113,
+        "achievement_rate": 0.89
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 8,
+        "net_sales": 13779072,
+        "plan_sales": 15019188,
+        "achievement_rate": 0.92
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 5,
+        "net_sales": 4683500,
+        "plan_sales": 5151850,
+        "achievement_rate": 0.91
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 9,
+        "net_sales": 5768388,
+        "plan_sales": 6229859,
+        "achievement_rate": 0.93
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 9906187,
+        "total_sales": 19812374,
+        "avg_sell_through": 0.83
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 9,
+        "avg_store_sales": 4387214,
+        "total_sales": 39484926,
+        "avg_sell_through": 0.84
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 7,
+        "avg_store_sales": 1407279,
+        "total_sales": 9850953,
+        "avg_sell_through": 0.82
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 6,
+        "avg_store_sales": 1496929,
+        "total_sales": 8981574,
+        "avg_sell_through": 0.84
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 3,
+        "avg_store_sales": 1742140,
+        "total_sales": 5226420,
+        "avg_sell_through": 0.83
+      }
+    ]
+  },
+  {
+    "province": "山东",
+    "region_id": "R01",
+    "region_name": "华东",
+    "total_stores": 23,
+    "net_sales": 38703907,
+    "plan_sales": 41291417,
+    "achievement_rate": 0.94,
+    "sell_through": 0.78,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 4,
+        "net_sales": 16960468,
+        "plan_sales": 17638887,
+        "achievement_rate": 0.96
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 6,
+        "net_sales": 11771376,
+        "plan_sales": 13066227,
+        "achievement_rate": 0.9
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 4588128,
+        "plan_sales": 4771653,
+        "achievement_rate": 0.96
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 9,
+        "net_sales": 5383935,
+        "plan_sales": 5814650,
+        "achievement_rate": 0.93
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 9506315,
+        "total_sales": 19012630,
+        "avg_sell_through": 0.9
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 8,
+        "avg_store_sales": 3512048,
+        "total_sales": 28096384,
+        "avg_sell_through": 0.77
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 6,
+        "avg_store_sales": 1496806,
+        "total_sales": 8980836,
+        "avg_sell_through": 0.82
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 5,
+        "avg_store_sales": 1277292,
+        "total_sales": 6386460,
+        "avg_sell_through": 0.81
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1875468,
+        "total_sales": 3750936,
+        "avg_sell_through": 0.89
+      }
+    ]
+  },
+  {
+    "province": "广东",
+    "region_id": "R02",
+    "region_name": "华南",
+    "total_stores": 23,
+    "net_sales": 34813822,
+    "plan_sales": 37283391,
+    "achievement_rate": 0.93,
+    "sell_through": 0.74,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 10143129,
+        "plan_sales": 10447423,
+        "achievement_rate": 0.97
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 7,
+        "net_sales": 14753536,
+        "plan_sales": 15786284,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 6,
+        "net_sales": 5753172,
+        "plan_sales": 6386021,
+        "achievement_rate": 0.9
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 7,
+        "net_sales": 4163985,
+        "plan_sales": 4663663,
+        "achievement_rate": 0.89
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 11859036,
+        "total_sales": 23718072,
+        "avg_sell_through": 0.83
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 8,
+        "avg_store_sales": 3989409,
+        "total_sales": 31915272,
+        "avg_sell_through": 0.66
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 6,
+        "avg_store_sales": 1325469,
+        "total_sales": 7952814,
+        "avg_sell_through": 0.74
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 5,
+        "avg_store_sales": 1369869,
+        "total_sales": 6849345,
+        "avg_sell_through": 0.83
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1521235,
+        "total_sales": 3042470,
+        "avg_sell_through": 0.79
+      }
+    ]
+  },
+  {
+    "province": "广西",
+    "region_id": "R02",
+    "region_name": "华南",
+    "total_stores": 22,
+    "net_sales": 32360964,
+    "plan_sales": 34846936,
+    "achievement_rate": 0.93,
+    "sell_through": 0.85,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 4,
+        "net_sales": 14419512,
+        "plan_sales": 15573073,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 6,
+        "net_sales": 9536712,
+        "plan_sales": 10490383,
+        "achievement_rate": 0.91
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 4254996,
+        "plan_sales": 4467746,
+        "achievement_rate": 0.95
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 8,
+        "net_sales": 4149744,
+        "plan_sales": 4315734,
+        "achievement_rate": 0.96
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 8692706,
+        "total_sales": 17385412,
+        "avg_sell_through": 0.83
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 8,
+        "avg_store_sales": 4048324,
+        "total_sales": 32386592,
+        "avg_sell_through": 0.83
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 6,
+        "avg_store_sales": 1147028,
+        "total_sales": 6882168,
+        "avg_sell_through": 0.77
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 5,
+        "avg_store_sales": 1208266,
+        "total_sales": 6041330,
+        "avg_sell_through": 0.79
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1700126,
+        "total_sales": 3400252,
+        "avg_sell_through": 0.73
+      }
+    ]
+  },
+  {
+    "province": "海南",
+    "region_id": "R02",
+    "region_name": "华南",
+    "total_stores": 24,
+    "net_sales": 35775540,
+    "plan_sales": 38957174,
+    "achievement_rate": 0.92,
+    "sell_through": 0.89,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 4,
+        "net_sales": 16029744,
+        "plan_sales": 17472421,
+        "achievement_rate": 0.92
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 6,
+        "net_sales": 10286514,
+        "plan_sales": 11212300,
+        "achievement_rate": 0.92
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 5,
+        "net_sales": 5293920,
+        "plan_sales": 5982130,
+        "achievement_rate": 0.88
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 9,
+        "net_sales": 4165362,
+        "plan_sales": 4290323,
+        "achievement_rate": 0.97
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 8717819,
+        "total_sales": 17435638,
+        "avg_sell_through": 0.76
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 8,
+        "avg_store_sales": 3778553,
+        "total_sales": 30228424,
+        "avg_sell_through": 0.71
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 6,
+        "avg_store_sales": 1289369,
+        "total_sales": 7736214,
+        "avg_sell_through": 0.66
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 5,
+        "avg_store_sales": 1132096,
+        "total_sales": 5660480,
+        "avg_sell_through": 0.66
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1656533,
+        "total_sales": 3313066,
+        "avg_sell_through": 0.89
+      }
+    ]
+  },
+  {
+    "province": "福建",
+    "region_id": "R02",
+    "region_name": "华南",
+    "total_stores": 22,
+    "net_sales": 37675980,
+    "plan_sales": 40963628,
+    "achievement_rate": 0.92,
+    "sell_through": 0.78,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 4,
+        "net_sales": 15034872,
+        "plan_sales": 16538359,
+        "achievement_rate": 0.91
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 6,
+        "net_sales": 11734314,
+        "plan_sales": 12790402,
+        "achievement_rate": 0.92
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 6,
+        "net_sales": 7223514,
+        "plan_sales": 7656925,
+        "achievement_rate": 0.94
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 6,
+        "net_sales": 3683280,
+        "plan_sales": 3977942,
+        "achievement_rate": 0.93
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 10975546,
+        "total_sales": 21951092,
+        "avg_sell_through": 0.72
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 8,
+        "avg_store_sales": 3643808,
+        "total_sales": 29150464,
+        "avg_sell_through": 0.84
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 6,
+        "avg_store_sales": 1399060,
+        "total_sales": 8394360,
+        "avg_sell_through": 0.85
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 5,
+        "avg_store_sales": 1312994,
+        "total_sales": 6564970,
+        "avg_sell_through": 0.76
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1414381,
+        "total_sales": 2828762,
+        "avg_sell_through": 0.82
+      }
+    ]
+  },
+  {
+    "province": "北京",
+    "region_id": "R03",
+    "region_name": "华北",
+    "total_stores": 24,
+    "net_sales": 35861559,
+    "plan_sales": 38660846,
+    "achievement_rate": 0.93,
+    "sell_through": 0.73,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 4,
+        "net_sales": 13854372,
+        "plan_sales": 14270003,
+        "achievement_rate": 0.97
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 6,
+        "net_sales": 12461616,
+        "plan_sales": 14081626,
+        "achievement_rate": 0.88
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 5,
+        "net_sales": 5045310,
+        "plan_sales": 5448935,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 9,
+        "net_sales": 4500261,
+        "plan_sales": 4860282,
+        "achievement_rate": 0.93
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 8576871,
+        "total_sales": 17153742,
+        "avg_sell_through": 0.67
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 8,
+        "avg_store_sales": 4336687,
+        "total_sales": 34693496,
+        "avg_sell_through": 0.76
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 6,
+        "avg_store_sales": 1223554,
+        "total_sales": 7341324,
+        "avg_sell_through": 0.85
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 5,
+        "avg_store_sales": 1456322,
+        "total_sales": 7281610,
+        "avg_sell_through": 0.67
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1426405,
+        "total_sales": 2852810,
+        "avg_sell_through": 0.8
+      }
+    ]
+  },
+  {
+    "province": "天津",
+    "region_id": "R03",
+    "region_name": "华北",
+    "total_stores": 23,
+    "net_sales": 32165728,
+    "plan_sales": 34666902,
+    "achievement_rate": 0.93,
+    "sell_through": 0.86,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 4,
+        "net_sales": 14173016,
+        "plan_sales": 15732048,
+        "achievement_rate": 0.9
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 5,
+        "net_sales": 8536755,
+        "plan_sales": 8878225,
+        "achievement_rate": 0.96
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 5,
+        "net_sales": 4262480,
+        "plan_sales": 4603478,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 9,
+        "net_sales": 5193477,
+        "plan_sales": 5453151,
+        "achievement_rate": 0.95
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 10361339,
+        "total_sales": 20722678,
+        "avg_sell_through": 0.87
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 8,
+        "avg_store_sales": 2987673,
+        "total_sales": 23901384,
+        "avg_sell_through": 0.84
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 6,
+        "avg_store_sales": 1434357,
+        "total_sales": 8606142,
+        "avg_sell_through": 0.74
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 5,
+        "avg_store_sales": 1410422,
+        "total_sales": 7052110,
+        "avg_sell_through": 0.82
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1895114,
+        "total_sales": 3790228,
+        "avg_sell_through": 0.86
+      }
+    ]
+  },
+  {
+    "province": "河北",
+    "region_id": "R03",
+    "region_name": "华北",
+    "total_stores": 23,
+    "net_sales": 31409610,
+    "plan_sales": 33818610,
+    "achievement_rate": 0.93,
+    "sell_through": 0.75,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 9227466,
+        "plan_sales": 10427037,
+        "achievement_rate": 0.88
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 7,
+        "net_sales": 11968712,
+        "plan_sales": 12567148,
+        "achievement_rate": 0.95
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 6,
+        "net_sales": 6869364,
+        "plan_sales": 7212832,
+        "achievement_rate": 0.95
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 7,
+        "net_sales": 3344068,
+        "plan_sales": 3611593,
+        "achievement_rate": 0.93
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 10700188,
+        "total_sales": 21400376,
+        "avg_sell_through": 0.69
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 8,
+        "avg_store_sales": 3114269,
+        "total_sales": 24914152,
+        "avg_sell_through": 0.81
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 6,
+        "avg_store_sales": 1372564,
+        "total_sales": 8235384,
+        "avg_sell_through": 0.75
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 5,
+        "avg_store_sales": 1112898,
+        "total_sales": 5564490,
+        "avg_sell_through": 0.66
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1414538,
+        "total_sales": 2829076,
+        "avg_sell_through": 0.78
+      }
+    ]
+  },
+  {
+    "province": "山西",
+    "region_id": "R03",
+    "region_name": "华北",
+    "total_stores": 25,
+    "net_sales": 37254550,
+    "plan_sales": 40085216,
+    "achievement_rate": 0.93,
+    "sell_through": 0.7,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 4,
+        "net_sales": 12099228,
+        "plan_sales": 13672128,
+        "achievement_rate": 0.88
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 8,
+        "net_sales": 15241952,
+        "plan_sales": 16004050,
+        "achievement_rate": 0.95
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 4843508,
+        "plan_sales": 5085683,
+        "achievement_rate": 0.95
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 9,
+        "net_sales": 5069862,
+        "plan_sales": 5323355,
+        "achievement_rate": 0.95
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 7877555,
+        "total_sales": 15755110,
+        "avg_sell_through": 0.79
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 9,
+        "avg_store_sales": 4125711,
+        "total_sales": 37131399,
+        "avg_sell_through": 0.79
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 6,
+        "avg_store_sales": 1076207,
+        "total_sales": 6457242,
+        "avg_sell_through": 0.84
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 6,
+        "avg_store_sales": 1155275,
+        "total_sales": 6931650,
+        "avg_sell_through": 0.71
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 3,
+        "avg_store_sales": 1589365,
+        "total_sales": 4768095,
+        "avg_sell_through": 0.69
+      }
+    ]
+  },
+  {
+    "province": "内蒙古",
+    "region_id": "R03",
+    "region_name": "华北",
+    "total_stores": 24,
+    "net_sales": 32328001,
+    "plan_sales": 34391584,
+    "achievement_rate": 0.94,
+    "sell_through": 0.85,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 4,
+        "net_sales": 11129860,
+        "plan_sales": 12020249,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 7,
+        "net_sales": 12243987,
+        "plan_sales": 12611307,
+        "achievement_rate": 0.97
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 5,
+        "net_sales": 5214530,
+        "plan_sales": 5683838,
+        "achievement_rate": 0.92
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 8,
+        "net_sales": 3739624,
+        "plan_sales": 4076190,
+        "achievement_rate": 0.92
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 7954594,
+        "total_sales": 15909188,
+        "avg_sell_through": 0.75
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 8,
+        "avg_store_sales": 3980791,
+        "total_sales": 31846328,
+        "avg_sell_through": 0.81
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 6,
+        "avg_store_sales": 1476908,
+        "total_sales": 8861448,
+        "avg_sell_through": 0.77
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 5,
+        "avg_store_sales": 1318616,
+        "total_sales": 6593080,
+        "avg_sell_through": 0.88
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1738530,
+        "total_sales": 3477060,
+        "avg_sell_through": 0.85
+      }
+    ]
+  },
+  {
+    "province": "四川",
+    "region_id": "R04",
+    "region_name": "西南",
+    "total_stores": 19,
+    "net_sales": 23706620,
+    "plan_sales": 25951463,
+    "achievement_rate": 0.91,
+    "sell_through": 0.76,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 8695866,
+        "plan_sales": 9391535,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 5,
+        "net_sales": 7486055,
+        "plan_sales": 8459242,
+        "achievement_rate": 0.88
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 3995040,
+        "plan_sales": 4394544,
+        "achievement_rate": 0.91
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 7,
+        "net_sales": 3529659,
+        "plan_sales": 3706142,
+        "achievement_rate": 0.95
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 7683562,
+        "total_sales": 15367124,
+        "avg_sell_through": 0.83
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 7,
+        "avg_store_sales": 2856490,
+        "total_sales": 19995430,
+        "avg_sell_through": 0.7
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 5,
+        "avg_store_sales": 974568,
+        "total_sales": 4872840,
+        "avg_sell_through": 0.74
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 1221084,
+        "total_sales": 4884336,
+        "avg_sell_through": 0.77
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1507895,
+        "total_sales": 3015790,
+        "avg_sell_through": 0.87
+      }
+    ]
+  },
+  {
+    "province": "重庆",
+    "region_id": "R04",
+    "region_name": "西南",
+    "total_stores": 17,
+    "net_sales": 20921629,
+    "plan_sales": 22634568,
+    "achievement_rate": 0.92,
+    "sell_through": 0.72,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 8029770,
+        "plan_sales": 8270663,
+        "achievement_rate": 0.97
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 4,
+        "net_sales": 5964924,
+        "plan_sales": 6740364,
+        "achievement_rate": 0.88
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 5,
+        "net_sales": 4887975,
+        "plan_sales": 5523412,
+        "achievement_rate": 0.88
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 5,
+        "net_sales": 2038960,
+        "plan_sales": 2100129,
+        "achievement_rate": 0.97
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 1,
+        "avg_store_sales": 7940760,
+        "total_sales": 7940760,
+        "avg_sell_through": 0.65
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 6,
+        "avg_store_sales": 2637628,
+        "total_sales": 15825768,
+        "avg_sell_through": 0.67
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 4,
+        "avg_store_sales": 1048676,
+        "total_sales": 4194704,
+        "avg_sell_through": 0.79
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 1277239,
+        "total_sales": 5108956,
+        "avg_sell_through": 0.82
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1433975,
+        "total_sales": 2867950,
+        "avg_sell_through": 0.82
+      }
+    ]
+  },
+  {
+    "province": "云南",
+    "region_id": "R04",
+    "region_name": "西南",
+    "total_stores": 17,
+    "net_sales": 21123086,
+    "plan_sales": 22116463,
+    "achievement_rate": 0.96,
+    "sell_through": 0.68,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 7965198,
+        "plan_sales": 8204154,
+        "achievement_rate": 0.97
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 4,
+        "net_sales": 6432668,
+        "plan_sales": 6689975,
+        "achievement_rate": 0.96
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 4021308,
+        "plan_sales": 4383226,
+        "achievement_rate": 0.92
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 6,
+        "net_sales": 2703912,
+        "plan_sales": 2839108,
+        "achievement_rate": 0.95
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 1,
+        "avg_store_sales": 7576223,
+        "total_sales": 7576223,
+        "avg_sell_through": 0.81
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 6,
+        "avg_store_sales": 3200855,
+        "total_sales": 19205130,
+        "avg_sell_through": 0.81
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 4,
+        "avg_store_sales": 905688,
+        "total_sales": 3622752,
+        "avg_sell_through": 0.83
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 1081304,
+        "total_sales": 4325216,
+        "avg_sell_through": 0.66
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1237649,
+        "total_sales": 2475298,
+        "avg_sell_through": 0.74
+      }
+    ]
+  },
+  {
+    "province": "贵州",
+    "region_id": "R04",
+    "region_name": "西南",
+    "total_stores": 17,
+    "net_sales": 18568858,
+    "plan_sales": 20410714,
+    "achievement_rate": 0.91,
+    "sell_through": 0.75,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 2,
+        "net_sales": 5599464,
+        "plan_sales": 6159410,
+        "achievement_rate": 0.91
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 5,
+        "net_sales": 7056390,
+        "plan_sales": 7832593,
+        "achievement_rate": 0.9
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 3266596,
+        "plan_sales": 3560590,
+        "achievement_rate": 0.92
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 6,
+        "net_sales": 2646408,
+        "plan_sales": 2858121,
+        "achievement_rate": 0.93
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 1,
+        "avg_store_sales": 7635411,
+        "total_sales": 7635411,
+        "avg_sell_through": 0.79
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 6,
+        "avg_store_sales": 3644175,
+        "total_sales": 21865050,
+        "avg_sell_through": 0.79
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 4,
+        "avg_store_sales": 1160739,
+        "total_sales": 4642956,
+        "avg_sell_through": 0.7
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 1045907,
+        "total_sales": 4183628,
+        "avg_sell_through": 0.81
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1345135,
+        "total_sales": 2690270,
+        "avg_sell_through": 0.76
+      }
+    ]
+  },
+  {
+    "province": "西藏",
+    "region_id": "R04",
+    "region_name": "西南",
+    "total_stores": 17,
+    "net_sales": 18621196,
+    "plan_sales": 20065011,
+    "achievement_rate": 0.93,
+    "sell_through": 0.85,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 7591017,
+        "plan_sales": 8577849,
+        "achievement_rate": 0.88
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 4,
+        "net_sales": 6125808,
+        "plan_sales": 6309582,
+        "achievement_rate": 0.97
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 3,
+        "net_sales": 2105358,
+        "plan_sales": 2210626,
+        "achievement_rate": 0.95
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 7,
+        "net_sales": 2799013,
+        "plan_sales": 2966954,
+        "achievement_rate": 0.94
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 1,
+        "avg_store_sales": 9273228,
+        "total_sales": 9273228,
+        "avg_sell_through": 0.73
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 6,
+        "avg_store_sales": 3596824,
+        "total_sales": 21580944,
+        "avg_sell_through": 0.78
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 4,
+        "avg_store_sales": 1308790,
+        "total_sales": 5235160,
+        "avg_sell_through": 0.73
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 1173162,
+        "total_sales": 4692648,
+        "avg_sell_through": 0.8
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1531810,
+        "total_sales": 3063620,
+        "avg_sell_through": 0.87
+      }
+    ]
+  },
+  {
+    "province": "湖北",
+    "region_id": "R05",
+    "region_name": "华中",
+    "total_stores": 18,
+    "net_sales": 25932806,
+    "plan_sales": 28973869,
+    "achievement_rate": 0.9,
+    "sell_through": 0.76,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 9578205,
+        "plan_sales": 10631808,
+        "achievement_rate": 0.9
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 6,
+        "net_sales": 10513902,
+        "plan_sales": 11880709,
+        "achievement_rate": 0.88
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 3834924,
+        "plan_sales": 4295115,
+        "achievement_rate": 0.89
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 5,
+        "net_sales": 2005775,
+        "plan_sales": 2166237,
+        "achievement_rate": 0.93
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 1,
+        "avg_store_sales": 8763497,
+        "total_sales": 8763497,
+        "avg_sell_through": 0.67
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 6,
+        "avg_store_sales": 3233320,
+        "total_sales": 19399920,
+        "avg_sell_through": 0.67
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 5,
+        "avg_store_sales": 1063444,
+        "total_sales": 5317220,
+        "avg_sell_through": 0.89
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 1316343,
+        "total_sales": 5265372,
+        "avg_sell_through": 0.74
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1654789,
+        "total_sales": 3309578,
+        "avg_sell_through": 0.74
+      }
+    ]
+  },
+  {
+    "province": "湖南",
+    "region_id": "R05",
+    "region_name": "华中",
+    "total_stores": 16,
+    "net_sales": 20514688,
+    "plan_sales": 22327491,
+    "achievement_rate": 0.92,
+    "sell_through": 0.82,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 2,
+        "net_sales": 5681710,
+        "plan_sales": 5965796,
+        "achievement_rate": 0.95
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 5,
+        "net_sales": 8669645,
+        "plan_sales": 9710002,
+        "achievement_rate": 0.89
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 3910908,
+        "plan_sales": 4106453,
+        "achievement_rate": 0.95
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 5,
+        "net_sales": 2252425,
+        "plan_sales": 2545240,
+        "achievement_rate": 0.88
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 1,
+        "avg_store_sales": 9992017,
+        "total_sales": 9992017,
+        "avg_sell_through": 0.9
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 6,
+        "avg_store_sales": 3008982,
+        "total_sales": 18053892,
+        "avg_sell_through": 0.69
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 4,
+        "avg_store_sales": 1354015,
+        "total_sales": 5416060,
+        "avg_sell_through": 0.78
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 1284972,
+        "total_sales": 5139888,
+        "avg_sell_through": 0.74
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1463958,
+        "total_sales": 2927916,
+        "avg_sell_through": 0.67
+      }
+    ]
+  },
+  {
+    "province": "河南",
+    "region_id": "R05",
+    "region_name": "华中",
+    "total_stores": 20,
+    "net_sales": 26447683,
+    "plan_sales": 28140400,
+    "achievement_rate": 0.94,
+    "sell_through": 0.7,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 9649719,
+        "plan_sales": 10421697,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 6,
+        "net_sales": 9928842,
+        "plan_sales": 10524573,
+        "achievement_rate": 0.94
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 5,
+        "net_sales": 4490440,
+        "plan_sales": 4625153,
+        "achievement_rate": 0.97
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 6,
+        "net_sales": 2378682,
+        "plan_sales": 2568977,
+        "achievement_rate": 0.93
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 7737551,
+        "total_sales": 15475102,
+        "avg_sell_through": 0.74
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 7,
+        "avg_store_sales": 3179986,
+        "total_sales": 22259902,
+        "avg_sell_through": 0.81
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 5,
+        "avg_store_sales": 1054979,
+        "total_sales": 5274895,
+        "avg_sell_through": 0.84
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 1126927,
+        "total_sales": 4507708,
+        "avg_sell_through": 0.77
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1225652,
+        "total_sales": 2451304,
+        "avg_sell_through": 0.9
+      }
+    ]
+  },
+  {
+    "province": "江西",
+    "region_id": "R05",
+    "region_name": "华中",
+    "total_stores": 17,
+    "net_sales": 20308649,
+    "plan_sales": 22057416,
+    "achievement_rate": 0.92,
+    "sell_through": 0.85,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 7590378,
+        "plan_sales": 8577127,
+        "achievement_rate": 0.88
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 5,
+        "net_sales": 6849840,
+        "plan_sales": 7123834,
+        "achievement_rate": 0.96
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 3397936,
+        "plan_sales": 3737730,
+        "achievement_rate": 0.91
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 5,
+        "net_sales": 2470495,
+        "plan_sales": 2618725,
+        "achievement_rate": 0.94
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 1,
+        "avg_store_sales": 9411428,
+        "total_sales": 9411428,
+        "avg_sell_through": 0.85
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 6,
+        "avg_store_sales": 3485899,
+        "total_sales": 20915394,
+        "avg_sell_through": 0.89
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 4,
+        "avg_store_sales": 1309862,
+        "total_sales": 5239448,
+        "avg_sell_through": 0.82
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 1214882,
+        "total_sales": 4859528,
+        "avg_sell_through": 0.86
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1214381,
+        "total_sales": 2428762,
+        "avg_sell_through": 0.68
+      }
+    ]
+  },
+  {
+    "province": "陕西",
+    "region_id": "R06",
+    "region_name": "西北",
+    "total_stores": 18,
+    "net_sales": 16569131,
+    "plan_sales": 18256256,
+    "achievement_rate": 0.91,
+    "sell_through": 0.81,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 7353537,
+        "plan_sales": 8162426,
+        "achievement_rate": 0.9
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 5,
+        "net_sales": 5018570,
+        "plan_sales": 5620798,
+        "achievement_rate": 0.89
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 2418612,
+        "plan_sales": 2587915,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 6,
+        "net_sales": 1778412,
+        "plan_sales": 1885117,
+        "achievement_rate": 0.94
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 1,
+        "avg_store_sales": 7321945,
+        "total_sales": 7321945,
+        "avg_sell_through": 0.81
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 6,
+        "avg_store_sales": 2726413,
+        "total_sales": 16358478,
+        "avg_sell_through": 0.82
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 5,
+        "avg_store_sales": 987618,
+        "total_sales": 4938090,
+        "avg_sell_through": 0.83
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 764403,
+        "total_sales": 3057612,
+        "avg_sell_through": 0.8
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1197768,
+        "total_sales": 2395536,
+        "avg_sell_through": 0.83
+      }
+    ]
+  },
+  {
+    "province": "甘肃",
+    "region_id": "R06",
+    "region_name": "西北",
+    "total_stores": 17,
+    "net_sales": 15423453,
+    "plan_sales": 17109089,
+    "achievement_rate": 0.9,
+    "sell_through": 0.85,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 2,
+        "net_sales": 3955420,
+        "plan_sales": 4469625,
+        "achievement_rate": 0.88
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 4,
+        "net_sales": 5571148,
+        "plan_sales": 6239686,
+        "achievement_rate": 0.89
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 2893164,
+        "plan_sales": 3095685,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 7,
+        "net_sales": 3003721,
+        "plan_sales": 3304093,
+        "achievement_rate": 0.91
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 1,
+        "avg_store_sales": 6119585,
+        "total_sales": 6119585,
+        "avg_sell_through": 0.86
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 6,
+        "avg_store_sales": 2637513,
+        "total_sales": 15825078,
+        "avg_sell_through": 0.68
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 4,
+        "avg_store_sales": 773519,
+        "total_sales": 3094076,
+        "avg_sell_through": 0.79
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 841955,
+        "total_sales": 3367820,
+        "avg_sell_through": 0.82
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1206223,
+        "total_sales": 2412446,
+        "avg_sell_through": 0.68
+      }
+    ]
+  },
+  {
+    "province": "新疆",
+    "region_id": "R06",
+    "region_name": "西北",
+    "total_stores": 20,
+    "net_sales": 16611195,
+    "plan_sales": 17912596,
+    "achievement_rate": 0.93,
+    "sell_through": 0.68,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 5597925,
+        "plan_sales": 5821842,
+        "achievement_rate": 0.96
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 6,
+        "net_sales": 6584898,
+        "plan_sales": 7309237,
+        "achievement_rate": 0.9
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 2270440,
+        "plan_sales": 2429371,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 7,
+        "net_sales": 2157932,
+        "plan_sales": 2352146,
+        "achievement_rate": 0.92
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 6211441,
+        "total_sales": 12422882,
+        "avg_sell_through": 0.77
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 7,
+        "avg_store_sales": 2786010,
+        "total_sales": 19502070,
+        "avg_sell_through": 0.81
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 5,
+        "avg_store_sales": 714438,
+        "total_sales": 3572190,
+        "avg_sell_through": 0.85
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 760445,
+        "total_sales": 3041780,
+        "avg_sell_through": 0.7
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 1159503,
+        "total_sales": 2319006,
+        "avg_sell_through": 0.83
+      }
+    ]
+  },
+  {
+    "province": "青海",
+    "region_id": "R06",
+    "region_name": "西北",
+    "total_stores": 19,
+    "net_sales": 17049477,
+    "plan_sales": 18597520,
+    "achievement_rate": 0.92,
+    "sell_through": 0.65,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 7102671,
+        "plan_sales": 7670885,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 6,
+        "net_sales": 5967756,
+        "plan_sales": 6683887,
+        "achievement_rate": 0.89
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 3,
+        "net_sales": 1742256,
+        "plan_sales": 1916482,
+        "achievement_rate": 0.91
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 7,
+        "net_sales": 2236794,
+        "plan_sales": 2326266,
+        "achievement_rate": 0.96
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 6110313,
+        "total_sales": 12220626,
+        "avg_sell_through": 0.72
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 7,
+        "avg_store_sales": 2556040,
+        "total_sales": 17892280,
+        "avg_sell_through": 0.66
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 5,
+        "avg_store_sales": 779269,
+        "total_sales": 3896345,
+        "avg_sell_through": 0.8
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 787145,
+        "total_sales": 3148580,
+        "avg_sell_through": 0.72
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 915972,
+        "total_sales": 1831944,
+        "avg_sell_through": 0.73
+      }
+    ]
+  },
+  {
+    "province": "宁夏",
+    "region_id": "R06",
+    "region_name": "西北",
+    "total_stores": 17,
+    "net_sales": 17129565,
+    "plan_sales": 18458029,
+    "achievement_rate": 0.93,
+    "sell_through": 0.69,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 6428049,
+        "plan_sales": 7070854,
+        "achievement_rate": 0.91
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 5,
+        "net_sales": 6100030,
+        "plan_sales": 6405032,
+        "achievement_rate": 0.95
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 2649736,
+        "plan_sales": 2835218,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 5,
+        "net_sales": 1951750,
+        "plan_sales": 2146925,
+        "achievement_rate": 0.91
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 1,
+        "avg_store_sales": 6071367,
+        "total_sales": 6071367,
+        "avg_sell_through": 0.71
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 6,
+        "avg_store_sales": 2274008,
+        "total_sales": 13644048,
+        "avg_sell_through": 0.83
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 4,
+        "avg_store_sales": 806396,
+        "total_sales": 3225584,
+        "avg_sell_through": 0.7
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 873751,
+        "total_sales": 3495004,
+        "avg_sell_through": 0.75
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 977521,
+        "total_sales": 1955042,
+        "avg_sell_through": 0.66
+      }
+    ]
+  },
+  {
+    "province": "辽宁",
+    "region_id": "R07",
+    "region_name": "东北",
+    "total_stores": 20,
+    "net_sales": 18913925,
+    "plan_sales": 19909743,
+    "achievement_rate": 0.95,
+    "sell_through": 0.83,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 4,
+        "net_sales": 8156228,
+        "plan_sales": 8482477,
+        "achievement_rate": 0.96
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 4,
+        "net_sales": 4753392,
+        "plan_sales": 4943528,
+        "achievement_rate": 0.96
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 5,
+        "net_sales": 2956575,
+        "plan_sales": 3222667,
+        "achievement_rate": 0.92
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 7,
+        "net_sales": 3047730,
+        "plan_sales": 3261071,
+        "achievement_rate": 0.93
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 2,
+        "avg_store_sales": 5607353,
+        "total_sales": 11214706,
+        "avg_sell_through": 0.85
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 7,
+        "avg_store_sales": 2922135,
+        "total_sales": 20454945,
+        "avg_sell_through": 0.83
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 5,
+        "avg_store_sales": 1028745,
+        "total_sales": 5143725,
+        "avg_sell_through": 0.78
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 1014821,
+        "total_sales": 4059284,
+        "avg_sell_through": 0.71
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 968389,
+        "total_sales": 1936778,
+        "avg_sell_through": 0.85
+      }
+    ]
+  },
+  {
+    "province": "吉林",
+    "region_id": "R07",
+    "region_name": "东北",
+    "total_stores": 17,
+    "net_sales": 16407398,
+    "plan_sales": 17352906,
+    "achievement_rate": 0.95,
+    "sell_through": 0.78,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 3,
+        "net_sales": 6081444,
+        "plan_sales": 6446331,
+        "achievement_rate": 0.94
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 4,
+        "net_sales": 5329876,
+        "plan_sales": 5543071,
+        "achievement_rate": 0.96
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 3,
+        "net_sales": 1888323,
+        "plan_sales": 1944973,
+        "achievement_rate": 0.97
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 7,
+        "net_sales": 3107755,
+        "plan_sales": 3418531,
+        "achievement_rate": 0.91
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 1,
+        "avg_store_sales": 6665302,
+        "total_sales": 6665302,
+        "avg_sell_through": 0.75
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 6,
+        "avg_store_sales": 2790001,
+        "total_sales": 16740006,
+        "avg_sell_through": 0.9
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 4,
+        "avg_store_sales": 747165,
+        "total_sales": 2988660,
+        "avg_sell_through": 0.76
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 899183,
+        "total_sales": 3596732,
+        "avg_sell_through": 0.66
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 933328,
+        "total_sales": 1866656,
+        "avg_sell_through": 0.76
+      }
+    ]
+  },
+  {
+    "province": "黑龙江",
+    "region_id": "R07",
+    "region_name": "东北",
+    "total_stores": 17,
+    "net_sales": 15921903,
+    "plan_sales": 17267606,
+    "achievement_rate": 0.92,
+    "sell_through": 0.66,
+    "tier_mix": [
+      {
+        "tier": "T1",
+        "label": "一线城市",
+        "store_count": 2,
+        "net_sales": 4495756,
+        "plan_sales": 4810459,
+        "achievement_rate": 0.93
+      },
+      {
+        "tier": "T2",
+        "label": "新一线城市",
+        "store_count": 5,
+        "net_sales": 6382895,
+        "plan_sales": 6957356,
+        "achievement_rate": 0.92
+      },
+      {
+        "tier": "T3",
+        "label": "二线城市",
+        "store_count": 4,
+        "net_sales": 2653932,
+        "plan_sales": 2919325,
+        "achievement_rate": 0.91
+      },
+      {
+        "tier": "T4",
+        "label": "三四线城市",
+        "store_count": 6,
+        "net_sales": 2389320,
+        "plan_sales": 2580466,
+        "achievement_rate": 0.93
+      }
+    ],
+    "format_mix": [
+      {
+        "format_id": "SF1",
+        "format_name": "品牌旗舰店",
+        "count": 1,
+        "avg_store_sales": 5719947,
+        "total_sales": 5719947,
+        "avg_sell_through": 0.82
+      },
+      {
+        "format_id": "SF2",
+        "format_name": "购物中心标准店",
+        "count": 6,
+        "avg_store_sales": 2477978,
+        "total_sales": 14867868,
+        "avg_sell_through": 0.73
+      },
+      {
+        "format_id": "SF3",
+        "format_name": "百货专柜",
+        "count": 4,
+        "avg_store_sales": 791565,
+        "total_sales": 3166260,
+        "avg_sell_through": 0.76
+      },
+      {
+        "format_id": "SF4",
+        "format_name": "街边社区店",
+        "count": 4,
+        "avg_store_sales": 1013862,
+        "total_sales": 4055448,
+        "avg_sell_through": 0.76
+      },
+      {
+        "format_id": "SF5",
+        "format_name": "奥特莱斯折扣店",
+        "count": 2,
+        "avg_store_sales": 967454,
+        "total_sales": 1934908,
+        "avg_sell_through": 0.74
+      }
+    ]
+  }
+]
