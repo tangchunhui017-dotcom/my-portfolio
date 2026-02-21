@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 
 export type CompareMode = 'none' | 'plan' | 'yoy' | 'mom';
 
@@ -36,13 +36,20 @@ interface DimSku {
     msrp: number;
     lifecycle: string;
     launch_date?: string;  // 上市日期，格式 YYYY-MM-DD
+    target_audience?: string; // 消费人群
+    target_age_group?: string; // 年龄段（如 18-25）
+    color?: string;           // 色系
+    color_family?: string;    // 色族（如 黑色/白色）
 }
 
 interface DimChannel {
     channel_id: string;
     channel_type: string;
     channel_name: string;
-    region_id: string;
+    is_online: boolean;       // 是否线上
+    region: string;           // 区域
+    city_tier: string;        // 城市级别
+    store_format: string;     // 店铺形态
 }
 
 import factSalesRaw from '@/../data/dashboard/fact_sales.json';
@@ -70,6 +77,13 @@ export interface DashboardFilters {
     channel_type: string | 'all';
     price_band: string | 'all';
     lifecycle: string | 'all';
+
+    // P3 新增维度
+    region: string | 'all';
+    city_tier: string | 'all';
+    store_format: string | 'all';
+    target_audience: string | 'all';
+    color: string | 'all';
 }
 
 export const DEFAULT_FILTERS: DashboardFilters = {
@@ -80,6 +94,11 @@ export const DEFAULT_FILTERS: DashboardFilters = {
     channel_type: 'all',
     price_band: 'all',
     lifecycle: 'all',
+    region: 'all',
+    city_tier: 'all',
+    store_format: 'all',
+    target_audience: 'all',
+    color: 'all',
 };
 
 const PRICE_BANDS = [
@@ -90,6 +109,30 @@ const PRICE_BANDS = [
     { id: 'PB5', min: 600, max: 699 },
     { id: 'PB6', min: 700, max: 9999 },
 ];
+
+const AUDIENCE_TO_AGE_GROUP: Record<string, string[]> = {
+    '18-23岁 GenZ': ['18-25'],
+    '24-28岁 职场新人': ['26-35'],
+    '29-35岁 资深中产': ['26-35'],
+    '35岁以上': ['36-45', '46+'],
+};
+
+function matchesTargetAudience(sku: DimSku, selectedAudience: string | 'all') {
+    if (selectedAudience === 'all') return true;
+    if (sku.target_audience === selectedAudience) return true;
+    if (sku.target_age_group === selectedAudience) return true;
+
+    if (sku.target_age_group) {
+        const mappedAgeGroups = AUDIENCE_TO_AGE_GROUP[selectedAudience];
+        if (mappedAgeGroups?.includes(sku.target_age_group)) return true;
+    }
+    return false;
+}
+
+function matchesColor(sku: DimSku, selectedColor: string | 'all') {
+    if (selectedColor === 'all') return true;
+    return sku.color === selectedColor || sku.color_family === selectedColor;
+}
 
 export function useDashboardFilter(compareMode: CompareMode = 'none') {
     const [filters, setFilters] = useState<DashboardFilters>(DEFAULT_FILTERS);
@@ -112,13 +155,19 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
             const channel = channelMap[record.channel_id];
             if (!sku || !channel) return false;
 
-            // season_year: JSON 存为字符串，筛选器可能是数字，统一转字符串比较
             if (filters.season_year !== 'all' && String(record.season_year) !== String(filters.season_year)) return false;
             if (filters.season !== 'all' && record.season !== filters.season) return false;
             if (filters.wave !== 'all' && record.wave !== filters.wave) return false;
             if (filters.category_id !== 'all' && sku.category_id !== filters.category_id) return false;
             if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
             if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
+
+            // P3 新增的高级维度过滤
+            if (filters.region !== 'all' && channel.region !== filters.region) return false;
+            if (filters.city_tier !== 'all' && channel.city_tier !== filters.city_tier) return false;
+            if (filters.store_format !== 'all' && channel.store_format !== filters.store_format) return false;
+            if (!matchesTargetAudience(sku, filters.target_audience)) return false;
+            if (!matchesColor(sku, filters.color)) return false;
 
             if (filters.price_band !== 'all') {
                 const band = PRICE_BANDS.find(b => b.id === filters.price_band);
@@ -153,6 +202,7 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
             : 0;
 
         const avgMarginRate = totalNetSales > 0 ? totalGrossProfit / totalNetSales : 0;
+        const avgDiscountRate = totalGrossSales > 0 ? totalNetSales / totalGrossSales : 0;
         const avgDiscountDepth = totalGrossSales > 0 ? totalDiscountAmt / totalGrossSales : 0;
 
         // 动销 SKU 数（有销售记录的唯一SKU）
@@ -382,13 +432,13 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
         scatterSkus = scatterSkus.slice(0, 80);
 
         // ── 在库存货（取各SKU最新周库存，用于WOS/DOS计算）
-        const skuLatestInventory: Record<string, { units: number; msrp: number }> = {};
+        const skuLatestInventory: Record<string, { units: number; msrp: number; week: number }> = {};
         filteredRecords.forEach(r => {
             const sku = skuMap[r.sku_id];
             if (!sku) return;
             const existing = skuLatestInventory[r.sku_id];
-            if (!existing || r.week_num > (existing as any)._week) {
-                (skuLatestInventory[r.sku_id] as any) = { units: r.on_hand_unit, msrp: sku.msrp, _week: r.week_num };
+            if (!existing || r.week_num > existing.week) {
+                skuLatestInventory[r.sku_id] = { units: r.on_hand_unit, msrp: sku.msrp, week: r.week_num };
             }
         });
         const totalOnHandUnits = Object.values(skuLatestInventory).reduce((s, v) => s + v.units, 0);
@@ -396,7 +446,6 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
 
         // WOS（周转周数）：期末库存 / 周均销量
         const weekCount = Object.keys(weeklyData).length || 1;
-        const avgWeeklySales = totalNetSales / weekCount;
         const avgWeeklyUnits = totalUnits / weekCount;
         const wos = avgWeeklyUnits > 0 ? Math.round((totalOnHandUnits / avgWeeklyUnits) * 10) / 10 : 0;
         const dos = wos * 7; // 周转天数
@@ -447,6 +496,7 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
             totalGrossProfit,
             avgSellThrough,
             avgMarginRate,
+            avgDiscountRate,
             avgDiscountDepth,
             activeSKUs,
             channelSales,
@@ -513,10 +563,17 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
             if (String(record.season_year) !== String(baselineYear)) return false;
             if (baselineSeason !== 'all' && record.season !== baselineSeason) return false;
 
-            // 复用其余筛选条件（品类/渠道/价格带/生命周期）
+            // 复用其余筛选条件（品类/渠道/价格带/生命周期/新增扩展维度）
             if (filters.category_id !== 'all' && sku.category_id !== filters.category_id) return false;
             if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
             if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
+
+            if (filters.region !== 'all' && channel.region !== filters.region) return false;
+            if (filters.city_tier !== 'all' && channel.city_tier !== filters.city_tier) return false;
+            if (filters.store_format !== 'all' && channel.store_format !== filters.store_format) return false;
+            if (!matchesTargetAudience(sku, filters.target_audience)) return false;
+            if (!matchesColor(sku, filters.color)) return false;
+
             if (filters.price_band !== 'all') {
                 const band = PRICE_BANDS.find(b => b.id === filters.price_band);
                 if (band && (sku.msrp < band.min || sku.msrp > band.max)) return false;
@@ -547,16 +604,17 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
             ? skuIds.reduce((s, id) => s + skuLatestST[id], 0) / skuIds.length : 0;
 
         const avgMarginRate = totalNetSales > 0 ? totalGrossProfit / totalNetSales : 0;
+        const avgDiscountRate = totalGrossSales > 0 ? totalNetSales / totalGrossSales : 0;
         const avgDiscountDepth = totalGrossSales > 0 ? totalDiscountAmt / totalGrossSales : 0;
         const activeSKUs = new Set(baselineRecords.map(r => r.sku_id)).size;
 
-        const skuLatestInventory: Record<string, { units: number; msrp: number }> = {};
+        const skuLatestInventory: Record<string, { units: number; msrp: number; week: number }> = {};
         baselineRecords.forEach(r => {
             const sku = skuMap[r.sku_id];
             if (!sku) return;
             const existing = skuLatestInventory[r.sku_id];
-            if (!existing || r.week_num > (existing as any)._week) {
-                (skuLatestInventory[r.sku_id] as any) = { units: r.on_hand_unit, msrp: sku.msrp, _week: r.week_num };
+            if (!existing || r.week_num > existing.week) {
+                skuLatestInventory[r.sku_id] = { units: r.on_hand_unit, msrp: sku.msrp, week: r.week_num };
             }
         });
         const totalOnHandUnits = Object.values(skuLatestInventory).reduce((s, v) => s + v.units, 0);
@@ -564,7 +622,7 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
         const avgWeeklyUnits = totalUnits / weekCount;
         const wos = avgWeeklyUnits > 0 ? Math.round((totalOnHandUnits / avgWeeklyUnits) * 10) / 10 : 0;
 
-        return { totalNetSales, totalGrossSales, totalUnits, totalGrossProfit, avgSellThrough, avgMarginRate, avgDiscountDepth, activeSKUs, totalOnHandUnits, wos };
+        return { totalNetSales, totalGrossSales, totalUnits, totalGrossProfit, avgSellThrough, avgMarginRate, avgDiscountRate, avgDiscountDepth, activeSKUs, totalOnHandUnits, wos };
     }, [baselineRecords, skuMap]);
 
     const filterSummary = useMemo(() => {
@@ -575,6 +633,14 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
         if (filters.category_id !== 'all') parts.push(filters.category_id);
         if (filters.channel_type !== 'all') parts.push(filters.channel_type);
         if (filters.lifecycle !== 'all') parts.push(filters.lifecycle);
+
+        // 新增维度标签
+        if (filters.region !== 'all') parts.push(filters.region);
+        if (filters.city_tier !== 'all') parts.push(filters.city_tier);
+        if (filters.store_format !== 'all') parts.push(filters.store_format);
+        if (filters.target_audience !== 'all') parts.push(filters.target_audience);
+        if (filters.color !== 'all') parts.push(filters.color);
+
         if (filters.price_band !== 'all') {
             const band = PRICE_BANDS.find(b => b.id === filters.price_band);
             if (band) parts.push(`¥${band.min}-${band.max === 9999 ? '700+' : band.max}`);

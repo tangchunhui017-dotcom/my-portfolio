@@ -14,7 +14,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S002",
@@ -31,7 +33,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S003",
@@ -48,7 +52,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S004",
@@ -65,7 +71,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S005",
@@ -82,7 +90,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "拼色/跳色",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S006",
@@ -99,7 +109,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S007",
@@ -116,7 +128,9 @@
     "product_line": "户外机能",
     "target_age_group": "36-45",
     "gender": "中性",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S008",
@@ -133,7 +147,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S009",
@@ -150,7 +166,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S010",
@@ -167,7 +185,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S011",
@@ -184,7 +204,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S012",
@@ -201,7 +223,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "46+",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S013",
@@ -218,7 +242,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S014",
@@ -235,7 +261,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S015",
@@ -252,7 +280,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S016",
@@ -269,7 +299,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "中性",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S017",
@@ -286,7 +318,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S018",
@@ -303,7 +337,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "46+",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S019",
@@ -320,7 +356,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S020",
@@ -337,7 +375,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S021",
@@ -354,7 +394,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "46+",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S022",
@@ -371,7 +413,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S023",
@@ -388,7 +432,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "灰",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S024",
@@ -405,7 +451,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S025",
@@ -422,7 +470,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S026",
@@ -439,7 +489,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S027",
@@ -456,7 +508,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S028",
@@ -473,7 +527,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S029",
@@ -490,7 +546,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S030",
@@ -507,7 +565,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S031",
@@ -524,7 +584,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "拼色/跳色",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S032",
@@ -541,7 +603,9 @@
     "product_line": "专业跑步",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "拼色/跳色",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S033",
@@ -558,7 +622,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S034",
@@ -575,7 +641,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S035",
@@ -592,7 +660,9 @@
     "product_line": "专业跑步",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S036",
@@ -609,7 +679,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S037",
@@ -626,7 +698,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S038",
@@ -643,7 +717,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S039",
@@ -660,7 +736,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S040",
@@ -677,7 +755,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "灰",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S041",
@@ -694,7 +774,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S042",
@@ -711,7 +793,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S043",
@@ -728,7 +812,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "拼色/跳色",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S044",
@@ -745,7 +831,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S045",
@@ -762,7 +850,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S046",
@@ -779,7 +869,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "中性",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S047",
@@ -796,7 +888,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S048",
@@ -813,7 +907,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "中性",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "灰",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S049",
@@ -830,7 +926,9 @@
     "product_line": "户外机能",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S050",
@@ -847,7 +945,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "46+",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S051",
@@ -864,7 +964,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "拼色/跳色",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S052",
@@ -881,7 +983,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S053",
@@ -898,7 +1002,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "拼色/跳色",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S054",
@@ -915,7 +1021,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S055",
@@ -932,7 +1040,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "灰",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S056",
@@ -949,7 +1059,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S057",
@@ -966,7 +1078,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S058",
@@ -983,7 +1097,9 @@
     "product_line": "专业跑步",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S059",
@@ -1000,7 +1116,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S060",
@@ -1017,7 +1135,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S061",
@@ -1034,7 +1154,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S062",
@@ -1051,7 +1173,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S063",
@@ -1068,7 +1192,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S064",
@@ -1085,7 +1211,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S065",
@@ -1102,7 +1230,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S066",
@@ -1119,7 +1249,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S067",
@@ -1136,7 +1268,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S068",
@@ -1153,7 +1287,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "拼色/跳色",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S069",
@@ -1170,7 +1306,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S070",
@@ -1187,7 +1325,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S071",
@@ -1204,7 +1344,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S072",
@@ -1221,7 +1363,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S073",
@@ -1238,7 +1382,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "中性",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S074",
@@ -1255,7 +1401,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "拼色/跳色",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S075",
@@ -1272,7 +1420,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S076",
@@ -1289,7 +1439,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "灰",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S077",
@@ -1306,7 +1458,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S078",
@@ -1323,7 +1477,9 @@
     "product_line": "户外机能",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S079",
@@ -1340,7 +1496,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "拼色/跳色",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S080",
@@ -1357,7 +1515,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S081",
@@ -1374,7 +1534,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S082",
@@ -1391,7 +1553,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S083",
@@ -1408,7 +1572,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S084",
@@ -1425,7 +1591,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S085",
@@ -1442,7 +1610,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "沙/大地",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S086",
@@ -1459,7 +1629,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S087",
@@ -1476,7 +1648,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S088",
@@ -1493,7 +1667,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S089",
@@ -1510,7 +1686,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "银/金属",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S090",
@@ -1527,7 +1705,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "46+",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S091",
@@ -1544,7 +1724,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S092",
@@ -1561,7 +1743,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S093",
@@ -1578,7 +1762,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "灰",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S094",
@@ -1595,7 +1781,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S095",
@@ -1612,7 +1800,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "46+",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S096",
@@ -1629,7 +1819,9 @@
     "product_line": "户外机能",
     "target_age_group": "36-45",
     "gender": "中性",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S097",
@@ -1646,7 +1838,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S098",
@@ -1663,7 +1857,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S099",
@@ -1680,7 +1876,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S100",
@@ -1697,7 +1895,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S101",
@@ -1714,7 +1914,9 @@
     "product_line": "户外机能",
     "target_age_group": "46+",
     "gender": "中性",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S102",
@@ -1731,7 +1933,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S103",
@@ -1748,7 +1952,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S104",
@@ -1765,7 +1971,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S105",
@@ -1782,7 +1990,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "沙/大地",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S106",
@@ -1799,7 +2009,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "拼色/跳色",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S107",
@@ -1816,7 +2028,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S108",
@@ -1833,7 +2047,9 @@
     "product_line": "户外机能",
     "target_age_group": "46+",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S109",
@@ -1850,7 +2066,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S110",
@@ -1867,7 +2085,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "46+",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S111",
@@ -1884,7 +2104,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S112",
@@ -1901,7 +2123,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S113",
@@ -1918,7 +2142,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S114",
@@ -1935,7 +2161,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "银/金属",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S115",
@@ -1952,7 +2180,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S116",
@@ -1969,7 +2199,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S117",
@@ -1986,7 +2218,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "银/金属",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S118",
@@ -2003,7 +2237,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "拼色/跳色",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S119",
@@ -2020,7 +2256,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S120",
@@ -2037,7 +2275,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S121",
@@ -2054,7 +2294,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "中性",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S122",
@@ -2071,7 +2313,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S123",
@@ -2088,7 +2332,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S124",
@@ -2105,7 +2351,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S125",
@@ -2122,7 +2370,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "银/金属",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S126",
@@ -2139,7 +2389,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S127",
@@ -2156,7 +2408,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "灰",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S128",
@@ -2173,7 +2427,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S129",
@@ -2190,7 +2446,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S130",
@@ -2207,7 +2465,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S131",
@@ -2224,7 +2484,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "中性",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S132",
@@ -2241,7 +2503,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S133",
@@ -2258,7 +2522,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S134",
@@ -2275,7 +2541,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S135",
@@ -2292,7 +2560,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S136",
@@ -2309,7 +2579,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S137",
@@ -2326,7 +2598,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S138",
@@ -2343,7 +2617,9 @@
     "product_line": "专业跑步",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "银/金属",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S139",
@@ -2360,7 +2636,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S140",
@@ -2377,7 +2655,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "银/金属",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S141",
@@ -2394,7 +2674,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S142",
@@ -2411,7 +2693,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S143",
@@ -2428,7 +2712,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S144",
@@ -2445,7 +2731,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S145",
@@ -2462,7 +2750,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S146",
@@ -2479,7 +2769,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S147",
@@ -2496,7 +2788,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "黑",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S148",
@@ -2513,7 +2807,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S149",
@@ -2530,7 +2826,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S150",
@@ -2547,7 +2845,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S151",
@@ -2564,7 +2864,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S152",
@@ -2581,7 +2883,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S153",
@@ -2598,7 +2902,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S154",
@@ -2615,7 +2921,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S155",
@@ -2632,7 +2940,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "拼色/跳色",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S156",
@@ -2649,7 +2959,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S157",
@@ -2666,7 +2978,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S158",
@@ -2683,7 +2997,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S159",
@@ -2700,7 +3016,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S160",
@@ -2717,7 +3035,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S161",
@@ -2734,7 +3054,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S162",
@@ -2751,7 +3073,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S163",
@@ -2768,7 +3092,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S164",
@@ -2785,7 +3111,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S165",
@@ -2802,7 +3130,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S166",
@@ -2819,7 +3149,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S167",
@@ -2836,7 +3168,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S168",
@@ -2853,7 +3187,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S169",
@@ -2870,7 +3206,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S170",
@@ -2887,7 +3225,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S171",
@@ -2904,7 +3244,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S172",
@@ -2921,7 +3263,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S173",
@@ -2938,7 +3282,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S174",
@@ -2955,7 +3301,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S175",
@@ -2972,7 +3320,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "拼色/跳色",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S176",
@@ -2989,7 +3339,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S177",
@@ -3006,7 +3358,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S178",
@@ -3023,7 +3377,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "银/金属",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S179",
@@ -3040,7 +3396,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "中性",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S180",
@@ -3057,7 +3415,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S181",
@@ -3074,7 +3434,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S182",
@@ -3091,7 +3453,9 @@
     "product_line": "户外机能",
     "target_age_group": "36-45",
     "gender": "中性",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S183",
@@ -3108,7 +3472,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S184",
@@ -3125,7 +3491,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S185",
@@ -3142,7 +3510,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S186",
@@ -3159,7 +3529,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S187",
@@ -3176,7 +3548,9 @@
     "product_line": "专业跑步",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "银/金属",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S188",
@@ -3193,7 +3567,9 @@
     "product_line": "户外机能",
     "target_age_group": "36-45",
     "gender": "中性",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S189",
@@ -3210,7 +3586,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S190",
@@ -3227,7 +3605,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S191",
@@ -3244,7 +3624,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S192",
@@ -3261,7 +3643,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "黑",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S193",
@@ -3278,7 +3662,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S194",
@@ -3295,7 +3681,9 @@
     "product_line": "专业跑步",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "拼色/跳色",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S195",
@@ -3312,7 +3700,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S196",
@@ -3329,7 +3719,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S197",
@@ -3346,7 +3738,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "灰",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S198",
@@ -3363,7 +3757,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S199",
@@ -3380,7 +3776,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S200",
@@ -3397,7 +3795,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S201",
@@ -3414,7 +3814,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "黑",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S202",
@@ -3431,7 +3833,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S203",
@@ -3448,7 +3852,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S204",
@@ -3465,7 +3871,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S205",
@@ -3482,7 +3890,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S206",
@@ -3499,7 +3909,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S207",
@@ -3516,7 +3928,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S208",
@@ -3533,7 +3947,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S209",
@@ -3550,7 +3966,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S210",
@@ -3567,7 +3985,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S211",
@@ -3584,7 +4004,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S212",
@@ -3601,7 +4023,9 @@
     "product_line": "户外机能",
     "target_age_group": "46+",
     "gender": "中性",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S213",
@@ -3618,7 +4042,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "46+",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S214",
@@ -3635,7 +4061,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "拼色/跳色",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S215",
@@ -3652,7 +4080,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "46+",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "拼色/跳色",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S216",
@@ -3669,7 +4099,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "灰",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S217",
@@ -3686,7 +4118,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "黑",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S218",
@@ -3703,7 +4137,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "中性",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S219",
@@ -3720,7 +4156,9 @@
     "product_line": "专业跑步",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S220",
@@ -3737,7 +4175,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S221",
@@ -3754,7 +4194,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S222",
@@ -3771,7 +4213,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "银/金属",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S223",
@@ -3788,7 +4232,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S224",
@@ -3805,7 +4251,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "灰",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S225",
@@ -3822,7 +4270,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S226",
@@ -3839,7 +4289,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S227",
@@ -3856,7 +4308,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S228",
@@ -3873,7 +4327,9 @@
     "product_line": "专业跑步",
     "target_age_group": "46+",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "银/金属",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S229",
@@ -3890,7 +4346,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S230",
@@ -3907,7 +4365,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S231",
@@ -3924,7 +4384,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S232",
@@ -3941,7 +4403,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S233",
@@ -3958,7 +4422,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S234",
@@ -3975,7 +4441,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S235",
@@ -3992,7 +4460,9 @@
     "product_line": "户外机能",
     "target_age_group": "36-45",
     "gender": "中性",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S236",
@@ -4009,7 +4479,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S237",
@@ -4026,7 +4498,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "拼色/跳色",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S238",
@@ -4043,7 +4517,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "中性",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "沙/大地",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S239",
@@ -4060,7 +4536,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "46+",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S240",
@@ -4077,7 +4555,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S241",
@@ -4094,7 +4574,9 @@
     "product_line": "专业跑步",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S242",
@@ -4111,7 +4593,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S243",
@@ -4128,7 +4612,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S244",
@@ -4145,7 +4631,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S245",
@@ -4162,7 +4650,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "46+",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S246",
@@ -4179,7 +4669,9 @@
     "product_line": "专业跑步",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W4"
+    "launch_wave": "W4",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S247",
@@ -4196,7 +4688,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S248",
@@ -4213,7 +4707,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S249",
@@ -4230,7 +4726,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S250",
@@ -4247,7 +4745,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S251",
@@ -4264,7 +4764,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S252",
@@ -4281,7 +4783,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S253",
@@ -4298,7 +4802,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S254",
@@ -4315,7 +4821,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S255",
@@ -4332,7 +4840,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S256",
@@ -4349,7 +4859,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "拼色/跳色",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S257",
@@ -4366,7 +4878,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S258",
@@ -4383,7 +4897,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S259",
@@ -4400,7 +4916,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "银/金属",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S260",
@@ -4417,7 +4935,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "46+",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "拼色/跳色",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S261",
@@ -4434,7 +4954,9 @@
     "product_line": "户外机能",
     "target_age_group": "46+",
     "gender": "中性",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S262",
@@ -4451,7 +4973,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S263",
@@ -4468,7 +4992,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S264",
@@ -4485,7 +5011,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S265",
@@ -4502,7 +5030,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S266",
@@ -4519,7 +5049,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S267",
@@ -4536,7 +5068,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "中性",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S268",
@@ -4553,7 +5087,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S269",
@@ -4570,7 +5106,9 @@
     "product_line": "户外机能",
     "target_age_group": "18-25",
     "gender": "中性",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S270",
@@ -4587,7 +5125,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S271",
@@ -4604,7 +5144,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S272",
@@ -4621,7 +5163,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S273",
@@ -4638,7 +5182,9 @@
     "product_line": "户外机能",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S274",
@@ -4655,7 +5201,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S275",
@@ -4672,7 +5220,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "银/金属",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S276",
@@ -4689,7 +5239,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "沙/大地",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S277",
@@ -4706,7 +5258,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S278",
@@ -4723,7 +5277,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "银/金属",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S279",
@@ -4740,7 +5296,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S280",
@@ -4757,7 +5315,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "46+",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "拼色/跳色",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S281",
@@ -4774,7 +5334,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "银/金属",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S282",
@@ -4791,7 +5353,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S283",
@@ -4808,7 +5372,9 @@
     "product_line": "专业跑步",
     "target_age_group": "46+",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S284",
@@ -4825,7 +5391,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "灰",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S285",
@@ -4842,7 +5410,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "36-45",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "白",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S286",
@@ -4859,7 +5429,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S287",
@@ -4876,7 +5448,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S288",
@@ -4893,7 +5467,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S289",
@@ -4910,7 +5486,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S290",
@@ -4927,7 +5505,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "灰",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S291",
@@ -4944,7 +5524,9 @@
     "product_line": "通勤轻商务",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   },
   {
     "sku_id": "S292",
@@ -4961,7 +5543,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "18-25",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "灰",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S293",
@@ -4978,7 +5562,9 @@
     "product_line": "专业跑步",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S294",
@@ -4995,7 +5581,9 @@
     "product_line": "专业跑步",
     "target_age_group": "36-45",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "29-35岁 资深中产"
   },
   {
     "sku_id": "S295",
@@ -5012,7 +5600,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S296",
@@ -5029,7 +5619,9 @@
     "product_line": "户外机能",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W2"
+    "launch_wave": "W2",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S297",
@@ -5046,7 +5638,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W3"
+    "launch_wave": "W3",
+    "color": "白",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S298",
@@ -5063,7 +5657,9 @@
     "product_line": "轻运动训练",
     "target_age_group": "26-35",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "35岁以上"
   },
   {
     "sku_id": "S299",
@@ -5080,7 +5676,9 @@
     "product_line": "竞技篮球",
     "target_age_group": "18-25",
     "gender": "女",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "黑",
+    "target_audience": "18-23岁 GenZ"
   },
   {
     "sku_id": "S300",
@@ -5097,6 +5695,8 @@
     "product_line": "通勤轻商务",
     "target_age_group": "26-35",
     "gender": "男",
-    "launch_wave": "W1"
+    "launch_wave": "W1",
+    "color": "沙/大地",
+    "target_audience": "24-28岁 职场新人"
   }
 ]

@@ -1,56 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-
-const METRICS = [
-    {
-        name: '净销售额',
-        formula: '净销售额 = 成交金额 - 退款金额 - 优惠券抵扣',
-        note: '以实际到账金额为准，不含运费。本看板使用指数化处理（×系数），结构与趋势真实。',
-        category: '结果指标',
-    },
-    {
-        name: '售罄率（累计）',
-        formula: '累计售罄率 = 累计销量 ÷ 期初库存',
-        note: '按上市波段计算，期初库存为首发日库存快照。目标值：新品≥80%，常青款≥90%，清仓款≥95%。',
-        category: '结果指标',
-    },
-    {
-        name: '毛利率',
-        formula: '毛利率 = (净销售额 - 销货成本) ÷ 净销售额',
-        note: '销货成本含出厂成本+物流+仓储。不含营销费用（营销费用计入运营利润层）。',
-        category: '结果指标',
-    },
-    {
-        name: '动销率',
-        formula: '动销率 = 有销售记录的 SKU 数 ÷ 在售 SKU 总数',
-        note: '统计周期内，至少有1笔销售记录即视为"动销"。低于70%需启动滞销预警。',
-        category: '效率指标',
-    },
-    {
-        name: '平均折扣深度',
-        formula: '折扣深度 = 1 - (净销售额 ÷ 吊牌销售额)',
-        note: '折扣深度反映整体促销力度。健康区间：<12%。超过15%需审查促销策略。',
-        category: '效率指标',
-    },
-    {
-        name: 'Top10 SKU 集中度',
-        formula: '集中度 = Top10 SKU 净销售额 ÷ 全部 SKU 净销售额',
-        note: '集中度>70%表示长尾SKU贡献极低，建议启动SKU精简评估。',
-        category: '结构指标',
-    },
-    {
-        name: '折扣损失额',
-        formula: '折扣损失额 = 吊牌销售额 - 净销售额',
-        note: '即因促销/折扣损失的潜在收入。折扣损失率>15%需重新评估定价策略。',
-        category: '效率指标',
-    },
-];
+import {
+    APPAREL_TO_FOOTWEAR_TERMS,
+    FOOTWEAR_CATEGORY_TAXONOMY,
+    FOOTWEAR_CORE_METRICS,
+    FOOTWEAR_SERIES_POSITIONING,
+} from '@/config/footwearLanguage';
 
 const CATEGORY_COLORS: Record<string, string> = {
-    '结果指标': 'bg-blue-100 text-blue-700',
-    '效率指标': 'bg-amber-100 text-amber-700',
-    '结构指标': 'bg-emerald-100 text-emerald-700',
+    经营结果: 'bg-blue-100 text-blue-700',
+    价格折扣: 'bg-amber-100 text-amber-700',
+    效率结构: 'bg-emerald-100 text-emerald-700',
 };
 
 export default function MetricsDrawer() {
@@ -78,12 +39,12 @@ export default function MetricsDrawer() {
                     />
 
                     {/* Drawer */}
-                    <div className="w-full max-w-md bg-white shadow-2xl flex flex-col overflow-hidden">
+                    <div className="w-full max-w-3xl bg-white shadow-2xl flex flex-col overflow-hidden">
                         {/* Header */}
                         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
                             <div>
-                                <h2 className="text-lg font-bold text-slate-900">指标口径说明</h2>
-                                <p className="text-xs text-slate-400 mt-0.5">数据更新：每周一 09:00 · 覆盖 15 款 SKU · 10 个渠道</p>
+                                <h2 className="text-lg font-bold text-slate-900">鞋类标准指标与字段口径</h2>
+                                <p className="text-xs text-slate-400 mt-0.5">依据你给出的 2.1 / 2.2 标准，统一到当前看板展示口径</p>
                             </div>
                             <button
                                 onClick={() => setOpen(false)}
@@ -94,27 +55,93 @@ export default function MetricsDrawer() {
                         </div>
 
                         {/* Content */}
-                        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-                            {METRICS.map(metric => (
-                                <div key={metric.name} className="border border-slate-100 rounded-lg p-4">
-                                    <div className="flex items-start justify-between mb-2">
-                                        <h3 className="font-semibold text-slate-900">{metric.name}</h3>
-                                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[metric.category]}`}>
-                                            {metric.category}
-                                        </span>
-                                    </div>
-                                    <div className="text-xs font-mono bg-slate-50 text-slate-600 px-3 py-2 rounded-md mb-2">
-                                        {metric.formula}
-                                    </div>
-                                    <p className="text-xs text-slate-500 leading-relaxed">{metric.note}</p>
+                        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+                            <section>
+                                <h3 className="text-sm font-bold text-slate-900 mb-3">2.1 核心指标字段口径</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {FOOTWEAR_CORE_METRICS.map((metric) => (
+                                        <div key={metric.id} className="border border-slate-100 rounded-lg p-3">
+                                            <div className="flex items-start justify-between mb-1.5 gap-2">
+                                                <div>
+                                                    <h4 className="font-semibold text-slate-900">{metric.name}</h4>
+                                                    <p className="text-[11px] text-slate-400">{metric.english}</p>
+                                                </div>
+                                                <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${CATEGORY_COLORS[metric.category]}`}>
+                                                    {metric.category}
+                                                </span>
+                                            </div>
+                                            <div className="text-xs font-mono bg-slate-50 text-slate-600 px-2.5 py-2 rounded-md mb-2">
+                                                {metric.formula}
+                                            </div>
+                                            <p className="text-xs text-slate-500 leading-relaxed">{metric.note}</p>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            </section>
+
+                            <section>
+                                <h3 className="text-sm font-bold text-slate-900 mb-3">服装字段 → 鞋类标准字段</h3>
+                                <div className="overflow-x-auto border border-slate-100 rounded-lg">
+                                    <table className="min-w-full text-xs">
+                                        <thead className="bg-slate-50">
+                                            <tr>
+                                                <th className="text-left px-3 py-2 text-slate-500 font-semibold">原字段（服装）</th>
+                                                <th className="text-left px-3 py-2 text-slate-500 font-semibold">标准字段（鞋类）</th>
+                                                <th className="text-left px-3 py-2 text-slate-500 font-semibold">说明</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {APPAREL_TO_FOOTWEAR_TERMS.map((item) => (
+                                                <tr key={`${item.apparel}-${item.footwear}`} className="border-t border-slate-100">
+                                                    <td className="px-3 py-2 text-slate-600">{item.apparel}</td>
+                                                    <td className="px-3 py-2 text-slate-800 font-medium">{item.footwear}</td>
+                                                    <td className="px-3 py-2 text-slate-500">{item.note || '-'}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
+
+                            <section>
+                                <h3 className="text-sm font-bold text-slate-900 mb-3">2.2 鞋类类目与系列标准</h3>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                                    <div className="border border-slate-100 rounded-lg p-3">
+                                        <div className="text-xs font-semibold text-slate-700 mb-2">一级/二级品类</div>
+                                        <div className="space-y-2">
+                                            {FOOTWEAR_CATEGORY_TAXONOMY.map((item) => (
+                                                <div key={item.category_l1}>
+                                                    <div className="text-xs font-medium text-slate-800 mb-1">{item.category_l1}</div>
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {item.category_l2.map((sub) => (
+                                                            <span key={`${item.category_l1}-${sub}`} className="text-[11px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
+                                                                {sub}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="border border-slate-100 rounded-lg p-3">
+                                        <div className="text-xs font-semibold text-slate-700 mb-2">系列/定位（替代黑标/红标）</div>
+                                        <div className="space-y-2">
+                                            {FOOTWEAR_SERIES_POSITIONING.map((item) => (
+                                                <div key={item.series} className="rounded-md bg-slate-50 px-2.5 py-2">
+                                                    <div className="text-xs font-medium text-slate-800">{item.series}</div>
+                                                    <div className="text-[11px] text-slate-500 mt-0.5">{item.description}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
                         </div>
 
                         {/* Footer */}
                         <div className="px-6 py-3 border-t border-slate-100 bg-slate-50">
                             <p className="text-xs text-slate-400">
-                                ⚠️ 本看板数据已脱敏处理，金额经指数化，结构与趋势真实反映业务逻辑。
+                                ⚠️ 当前为 Demo 数据口径。后续接入真实 ERP/CRM 后，可按同一标准直接替换字段。
                             </p>
                         </div>
                     </div>

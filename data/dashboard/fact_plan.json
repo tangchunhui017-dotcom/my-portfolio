@@ -1,0 +1,110 @@
+[
+  {
+    "year": 2024,
+    "season": "2024-SS",
+    "wave": "W1",
+    "plan_sku": 59,
+    "plan_sales": 15354901,
+    "plan_gm": 0.43,
+    "plan_buy_units": 51761,
+    "plan_otb_budget": 6280000,
+    "plan_opening_inventory": 3120000,
+    "plan_closing_inventory": 2840000
+  },
+  {
+    "year": 2024,
+    "season": "2024-SS",
+    "wave": "W2",
+    "plan_sku": 70,
+    "plan_sales": 18413659,
+    "plan_gm": 0.44,
+    "plan_buy_units": 62072,
+    "plan_otb_budget": 7420000,
+    "plan_opening_inventory": 3340000,
+    "plan_closing_inventory": 3080000
+  },
+  {
+    "year": 2024,
+    "season": "2024-SS",
+    "wave": "W3",
+    "plan_sku": 77,
+    "plan_sales": 21131863,
+    "plan_gm": 0.45,
+    "plan_buy_units": 71235,
+    "plan_otb_budget": 8280000,
+    "plan_opening_inventory": 3560000,
+    "plan_closing_inventory": 3350000
+  },
+  {
+    "year": 2024,
+    "season": "2024-AW",
+    "wave": "W1",
+    "plan_sku": 68,
+    "plan_sales": 21203304,
+    "plan_gm": 0.44,
+    "plan_buy_units": 58147,
+    "plan_otb_budget": 7980000,
+    "plan_opening_inventory": 3480000,
+    "plan_closing_inventory": 3260000
+  },
+  {
+    "year": 2024,
+    "season": "2024-AW",
+    "wave": "W2",
+    "plan_sku": 83,
+    "plan_sales": 26678159,
+    "plan_gm": 0.43,
+    "plan_buy_units": 73161,
+    "plan_otb_budget": 9660000,
+    "plan_opening_inventory": 3820000,
+    "plan_closing_inventory": 3530000
+  },
+  {
+    "year": 2024,
+    "season": "2024-AW",
+    "wave": "W3",
+    "plan_sku": 60,
+    "plan_sales": 17803672,
+    "plan_gm": 0.41,
+    "plan_buy_units": 48824,
+    "plan_otb_budget": 6520000,
+    "plan_opening_inventory": 2940000,
+    "plan_closing_inventory": 2780000
+  },
+  {
+    "year": 2024,
+    "season": "2024-AW",
+    "wave": "W4",
+    "plan_sku": 41,
+    "plan_sales": 8052201,
+    "plan_gm": 0.37,
+    "plan_buy_units": 22082,
+    "plan_otb_budget": 3020000,
+    "plan_opening_inventory": 1880000,
+    "plan_closing_inventory": 1640000
+  },
+  {
+    "year": 2025,
+    "season": "2025-SS",
+    "wave": "W1",
+    "plan_sku": 64,
+    "plan_sales": 17850320,
+    "plan_gm": 0.44,
+    "plan_buy_units": 60173,
+    "plan_otb_budget": 6980000,
+    "plan_opening_inventory": 2920000,
+    "plan_closing_inventory": 2710000
+  },
+  {
+    "year": 2025,
+    "season": "2025-SS",
+    "wave": "W2",
+    "plan_sku": 74,
+    "plan_sales": 19346623,
+    "plan_gm": 0.45,
+    "plan_buy_units": 65217,
+    "plan_otb_budget": 7350000,
+    "plan_opening_inventory": 3050000,
+    "plan_closing_inventory": 2820000
+  }
+]

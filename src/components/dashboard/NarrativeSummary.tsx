@@ -125,7 +125,7 @@ export default function NarrativeSummary({
         { label: '毛利率', value: `${margin}%`, onClick: onMarginClick, tip: '→ SKU列表' },
         { label: '折扣深度', value: `${discount}%`, onClick: onDiscountClick, tip: '→ SKU列表' },
         { label: 'WOS', value: `${kpis.wos} 周`, onClick: onInventoryClick, tip: '→ 库存分析' },
-        { label: '动销SKU', value: `${kpis.activeSKUs} 款`, onClick: onSkuClick, tip: '→ SKU列表' },
+        { label: '动销SKU（色码）', value: `${kpis.activeSKUs} 款`, onClick: onSkuClick, tip: '→ SKU列表' },
     ];
 
     return (

@@ -10,6 +10,7 @@ type BaselineKpis = {
     totalGrossProfit?: number;
     avgSellThrough: number;
     avgMarginRate?: number;
+    avgDiscountRate?: number;
     avgDiscountDepth?: number;
     activeSKUs?: number;
     wos?: number;
@@ -23,6 +24,7 @@ interface KpiGridProps {
         totalGrossProfit: number;
         avgSellThrough: number;
         avgMarginRate: number;
+        avgDiscountRate?: number;
         avgDiscountDepth: number;
         activeSKUs: number;
         top10Concentration: number;
@@ -67,12 +69,6 @@ function isPositiveDelta(delta: string | undefined): boolean {
     return !delta.startsWith('-');
 }
 
-/** 折扣深度：delta 越小越好（反向） */
-function isPositiveDiscountDelta(delta: string | undefined): boolean {
-    if (!delta) return true;
-    return delta.startsWith('-');  // 折扣率下降 = 积极
-}
-
 export default function KpiGrid({ kpis, compareMode = 'none', baselineKpis, onSellThroughClick, onDiscountClick, onChannelClick, onMarginClick }: KpiGridProps) {
     if (!kpis) {
         return (
@@ -99,10 +95,6 @@ export default function KpiGrid({ kpis, compareMode = 'none', baselineKpis, onSe
     };
 
     // 生成 Sparkline 数据（12周趋势）
-    const salesSparkline = kpis.weeklyData
-        ? Object.keys(kpis.weeklyData).sort((a, b) => Number(a) - Number(b)).map(w => kpis.weeklyData![Number(w)].sales / 10000)
-        : undefined;
-
     const stSparkline = kpis.weeklyData
         ? Object.keys(kpis.weeklyData).sort((a, b) => Number(a) - Number(b)).map(w => kpis.weeklyData![Number(w)].st * 100)
         : undefined;
@@ -114,13 +106,15 @@ export default function KpiGrid({ kpis, compareMode = 'none', baselineKpis, onSe
     // 动态 delta（有 baselineKpis 时计算真实值）
     const hasBaseline = (compareMode === 'yoy' || compareMode === 'mom') && !!baselineKpis;
     const marginDelta = hasBaseline ? ppDelta(kpis.avgMarginRate, baselineKpis?.avgMarginRate) : '+1.2pp';
-    const unitsDelta = hasBaseline ? pctDelta(kpis.totalUnits, baselineKpis?.totalUnits) : '+8.5%';
-    const discountDelta = hasBaseline ? ppDelta(kpis.avgDiscountDepth, baselineKpis?.avgDiscountDepth) : '-0.5pp';
+    const stDelta = hasBaseline ? ppDelta(kpis.avgSellThrough, baselineKpis?.avgSellThrough) : '+1.0pp';
+    const currentDiscountRate = kpis.avgDiscountRate ?? (1 - kpis.avgDiscountDepth);
+    const baselineDiscountRate = baselineKpis?.avgDiscountRate ?? (baselineKpis?.avgDiscountDepth !== undefined ? 1 - baselineKpis.avgDiscountDepth : undefined);
+    const discountRateDelta = hasBaseline ? ppDelta(currentDiscountRate, baselineDiscountRate) : '+0.5pp';
     const profitDelta = hasBaseline ? pctDelta(kpis.totalGrossProfit, baselineKpis?.totalGrossProfit) : '+14.1%';
 
     const marginDeltaPositive = hasBaseline ? isPositiveDelta(marginDelta) : true;
-    const unitsDeltaPositive = hasBaseline ? isPositiveDelta(unitsDelta) : true;
-    const discountDeltaPositive = hasBaseline ? isPositiveDiscountDelta(discountDelta) : true;
+    const stDeltaPositive = hasBaseline ? isPositiveDelta(stDelta) : true;
+    const discountRateDeltaPositive = hasBaseline ? isPositiveDelta(discountRateDelta) : true;
     const profitDeltaPositive = hasBaseline ? isPositiveDelta(profitDelta) : true;
 
     const modeLabel = compareMode === 'yoy' ? 'YoY' : compareMode === 'mom' ? 'MoM' : '';
@@ -151,13 +145,15 @@ export default function KpiGrid({ kpis, compareMode = 'none', baselineKpis, onSe
                     />
                     <KpiCard
                         group="outcome"
-                        label="总销量"
-                        value={`${kpis.totalUnits.toLocaleString()} 双`}
-                        delta={unitsDelta}
+                        label="季内售罄率"
+                        value={fmtPct(kpis.avgSellThrough)}
+                        delta={stDelta}
                         deltaLabel={modeLabel}
-                        deltaPositive={unitsDeltaPositive}
-                        hint="📦 含全渠道出货"
-                        hintType="neutral"
+                        deltaPositive={stDeltaPositive}
+                        hint={stDeltaPositive ? '✅ 去化节奏稳定' : '⚠️ 去化节奏偏慢'}
+                        hintType={stDeltaPositive ? 'opportunity' : 'warning'}
+                        sparklineData={stSparkline}
+                        onClick={onSellThroughClick}
                     />
                 </div>
             </div>
@@ -172,17 +168,18 @@ export default function KpiGrid({ kpis, compareMode = 'none', baselineKpis, onSe
                     <KpiCard
                         variant="compact"
                         group="efficiency"
-                        label="动销 SKU 数"
+                        label="动销SKU（色码）"
                         value={`${kpis.activeSKUs} 款`}
                     />
                     <KpiCard
                         variant="compact"
                         group="efficiency"
-                        label="平均折扣深度"
-                        value={fmtPct(kpis.avgDiscountDepth)}
-                        delta={discountDelta}
+                        label="平均折扣率"
+                        value={fmtPct(currentDiscountRate)}
+                        delta={discountRateDelta}
                         deltaLabel={modeLabel}
-                        deltaPositive={discountDeltaPositive}
+                        deltaPositive={discountRateDeltaPositive}
+                        hint={`折扣深度 ${fmtPct(kpis.avgDiscountDepth)}`}
                         onClick={onDiscountClick}
                     />
                     <KpiCard
@@ -197,7 +194,7 @@ export default function KpiGrid({ kpis, compareMode = 'none', baselineKpis, onSe
                     <KpiCard
                         variant="compact"
                         group="efficiency"
-                        label="吊牌总额"
+                        label="MSRP金额（吊牌额）"
                         value={fmtSales(kpis.totalGrossSales)}
                     />
                 </div>

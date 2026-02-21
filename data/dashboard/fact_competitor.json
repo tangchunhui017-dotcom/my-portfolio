@@ -1,0 +1,902 @@
+[
+  {
+    "record_id": "COMP_1",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "跑步",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 988274,
+    "estimated_units": 3953,
+    "market_share_pct": "36.5"
+  },
+  {
+    "record_id": "COMP_2",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "跑步",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 3239776,
+    "estimated_units": 12959,
+    "market_share_pct": "25.5"
+  },
+  {
+    "record_id": "COMP_3",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "跑步",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 2376395,
+    "estimated_units": 9505,
+    "market_share_pct": "33.7"
+  },
+  {
+    "record_id": "COMP_4",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "休闲",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 2175420,
+    "estimated_units": 8701,
+    "market_share_pct": "27.6"
+  },
+  {
+    "record_id": "COMP_5",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "休闲",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 1259293,
+    "estimated_units": 5037,
+    "market_share_pct": "16.1"
+  },
+  {
+    "record_id": "COMP_6",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "休闲",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 1749575,
+    "estimated_units": 6998,
+    "market_share_pct": "38.2"
+  },
+  {
+    "record_id": "COMP_7",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "篮球",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 1053785,
+    "estimated_units": 4215,
+    "market_share_pct": "10.9"
+  },
+  {
+    "record_id": "COMP_8",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "篮球",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 924339,
+    "estimated_units": 3697,
+    "market_share_pct": "13.5"
+  },
+  {
+    "record_id": "COMP_9",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "篮球",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 727774,
+    "estimated_units": 2911,
+    "market_share_pct": "11.9"
+  },
+  {
+    "record_id": "COMP_10",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "户外",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 1443934,
+    "estimated_units": 5775,
+    "market_share_pct": "30.5"
+  },
+  {
+    "record_id": "COMP_11",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "户外",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 2181631,
+    "estimated_units": 8726,
+    "market_share_pct": "25.7"
+  },
+  {
+    "record_id": "COMP_12",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "户外",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 3608758,
+    "estimated_units": 14435,
+    "market_share_pct": "28.1"
+  },
+  {
+    "record_id": "COMP_13",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "训练",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 2536712,
+    "estimated_units": 10146,
+    "market_share_pct": "17.7"
+  },
+  {
+    "record_id": "COMP_14",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "训练",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 2926674,
+    "estimated_units": 11706,
+    "market_share_pct": "27.7"
+  },
+  {
+    "record_id": "COMP_15",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "训练",
+    "price_band": "PB1",
+    "price_band_name": "¥199-299",
+    "estimated_sales_amt": 2242624,
+    "estimated_units": 8970,
+    "market_share_pct": "30.3"
+  },
+  {
+    "record_id": "COMP_16",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "跑步",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 588652,
+    "estimated_units": 2354,
+    "market_share_pct": "30.0"
+  },
+  {
+    "record_id": "COMP_17",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "跑步",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 2892730,
+    "estimated_units": 11570,
+    "market_share_pct": "20.5"
+  },
+  {
+    "record_id": "COMP_18",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "跑步",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 2910188,
+    "estimated_units": 11640,
+    "market_share_pct": "20.3"
+  },
+  {
+    "record_id": "COMP_19",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "休闲",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 2923734,
+    "estimated_units": 11694,
+    "market_share_pct": "22.9"
+  },
+  {
+    "record_id": "COMP_20",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "休闲",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 2813191,
+    "estimated_units": 11252,
+    "market_share_pct": "38.7"
+  },
+  {
+    "record_id": "COMP_21",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "休闲",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 1862901,
+    "estimated_units": 7451,
+    "market_share_pct": "18.3"
+  },
+  {
+    "record_id": "COMP_22",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "篮球",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 847575,
+    "estimated_units": 3390,
+    "market_share_pct": "11.9"
+  },
+  {
+    "record_id": "COMP_23",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "篮球",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 1316244,
+    "estimated_units": 5264,
+    "market_share_pct": "17.5"
+  },
+  {
+    "record_id": "COMP_24",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "篮球",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 2784628,
+    "estimated_units": 11138,
+    "market_share_pct": "11.2"
+  },
+  {
+    "record_id": "COMP_25",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "户外",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 529205,
+    "estimated_units": 2116,
+    "market_share_pct": "17.4"
+  },
+  {
+    "record_id": "COMP_26",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "户外",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 1644699,
+    "estimated_units": 6578,
+    "market_share_pct": "19.9"
+  },
+  {
+    "record_id": "COMP_27",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "户外",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 4572910,
+    "estimated_units": 18291,
+    "market_share_pct": "29.4"
+  },
+  {
+    "record_id": "COMP_28",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "训练",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 2036076,
+    "estimated_units": 8144,
+    "market_share_pct": "22.1"
+  },
+  {
+    "record_id": "COMP_29",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "训练",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 3518238,
+    "estimated_units": 14072,
+    "market_share_pct": "28.0"
+  },
+  {
+    "record_id": "COMP_30",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "训练",
+    "price_band": "PB2",
+    "price_band_name": "¥300-399",
+    "estimated_sales_amt": 2222487,
+    "estimated_units": 8889,
+    "market_share_pct": "24.4"
+  },
+  {
+    "record_id": "COMP_31",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "跑步",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 2309007,
+    "estimated_units": 9236,
+    "market_share_pct": "38.5"
+  },
+  {
+    "record_id": "COMP_32",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "跑步",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 3394726,
+    "estimated_units": 13578,
+    "market_share_pct": "13.7"
+  },
+  {
+    "record_id": "COMP_33",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "跑步",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 1351078,
+    "estimated_units": 5404,
+    "market_share_pct": "33.5"
+  },
+  {
+    "record_id": "COMP_34",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "休闲",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 987164,
+    "estimated_units": 3948,
+    "market_share_pct": "11.5"
+  },
+  {
+    "record_id": "COMP_35",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "休闲",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 1118851,
+    "estimated_units": 4475,
+    "market_share_pct": "16.8"
+  },
+  {
+    "record_id": "COMP_36",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "休闲",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 1515674,
+    "estimated_units": 6062,
+    "market_share_pct": "33.7"
+  },
+  {
+    "record_id": "COMP_37",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "篮球",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 2010259,
+    "estimated_units": 8041,
+    "market_share_pct": "26.9"
+  },
+  {
+    "record_id": "COMP_38",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "篮球",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 2515666,
+    "estimated_units": 10062,
+    "market_share_pct": "30.4"
+  },
+  {
+    "record_id": "COMP_39",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "篮球",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 1967210,
+    "estimated_units": 7868,
+    "market_share_pct": "25.7"
+  },
+  {
+    "record_id": "COMP_40",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "户外",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 1560885,
+    "estimated_units": 6243,
+    "market_share_pct": "11.1"
+  },
+  {
+    "record_id": "COMP_41",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "户外",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 3248641,
+    "estimated_units": 12994,
+    "market_share_pct": "12.9"
+  },
+  {
+    "record_id": "COMP_42",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "户外",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 2853126,
+    "estimated_units": 11412,
+    "market_share_pct": "10.7"
+  },
+  {
+    "record_id": "COMP_43",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "训练",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 1675467,
+    "estimated_units": 6701,
+    "market_share_pct": "22.1"
+  },
+  {
+    "record_id": "COMP_44",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "训练",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 3629538,
+    "estimated_units": 14518,
+    "market_share_pct": "22.9"
+  },
+  {
+    "record_id": "COMP_45",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "训练",
+    "price_band": "PB3",
+    "price_band_name": "¥400-499",
+    "estimated_sales_amt": 2478810,
+    "estimated_units": 9915,
+    "market_share_pct": "32.6"
+  },
+  {
+    "record_id": "COMP_46",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "跑步",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 4997044,
+    "estimated_units": 19988,
+    "market_share_pct": "20.7"
+  },
+  {
+    "record_id": "COMP_47",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "跑步",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 2448963,
+    "estimated_units": 9795,
+    "market_share_pct": "23.0"
+  },
+  {
+    "record_id": "COMP_48",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "跑步",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 2357900,
+    "estimated_units": 9431,
+    "market_share_pct": "28.8"
+  },
+  {
+    "record_id": "COMP_49",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "休闲",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 3269757,
+    "estimated_units": 13079,
+    "market_share_pct": "38.5"
+  },
+  {
+    "record_id": "COMP_50",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "休闲",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 543935,
+    "estimated_units": 2175,
+    "market_share_pct": "29.3"
+  },
+  {
+    "record_id": "COMP_51",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "休闲",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 2097597,
+    "estimated_units": 8390,
+    "market_share_pct": "30.0"
+  },
+  {
+    "record_id": "COMP_52",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "篮球",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 1745634,
+    "estimated_units": 6982,
+    "market_share_pct": "19.3"
+  },
+  {
+    "record_id": "COMP_53",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "篮球",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 575644,
+    "estimated_units": 2302,
+    "market_share_pct": "29.4"
+  },
+  {
+    "record_id": "COMP_54",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "篮球",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 2656459,
+    "estimated_units": 10625,
+    "market_share_pct": "32.6"
+  },
+  {
+    "record_id": "COMP_55",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "户外",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 3481628,
+    "estimated_units": 13926,
+    "market_share_pct": "29.4"
+  },
+  {
+    "record_id": "COMP_56",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "户外",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 1734237,
+    "estimated_units": 6936,
+    "market_share_pct": "36.9"
+  },
+  {
+    "record_id": "COMP_57",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "户外",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 5846594,
+    "estimated_units": 23386,
+    "market_share_pct": "10.6"
+  },
+  {
+    "record_id": "COMP_58",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "训练",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 2204568,
+    "estimated_units": 8818,
+    "market_share_pct": "30.4"
+  },
+  {
+    "record_id": "COMP_59",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "训练",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 509813,
+    "estimated_units": 2039,
+    "market_share_pct": "22.0"
+  },
+  {
+    "record_id": "COMP_60",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "训练",
+    "price_band": "PB4",
+    "price_band_name": "¥500-599",
+    "estimated_sales_amt": 2002881,
+    "estimated_units": 8011,
+    "market_share_pct": "14.4"
+  },
+  {
+    "record_id": "COMP_61",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "跑步",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 2992363,
+    "estimated_units": 11969,
+    "market_share_pct": "16.4"
+  },
+  {
+    "record_id": "COMP_62",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "跑步",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 1032651,
+    "estimated_units": 4130,
+    "market_share_pct": "25.6"
+  },
+  {
+    "record_id": "COMP_63",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "跑步",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 2129046,
+    "estimated_units": 8516,
+    "market_share_pct": "18.2"
+  },
+  {
+    "record_id": "COMP_64",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "休闲",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 1032186,
+    "estimated_units": 4128,
+    "market_share_pct": "14.4"
+  },
+  {
+    "record_id": "COMP_65",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "休闲",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 513705,
+    "estimated_units": 2054,
+    "market_share_pct": "16.5"
+  },
+  {
+    "record_id": "COMP_66",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "休闲",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 2430782,
+    "estimated_units": 9723,
+    "market_share_pct": "20.2"
+  },
+  {
+    "record_id": "COMP_67",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "篮球",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 3352172,
+    "estimated_units": 13408,
+    "market_share_pct": "11.3"
+  },
+  {
+    "record_id": "COMP_68",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "篮球",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 2156246,
+    "estimated_units": 8624,
+    "market_share_pct": "19.9"
+  },
+  {
+    "record_id": "COMP_69",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "篮球",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 867124,
+    "estimated_units": 3468,
+    "market_share_pct": "28.2"
+  },
+  {
+    "record_id": "COMP_70",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "户外",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 4634904,
+    "estimated_units": 18539,
+    "market_share_pct": "20.9"
+  },
+  {
+    "record_id": "COMP_71",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "户外",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 2538679,
+    "estimated_units": 10154,
+    "market_share_pct": "10.2"
+  },
+  {
+    "record_id": "COMP_72",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "户外",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 3460790,
+    "estimated_units": 13843,
+    "market_share_pct": "26.6"
+  },
+  {
+    "record_id": "COMP_73",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "训练",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 3072616,
+    "estimated_units": 12290,
+    "market_share_pct": "20.1"
+  },
+  {
+    "record_id": "COMP_74",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "训练",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 1332532,
+    "estimated_units": 5330,
+    "market_share_pct": "10.2"
+  },
+  {
+    "record_id": "COMP_75",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "训练",
+    "price_band": "PB5",
+    "price_band_name": "¥600-699",
+    "estimated_sales_amt": 2308488,
+    "estimated_units": 9233,
+    "market_share_pct": "22.0"
+  },
+  {
+    "record_id": "COMP_76",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "跑步",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 4407161,
+    "estimated_units": 17628,
+    "market_share_pct": "12.7"
+  },
+  {
+    "record_id": "COMP_77",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "跑步",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 2850332,
+    "estimated_units": 11401,
+    "market_share_pct": "21.7"
+  },
+  {
+    "record_id": "COMP_78",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "跑步",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 1848190,
+    "estimated_units": 7392,
+    "market_share_pct": "20.3"
+  },
+  {
+    "record_id": "COMP_79",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "休闲",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 5376974,
+    "estimated_units": 21507,
+    "market_share_pct": "32.5"
+  },
+  {
+    "record_id": "COMP_80",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "休闲",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 780273,
+    "estimated_units": 3121,
+    "market_share_pct": "22.1"
+  },
+  {
+    "record_id": "COMP_81",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "休闲",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 2015390,
+    "estimated_units": 8061,
+    "market_share_pct": "18.3"
+  },
+  {
+    "record_id": "COMP_82",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "篮球",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 2477851,
+    "estimated_units": 9911,
+    "market_share_pct": "33.6"
+  },
+  {
+    "record_id": "COMP_83",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "篮球",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 1969765,
+    "estimated_units": 7879,
+    "market_share_pct": "14.7"
+  },
+  {
+    "record_id": "COMP_84",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "篮球",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 2735517,
+    "estimated_units": 10942,
+    "market_share_pct": "11.4"
+  },
+  {
+    "record_id": "COMP_85",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "户外",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 2343303,
+    "estimated_units": 9373,
+    "market_share_pct": "22.4"
+  },
+  {
+    "record_id": "COMP_86",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "户外",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 1633576,
+    "estimated_units": 6534,
+    "market_share_pct": "13.5"
+  },
+  {
+    "record_id": "COMP_87",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "户外",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 1140946,
+    "estimated_units": 4563,
+    "market_share_pct": "21.7"
+  },
+  {
+    "record_id": "COMP_88",
+    "competitor_name": "友商 A (国际一线)",
+    "category_name": "训练",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 3722706,
+    "estimated_units": 14890,
+    "market_share_pct": "13.4"
+  },
+  {
+    "record_id": "COMP_89",
+    "competitor_name": "友商 B (国货霸主)",
+    "category_name": "训练",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 2699956,
+    "estimated_units": 10799,
+    "market_share_pct": "30.2"
+  },
+  {
+    "record_id": "COMP_90",
+    "competitor_name": "友商 C (新锐黑马)",
+    "category_name": "训练",
+    "price_band": "PB6",
+    "price_band_name": "¥700+",
+    "estimated_sales_amt": 2278512,
+    "estimated_units": 9114,
+    "market_share_pct": "28.3"
+  }
+]

@@ -6,7 +6,6 @@ import KpiGrid from '@/components/dashboard/KpiGrid';
 import MetricsDrawer from '@/components/dashboard/MetricsDrawer';
 import DashboardChart from '@/components/charts/DashboardChart';
 import SkuRiskList from '@/components/dashboard/SkuRiskList';
-import DashboardSkeleton from '@/components/dashboard/DashboardSkeleton';
 import DashboardSummaryButton from '@/components/dashboard/DashboardSummaryButton';
 import SkuDetailModal, { SkuDrillData } from '@/components/dashboard/SkuDetailModal';
 import ChartMenu from '@/components/dashboard/ChartMenu';
@@ -14,14 +13,18 @@ import OverviewKpiBar from '@/components/dashboard/OverviewKpiBar';
 import NarrativeSummary from '@/components/dashboard/NarrativeSummary';
 import ProductAnalysisPanel from '@/components/dashboard/ProductAnalysisPanel';
 import WavePlanningPanel from '@/components/dashboard/WavePlanningPanel';
-import { useState, useEffect, useRef } from 'react';
+import ChannelAnalysisPanel from '@/components/dashboard/ChannelAnalysisPanel';
+import CompetitorTrendPanel from '@/components/dashboard/CompetitorTrendPanel';
+import { useState, useRef } from 'react';
 
-type DashboardTab = 'overview' | 'product' | 'planning';
+type DashboardTab = 'overview' | 'product' | 'channel' | 'planning' | 'competitor';
 
 const TABS: { key: DashboardTab; label: string; labelEn: string; icon: string }[] = [
     { key: 'overview', label: '总览', labelEn: 'Overview', icon: '📊' },
-    { key: 'product', label: '商品分析', labelEn: 'Product', icon: '👟' },
-    { key: 'planning', label: '波段企划', labelEn: 'Planning', icon: '📅' },
+    { key: 'channel', label: '区域&门店', labelEn: 'Region&Store', icon: '🏪' },
+    { key: 'product', label: '消费者&产品要素', labelEn: 'Consumer&Product', icon: '🧑‍🤝‍🧑' },
+    { key: 'planning', label: '波段&企划', labelEn: 'Wave&Planning', icon: '🗓️' },
+    { key: 'competitor', label: '竞品&趋势', labelEn: 'Competitor&Trend', icon: '🧭' },
 ];
 
 interface ConclusionCardProps {
@@ -94,24 +97,18 @@ export default function DashboardPage() {
     const [compareMode, setCompareMode] = useState<CompareMode>('plan');
     const { filters, setFilters, kpis, filterSummary, baselineKpis, filteredRecords } = useDashboardFilter(compareMode);
     const [heatmapMetric, setHeatmapMetric] = useState<'sku' | 'sales' | 'st'>('sku');
-    const [mounted, setMounted] = useState(false);
     const [selectedSku, setSelectedSku] = useState<SkuDrillData | null>(null);
     const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
 
     // Refs for scroll targets
     const lineChartRef = useRef<HTMLDivElement>(null);
-    const scatterChartRef = useRef<HTMLDivElement>(null);
     const pieChartRef = useRef<HTMLDivElement>(null);
     const skuListRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => { setMounted(true); }, []);
 
     // 滚动到指定区域
     const scrollToSection = (ref: React.RefObject<HTMLDivElement | null>) => {
         ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     };
-
-    if (!mounted) return <DashboardSkeleton />;
 
     // 渠道销售贡献排名（真实数据，用于 Gauge 旁边的红黑榜）
     const totalChannelSales = kpis ? Object.values(kpis.channelSales).reduce((a, b) => a + b, 0) : 0;
@@ -253,7 +250,13 @@ export default function DashboardPage() {
         <>
             <div className="min-h-screen bg-slate-50">
                 {/* Filter Bar */}
-                <FilterBar filters={filters} setFilters={setFilters} filterSummary={filterSummary} />
+                <FilterBar
+                    filters={filters}
+                    setFilters={setFilters}
+                    filterSummary={filterSummary}
+                    compareMode={compareMode}
+                    onCompareModeChange={setCompareMode}
+                />
 
                 <div className="max-w-screen-2xl mx-auto px-6 py-8">
 
@@ -292,7 +295,6 @@ export default function DashboardPage() {
                         <OverviewKpiBar
                             kpis={kpis}
                             compareMode={compareMode}
-                            onCompareModeChange={setCompareMode}
                             baselineKpis={baselineKpis}
                             onKpiClick={(kpiKey) => {
                                 if (kpiKey === 'sellThrough') scrollToSection(lineChartRef);
@@ -304,12 +306,34 @@ export default function DashboardPage() {
 
                     {/* ── 商品分析 Tab ──────────────────────────────── */}
                     {activeTab === 'product' && (
-                        <ProductAnalysisPanel />
+                        <ProductAnalysisPanel filters={filters} setFilters={setFilters} />
+                    )}
+
+                    {/* ── 渠道分析 Tab ──────────────────────────────── */}
+                    {activeTab === 'channel' && (
+                        <div className="space-y-8">
+                            <ChannelAnalysisPanel filters={filters} setFilters={setFilters} />
+                            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <span className="w-1 h-5 rounded-full bg-rose-500 inline-block" />
+                                    <h3 className="text-base font-bold text-slate-900">区域联动风险 SKU 表</h3>
+                                </div>
+                                <SkuRiskList
+                                    filteredRecords={filteredRecords}
+                                    filterSummary={filterSummary}
+                                />
+                            </div>
+                        </div>
                     )}
 
                     {/* ── 波段企划 Tab ──────────────────────────────── */}
                     {activeTab === 'planning' && (
                         <WavePlanningPanel />
+                    )}
+
+                    {/* ── 竞品&趋势 Tab ──────────────────────────────── */}
+                    {activeTab === 'competitor' && (
+                        <CompetitorTrendPanel />
                     )}
 
 
@@ -403,14 +427,14 @@ export default function DashboardPage() {
                                     heatmapMetric={heatmapMetric}
                                     headerAction={
                                         <div className="flex bg-slate-100 rounded-lg p-0.5">
-                                            {[
+                                            {([
                                                 { k: 'sku', l: 'SKU数' },
                                                 { k: 'sales', l: '销售额' },
                                                 { k: 'st', l: '售罄率' }
-                                            ].map(m => (
+                                            ] as const).map(m => (
                                                 <button
                                                     key={m.k}
-                                                    onClick={() => setHeatmapMetric(m.k as any)}
+                                                    onClick={() => setHeatmapMetric(m.k)}
                                                     className={`px-2 py-1 text-xs font-medium rounded-md transition-all ${heatmapMetric === m.k ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                                                         }`}
                                                 >

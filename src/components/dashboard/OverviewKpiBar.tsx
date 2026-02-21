@@ -73,7 +73,6 @@ interface OverviewKpiBarProps {
         };
     };
     compareMode: CompareMode;
-    onCompareModeChange: (mode: CompareMode) => void;
     baselineKpis: BaselineKpis;
     onKpiClick?: (kpi: string) => void;
 }
@@ -84,7 +83,7 @@ function fmt万(n: number) {
     return `¥${n.toLocaleString()}`;
 }
 
-export default function OverviewKpiBar({ kpis, compareMode, onCompareModeChange, baselineKpis, onKpiClick }: OverviewKpiBarProps) {
+export default function OverviewKpiBar({ kpis, compareMode, baselineKpis, onKpiClick }: OverviewKpiBarProps) {
     const plan = kpis.planData?.overall_plan;
 
     const compareModeLabel: Record<CompareMode, string> = {
@@ -204,26 +203,12 @@ export default function OverviewKpiBar({ kpis, compareMode, onCompareModeChange,
     return (
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 mb-6">
             {/* Header */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-4">
                 <div>
                     <h2 className="text-base font-bold text-slate-900">鞋类经营总览</h2>
                     <p className="text-xs text-slate-400 mt-0.5">库存健康快照 — 点击指标卡联动下方图表</p>
                 </div>
                 {/* 对比方式切换（受控） */}
-                <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-                    {(['none', 'plan', 'mom', 'yoy'] as CompareMode[]).map((key) => (
-                        <button
-                            key={key}
-                            onClick={() => onCompareModeChange(key)}
-                            className={`px-3 py-1.5 text-xs rounded-lg transition-all font-medium ${compareMode === key
-                                ? 'bg-white text-pink-600 shadow-sm font-semibold'
-                                : 'text-slate-500 hover:text-slate-700'
-                                }`}
-                        >
-                            {compareModeLabel[key]}
-                        </button>
-                    ))}
-                </div>
             </div>
 
             {/* KPI Grid - 5 cards */}
