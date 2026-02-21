@@ -15,6 +15,7 @@ import ProductAnalysisPanel from '@/components/dashboard/ProductAnalysisPanel';
 import WavePlanningPanel from '@/components/dashboard/WavePlanningPanel';
 import ChannelAnalysisPanel from '@/components/dashboard/ChannelAnalysisPanel';
 import CompetitorTrendPanel from '@/components/dashboard/CompetitorTrendPanel';
+import MonthlyAchievementPanel from '@/components/dashboard/MonthlyAchievementPanel';
 import { useState, useRef } from 'react';
 
 type DashboardTab = 'overview' | 'product' | 'channel' | 'planning' | 'competitor';
@@ -108,6 +109,13 @@ export default function DashboardPage() {
     // 滚动到指定区域
     const scrollToSection = (ref: React.RefObject<HTMLDivElement | null>) => {
         ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    const jumpToTab = (tab: DashboardTab) => setActiveTab(tab);
+    const jumpToSkuRisk = () => {
+        setActiveTab('overview');
+        window.requestAnimationFrame(() => {
+            skuListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
     };
 
     // 渠道销售贡献排名（真实数据，用于 Gauge 旁边的红黑榜）
@@ -340,6 +348,14 @@ export default function DashboardPage() {
                     {/* ── Overview Tab 内容 ───────────────────────── */}
                     {activeTab === 'overview' && (
                         <div>
+                            <MonthlyAchievementPanel
+                                filters={filters}
+                                compareMode={compareMode}
+                                onJumpToPlanning={() => jumpToTab('planning')}
+                                onJumpToProduct={() => jumpToTab('product')}
+                                onJumpToChannel={() => jumpToTab('channel')}
+                                onJumpToSkuRisk={jumpToSkuRisk}
+                            />
 
                             {/* KPI Grid */}
                             <div className="mb-6">
