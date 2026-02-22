@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useDashboardFilter, CompareMode } from '@/hooks/useDashboardFilter';
 import FilterBar from '@/components/dashboard/FilterBar';
@@ -18,13 +18,14 @@ import CompetitorTrendPanel from '@/components/dashboard/CompetitorTrendPanel';
 import MonthlyAchievementPanel from '@/components/dashboard/MonthlyAchievementPanel';
 import { useState, useRef } from 'react';
 
-type DashboardTab = 'overview' | 'product' | 'channel' | 'planning' | 'competitor';
+type DashboardTab = 'overview' | 'product' | 'channel' | 'planning' | 'otb' | 'competitor';
 
 const TABS: { key: DashboardTab; label: string; labelEn: string; icon: string }[] = [
     { key: 'overview', label: '总览', labelEn: 'Overview', icon: '📊' },
     { key: 'channel', label: '区域&门店', labelEn: 'Region&Store', icon: '🏪' },
     { key: 'product', label: '消费者&产品要素', labelEn: 'Consumer&Product', icon: '🧑‍🤝‍🧑' },
-    { key: 'planning', label: '波段&企划', labelEn: 'Wave&Planning', icon: '🗓️' },
+    { key: 'planning', label: '波段企划', labelEn: 'Wave Planning', icon: '🗓️' },
+    { key: 'otb', label: 'OTB预算', labelEn: 'OTB Budget', icon: '💰' },
     { key: 'competitor', label: '竞品&趋势', labelEn: 'Competitor&Trend', icon: '🧭' },
 ];
 
@@ -336,12 +337,33 @@ export default function DashboardPage() {
 
                     {/* ── 波段企划 Tab ──────────────────────────────── */}
                     {activeTab === 'planning' && (
-                        <WavePlanningPanel />
+                        <WavePlanningPanel
+                            defaultView="wave"
+                            lockView
+                            onJumpToChannel={() => jumpToTab('channel')}
+                            onJumpToOtb={() => jumpToTab('otb')}
+                            onJumpToSkuRisk={jumpToSkuRisk}
+                        />
+                    )}
+
+                    {/* ── OTB预算 Tab ──────────────────────────────── */}
+                    {activeTab === 'otb' && (
+                        <WavePlanningPanel
+                            defaultView="otb"
+                            lockView
+                            onJumpToChannel={() => jumpToTab('channel')}
+                            onJumpToOtb={() => jumpToTab('otb')}
+                            onJumpToSkuRisk={jumpToSkuRisk}
+                        />
                     )}
 
                     {/* ── 竞品&趋势 Tab ──────────────────────────────── */}
                     {activeTab === 'competitor' && (
-                        <CompetitorTrendPanel />
+                        <CompetitorTrendPanel
+                            onJumpToPlanning={() => jumpToTab('planning')}
+                            onJumpToChannel={() => jumpToTab('channel')}
+                            onJumpToSkuRisk={jumpToSkuRisk}
+                        />
                     )}
 
 

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useMemo } from 'react';
 import dimCompetitorRaw from '@/../data/dashboard/dim_competitor.json';
@@ -8,6 +8,12 @@ interface CategoryMix {
     category: string;
     sku_count: number;
     ratio: number;
+}
+
+interface PriceBandMix {
+    band: string;
+    ratio: number;
+    sku_count: number;
 }
 
 interface HotSku {
@@ -26,6 +32,7 @@ interface DimCompetitor {
     market_share: number;
     yoy: number;
     category_mix: CategoryMix[];
+    price_band_mix: PriceBandMix[];
     trend_tags: string[];
     hot_skus: HotSku[];
 }
@@ -79,6 +86,41 @@ export interface PriceBandBenchmarkRow {
     sales_share: number;
 }
 
+export interface CompetitorBubblePoint {
+    id: string;
+    comp_brand: string;
+    category: string;
+    price_band: string;
+    price_band_name: string;
+    band_order: number;
+    price_mid: number;
+    sku_cnt: number;
+    heat: number;
+    net_sales: number;
+}
+
+export interface CompetitorRadarRow {
+    comp_brand: string;
+    scores: number[];
+}
+
+export interface CompetitorSuppressedCategory {
+    category: string;
+    comp_brand: string;
+    comp_share: number;
+    our_share: number;
+    gap: number;
+}
+
+export interface CompetitorWeakBand {
+    price_band_name: string;
+    top_brand: string;
+    top_sku_cnt: number;
+    our_sku_cnt: number;
+    share: number;
+    gap: number;
+}
+
 const dimCompetitors = dimCompetitorRaw as DimCompetitor[];
 const factCompetitors = factCompetitorRaw as FactCompetitor[];
 
@@ -90,6 +132,18 @@ const REGION_POOL = [
 ];
 
 const WAVE_POOL = ['W1', 'W2', 'W3', 'W4'];
+
+const RADAR_INDICATORS = ['温度适应性', '陈列面积', '款式新颖度', '价格力', '主推科技'];
+
+const DEFAULT_BAND_MID: Record<number, number> = {
+    1: 199,
+    2: 249,
+    3: 349,
+    4: 449,
+    5: 599,
+    6: 799,
+};
+
 const REAL_IMAGE_POOL = [
     'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=80',
     'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=1200&q=80',
@@ -105,37 +159,74 @@ const REAL_IMAGE_POOL = [
     'https://images.unsplash.com/photo-1512374382149-233c42b6a83b?auto=format&fit=crop&w=1200&q=80',
 ];
 
-function parseBandRank(band: string) {
-    const match = band.match(/\d+/);
-    if (!match) return Number.MAX_SAFE_INTEGER;
-    return Number(match[0]);
+function safeDiv(numerator: number, denominator: number) {
+    if (denominator <= 0) return 0;
+    return numerator / denominator;
+}
+
+function clamp(value: number, min: number, max: number) {
+    return Math.min(max, Math.max(min, value));
+}
+
+function parseBandOrder(rawBand: string) {
+    const pbMatch = rawBand.match(/PB\s*(\d+)/i);
+    if (pbMatch) return Number(pbMatch[1]);
+    const fallback = rawBand.match(/\d+/);
+    return fallback ? Number(fallback[0]) : Number.MAX_SAFE_INTEGER;
+}
+
+function parseBandName(rawBand: string) {
+    const name = rawBand.replace(/^PB\s*\d+\s*/i, '').trim();
+    return name || rawBand;
+}
+
+function parseBandMidpoint(name: string, order: number) {
+    const numbers = name.match(/\d+/g)?.map(Number) || [];
+    if (numbers.length >= 2) {
+        return Math.round((numbers[0] + numbers[1]) / 2);
+    }
+    if (numbers.length === 1) {
+        const single = numbers[0];
+        if (/\+|以上|>=|≥/i.test(name)) return single + 120;
+        if (/<=|≤|以下/i.test(name)) return Math.max(99, single - 40);
+        return single;
+    }
+    return DEFAULT_BAND_MID[order] || 399;
+}
+
+function avg(numbers: number[], fallback = 0) {
+    if (!numbers.length) return fallback;
+    return numbers.reduce((sum, value) => sum + value, 0) / numbers.length;
 }
 
 export function useCompetitorAnalysis() {
     return useMemo(() => {
         const skuStructureRows: CompetitorSkuStructureRow[] = [];
-        const brandSummary: CompetitorBrandSummary[] = dimCompetitors.map((brand) => {
-            const skuTotal = brand.category_mix.reduce((sum, item) => sum + item.sku_count, 0);
-            brand.category_mix.forEach((item) => {
-                skuStructureRows.push({
-                    comp_brand: brand.name,
-                    category_l2: item.category,
-                    sku_cnt: item.sku_count,
-                    sku_share: item.ratio,
-                    sku_yoy: brand.yoy,
+        const brandSummary: CompetitorBrandSummary[] = dimCompetitors
+            .map((brand) => {
+                const skuTotal = brand.category_mix.reduce((sum, item) => sum + item.sku_count, 0);
+                brand.category_mix.forEach((item) => {
+                    skuStructureRows.push({
+                        comp_brand: brand.name,
+                        category_l2: item.category,
+                        sku_cnt: item.sku_count,
+                        sku_share: item.ratio,
+                        sku_yoy: brand.yoy,
+                    });
                 });
-            });
-            return {
-                comp_brand: brand.name,
-                position: brand.position,
-                market_share: brand.market_share,
-                sku_total: skuTotal,
-                sku_yoy: brand.yoy,
-            };
-        }).sort((a, b) => b.market_share - a.market_share);
+                return {
+                    comp_brand: brand.name,
+                    position: brand.position,
+                    market_share: brand.market_share,
+                    sku_total: skuTotal,
+                    sku_yoy: brand.yoy,
+                };
+            })
+            .sort((a, b) => b.market_share - a.market_share);
 
-        const categories = Array.from(new Set(skuStructureRows.map((row) => row.category_l2)));
         const brands = brandSummary.map((item) => item.comp_brand);
+        const categories = Array.from(new Set(skuStructureRows.map((row) => row.category_l2)));
+        const ourBrandName = dimCompetitors.find((item) => item.id === 'OUR')?.name || brandSummary[0]?.comp_brand || '本品牌';
 
         const brandCategoryMap = new Map<string, CompetitorSkuStructureRow>();
         skuStructureRows.forEach((row) => {
@@ -155,13 +246,155 @@ export function useCompetitorAnalysis() {
             return row;
         });
 
+        const bubblePoints: CompetitorBubblePoint[] = [];
+        dimCompetitors.forEach((brand) => {
+            const avgBuzz = avg(brand.hot_skus.map((item) => item.buzz_score), 68);
+            const categoryBuzzMap = new Map<string, number>();
+            const categorySellThroughMap = new Map<string, number>();
+
+            categories.forEach((category) => {
+                const hotRows = brand.hot_skus.filter((item) => item.category === category);
+                categoryBuzzMap.set(category, avg(hotRows.map((item) => item.buzz_score), avgBuzz));
+                categorySellThroughMap.set(category, avg(hotRows.map((item) => item.sell_through), 0.72));
+            });
+
+            brand.category_mix.forEach((category) => {
+                brand.price_band_mix.forEach((band) => {
+                    if ((band.sku_count || 0) <= 0 || (category.ratio || 0) <= 0) return;
+
+                    const bandOrder = parseBandOrder(band.band);
+                    const bandName = parseBandName(band.band);
+                    const priceMid = parseBandMidpoint(bandName, bandOrder);
+                    const skuCnt = Math.max(1, Math.round((band.sku_count || 0) * (category.ratio || 0)));
+                    const sellThrough = categorySellThroughMap.get(category.category) || 0.72;
+                    const categoryBuzz = categoryBuzzMap.get(category.category) || avgBuzz;
+                    const heat = clamp(
+                        Math.round(sellThrough * 100 * 0.45 + categoryBuzz * 0.35 + brand.market_share * 100 * 0.2 + brand.yoy * 100),
+                        25,
+                        98,
+                    );
+                    const netSales = Math.round(skuCnt * priceMid * (0.75 + heat / 120) * (0.8 + brand.market_share));
+
+                    bubblePoints.push({
+                        id: `${brand.id}-${category.category}-${bandOrder}`,
+                        comp_brand: brand.name,
+                        category: category.category,
+                        price_band: `PB${bandOrder}`,
+                        price_band_name: bandName,
+                        band_order: bandOrder,
+                        price_mid: priceMid,
+                        sku_cnt: skuCnt,
+                        heat,
+                        net_sales: netSales,
+                    });
+                });
+            });
+        });
+
+        const priceBandOptions = Array.from(new Set(bubblePoints.map((item) => item.price_band_name))).sort((a, b) => {
+            const orderA = bubblePoints.find((item) => item.price_band_name === a)?.band_order || 99;
+            const orderB = bubblePoints.find((item) => item.price_band_name === b)?.band_order || 99;
+            return orderA - orderB;
+        });
+
+        const ourShareByCategory = new Map(
+            skuStructureRows
+                .filter((row) => row.comp_brand === ourBrandName)
+                .map((row) => [row.category_l2, row.sku_share]),
+        );
+
+        const suppressedCategories: CompetitorSuppressedCategory[] = categories
+            .map((category) => {
+                const competitors = skuStructureRows
+                    .filter((row) => row.category_l2 === category && row.comp_brand !== ourBrandName)
+                    .sort((a, b) => b.sku_share - a.sku_share);
+                const top = competitors[0];
+                if (!top) {
+                    return {
+                        category,
+                        comp_brand: '—',
+                        comp_share: 0,
+                        our_share: ourShareByCategory.get(category) || 0,
+                        gap: 0,
+                    };
+                }
+                const ourShare = ourShareByCategory.get(category) || 0;
+                return {
+                    category,
+                    comp_brand: top.comp_brand,
+                    comp_share: top.sku_share,
+                    our_share: ourShare,
+                    gap: top.sku_share - ourShare,
+                };
+            })
+            .filter((row) => row.comp_share >= 0.6)
+            .sort((a, b) => b.gap - a.gap)
+            .slice(0, 3);
+
+        const bandBrandAgg = new Map<string, Map<string, { skuCnt: number; netSales: number }>>();
+        bubblePoints.forEach((point) => {
+            if (!bandBrandAgg.has(point.price_band_name)) {
+                bandBrandAgg.set(point.price_band_name, new Map<string, { skuCnt: number; netSales: number }>());
+            }
+            const brandMap = bandBrandAgg.get(point.price_band_name)!;
+            const prev = brandMap.get(point.comp_brand) || { skuCnt: 0, netSales: 0 };
+            prev.skuCnt += point.sku_cnt;
+            prev.netSales += point.net_sales;
+            brandMap.set(point.comp_brand, prev);
+        });
+
+        const weakPriceBands: CompetitorWeakBand[] = Array.from(bandBrandAgg.entries())
+            .map(([priceBandName, brandMap]) => {
+                const ourValue = brandMap.get(ourBrandName) || { skuCnt: 0, netSales: 0 };
+                const topCompetitor = Array.from(brandMap.entries())
+                    .filter(([brand]) => brand !== ourBrandName)
+                    .sort((a, b) => b[1].skuCnt - a[1].skuCnt)[0];
+                const topBrand = topCompetitor?.[0] || '—';
+                const topSkuCnt = topCompetitor?.[1].skuCnt || 0;
+                const share = safeDiv(topSkuCnt, topSkuCnt + ourValue.skuCnt);
+                return {
+                    price_band_name: priceBandName,
+                    top_brand: topBrand,
+                    top_sku_cnt: topSkuCnt,
+                    our_sku_cnt: ourValue.skuCnt,
+                    share,
+                    gap: topSkuCnt - ourValue.skuCnt,
+                };
+            })
+            .filter((item) => item.gap > 0 && item.share >= 0.6)
+            .sort((a, b) => b.gap - a.gap)
+            .slice(0, 3);
+
+        const radarRows: CompetitorRadarRow[] = dimCompetitors.map((brand) => {
+            const outdoorRatio = brand.category_mix.find((item) => item.category.includes('户外'))?.ratio || 0;
+            const lowPriceRatio = brand.price_band_mix
+                .filter((item) => parseBandOrder(item.band) <= 2)
+                .reduce((sum, item) => sum + item.ratio, 0);
+            const highPriceRatio = brand.price_band_mix
+                .filter((item) => parseBandOrder(item.band) >= 5)
+                .reduce((sum, item) => sum + item.ratio, 0);
+            const avgSellThrough = avg(brand.hot_skus.map((item) => item.sell_through), 0.72);
+            const avgBuzz = avg(brand.hot_skus.map((item) => item.buzz_score), 70);
+
+            const tempFit = clamp(Math.round(avgSellThrough * 100 * 0.7 + outdoorRatio * 30), 40, 95);
+            const display = clamp(Math.round(45 + brand.market_share * 220), 35, 95);
+            const newness = clamp(Math.round(55 + brand.yoy * 130 + Math.min(brand.trend_tags.length, 6) * 2), 35, 95);
+            const pricePower = clamp(Math.round(45 + lowPriceRatio * 35 + (1 - highPriceRatio) * 20), 30, 95);
+            const tech = clamp(Math.round(40 + avgBuzz * 0.6), 35, 95);
+
+            return {
+                comp_brand: brand.name,
+                scores: [tempFit, display, newness, pricePower, tech],
+            };
+        });
+
         let galleryIndex = 0;
         const galleryItems: CompetitorGalleryItem[] = [];
         dimCompetitors.forEach((brand, brandIndex) => {
             brand.hot_skus.forEach((sku, skuIndex) => {
                 const regionItem = REGION_POOL[(brandIndex + skuIndex) % REGION_POOL.length];
                 const wave = WAVE_POOL[(sku.rank + brandIndex) % WAVE_POOL.length];
-                const tags = [sku.category, ...brand.trend_tags.slice(0, 2), `¥${sku.msrp}`];
+                const tags = [sku.category, ...brand.trend_tags.slice(0, 2), `￥${sku.msrp}`];
                 galleryItems.push({
                     id: `${brand.id}-${sku.rank}`,
                     comp_brand: brand.name,
@@ -208,7 +441,7 @@ export function useCompetitorAnalysis() {
             .sort((a, b) => {
                 if (a.comp_brand !== b.comp_brand) return a.comp_brand.localeCompare(b.comp_brand, 'zh-CN');
                 if (a.category !== b.category) return a.category.localeCompare(b.category, 'zh-CN');
-                return parseBandRank(a.price_band) - parseBandRank(b.price_band);
+                return parseBandOrder(a.price_band) - parseBandOrder(b.price_band);
             });
 
         const waveOptions = Array.from(new Set(galleryItems.map((item) => item.wave)));
@@ -218,8 +451,15 @@ export function useCompetitorAnalysis() {
             brands,
             categories,
             brandSummary,
+            ourBrandName,
             skuStructureRows,
             skuStructureChartData,
+            bubblePoints,
+            priceBandOptions,
+            radarIndicators: RADAR_INDICATORS,
+            radarRows,
+            suppressedCategories,
+            weakPriceBands,
             galleryItems,
             waveOptions,
             regionOptions,
