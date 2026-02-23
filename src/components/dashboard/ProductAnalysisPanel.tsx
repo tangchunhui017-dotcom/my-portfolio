@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import { DashboardFilters } from '@/hooks/useDashboardFilter';
 import { useProductAnalysis } from '@/hooks/useProductAnalysis';
+import { formatMoneyCny } from '@/config/numberFormat';
 
 type HeatMetric = 'net_sales' | 'sell_through' | 'gm_rate';
 type TreemapAreaMetric = 'net_sales' | 'pairs_sold';
@@ -20,14 +21,11 @@ type TreemapColorMetric = 'sell_through' | 'gm_rate';
 type TreemapColorMode = 'performance' | 'palette';
 
 function fmtWan(value: number) {
-    if (!Number.isFinite(value)) return '--';
-    return `${(value / 10000).toFixed(1)}万`;
+    return formatMoneyCny(value);
 }
 
 function fmtMoney(value: number) {
-    if (!Number.isFinite(value)) return '--';
-    if (value >= 10000) return `¥${(value / 10000).toFixed(1)}万`;
-    return `¥${value.toFixed(0)}`;
+    return formatMoneyCny(value);
 }
 
 function fmtPct(value: number) {

@@ -53,6 +53,8 @@ export interface CompetitorSkuStructureRow {
     sku_cnt: number;
     sku_share: number;
     sku_yoy: number;
+    sku_plan_gap: number;
+    sku_mom: number;
 }
 
 export interface CompetitorBrandSummary {
@@ -60,6 +62,10 @@ export interface CompetitorBrandSummary {
     position: string;
     market_share: number;
     sku_total: number;
+    sku_plan_base: number;
+    sku_mom_base: number;
+    sku_plan_gap: number;
+    sku_mom: number;
     sku_yoy: number;
 }
 
@@ -199,12 +205,26 @@ function avg(numbers: number[], fallback = 0) {
     return numbers.reduce((sum, value) => sum + value, 0) / numbers.length;
 }
 
+function deriveSkuBaselines(brand: DimCompetitor, skuTotal: number) {
+    const planGap = clamp(brand.yoy * 0.32 + (brand.market_share - 0.12) * 0.12, -0.12, 0.16);
+    const momGap = clamp(brand.yoy * 0.4 + (brand.market_share - 0.1) * 0.1, -0.12, 0.18);
+    const skuPlanBase = Math.max(1, Math.round(skuTotal / (1 + planGap)));
+    const skuMomBase = Math.max(1, Math.round(skuTotal / (1 + momGap)));
+    return {
+        skuPlanBase,
+        skuMomBase,
+        skuPlanGap: safeDiv(skuTotal - skuPlanBase, skuPlanBase),
+        skuMom: safeDiv(skuTotal - skuMomBase, skuMomBase),
+    };
+}
+
 export function useCompetitorAnalysis() {
     return useMemo(() => {
         const skuStructureRows: CompetitorSkuStructureRow[] = [];
         const brandSummary: CompetitorBrandSummary[] = dimCompetitors
             .map((brand) => {
                 const skuTotal = brand.category_mix.reduce((sum, item) => sum + item.sku_count, 0);
+                const baselines = deriveSkuBaselines(brand, skuTotal);
                 brand.category_mix.forEach((item) => {
                     skuStructureRows.push({
                         comp_brand: brand.name,
@@ -212,6 +232,8 @@ export function useCompetitorAnalysis() {
                         sku_cnt: item.sku_count,
                         sku_share: item.ratio,
                         sku_yoy: brand.yoy,
+                        sku_plan_gap: baselines.skuPlanGap,
+                        sku_mom: baselines.skuMom,
                     });
                 });
                 return {
@@ -219,6 +241,10 @@ export function useCompetitorAnalysis() {
                     position: brand.position,
                     market_share: brand.market_share,
                     sku_total: skuTotal,
+                    sku_plan_base: baselines.skuPlanBase,
+                    sku_mom_base: baselines.skuMomBase,
+                    sku_plan_gap: baselines.skuPlanGap,
+                    sku_mom: baselines.skuMom,
                     sku_yoy: brand.yoy,
                 };
             })
@@ -237,6 +263,8 @@ export function useCompetitorAnalysis() {
             const row: Record<string, string | number> = {
                 comp_brand: brand.comp_brand,
                 sku_yoy: brand.sku_yoy * 100,
+                sku_plan_gap: brand.sku_plan_gap * 100,
+                sku_mom: brand.sku_mom * 100,
                 market_share: brand.market_share * 100,
             };
             categories.forEach((category) => {

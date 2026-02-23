@@ -321,7 +321,7 @@ export default function DashboardPage() {
                     {/* ── 渠道分析 Tab ──────────────────────────────── */}
                     {activeTab === 'channel' && (
                         <div className="space-y-8">
-                            <ChannelAnalysisPanel filters={filters} setFilters={setFilters} />
+                            <ChannelAnalysisPanel filters={filters} setFilters={setFilters} compareMode={compareMode} />
                             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
                                 <div className="flex items-center gap-2 mb-3">
                                     <span className="w-1 h-5 rounded-full bg-rose-500 inline-block" />
@@ -340,6 +340,7 @@ export default function DashboardPage() {
                         <WavePlanningPanel
                             defaultView="wave"
                             lockView
+                            compareMode={compareMode}
                             onJumpToChannel={() => jumpToTab('channel')}
                             onJumpToOtb={() => jumpToTab('otb')}
                             onJumpToSkuRisk={jumpToSkuRisk}
@@ -351,6 +352,7 @@ export default function DashboardPage() {
                         <WavePlanningPanel
                             defaultView="otb"
                             lockView
+                            compareMode={compareMode}
                             onJumpToChannel={() => jumpToTab('channel')}
                             onJumpToOtb={() => jumpToTab('otb')}
                             onJumpToSkuRisk={jumpToSkuRisk}
@@ -360,6 +362,7 @@ export default function DashboardPage() {
                     {/* ── 竞品&趋势 Tab ──────────────────────────────── */}
                     {activeTab === 'competitor' && (
                         <CompetitorTrendPanel
+                            compareMode={compareMode}
                             onJumpToPlanning={() => jumpToTab('planning')}
                             onJumpToChannel={() => jumpToTab('channel')}
                             onJumpToSkuRisk={jumpToSkuRisk}

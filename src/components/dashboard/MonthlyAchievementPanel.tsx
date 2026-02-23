@@ -19,6 +19,7 @@ import factSalesRaw from '@/../data/dashboard/fact_sales.json';
 import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
 import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
 import dimPlanRaw from '@/../data/dashboard/dim_plan.json';
+import { formatMoneyCny } from '@/config/numberFormat';
 
 type FactSales = {
     sku_id: string;
@@ -92,12 +93,9 @@ const PRICE_BANDS = [
 ];
 const SEASON_MONTH_START: Record<string, number> = { Q1: 1, Q2: 4, Q3: 7, Q4: 10 };
 
-const cny = new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 0 });
 const fmtAmt = (v: number | null | undefined) => {
-    if (v === null || v === undefined || Number.isNaN(v)) return '—';
-    if (Math.abs(v) >= 1e8) return `${(v / 1e8).toFixed(2)}亿`;
-    if (Math.abs(v) >= 1e4) return `${(v / 1e4).toFixed(1)}万`;
-    return cny.format(v);
+    if (v === null || v === undefined || Number.isNaN(v)) return '--';
+    return formatMoneyCny(v);
 };
 const fmtPct = (v: number | null | undefined, digits = 1) => (v === null || v === undefined || Number.isNaN(v) ? '—' : `${(v * 100).toFixed(digits)}%`);
 const divOrNull = (n: number, d: number | null | undefined) => (!d ? null : n / d);

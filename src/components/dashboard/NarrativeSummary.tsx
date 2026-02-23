@@ -2,6 +2,7 @@
 
 import { THRESHOLDS } from '@/config/thresholds';
 import { FOOTWEAR_ANALYSIS_MODULES } from '@/config/footwearLanguage';
+import { formatMoneyCny } from '@/config/numberFormat';
 
 interface NarrativeSummaryProps {
     kpis: {
@@ -53,16 +54,16 @@ export default function NarrativeSummary({
     const discount = (kpis.avgDiscountDepth * 100).toFixed(1);
     const stTarget = plan ? (plan.plan_avg_sell_through * 100).toFixed(0) : '80';
     const stDelta = plan ? ((kpis.avgSellThrough - plan.plan_avg_sell_through) * 100).toFixed(1) : null;
-    const salesMillion = (kpis.totalNetSales / 10000).toFixed(0);
+    const salesDisplay = formatMoneyCny(kpis.totalNetSales);
     const salesPlanAchieve = plan ? ((kpis.totalNetSales / plan.plan_total_sales) * 100).toFixed(0) : null;
     const focusModules = FOOTWEAR_ANALYSIS_MODULES.map(m => m.title).slice(0, 3).join(' / ');
 
     const getPerformanceSentence = () => {
         if (health === 'strong') {
-            return `当前筛选条件（${filterSummary}）下，鞋类大商品盘经营表现**优于计划**。净销售额 ¥${salesMillion}万，计划达成率 ${salesPlanAchieve}%；季内累计售罄率 ${st}%，${stDelta && parseFloat(stDelta) > 0 ? `超出目标 +${stDelta}pp` : `达成目标`}，库存结构健康（WOS ${kpis.wos} 周）。`;
+            return `当前筛选条件（${filterSummary}）下，鞋类大商品盘经营表现**优于计划**。净销售额 ${salesDisplay}，计划达成率 ${salesPlanAchieve}%；季内累计售罄率 ${st}%，${stDelta && parseFloat(stDelta) > 0 ? `超出目标 +${stDelta}pp` : `达成目标`}，库存结构健康（WOS ${kpis.wos} 周）。`;
         }
         if (health === 'moderate') {
-            return `当前筛选条件（${filterSummary}）下，鞋类经营表现**接近计划线**。净销售额 ¥${salesMillion}万${salesPlanAchieve ? `（达成率 ${salesPlanAchieve}%）` : ''}；售罄率 ${st}% 处于警戒线附近（目标 ${stTarget}%），${stDelta ? `偏差 ${stDelta}pp` : ''}，需关注折扣深度（${discount}%）和波段节奏匹配度。`;
+            return `当前筛选条件（${filterSummary}）下，鞋类经营表现**接近计划线**。净销售额 ${salesDisplay}${salesPlanAchieve ? `（达成率 ${salesPlanAchieve}%）` : ''}；售罄率 ${st}% 处于警戒线附近（目标 ${stTarget}%），${stDelta ? `偏差 ${stDelta}pp` : ''}，需关注折扣深度（${discount}%）和波段节奏匹配度。`;
         }
         return `当前筛选条件（${filterSummary}）下，鞋类经营表现**低于计划预期**。售罄率 ${st}% 显著低于目标 ${stTarget}%${stDelta ? `（差距 ${Math.abs(parseFloat(stDelta)).toFixed(1)}pp）` : ''}，毛利率 ${margin}% 承压，需立即启动库存与渠道协同动作。`;
     };

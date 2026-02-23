@@ -105,8 +105,10 @@ export interface RegionPerformanceItem {
     target_sales: number;
     net_sales: number;
     yoy_sales: number;
+    mom_sales: number;
     achv_rate: number;
     yoy_rate: number;
+    mom_rate: number;
 }
 
 export interface RegionChannelMatrixCell {
@@ -190,6 +192,18 @@ export interface TerminalHealthRankItem {
     diagnosis: string;
 }
 
+export type ChannelSystemMode = 'all' | 'offline' | 'online';
+
+export interface ChannelFilterScope {
+    system: ChannelSystemMode;
+    platform: string | 'all';
+}
+
+const DEFAULT_CHANNEL_SCOPE: ChannelFilterScope = {
+    system: 'all',
+    platform: 'all',
+};
+
 const PRICE_BANDS = [
     { id: 'PB1', min: 199, max: 299 },
     { id: 'PB2', min: 300, max: 399 },
@@ -209,10 +223,14 @@ const AUDIENCE_TO_AGE_GROUP: Record<string, string[]> = {
 const TARGET_GROWTH_RATE = 0.08;
 const SALES_BUCKETS = ['超高', '高', '中', '低'];
 const CITY_TIER_ORDER = ['全国', '一线', '新一线', '二线', '三线', '四线'];
+const SEASON_ORDER = ['Q1', 'Q2', 'Q3', 'Q4'] as const;
 
 const salesRecords = rawSalesData as FactSalesRecord[];
 const channels = rawChannelData as DimChannel[];
 const skus = rawSkuData as DimSku[];
+const ONLINE_REGION_SET = new Set(
+    channels.filter((channel) => channel.is_online).map((channel) => channel.region),
+);
 
 function sortByTierOrder(a: string, b: string) {
     const ai = CITY_TIER_ORDER.indexOf(a);
@@ -261,7 +279,8 @@ function shouldIncludeRecord(
     sku: DimSku,
     channel: DimChannel,
     filters: DashboardFilters,
-    yearOverride?: number
+    yearOverride?: number,
+    scope: ChannelFilterScope = DEFAULT_CHANNEL_SCOPE
 ) {
     if (yearOverride !== undefined) {
         if (Number(sale.season_year) !== yearOverride) return false;
@@ -272,11 +291,21 @@ function shouldIncludeRecord(
     if (filters.season !== 'all' && sale.season !== filters.season) return false;
     if (filters.wave !== 'all' && sale.wave !== filters.wave) return false;
 
+    if (scope.system === 'online' && !channel.is_online) return false;
+    if (scope.system === 'offline' && channel.is_online) return false;
+    if (scope.system === 'online' && scope.platform !== 'all' && channel.region !== scope.platform) return false;
+
     if (filters.category_id !== 'all' && sku.category_id !== filters.category_id) return false;
     if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
     if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
 
-    if (filters.region !== 'all' && channel.region !== filters.region) return false;
+    if (filters.region !== 'all') {
+        const isOnlineRegionFilter = ONLINE_REGION_SET.has(filters.region);
+        const shouldIgnoreRegionFilter =
+            scope.system === 'online' ||
+            (scope.system === 'offline' && isOnlineRegionFilter);
+        if (!shouldIgnoreRegionFilter && channel.region !== filters.region) return false;
+    }
     if (filters.city_tier !== 'all' && channel.city_tier !== filters.city_tier) return false;
     if (filters.store_format !== 'all' && channel.store_format !== filters.store_format) return false;
 
@@ -329,6 +358,19 @@ function getLatestYear(records: FactSalesRecord[]) {
     return latest || new Date().getFullYear();
 }
 
+function getMomBaseline(filters: DashboardFilters, currentYear: number) {
+    const currentSeasonIdx = filters.season !== 'all'
+        ? SEASON_ORDER.indexOf(filters.season as typeof SEASON_ORDER[number])
+        : -1;
+    if (currentSeasonIdx === -1) {
+        return { year: currentYear - 1, season: 'all' as const };
+    }
+    if (currentSeasonIdx === 0) {
+        return { year: currentYear - 1, season: 'Q4' as const };
+    }
+    return { year: currentYear, season: SEASON_ORDER[currentSeasonIdx - 1] };
+}
+
 function toStoreMetrics(store: StoreAccumulator): StoreMetrics {
     return {
         ...store,
@@ -340,7 +382,10 @@ function toStoreMetrics(store: StoreAccumulator): StoreMetrics {
     };
 }
 
-export function useChannelAnalysis(filters: DashboardFilters) {
+export function useChannelAnalysis(
+    filters: DashboardFilters,
+    scope: ChannelFilterScope = DEFAULT_CHANNEL_SCOPE,
+) {
     const channelMap = useMemo(() => {
         const map: Record<string, DimChannel> = {};
         channels.forEach((channel) => {
@@ -370,15 +415,21 @@ export function useChannelAnalysis(filters: DashboardFilters) {
         const latestYear = getLatestYear(salesRecords);
         const currentYear = filters.season_year === 'all' ? latestYear : Number(filters.season_year);
         const baselineYear = currentYear - 1;
+        const momBaseline = getMomBaseline(filters, currentYear);
+        const momFilters: DashboardFilters = {
+            ...filters,
+            season: momBaseline.season,
+        };
         const regionCurrentMap: Record<string, RegionYearStats> = {};
         const regionBaselineMap: Record<string, RegionYearStats> = {};
+        const regionMomMap: Record<string, RegionYearStats> = {};
 
         salesRecords.forEach((sale) => {
             const channel = channelMap[sale.channel_id];
             const sku = skuMap[sale.sku_id];
             if (!channel || !sku) return;
 
-            if (shouldIncludeRecord(sale, sku, channel, filters)) {
+            if (shouldIncludeRecord(sale, sku, channel, filters, undefined, scope)) {
                 const regionKey = channel.region || '未知大区';
                 const formatKey = channel.store_format || '未知店态';
                 const tierKey = channel.city_tier || '未知线级';
@@ -451,14 +502,19 @@ export function useChannelAnalysis(filters: DashboardFilters) {
                 }
             }
 
-            if (shouldIncludeRecord(sale, sku, channel, filters, currentYear)) {
+            if (shouldIncludeRecord(sale, sku, channel, filters, currentYear, scope)) {
                 const regionKey = channel.region || '未知大区';
                 accumulateYear(regionCurrentMap, regionKey, sale);
             }
 
-            if (shouldIncludeRecord(sale, sku, channel, filters, baselineYear)) {
+            if (shouldIncludeRecord(sale, sku, channel, filters, baselineYear, scope)) {
                 const regionKey = channel.region || '未知大区';
                 accumulateYear(regionBaselineMap, regionKey, sale);
+            }
+
+            if (shouldIncludeRecord(sale, sku, channel, momFilters, momBaseline.year, scope)) {
+                const regionKey = channel.region || '未知大区';
+                accumulateYear(regionMomMap, regionKey, sale);
             }
         });
 
@@ -479,21 +535,26 @@ export function useChannelAnalysis(filters: DashboardFilters) {
         const allRegionKeys = new Set<string>([
             ...Object.keys(regionCurrentMap),
             ...Object.keys(regionBaselineMap),
+            ...Object.keys(regionMomMap),
         ]);
         const regionPerformance: RegionPerformanceItem[] = Array.from(allRegionKeys)
             .map((region) => {
                 const net_sales = regionCurrentMap[region]?.netSales || 0;
                 const yoy_sales = regionBaselineMap[region]?.netSales || 0;
+                const mom_sales = regionMomMap[region]?.netSales || 0;
                 const target_sales = yoy_sales * (1 + TARGET_GROWTH_RATE);
                 const achv_rate = target_sales > 0 ? net_sales / target_sales : 0;
                 const yoy_rate = yoy_sales > 0 ? (net_sales - yoy_sales) / yoy_sales : 0;
+                const mom_rate = mom_sales > 0 ? (net_sales - mom_sales) / mom_sales : 0;
                 return {
                     region,
                     target_sales,
                     net_sales,
                     yoy_sales,
+                    mom_sales,
                     achv_rate,
                     yoy_rate,
+                    mom_rate,
                 };
             })
             .sort((a, b) => b.net_sales - a.net_sales);
@@ -509,10 +570,20 @@ export function useChannelAnalysis(filters: DashboardFilters) {
             };
         });
 
-        const regionOrder = Array.from(
-            new Set(regionChannelCells.sort((a, b) => b.net_sales - a.net_sales).map((cell) => cell.region))
+        const regionOrderFromPerformance = regionPerformance.map((item) => item.region);
+        const regionSetFromCells = new Set(regionChannelCells.map((cell) => cell.region));
+        const regionOrder = [
+            ...regionOrderFromPerformance.filter((region) => regionSetFromCells.has(region)),
+            ...Array.from(regionSetFromCells).filter((region) => !regionOrderFromPerformance.includes(region)),
+        ];
+
+        const channelTotalsMap: Record<string, number> = {};
+        regionChannelCells.forEach((cell) => {
+            channelTotalsMap[cell.channel] = (channelTotalsMap[cell.channel] || 0) + cell.net_sales;
+        });
+        const channelOrder = Array.from(new Set(regionChannelCells.map((cell) => cell.channel))).sort(
+            (a, b) => (channelTotalsMap[b] || 0) - (channelTotalsMap[a] || 0),
         );
-        const channelOrder = Array.from(new Set(regionChannelCells.map((cell) => cell.channel)));
 
         const storeInventoryUnitsMap: Record<string, number> = {};
         Object.entries(storeSkuInventoryMap).forEach(([key, value]) => {
@@ -574,16 +645,22 @@ export function useChannelAnalysis(filters: DashboardFilters) {
                 .splice(10);
         });
 
-        const cityTierBucketCells: CityTierBucketCell[] = Object.values(cityTierBucketAccMap).map((item) => ({
-            city_tier: item.city_tier,
-            sales_bucket: item.sales_bucket,
-            store_count: item.store_count,
-            store_count_share: totalStoreCount > 0 ? item.store_count / totalStoreCount : 0,
-            net_sales: item.net_sales,
-            sales_share: totalStoreSales > 0 ? item.net_sales / totalStoreSales : 0,
-        }));
-
         const cityTierOrder = Array.from(new Set(stores.map((store) => store.city_tier))).sort(sortByTierOrder);
+        const cityTierBucketCells: CityTierBucketCell[] = cityTierOrder.flatMap((city_tier) =>
+            SALES_BUCKETS.map((sales_bucket) => {
+                const hit = cityTierBucketAccMap[`${city_tier}__${sales_bucket}`];
+                const store_count = hit?.store_count || 0;
+                const net_sales = hit?.net_sales || 0;
+                return {
+                    city_tier,
+                    sales_bucket,
+                    store_count,
+                    store_count_share: totalStoreCount > 0 ? store_count / totalStoreCount : 0,
+                    net_sales,
+                    sales_share: totalStoreSales > 0 ? net_sales / totalStoreSales : 0,
+                };
+            }),
+        );
 
         const formatMixMap: Record<string, { store_format: string; store_count: number; net_sales: number }> = {};
         stores.forEach((store) => {
@@ -634,17 +711,21 @@ export function useChannelAnalysis(filters: DashboardFilters) {
             item.gmWeight += salesWeight;
         });
 
-        const formatTierCells: FormatTierMatrixCell[] = Object.values(formatTierAccMap).map((item) => ({
-            store_format: item.store_format,
-            city_tier: item.city_tier,
-            store_count: item.store_count,
-            net_sales: item.net_sales,
-            sell_through: item.stWeight > 0 ? item.stWeighted / item.stWeight : 0,
-            gm_rate: item.gmWeight > 0 ? item.gmWeighted / item.gmWeight : 0,
-        }));
-
         const formatOrder = Array.from(new Set(storeFormatMix.map((item) => item.store_format)));
-        const formatTierOrder = Array.from(new Set(formatTierCells.map((item) => item.city_tier))).sort(sortByTierOrder);
+        const formatTierOrder = Array.from(new Set(stores.map((store) => store.city_tier))).sort(sortByTierOrder);
+        const formatTierCells: FormatTierMatrixCell[] = formatOrder.flatMap((store_format) =>
+            formatTierOrder.map((city_tier) => {
+                const hit = formatTierAccMap[`${store_format}__${city_tier}`];
+                return {
+                    store_format,
+                    city_tier,
+                    store_count: hit?.store_count || 0,
+                    net_sales: hit?.net_sales || 0,
+                    sell_through: hit && hit.stWeight > 0 ? hit.stWeighted / hit.stWeight : 0,
+                    gm_rate: hit && hit.gmWeight > 0 ? hit.gmWeighted / hit.gmWeight : 0,
+                };
+            }),
+        );
 
         const regionCityAccMap: Record<string, {
             region: string;
@@ -692,7 +773,13 @@ export function useChannelAnalysis(filters: DashboardFilters) {
                 return sortByTierOrder(a.city_tier, b.city_tier);
             });
 
-        const regionDrillOrder = Array.from(new Set(stores.map((store) => store.region))).sort((a, b) => a.localeCompare(b, 'zh-CN'));
+        const drillRegionSet = new Set(stores.map((store) => store.region));
+        const regionDrillOrder = [
+            ...regionOrderFromPerformance.filter((region) => drillRegionSet.has(region)),
+            ...Array.from(drillRegionSet)
+                .filter((region) => !regionOrderFromPerformance.includes(region))
+                .sort((a, b) => a.localeCompare(b, 'zh-CN')),
+        ];
 
         const terminalHealthAccMap: Record<string, {
             region: string;
@@ -807,6 +894,15 @@ export function useChannelAnalysis(filters: DashboardFilters) {
                     : '周转偏慢，建议压缩深度并优化结构',
             }));
 
+        const ecomPlatforms = Array.from(
+            new Set(
+                channels
+                    .filter((channel) => channel.is_online)
+                    .map((channel) => channel.region)
+                    .filter((region): region is string => Boolean(region)),
+            ),
+        ).sort((a, b) => a.localeCompare(b, 'zh-CN'));
+
         return {
             regionStats,
             regionSplitStats,
@@ -836,6 +932,8 @@ export function useChannelAnalysis(filters: DashboardFilters) {
             terminalHealthPoints,
             efficiencyLeaderboard,
             laggingLeaderboard,
+            ecomPlatforms,
         };
-    }, [channelMap, filters, skuMap]);
+    }, [channelMap, filters, scope, skuMap]);
 }
+

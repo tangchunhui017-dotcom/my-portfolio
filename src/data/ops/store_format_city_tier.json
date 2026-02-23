@@ -1,0 +1,19 @@
+[
+  { "store_format": "市中心MALL", "city_tier": "一线", "store_count": 52, "store_count_share": 0.0760, "sales_share": 0.1100 },
+  { "store_format": "市中心MALL", "city_tier": "二线", "store_count": 45, "store_count_share": 0.0658, "sales_share": 0.0950 },
+  { "store_format": "市中心MALL", "city_tier": "三线", "store_count": 30, "store_count_share": 0.0439, "sales_share": 0.0550 },
+  { "store_format": "市中心MALL", "city_tier": "四线", "store_count": 18, "store_count_share": 0.0263, "sales_share": 0.0200 },
+  { "store_format": "市中心MALL", "city_tier": "五线", "store_count": 10, "store_count_share": 0.0146, "sales_share": 0.0100 },
+
+  { "store_format": "重点百货", "city_tier": "一线", "store_count": 46, "store_count_share": 0.0673, "sales_share": 0.0900 },
+  { "store_format": "重点百货", "city_tier": "二线", "store_count": 38, "store_count_share": 0.0556, "sales_share": 0.0800 },
+  { "store_format": "重点百货", "city_tier": "三线", "store_count": 28, "store_count_share": 0.0409, "sales_share": 0.0600 },
+  { "store_format": "重点百货", "city_tier": "四线", "store_count": 20, "store_count_share": 0.0292, "sales_share": 0.0250 },
+  { "store_format": "重点百货", "city_tier": "五线", "store_count": 14, "store_count_share": 0.0205, "sales_share": 0.0150 },
+
+  { "store_format": "街铺专卖", "city_tier": "一线", "store_count": 40, "store_count_share": 0.0585, "sales_share": 0.0600 },
+  { "store_format": "街铺专卖", "city_tier": "二线", "store_count": 55, "store_count_share": 0.0804, "sales_share": 0.0950 },
+  { "store_format": "街铺专卖", "city_tier": "三线", "store_count": 72, "store_count_share": 0.1053, "sales_share": 0.1000 },
+  { "store_format": "街铺专卖", "city_tier": "四线", "store_count": 96, "store_count_share": 0.1404, "sales_share": 0.1000 },
+  { "store_format": "街铺专卖", "city_tier": "五线", "store_count": 120, "store_count_share": 0.1754, "sales_share": 0.0850 }
+]

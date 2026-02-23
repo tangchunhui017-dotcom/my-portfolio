@@ -1,0 +1,26 @@
+[
+  { "city_tier": "一线", "sales_bucket": "超高>200万", "store_pct": 0.38, "sales_pct": 0.49 },
+  { "city_tier": "一线", "sales_bucket": "高>150万", "store_pct": 0.32, "sales_pct": 0.29 },
+  { "city_tier": "一线", "sales_bucket": "中>80万", "store_pct": 0.20, "sales_pct": 0.16 },
+  { "city_tier": "一线", "sales_bucket": "低<80万", "store_pct": 0.10, "sales_pct": 0.06 },
+
+  { "city_tier": "二线", "sales_bucket": "超高>200万", "store_pct": 0.26, "sales_pct": 0.34 },
+  { "city_tier": "二线", "sales_bucket": "高>150万", "store_pct": 0.33, "sales_pct": 0.33 },
+  { "city_tier": "二线", "sales_bucket": "中>80万", "store_pct": 0.25, "sales_pct": 0.22 },
+  { "city_tier": "二线", "sales_bucket": "低<80万", "store_pct": 0.16, "sales_pct": 0.11 },
+
+  { "city_tier": "三线", "sales_bucket": "超高>200万", "store_pct": 0.14, "sales_pct": 0.20 },
+  { "city_tier": "三线", "sales_bucket": "高>150万", "store_pct": 0.25, "sales_pct": 0.28 },
+  { "city_tier": "三线", "sales_bucket": "中>80万", "store_pct": 0.33, "sales_pct": 0.30 },
+  { "city_tier": "三线", "sales_bucket": "低<80万", "store_pct": 0.28, "sales_pct": 0.22 },
+
+  { "city_tier": "四线", "sales_bucket": "超高>200万", "store_pct": 0.06, "sales_pct": 0.09 },
+  { "city_tier": "四线", "sales_bucket": "高>150万", "store_pct": 0.14, "sales_pct": 0.18 },
+  { "city_tier": "四线", "sales_bucket": "中>80万", "store_pct": 0.28, "sales_pct": 0.29 },
+  { "city_tier": "四线", "sales_bucket": "低<80万", "store_pct": 0.52, "sales_pct": 0.44 },
+
+  { "city_tier": "五线", "sales_bucket": "超高>200万", "store_pct": 0.03, "sales_pct": 0.05 },
+  { "city_tier": "五线", "sales_bucket": "高>150万", "store_pct": 0.08, "sales_pct": 0.11 },
+  { "city_tier": "五线", "sales_bucket": "中>80万", "store_pct": 0.24, "sales_pct": 0.27 },
+  { "city_tier": "五线", "sales_bucket": "低<80万", "store_pct": 0.65, "sales_pct": 0.57 }
+]

@@ -215,3 +215,80 @@ export const FOOTWEAR_ANALYSIS_MODULES: FootwearAnalysisModule[] = [
         focus: ['年龄段结构', '主色系效率', '配色占比', '售罄差异'],
     },
 ];
+
+export interface FootwearPlanningCubeAxisItem {
+    axis: 'X' | 'Y' | 'Z';
+    title: string;
+    english: string;
+    coreLogic: string;
+    values: Array<{
+        code: string;
+        label: string;
+        scope: string;
+        planningFocus: string;
+    }>;
+}
+
+export const FOOTWEAR_PLANNING_CUBE_AXES: FootwearPlanningCubeAxisItem[] = [
+    {
+        axis: 'X',
+        title: '气候与波段',
+        english: 'Region & Climate Matrix',
+        coreLogic: '以季节轮动与脚型偏好定义波段，不以行政管理线做均值铺货。',
+        values: [
+            { code: 'EAST', label: '华东', scope: '上海/江苏/浙江/安徽', planningFocus: '趋势试验田，换季快，主推新材质与快反节奏。' },
+            { code: 'SOUTH', label: '华南', scope: '广东/福建/海南/广西', planningFocus: '长夏无冬，透气网面/凉拖高占比，冬季加绒需求低。' },
+            { code: 'NORTH', label: '华北', scope: '北京/天津/河北/山东/山西', planningFocus: '春秋防风耐脏，易打理材质需求更高。' },
+            { code: 'MID', label: '华中', scope: '湖北/湖南/江西', planningFocus: '湿冷与酷热交替，冬季保暖防水与夏季透气并重。' },
+            { code: 'SW', label: '西南', scope: '四川/重庆/贵州/云南', planningFocus: '地形复杂步行强度高，强调抓地/耐磨/缓震。' },
+            { code: 'NW', label: '西北', scope: '陕西/甘肃/新疆/青海/宁夏', planningFocus: '秋冬提前，防风防尘与保暖鞋款周期更长。' },
+            { code: 'NE', label: '东北', scope: '辽宁/吉林/黑龙江', planningFocus: '极寒长冬，10月前置备货防滑与厚保暖品类。' },
+        ],
+    },
+    {
+        axis: 'Y',
+        title: '定价与成本',
+        english: 'City Tier & Commercial Level',
+        coreLogic: '按商业能级划分 SKU 结构和价格带，不按行政级别粗分。',
+        values: [
+            { code: 'S', label: 'S级（一线/新一线）', scope: '北上广深/成都/杭州等高能级城市', planningFocus: '形象与首发阵地，高溢价产品（约599-899）与先锋款主导。' },
+            { code: 'A', label: 'A级（二线/三线）', scope: '省会与强地级市', planningFocus: '利润中枢，走量款与形象款保持7:3。' },
+            { code: 'B', label: 'B级（四线/五线及以下）', scope: '下沉县镇市场', planningFocus: '现金流底盘，主打耐穿高性价比（约199-399）。' },
+        ],
+    },
+    {
+        axis: 'Z',
+        title: '宽度与风格',
+        english: 'Store Format & Channel Vibe',
+        coreLogic: '按消费场景调性定义下发宽度，什么店态配什么商品。',
+        values: [
+            { code: 'Type A', label: '高能级潮流', scope: '核心MALL/标杆百货/旗舰店', planningFocus: '可投高颜值与新工艺，允许限量配色和实验款。' },
+            { code: 'Type B', label: '大众生活方式', scope: '社区MALL/市级步行街专卖/连锁百货', planningFocus: '高频百搭与舒适优先，品牌基本盘主投放。' },
+            { code: 'Type C', label: '下沉高频刚需', scope: '普通百货/社区街边店', planningFocus: '耐穿耐脏与价格敏感，严控娇贵材质。' },
+        ],
+    },
+];
+
+export interface FootwearExecutionMandate {
+    id: string;
+    title: string;
+    detail: string;
+}
+
+export const FOOTWEAR_EXECUTION_MANDATES: FootwearExecutionMandate[] = [
+    {
+        id: 'mdm-required-fields',
+        title: '主数据强校验字段',
+        detail: '新增终端必须维护：地理大区（X）/商业能级（Y）/渠道调性（Z），缺一不可。',
+    },
+    {
+        id: 'otb-coordinate',
+        title: 'OTB下单坐标',
+        detail: '每个SKU下单需绑定魔方坐标（如：华北-A级-TypeB 通勤靴），禁止全国均值分货。',
+    },
+    {
+        id: 'benchmark-rule',
+        title: '业绩体检对标规则',
+        detail: '店效对比仅在同渠道调性内进行（Type A只和Type A比），避免错误关店/扩张。',
+    },
+];

@@ -2,6 +2,7 @@
 
 import KpiCard from './KpiCard';
 import type { CompareMode } from '@/hooks/useDashboardFilter';
+import { formatMoneyCny } from '@/config/numberFormat';
 
 type BaselineKpis = {
     totalNetSales: number;
@@ -41,9 +42,7 @@ interface KpiGridProps {
 }
 
 function fmtSales(n: number) {
-    if (n >= 100_000_000) return `¥${(n / 100_000_000).toFixed(2)}亿`;
-    if (n >= 10_000) return `¥${(n / 10_000).toFixed(1)}万`;
-    return `¥${n.toLocaleString()}`;
+    return formatMoneyCny(n);
 }
 
 function fmtPct(n: number) {

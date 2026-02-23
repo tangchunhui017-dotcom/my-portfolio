@@ -5,6 +5,8 @@ import { useMemo, useState } from 'react';
 import type { EChartsOption } from 'echarts';
 import ReactECharts from 'echarts-for-react';
 import { useCompetitorAnalysis, type CompetitorBubblePoint } from '@/hooks/useCompetitorAnalysis';
+import type { CompareMode } from '@/hooks/useDashboardFilter';
+import { formatMoneyCny } from '@/config/numberFormat';
 
 type CompareContext = {
     point: CompetitorBubblePoint;
@@ -22,6 +24,8 @@ type CompareContext = {
 type SkuStructureChartRow = {
     comp_brand: string;
     sku_yoy: number;
+    sku_plan_gap: number;
+    sku_mom: number;
     market_share: number;
     [key: string]: string | number;
 };
@@ -32,8 +36,7 @@ function fmtPct(value: number) {
 }
 
 function fmtWan(value: number) {
-    if (!Number.isFinite(value)) return '-';
-    return `${(value / 10000).toFixed(1)}万`;
+    return formatMoneyCny(value);
 }
 
 function fmtInt(value: number) {
@@ -50,6 +53,34 @@ function fmtPP(value: number) {
 function safeDiv(numerator: number, denominator: number) {
     if (denominator <= 0) return 0;
     return numerator / denominator;
+}
+
+function getCompareModeLabel(compareMode: CompareMode) {
+    if (compareMode === 'plan') return 'vs计划';
+    if (compareMode === 'yoy') return '同比去年';
+    if (compareMode === 'mom') return '环比上季';
+    return '无对比';
+}
+
+function getCompareDeltaLabel(compareMode: CompareMode) {
+    if (compareMode === 'plan') return '较计划';
+    if (compareMode === 'yoy') return '同比';
+    if (compareMode === 'mom') return '较上季';
+    return '对比';
+}
+
+function getSkuDeltaMetricKey(compareMode: CompareMode): 'sku_yoy' | 'sku_plan_gap' | 'sku_mom' | null {
+    if (compareMode === 'yoy') return 'sku_yoy';
+    if (compareMode === 'plan') return 'sku_plan_gap';
+    if (compareMode === 'mom') return 'sku_mom';
+    return null;
+}
+
+function getSkuDeltaMetricName(compareMode: CompareMode) {
+    if (compareMode === 'yoy') return 'SKU同比';
+    if (compareMode === 'plan') return 'SKU较计划';
+    if (compareMode === 'mom') return 'SKU较上季';
+    return '';
 }
 
 function InfoTip({ text }: { text: string }) {
@@ -92,12 +123,14 @@ const BRAND_COLORS = ['#2563EB', '#10B981', '#F59E0B', '#7C3AED', '#EF4444', '#0
 const SHARE_COLORS = ['#3B82F6', '#06B6D4', '#22C55E', '#8B5CF6', '#F97316', '#EC4899', '#64748B'];
 
 interface CompetitorTrendPanelProps {
+    compareMode?: CompareMode;
     onJumpToPlanning?: () => void;
     onJumpToChannel?: () => void;
     onJumpToSkuRisk?: () => void;
 }
 
 export default function CompetitorTrendPanel({
+    compareMode = 'none',
     onJumpToPlanning,
     onJumpToChannel,
     onJumpToSkuRisk,
@@ -126,6 +159,18 @@ export default function CompetitorTrendPanel({
     const [selectedContextId, setSelectedContextId] = useState<string>('');
     const [selectedWave, setSelectedWave] = useState<string>('all');
     const [selectedRegion, setSelectedRegion] = useState<string>('all');
+    const compareModeLabel = useMemo(() => getCompareModeLabel(compareMode), [compareMode]);
+    const compareDeltaLabel = useMemo(() => getCompareDeltaLabel(compareMode), [compareMode]);
+    const sectionScopeHint = useMemo(() => `口径：${compareModeLabel}`, [compareModeLabel]);
+    const skuDeltaMetricKey = useMemo(() => getSkuDeltaMetricKey(compareMode), [compareMode]);
+    const skuDeltaMetricName = useMemo(() => getSkuDeltaMetricName(compareMode), [compareMode]);
+    const showSkuDeltaLine = skuDeltaMetricKey !== null;
+    const competitorCompareHint = useMemo(() => {
+        if (compareMode === 'yoy') return '同比口径下展示 SKU 同比线。';
+        if (compareMode === 'plan') return '计划口径下展示 SKU 较计划线。';
+        if (compareMode === 'mom') return '环比口径下展示 SKU 较上季线。';
+        return '无对比口径下仅展示当前结构。';
+    }, [compareMode]);
 
     const categoryShareMap = useMemo(() => {
         const map = new Map<string, number>();
@@ -205,6 +250,13 @@ export default function CompetitorTrendPanel({
         () => brandSummary.find((row) => row.comp_brand === ourBrandName) || null,
         [brandSummary, ourBrandName],
     );
+    const ourSkuDeltaRate = useMemo(() => {
+        if (!ourSummary) return null;
+        if (compareMode === 'yoy') return ourSummary.sku_yoy;
+        if (compareMode === 'plan') return ourSummary.sku_plan_gap;
+        if (compareMode === 'mom') return ourSummary.sku_mom;
+        return null;
+    }, [compareMode, ourSummary]);
 
     const brandColorMap = useMemo(() => {
         const map = new Map<string, string>();
@@ -389,9 +441,11 @@ export default function CompetitorTrendPanel({
     }, [ourBrandName, selectedBrand, skuStructureChartData]);
 
     const shareStackOption = useMemo<EChartsOption>(() => {
-        const yoyValues = shareComparisonRows.map((row) => Number(row.sku_yoy || 0));
-        const upper = Math.max(20, Math.ceil((Math.max(...yoyValues, 0) + 2) / 5) * 5);
-        const lower = Math.min(-10, Math.floor((Math.min(...yoyValues, 0) - 2) / 5) * 5);
+        const metricValues = showSkuDeltaLine && skuDeltaMetricKey
+            ? shareComparisonRows.map((row) => Number(row[skuDeltaMetricKey] || 0))
+            : [0];
+        const upper = Math.max(20, Math.ceil((Math.max(...metricValues, 0) + 2) / 5) * 5);
+        const lower = Math.min(-10, Math.floor((Math.min(...metricValues, 0) - 2) / 5) * 5);
 
         return {
             animationDuration: 500,
@@ -439,6 +493,7 @@ export default function CompetitorTrendPanel({
                 },
                 {
                     type: 'value',
+                    show: showSkuDeltaLine,
                     min: lower,
                     max: upper,
                     axisLine: { show: false },
@@ -456,20 +511,24 @@ export default function CompetitorTrendPanel({
                     data: shareComparisonRows.map((row) => Number(row[category] || 0)),
                     emphasis: { focus: 'series' as const },
                 })),
-                {
-                    name: 'SKU同比',
-                    type: 'line' as const,
-                    yAxisIndex: 1,
-                    smooth: true,
-                    symbol: 'circle',
-                    symbolSize: 7,
-                    itemStyle: { color: '#111827' },
-                    lineStyle: { color: '#111827', width: 2.2 },
-                    data: shareComparisonRows.map((row) => Number(row.sku_yoy || 0)),
-                },
+                ...(showSkuDeltaLine && skuDeltaMetricKey
+                    ? [
+                          {
+                              name: skuDeltaMetricName,
+                              type: 'line' as const,
+                              yAxisIndex: 1,
+                              smooth: true,
+                              symbol: 'circle',
+                              symbolSize: 7,
+                              itemStyle: { color: '#111827' },
+                              lineStyle: { color: '#111827', width: 2.2 },
+                              data: shareComparisonRows.map((row) => Number(row[skuDeltaMetricKey] || 0)),
+                          },
+                      ]
+                    : []),
             ],
         };
-    }, [categories, shareComparisonRows]);
+    }, [categories, shareComparisonRows, showSkuDeltaLine, skuDeltaMetricKey, skuDeltaMetricName]);
 
     const insight = useMemo(() => {
         if (!compareContext) {
@@ -525,6 +584,9 @@ export default function CompetitorTrendPanel({
                         </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                            {sectionScopeHint}
+                        </span>
                         <select
                             value={selectedBrand}
                             onChange={(event) => setSelectedBrand(event.target.value)}
@@ -578,10 +640,12 @@ export default function CompetitorTrendPanel({
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                         <div className="flex items-center text-xs text-slate-500">
                             本品牌SKU总量
-                            <InfoTip text="本品牌SKU总量=本品牌各品类SKU数量汇总；同比来自 sku_yoy 字段。" />
+                            <InfoTip text="本品牌SKU总量=本品牌各品类SKU数量汇总；支持较计划（sku_plan_gap）/较上季（sku_mom）/同比（sku_yoy）三种口径。" />
                         </div>
                         <div className="mt-1 text-base font-semibold text-slate-900">{fmtInt(ourSummary?.sku_total || 0)}</div>
-                        <div className="text-xs text-slate-500 mt-1">同比 {fmtPct(ourSummary?.sku_yoy || 0)}</div>
+                        <div className="text-xs text-slate-500 mt-1">
+                            {ourSkuDeltaRate === null ? `${compareDeltaLabel} —` : `${compareDeltaLabel} ${fmtPct(ourSkuDeltaRate)}`}
+                        </div>
                     </div>
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                         <div className="flex items-center text-xs text-slate-500">
@@ -615,13 +679,23 @@ export default function CompetitorTrendPanel({
 
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
                     <div className="xl:col-span-7 rounded-xl border border-slate-100 p-4">
-                        <div className="text-sm font-semibold text-slate-900 mb-2">核心图1：竞品气泡散点（点击气泡联动洞察）</div>
+                        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                            <div className="text-sm font-semibold text-slate-900">核心图1：竞品气泡散点（点击气泡联动洞察）</div>
+                            <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                                {sectionScopeHint}
+                            </span>
+                        </div>
                         <ReactECharts option={bubbleOption} onEvents={bubbleEvents} style={{ height: 360 }} notMerge />
                     </div>
 
                     <div className="xl:col-span-5 space-y-4">
                         <div className="rounded-xl border border-slate-100 p-4">
-                            <div className="text-sm font-semibold text-slate-900 mb-2">核心图2：STEPIC 市调雷达</div>
+                            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                                <div className="text-sm font-semibold text-slate-900">核心图2：STEPIC 市调雷达</div>
+                                <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                                    {sectionScopeHint}
+                                </span>
+                            </div>
                             <ReactECharts option={radarOption} style={{ height: 340 }} notMerge />
                         </div>
 
@@ -707,8 +781,17 @@ export default function CompetitorTrendPanel({
                 </div>
 
                 <div className="mt-4 rounded-xl border border-slate-100 p-4">
-                    <div className="text-sm font-semibold text-slate-900 mb-2">补充图：品牌 × 品类结构占比（100%堆叠）</div>
-                    <div className="text-xs text-slate-500 mb-2">柱子看结构占比，黑线看SKU同比，便于判断“结构偏移 + 扩款节奏”是否一致。</div>
+                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                        <div className="text-sm font-semibold text-slate-900">补充图：品牌 × 品类结构占比（100%堆叠）</div>
+                        <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                            {sectionScopeHint}
+                        </span>
+                    </div>
+                    <div className="text-xs text-slate-500 mb-2">
+                        {showSkuDeltaLine
+                            ? '柱子看结构占比，黑线看SKU同比，便于判断“结构偏移 + 扩款节奏”是否一致。'
+                            : competitorCompareHint}
+                    </div>
                     <ReactECharts option={shareStackOption} style={{ height: 320 }} notMerge />
                 </div>
 
@@ -752,6 +835,9 @@ export default function CompetitorTrendPanel({
                         <div className="mt-1 text-xs text-slate-500">用于沉淀主推 Look、陈列策略与温度带打法。</div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                            口径：素材标签 / 波段 / 区域（Demo）
+                        </span>
                         <select
                             value={selectedWave}
                             onChange={(event) => setSelectedWave(event.target.value)}

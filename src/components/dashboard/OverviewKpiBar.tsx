@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { THRESHOLDS } from '@/config/thresholds';
 import { FOOTWEAR_ANALYSIS_MODULES } from '@/config/footwearLanguage';
 import type { CompareMode } from '@/hooks/useDashboardFilter';
+import { formatMoneyCny } from '@/config/numberFormat';
 
 interface KpiItem {
     label: string;
@@ -78,9 +79,7 @@ interface OverviewKpiBarProps {
 }
 
 function fmt万(n: number) {
-    if (n >= 1e8) return `¥${(n / 1e8).toFixed(2)}亿`;
-    if (n >= 1e4) return `¥${(n / 1e4).toFixed(1)}万`;
-    return `¥${n.toLocaleString()}`;
+    return formatMoneyCny(n);
 }
 
 export default function OverviewKpiBar({ kpis, compareMode, baselineKpis, onKpiClick }: OverviewKpiBarProps) {

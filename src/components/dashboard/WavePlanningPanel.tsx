@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import type { EChartsOption } from 'echarts';
 import ReactECharts from 'echarts-for-react';
 import { useWavePlanning } from '@/hooks/useWavePlanning';
+import type { CompareMode } from '@/hooks/useDashboardFilter';
+import { formatMoneyCny } from '@/config/numberFormat';
 
 interface ChartClickParam {
     data?: { waveId?: string };
@@ -15,6 +17,7 @@ type PlanningView = 'wave' | 'otb';
 interface WavePlanningPanelProps {
     defaultView?: PlanningView;
     lockView?: boolean;
+    compareMode?: CompareMode;
     onJumpToChannel?: () => void;
     onJumpToOtb?: () => void;
     onJumpToSkuRisk?: () => void;
@@ -26,7 +29,7 @@ function safeDiv(numerator: number, denominator: number) {
 }
 
 function formatWan(value: number) {
-    return `${(value / 10000).toFixed(1)}万`;
+    return formatMoneyCny(value);
 }
 
 function formatPct(value: number) {
@@ -62,6 +65,29 @@ function formatDate(value: string) {
     return `${y}-${m}-${d}`;
 }
 
+function formatSignedWan(value: number) {
+    return formatMoneyCny(value, { signed: true });
+}
+
+function formatSignedPct(value: number) {
+    const sign = value >= 0 ? '+' : '-';
+    return `${sign}${(Math.abs(value) * 100).toFixed(1)}%`;
+}
+
+function getCompareModeLabel(compareMode: CompareMode) {
+    if (compareMode === 'plan') return 'vs计划';
+    if (compareMode === 'yoy') return '同比去年';
+    if (compareMode === 'mom') return '环比上季';
+    return '无对比';
+}
+
+function getCompareDeltaLabel(compareMode: CompareMode) {
+    if (compareMode === 'plan') return '较计划';
+    if (compareMode === 'yoy') return '较去年同期';
+    if (compareMode === 'mom') return '较上季';
+    return '偏离';
+}
+
 function InfoTip({ text }: { text: string }) {
     return (
         <span
@@ -77,6 +103,7 @@ function InfoTip({ text }: { text: string }) {
 export default function WavePlanningPanel({
     defaultView = 'wave',
     lockView = false,
+    compareMode = 'none',
     onJumpToChannel,
     onJumpToOtb,
     onJumpToSkuRisk,
@@ -146,6 +173,80 @@ export default function WavePlanningPanel({
         () => stackRows.find((row) => row.wave_id === activeWave?.id) || null,
         [activeWave?.id, stackRows],
     );
+    const compareModeLabel = useMemo(() => getCompareModeLabel(compareMode), [compareMode]);
+    const compareDeltaLabel = useMemo(() => getCompareDeltaLabel(compareMode), [compareMode]);
+    const sectionScopeHint = useMemo(() => `口径：${compareModeLabel}`, [compareModeLabel]);
+
+    const waveCompare = useMemo(() => {
+        if (!activeWave) {
+            return {
+                baselineLabel: '基线',
+                baselineValue: null as number | null,
+                deltaValue: null as number | null,
+                deltaRate: null as number | null,
+                note: '',
+            };
+        }
+
+        if (compareMode === 'none') {
+            return {
+                baselineLabel: '当前值',
+                baselineValue: activeWave.actual_sales,
+                deltaValue: null as number | null,
+                deltaRate: null as number | null,
+                note: '无对比模式下展示当前波段实际值。',
+            };
+        }
+
+        const currentSales = activeWave.actual_sales;
+        let baselineLabel = '';
+        let baselineValue: number | null = null;
+        let note = '';
+
+        if (compareMode === 'plan') {
+            baselineLabel = '计划销额';
+            baselineValue = activeWave.plan_sales;
+        } else if (compareMode === 'mom') {
+            baselineLabel = '上季销额';
+            const currentIndex = waveSummaries.findIndex((wave) => wave.id === activeWave.id);
+            baselineValue = currentIndex > 0 ? waveSummaries[currentIndex - 1]?.actual_sales ?? null : null;
+            if (baselineValue === null) {
+                note = '当前波段缺上季基线，环比差值显示为 —。';
+            }
+        } else if (compareMode === 'yoy') {
+            baselineLabel = '去年同波段销额';
+            const currentYear = Number(activeWave.season.match(/\d{4}/)?.[0] || NaN);
+            const lastYearWave = Number.isFinite(currentYear)
+                ? waveSummaries.find((wave) => {
+                      const waveYear = Number(wave.season.match(/\d{4}/)?.[0] || NaN);
+                      return wave.wave === activeWave.wave && waveYear === currentYear - 1;
+                  })
+                : null;
+            baselineValue = lastYearWave?.actual_sales ?? null;
+            if (baselineValue === null) {
+                note = '当前样本缺去年同波段基线，同比差值显示为 —。';
+            }
+        }
+
+        if (baselineValue === null || baselineValue <= 0) {
+            return {
+                baselineLabel,
+                baselineValue,
+                deltaValue: null as number | null,
+                deltaRate: null as number | null,
+                note: note || `${baselineLabel}缺失或为 0，差值显示为 —。`,
+            };
+        }
+
+        const deltaValue = currentSales - baselineValue;
+        return {
+            baselineLabel,
+            baselineValue,
+            deltaValue,
+            deltaRate: deltaValue / baselineValue,
+            note,
+        };
+    }, [activeWave, compareMode, waveSummaries]);
 
     const otbSummary = useMemo(() => {
         const totalPlanSales = waveSummaries.reduce((sum, wave) => sum + wave.plan_sales, 0);
@@ -355,7 +456,12 @@ export default function WavePlanningPanel({
                     <div>
                         <div className="text-xs uppercase tracking-wide text-slate-400">4.6 Wave Strategy</div>
                         <h2 className="text-lg font-bold text-slate-900">波段策略与款式需求企划</h2>
-                        <p className="mt-1 text-xs text-slate-500">{dataScopeHint}</p>
+                        <p className="mt-1 text-xs text-slate-500">
+                            {dataScopeHint}
+                            <span className="ml-2 inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                                {sectionScopeHint}
+                            </span>
+                        </p>
                     </div>
                     {!lockView ? (
                         <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
@@ -397,6 +503,23 @@ export default function WavePlanningPanel({
                                     ))}
                                 </div>
                             </div>
+                        </div>
+                        <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50/70 px-3 py-2">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+                                <div className="text-slate-500">
+                                    当前销额：<span className="font-medium text-slate-900">{formatWan(activeWave.actual_sales)}</span>
+                                </div>
+                                <div className="text-slate-500">
+                                    {waveCompare.baselineLabel}：<span className="font-medium text-slate-900">{waveCompare.baselineValue === null ? '—' : formatWan(waveCompare.baselineValue)}</span>
+                                </div>
+                                <div className={`font-medium ${waveCompare.deltaValue === null ? 'text-slate-400' : waveCompare.deltaValue >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                    {compareDeltaLabel}：
+                                    {waveCompare.deltaValue === null
+                                        ? '—'
+                                        : `${formatSignedWan(waveCompare.deltaValue)}（${formatSignedPct(waveCompare.deltaRate || 0)}）`}
+                                </div>
+                            </div>
+                            {waveCompare.note && <div className="mt-1 text-[11px] text-slate-500">{waveCompare.note}</div>}
                         </div>
                         <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
                             <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
@@ -470,7 +593,12 @@ export default function WavePlanningPanel({
                         <div>
                             <div className="text-xs uppercase tracking-wide text-slate-400">3.1 OTB / Buy Plan</div>
                             <h3 className="text-lg font-bold text-slate-900">OTB 预算推算（Open-To-Buy）</h3>
-                            <p className="mt-1 text-xs text-slate-500">预算口径与库存覆盖联动，输出 Tier 切分与波段预算分配。</p>
+                            <p className="mt-1 text-xs text-slate-500">
+                                预算口径与库存覆盖联动，输出 Tier 切分与波段预算分配。
+                                <span className="ml-2 inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                                    {sectionScopeHint}
+                                </span>
+                            </p>
                         </div>
                         <div className="flex flex-wrap gap-2">
                             <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">库存快照<div className="mt-0.5 text-base font-semibold text-slate-900">{formatDate(otbSummary.latestSnapshot)}</div></div>
@@ -510,7 +638,14 @@ export default function WavePlanningPanel({
                     <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
                         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                             <div><div className="text-xs uppercase tracking-wide text-slate-400">核心图 1</div><h3 className="text-base font-bold text-slate-900">波段时间轴 + 温度叙事</h3></div>
-                            <div className="flex flex-wrap gap-2">{regionOptions.map((region) => (<button key={region} onClick={() => setSelectedRegion(region)} className={`rounded-md border px-2.5 py-1 text-xs transition-colors ${region === activeRegion ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}>{region}</button>))}</div>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                                    {sectionScopeHint}
+                                </span>
+                                <div className="flex flex-wrap gap-2">
+                                    {regionOptions.map((region) => (<button key={region} onClick={() => setSelectedRegion(region)} className={`rounded-md border px-2.5 py-1 text-xs transition-colors ${region === activeRegion ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}>{region}</button>))}
+                                </div>
+                            </div>
                         </div>
                         <div className="mb-2 text-xs text-slate-500">当前区域：{activeRegion || '—'} ｜ 温度带：{activeRegionMeta?.temp_range || '—'}</div>
                         <ReactECharts option={timelineOption} style={{ height: 320 }} onEvents={timelineEvents} notMerge />
@@ -518,7 +653,12 @@ export default function WavePlanningPanel({
                     <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
                         <div className="flex items-center justify-between gap-2">
                             <div><div className="text-xs uppercase tracking-wide text-slate-400">核心图 2</div><h3 className="text-base font-bold text-slate-900">波段 SKU 堆叠配置图</h3></div>
-                            <div className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">当前波段总SKU：<span className="font-semibold text-slate-900">{activeStackRow?.total_sku ?? 0}</span></div>
+                            <div className="flex flex-wrap items-center justify-end gap-2">
+                                <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                                    {sectionScopeHint}
+                                </span>
+                                <div className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">当前波段总SKU：<span className="font-semibold text-slate-900">{activeStackRow?.total_sku ?? 0}</span></div>
+                            </div>
                         </div>
                         <ReactECharts option={stackOption} style={{ height: 320 }} onEvents={stackEvents} notMerge />
                     </div>
@@ -529,7 +669,12 @@ export default function WavePlanningPanel({
                 <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                         <div><div className="text-xs uppercase tracking-wide text-slate-400">下钻区</div><h3 className="text-base font-bold text-slate-900">{activeWave.season}-{activeWave.wave} 款式企划动作清单</h3></div>
-                        <div className="rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-600">波段主题：{activeWave.theme || '未配置'}</div>
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                                {sectionScopeHint}
+                            </span>
+                            <div className="rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-600">波段主题：{activeWave.theme || '未配置'}</div>
+                        </div>
                     </div>
                     <div className="mt-4 overflow-x-auto">
                         <table className="min-w-full text-xs">
@@ -543,7 +688,12 @@ export default function WavePlanningPanel({
             {planningView === 'wave' && (
                 <section className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                     <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                        <div className="text-xs uppercase tracking-wide text-slate-400">Insights</div>
+                        <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+                            <div className="text-xs uppercase tracking-wide text-slate-400">Insights</div>
+                            <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                                {sectionScopeHint}
+                            </span>
+                        </div>
                         <h3 className="text-base font-bold text-slate-900">自动结论</h3>
                         <ul className="mt-3 space-y-2 text-sm text-slate-700">
                             <li className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
@@ -558,7 +708,12 @@ export default function WavePlanningPanel({
                         </ul>
                     </div>
                     <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                        <div className="text-xs uppercase tracking-wide text-slate-400">Actions</div>
+                        <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+                            <div className="text-xs uppercase tracking-wide text-slate-400">Actions</div>
+                            <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                                {sectionScopeHint}
+                            </span>
+                        </div>
                         <h3 className="text-base font-bold text-slate-900">可执行方案</h3>
                         <div className="mt-3 space-y-2 text-sm text-slate-700">
                             <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">

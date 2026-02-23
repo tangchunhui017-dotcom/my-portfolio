@@ -29,64 +29,631 @@
   {
     "channel_id": "C04",
     "channel_type": "直营",
-    "channel_name": "上海恒隆品牌旗舰店",
+    "channel_name": "EAST-T2-01",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "二线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C05",
+    "channel_type": "加盟",
+    "channel_name": "EAST-T2-02",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "二线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C06",
+    "channel_type": "KA",
+    "channel_name": "EAST-T1-03",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "一线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C07",
+    "channel_type": "直营",
+    "channel_name": "EAST-T1-04",
     "is_online": false,
     "region": "华东",
     "city_tier": "一线",
     "store_format": "购物中心 Mall"
   },
   {
-    "channel_id": "C05",
+    "channel_id": "C08",
     "channel_type": "直营",
-    "channel_name": "广州天河体育大店",
+    "channel_name": "EAST-NT1-05",
     "is_online": false,
-    "region": "华南",
-    "city_tier": "一线",
-    "store_format": "街边大店 Street"
-  },
-  {
-    "channel_id": "C06",
-    "channel_type": "直营",
-    "channel_name": "北京三里屯大厦店",
-    "is_online": false,
-    "region": "华北",
-    "city_tier": "一线",
+    "region": "华东",
+    "city_tier": "新一线",
     "store_format": "购物中心 Mall"
   },
   {
-    "channel_id": "C07",
+    "channel_id": "C09",
+    "channel_type": "KA",
+    "channel_name": "EAST-NT1-06",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "新一线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C10",
     "channel_type": "加盟",
-    "channel_name": "苏州万达下沉加盟店",
+    "channel_name": "EAST-T1-07",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "一线",
+    "store_format": "奥特莱斯 Outlet"
+  },
+  {
+    "channel_id": "C11",
+    "channel_type": "加盟",
+    "channel_name": "EAST-NT1-08",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "新一线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C12",
+    "channel_type": "加盟",
+    "channel_name": "EAST-NT1-09",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "新一线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C13",
+    "channel_type": "KA",
+    "channel_name": "EAST-NT1-10",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "新一线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C14",
+    "channel_type": "直营",
+    "channel_name": "EAST-T2-11",
     "is_online": false,
     "region": "华东",
     "city_tier": "二线",
     "store_format": "百货 Store"
   },
   {
-    "channel_id": "C08",
+    "channel_id": "C15",
+    "channel_type": "直营",
+    "channel_name": "EAST-T1-12",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "一线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C16",
     "channel_type": "加盟",
-    "channel_name": "东莞步行街分销商",
+    "channel_name": "EAST-T1-13",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "一线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C17",
+    "channel_type": "加盟",
+    "channel_name": "EAST-NT1-14",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "新一线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C18",
+    "channel_type": "直营",
+    "channel_name": "EAST-T2-15",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "二线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C19",
+    "channel_type": "直营",
+    "channel_name": "EAST-T1-16",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "一线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C20",
+    "channel_type": "加盟",
+    "channel_name": "EAST-T2-17",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "二线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C21",
+    "channel_type": "加盟",
+    "channel_name": "EAST-T3-18",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "三线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C22",
+    "channel_type": "直营",
+    "channel_name": "EAST-T1-19",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "一线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C23",
+    "channel_type": "加盟",
+    "channel_name": "EAST-T3-20",
+    "is_online": false,
+    "region": "华东",
+    "city_tier": "三线",
+    "store_format": "奥特莱斯 Outlet"
+  },
+  {
+    "channel_id": "C24",
+    "channel_type": "加盟",
+    "channel_name": "SOUTH-NT1-01",
     "is_online": false,
     "region": "华南",
+    "city_tier": "新一线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C25",
+    "channel_type": "直营",
+    "channel_name": "SOUTH-T2-02",
+    "is_online": false,
+    "region": "华南",
+    "city_tier": "二线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C26",
+    "channel_type": "加盟",
+    "channel_name": "SOUTH-T3-03",
+    "is_online": false,
+    "region": "华南",
+    "city_tier": "三线",
+    "store_format": "奥特莱斯 Outlet"
+  },
+  {
+    "channel_id": "C27",
+    "channel_type": "直营",
+    "channel_name": "SOUTH-T2-04",
+    "is_online": false,
+    "region": "华南",
+    "city_tier": "二线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C28",
+    "channel_type": "加盟",
+    "channel_name": "SOUTH-NT1-05",
+    "is_online": false,
+    "region": "华南",
+    "city_tier": "新一线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C29",
+    "channel_type": "KA",
+    "channel_name": "SOUTH-T1-06",
+    "is_online": false,
+    "region": "华南",
+    "city_tier": "一线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C30",
+    "channel_type": "直营",
+    "channel_name": "SOUTH-NT1-07",
+    "is_online": false,
+    "region": "华南",
+    "city_tier": "新一线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C31",
+    "channel_type": "KA",
+    "channel_name": "SOUTH-T3-08",
+    "is_online": false,
+    "region": "华南",
+    "city_tier": "三线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C32",
+    "channel_type": "加盟",
+    "channel_name": "SOUTH-T2-09",
+    "is_online": false,
+    "region": "华南",
+    "city_tier": "二线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C33",
+    "channel_type": "加盟",
+    "channel_name": "SOUTH-T4-10",
+    "is_online": false,
+    "region": "华南",
+    "city_tier": "四线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C34",
+    "channel_type": "加盟",
+    "channel_name": "SOUTH-T2-11",
+    "is_online": false,
+    "region": "华南",
+    "city_tier": "二线",
+    "store_format": "奥特莱斯 Outlet"
+  },
+  {
+    "channel_id": "C35",
+    "channel_type": "KA",
+    "channel_name": "SOUTH-T2-12",
+    "is_online": false,
+    "region": "华南",
+    "city_tier": "二线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C36",
+    "channel_type": "加盟",
+    "channel_name": "SOUTH-T1-13",
+    "is_online": false,
+    "region": "华南",
+    "city_tier": "一线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C37",
+    "channel_type": "直营",
+    "channel_name": "SOUTH-T2-14",
+    "is_online": false,
+    "region": "华南",
+    "city_tier": "二线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C38",
+    "channel_type": "直营",
+    "channel_name": "NORTH-T3-01",
+    "is_online": false,
+    "region": "华北",
     "city_tier": "三线",
     "store_format": "街边大店 Street"
   },
   {
-    "channel_id": "C09",
+    "channel_id": "C39",
+    "channel_type": "直营",
+    "channel_name": "NORTH-NT1-02",
+    "is_online": false,
+    "region": "华北",
+    "city_tier": "新一线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C40",
+    "channel_type": "加盟",
+    "channel_name": "NORTH-T3-03",
+    "is_online": false,
+    "region": "华北",
+    "city_tier": "三线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C41",
+    "channel_type": "直营",
+    "channel_name": "NORTH-T4-04",
+    "is_online": false,
+    "region": "华北",
+    "city_tier": "四线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C42",
+    "channel_type": "直营",
+    "channel_name": "NORTH-T3-05",
+    "is_online": false,
+    "region": "华北",
+    "city_tier": "三线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C43",
+    "channel_type": "加盟",
+    "channel_name": "NORTH-T2-06",
+    "is_online": false,
+    "region": "华北",
+    "city_tier": "二线",
+    "store_format": "奥特莱斯 Outlet"
+  },
+  {
+    "channel_id": "C44",
     "channel_type": "KA",
-    "channel_name": "全国王府井百货联营",
+    "channel_name": "NORTH-T2-07",
+    "is_online": false,
+    "region": "华北",
+    "city_tier": "二线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C45",
+    "channel_type": "加盟",
+    "channel_name": "NORTH-NT1-08",
+    "is_online": false,
+    "region": "华北",
+    "city_tier": "新一线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C46",
+    "channel_type": "直营",
+    "channel_name": "NORTH-T1-09",
+    "is_online": false,
+    "region": "华北",
+    "city_tier": "一线",
+    "store_format": "奥特莱斯 Outlet"
+  },
+  {
+    "channel_id": "C47",
+    "channel_type": "加盟",
+    "channel_name": "NORTH-NT1-10",
+    "is_online": false,
+    "region": "华北",
+    "city_tier": "新一线",
+    "store_format": "奥特莱斯 Outlet"
+  },
+  {
+    "channel_id": "C48",
+    "channel_type": "直营",
+    "channel_name": "SW-T4-01",
+    "is_online": false,
+    "region": "西南",
+    "city_tier": "四线",
+    "store_format": "奥特莱斯 Outlet"
+  },
+  {
+    "channel_id": "C49",
+    "channel_type": "加盟",
+    "channel_name": "SW-T2-02",
+    "is_online": false,
+    "region": "西南",
+    "city_tier": "二线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C50",
+    "channel_type": "加盟",
+    "channel_name": "SW-NT1-03",
+    "is_online": false,
+    "region": "西南",
+    "city_tier": "新一线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C51",
+    "channel_type": "加盟",
+    "channel_name": "SW-T4-04",
+    "is_online": false,
+    "region": "西南",
+    "city_tier": "四线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C52",
+    "channel_type": "直营",
+    "channel_name": "SW-T3-05",
+    "is_online": false,
+    "region": "西南",
+    "city_tier": "三线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C53",
+    "channel_type": "加盟",
+    "channel_name": "SW-NT1-06",
+    "is_online": false,
+    "region": "西南",
+    "city_tier": "新一线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C54",
+    "channel_type": "KA",
+    "channel_name": "SW-T3-07",
+    "is_online": false,
+    "region": "西南",
+    "city_tier": "三线",
+    "store_format": "奥特莱斯 Outlet"
+  },
+  {
+    "channel_id": "C55",
+    "channel_type": "加盟",
+    "channel_name": "SW-T2-08",
+    "is_online": false,
+    "region": "西南",
+    "city_tier": "二线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C56",
+    "channel_type": "加盟",
+    "channel_name": "NW-T4-01",
+    "is_online": false,
+    "region": "西北",
+    "city_tier": "四线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C57",
+    "channel_type": "加盟",
+    "channel_name": "NW-T3-02",
+    "is_online": false,
+    "region": "西北",
+    "city_tier": "三线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C58",
+    "channel_type": "加盟",
+    "channel_name": "NW-T3-03",
+    "is_online": false,
+    "region": "西北",
+    "city_tier": "三线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C59",
+    "channel_type": "加盟",
+    "channel_name": "NW-T4-04",
+    "is_online": false,
+    "region": "西北",
+    "city_tier": "四线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C60",
+    "channel_type": "直营",
+    "channel_name": "NW-T4-05",
+    "is_online": false,
+    "region": "西北",
+    "city_tier": "四线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C61",
+    "channel_type": "直营",
+    "channel_name": "NE-T2-01",
+    "is_online": false,
+    "region": "东北",
+    "city_tier": "二线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C62",
+    "channel_type": "加盟",
+    "channel_name": "NE-T4-02",
+    "is_online": false,
+    "region": "东北",
+    "city_tier": "四线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C63",
+    "channel_type": "直营",
+    "channel_name": "NE-T3-03",
+    "is_online": false,
+    "region": "东北",
+    "city_tier": "三线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C64",
+    "channel_type": "加盟",
+    "channel_name": "NE-T3-04",
+    "is_online": false,
+    "region": "东北",
+    "city_tier": "三线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C65",
+    "channel_type": "KA",
+    "channel_name": "MID-T2-01",
+    "is_online": false,
+    "region": "全国统管",
+    "city_tier": "二线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C66",
+    "channel_type": "直营",
+    "channel_name": "MID-T2-02",
+    "is_online": false,
+    "region": "全国统管",
+    "city_tier": "二线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C67",
+    "channel_type": "KA",
+    "channel_name": "MID-T2-03",
+    "is_online": false,
+    "region": "全国统管",
+    "city_tier": "二线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C68",
+    "channel_type": "加盟",
+    "channel_name": "MID-NT1-04",
     "is_online": false,
     "region": "全国统管",
     "city_tier": "新一线",
     "store_format": "百货 Store"
   },
   {
-    "channel_id": "C10",
+    "channel_id": "C69",
+    "channel_type": "加盟",
+    "channel_name": "MID-T2-05",
+    "is_online": false,
+    "region": "全国统管",
+    "city_tier": "二线",
+    "store_format": "街边大店 Street"
+  },
+  {
+    "channel_id": "C70",
+    "channel_type": "加盟",
+    "channel_name": "MID-T3-06",
+    "is_online": false,
+    "region": "全国统管",
+    "city_tier": "三线",
+    "store_format": "购物中心 Mall"
+  },
+  {
+    "channel_id": "C71",
     "channel_type": "KA",
-    "channel_name": "滔搏运动多品牌集成",
+    "channel_name": "MID-T2-07",
     "is_online": false,
     "region": "全国统管",
     "city_tier": "二线",
     "store_format": "奥特莱斯 Outlet"
+  },
+  {
+    "channel_id": "C72",
+    "channel_type": "加盟",
+    "channel_name": "MID-NT1-08",
+    "is_online": false,
+    "region": "全国统管",
+    "city_tier": "新一线",
+    "store_format": "百货 Store"
+  },
+  {
+    "channel_id": "C73",
+    "channel_type": "KA",
+    "channel_name": "MID-NT1-09",
+    "is_online": false,
+    "region": "全国统管",
+    "city_tier": "新一线",
+    "store_format": "百货 Store"
   }
 ]

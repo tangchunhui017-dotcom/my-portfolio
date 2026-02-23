@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { formatMoneyCny } from '@/config/numberFormat';
 
 interface SummaryProps {
     kpis: {
@@ -22,9 +23,7 @@ function generateSummary(kpis: SummaryProps['kpis'], filterSummary: string): str
     const st = Math.round(kpis.avgSellThrough * 100);
     const margin = Math.round(kpis.avgMarginRate * 100);
     const discount = Math.round(kpis.avgDiscountDepth * 100);
-    const sales = kpis.totalNetSales >= 1_000_000
-        ? `¥${(kpis.totalNetSales / 1_000_000).toFixed(1)}M`
-        : `¥${(kpis.totalNetSales / 10_000).toFixed(0)}万`;
+    const sales = formatMoneyCny(kpis.totalNetSales);
     const top10 = Math.round(kpis.top10Concentration * 100);
 
     // 渠道最高/最低
