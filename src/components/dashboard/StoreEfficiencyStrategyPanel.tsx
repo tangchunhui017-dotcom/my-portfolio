@@ -98,6 +98,28 @@ function actionPriorityClass(priority: ActionPriority) {
     return 'bg-amber-50 text-amber-700 border border-amber-200';
 }
 
+function InfoHoverTip({ title, lines }: { title: string; lines: string[] }) {
+    return (
+        <div className="relative group">
+            <button
+                type="button"
+                aria-label={`${title}口径说明`}
+                className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-300 bg-white text-[11px] text-slate-500 transition-colors hover:text-slate-700 hover:border-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+            >
+                i
+            </button>
+            <div className="pointer-events-none absolute right-0 top-[calc(100%+8px)] z-30 w-[360px] max-w-[80vw] rounded-lg border border-slate-200 bg-white p-2.5 text-left text-[11px] leading-5 text-slate-600 shadow-lg opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+                <div className="mb-1 text-[11px] font-semibold text-slate-800">{title}</div>
+                <div className="space-y-0.5">
+                    {lines.map((line) => (
+                        <div key={line}>{line}</div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
 function pickTailTiers(tiers: string[]) {
     const explicit = tiers.filter((tier) => tier.includes('四线') || tier.includes('五线'));
     if (explicit.length > 0) return explicit;
@@ -192,7 +214,7 @@ export default function StoreEfficiencyStrategyPanel({
     const matrixOption = useMemo<EChartsOption>(
         () => ({
             animationDuration: 420,
-            grid: { left: 88, right: 20, top: 24, bottom: 50 },
+            grid: { left: 88, right: 20, top: 24, bottom: 72 },
             tooltip: {
                 trigger: 'item',
                 borderColor: '#E5E7EB',
@@ -232,9 +254,10 @@ export default function StoreEfficiencyStrategyPanel({
                 max: matrixRange.max,
                 orient: 'horizontal',
                 left: 'center',
-                bottom: 6,
+                bottom: 2,
                 calculable: false,
                 text: ['高', '低'],
+                textGap: 26,
                 textStyle: { color: '#64748B', fontSize: 11 },
                 inRange: {
                     color: ['#F8FAFC', '#E2E8F0', '#CBD5E1', '#94A3B8', '#334155'],
@@ -486,6 +509,31 @@ export default function StoreEfficiencyStrategyPanel({
 
     const bucketWarningThreshold = getWarningThreshold(bucketViewMode);
 
+    const bucketRuleText = useMemo(() => {
+        const hasAbsoluteLabel = salesBuckets.some((bucket) => /[<>≤≥]|\d+/.test(bucket));
+        if (hasAbsoluteLabel) {
+            return `分档口径：${salesBuckets.join(' / ')}；低产出占比 = 中档 + 低档。`;
+        }
+        return '分档口径：当前筛选下按门店业绩分位分组，超高=前25%，高=25%-50%，中=50%-75%，低=后25%；低产出占比 = 中档 + 低档。';
+    }, [salesBuckets]);
+
+    const bucketThresholdText = useMemo(
+        () =>
+            `警戒线：低产出占比 ≥ ${bucketWarningThreshold}%（当前视角：${
+                bucketViewMode === 'store' ? '按店数占比' : '按业绩占比'
+            }）。`,
+        [bucketViewMode, bucketWarningThreshold],
+    );
+
+    const bucketTooltipLines = useMemo(
+        () => [
+            bucketRuleText,
+            bucketThresholdText,
+            `当前视角：${bucketViewMode === 'store' ? '按店数占比%' : '按业绩占比%'}`,
+        ],
+        [bucketRuleText, bucketThresholdText, bucketViewMode],
+    );
+
     const bucketOption = useMemo<EChartsOption>(
         () => ({
             animationDuration: 420,
@@ -621,7 +669,10 @@ export default function StoreEfficiencyStrategyPanel({
 
                         <div className="rounded-xl border border-slate-200 p-3">
                             <div className="flex items-center justify-between gap-2 mb-2">
-                                <div className="text-sm font-semibold text-slate-900">图2：城市级别 × 门店业绩规模 长尾结构图</div>
+                                <div className="flex items-center gap-1.5">
+                                    <div className="text-sm font-semibold text-slate-900">图2：城市级别 × 门店业绩规模 长尾结构图</div>
+                                    <InfoHoverTip title="分档口径说明" lines={bucketTooltipLines} />
+                                </div>
                                 <div className="inline-flex rounded-md border border-slate-200 bg-slate-50 p-1">
                                     <button
                                         onClick={() => setBucketViewMode('store')}

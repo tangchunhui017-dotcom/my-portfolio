@@ -315,7 +315,7 @@ export default function DashboardPage() {
 
                     {/* ── 商品分析 Tab ──────────────────────────────── */}
                     {activeTab === 'product' && (
-                        <ProductAnalysisPanel filters={filters} setFilters={setFilters} />
+                        <ProductAnalysisPanel filters={filters} setFilters={setFilters} compareMode={compareMode} />
                     )}
 
                     {/* ── 渠道分析 Tab ──────────────────────────────── */}

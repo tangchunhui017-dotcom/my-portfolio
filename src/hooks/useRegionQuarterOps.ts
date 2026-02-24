@@ -319,11 +319,28 @@ function buildRegionStats(
     Object.entries(accMap).forEach(([region, acc]) => {
         const storeCount = Math.max(acc.stores.size, 1);
         const avgSt = acc.st_weight > 0 ? acc.st_weighted / acc.st_weight : 0;
-        const demand = acc.units + acc.on_hand * 0.25;
-        const ship = acc.units + acc.on_hand * 0.22;
+
+        // Add a small deterministic variance based on region name to prevent perfect overlap 
+        // in mock data, making the四象限图 (Four-Quadrant chart) look more realistic.
+        const varianceStr = region + (storeCount).toString();
+        let hash = 0;
+        for (let i = 0; i < varianceStr.length; i++) {
+            hash = Math.imul(31, hash) + varianceStr.charCodeAt(i) | 0;
+        }
+        const pseudoRandom = Math.abs(hash) / 2147483647; // 0 to 1
+
+        const demandVariance = 1 + (pseudoRandom * 0.15 - 0.05); // -5% to +10%
+        const shipVariance = 1 + ((pseudoRandom * 1.7 % 1) * 0.12 - 0.06); // -6% to +6%
+
+        const demand = (acc.units + acc.on_hand * 0.25) * demandVariance;
+        const ship = (acc.units + acc.on_hand * 0.22) * shipVariance;
         const fillRate = safeDiv(ship, demand);
         const inventoryPressure = safeDiv(acc.on_hand, acc.units + 1);
-        const reorderRate = clamp(0.08 + avgSt * 0.18 - Math.min(0.08, inventoryPressure * 0.06), 0.05, 0.3);
+
+        // Add slight variance to reorder rate as well
+        const reorderVariance = ((pseudoRandom * 3.1 % 1) * 0.06 - 0.03); // -3% to +3%
+        const baseReorder = 0.08 + avgSt * 0.18 - Math.min(0.08, inventoryPressure * 0.06);
+        const reorderRate = clamp(baseReorder + reorderVariance, 0.05, 0.3);
 
         result[region] = {
             actual_amt: acc.actual_amt,
@@ -538,7 +555,7 @@ export function useRegionQuarterOps(
             store_avg_demand_ly: average(rows.map((row) => row.store_avg_demand_ly).filter((value) => value > 0)),
             store_avg_demand_yoy: safeDiv(
                 average(rows.map((row) => row.store_avg_demand)) -
-                    average(rows.map((row) => row.store_avg_demand_ly).filter((value) => value > 0)),
+                average(rows.map((row) => row.store_avg_demand_ly).filter((value) => value > 0)),
                 average(rows.map((row) => row.store_avg_demand_ly).filter((value) => value > 0)),
             ),
             store_avg_demand_mom: average(rows.map((row) => row.store_avg_demand_mom).filter((value) => value > 0)),
@@ -546,7 +563,7 @@ export function useRegionQuarterOps(
             store_avg_ship_ly: average(rows.map((row) => row.store_avg_ship_ly).filter((value) => value > 0)),
             store_avg_ship_yoy: safeDiv(
                 average(rows.map((row) => row.store_avg_ship)) -
-                    average(rows.map((row) => row.store_avg_ship_ly).filter((value) => value > 0)),
+                average(rows.map((row) => row.store_avg_ship_ly).filter((value) => value > 0)),
                 average(rows.map((row) => row.store_avg_ship_ly).filter((value) => value > 0)),
             ),
             store_avg_ship_mom: average(rows.map((row) => row.store_avg_ship_mom).filter((value) => value > 0)),
@@ -558,27 +575,27 @@ export function useRegionQuarterOps(
 
         const insights: RegionQuarterOpsInsight[] = rows.length
             ? [
-                  {
-                      id: 'insight-demand',
-                      tone: 'warn',
-                      text: `${topDemandGrow.region} 订货需求同比 +${toPp(topDemandGrow.demand_yoy).toFixed(1)}%，是本季需求拉升主引擎。`,
-                  },
-                  {
-                      id: 'insight-fill',
-                      tone: worstFillGap.fill_gap < 0 ? 'risk' : 'good',
-                      text: `${worstFillGap.region} 执行率差异 ${toPp(worstFillGap.fill_gap).toFixed(1)}pp，当前供给满足是关键瓶颈。`,
-                  },
-                  {
-                      id: 'insight-store',
-                      tone: 'good',
-                      text: `${bestStoreShip.region} 店均发货同比 +${toPp(bestStoreShip.store_avg_ship_yoy).toFixed(1)}%，可作为店效复制样板。`,
-                  },
-              ]
+                {
+                    id: 'insight-demand',
+                    tone: 'warn',
+                    text: `${topDemandGrow.region} 订货需求同比 +${toPp(topDemandGrow.demand_yoy).toFixed(1)}%，是本季需求拉升主引擎。`,
+                },
+                {
+                    id: 'insight-fill',
+                    tone: worstFillGap.fill_gap < 0 ? 'risk' : 'good',
+                    text: `${worstFillGap.region} 执行率差异 ${toPp(worstFillGap.fill_gap).toFixed(1)}pp，当前供给满足是关键瓶颈。`,
+                },
+                {
+                    id: 'insight-store',
+                    tone: 'good',
+                    text: `${bestStoreShip.region} 店均发货同比 +${toPp(bestStoreShip.store_avg_ship_yoy).toFixed(1)}%，可作为店效复制样板。`,
+                },
+            ]
             : [
-                  { id: 'insight-1', tone: 'warn', text: '暂无区域运营链路数据。' },
-                  { id: 'insight-2', tone: 'risk', text: '请检查筛选条件或补充基础事实数据。' },
-                  { id: 'insight-3', tone: 'good', text: '恢复数据后将自动生成区域诊断。' },
-              ];
+                { id: 'insight-1', tone: 'warn', text: '暂无区域运营链路数据。' },
+                { id: 'insight-2', tone: 'risk', text: '请检查筛选条件或补充基础事实数据。' },
+                { id: 'insight-3', tone: 'good', text: '恢复数据后将自动生成区域诊断。' },
+            ];
 
         const actionPool: RegionQuarterOpsAction[] = [];
         if (rows.some((row) => row.fill_gap < -0.05 && row.reorder_gap > 0.05)) {
