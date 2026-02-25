@@ -5,12 +5,16 @@ import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
 import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
 import factSalesRaw from '@/../data/dashboard/fact_sales.json';
 import { DashboardFilters } from '@/hooks/useDashboardFilter';
+import { matchCategoryL1, matchCategoryL2, resolveFootwearCategory } from '@/config/categoryMapping';
+import { matchesAudienceFilter } from '@/config/audienceMapping';
+import { getPriceBandSortRank, matchesPriceBandFilter, normalizePriceBandKey } from '@/config/priceBand';
 
 interface DimSku {
     sku_id: string;
     sku_name?: string;
     category_id: string;
     category_name?: string;
+    category_l2?: string;
     price_band?: string;
     msrp: number;
     lifecycle: string;
@@ -106,52 +110,12 @@ export interface SkuDrillRow {
 
 const AGE_ORDER = ['18-25', '26-35', '36-45', '46+', '未知'];
 
-const AUDIENCE_TO_AGE_GROUP: Record<string, string[]> = {
-    '18-23岁 GenZ': ['18-25'],
-    '24-28岁 职场新人': ['26-35'],
-    '29-35岁 资深中产': ['26-35'],
-    '35岁以上': ['36-45', '46+'],
-};
-
 const salesRecords = factSalesRaw as FactSalesRecord[];
 const skus = dimSkuRaw as DimSku[];
 const channels = dimChannelRaw as DimChannel[];
 
-function parseBandRank(band: string) {
-    const match = band.match(/\d+/);
-    if (!match) return Number.MAX_SAFE_INTEGER;
-    return Number(match[0]);
-}
-
-function sortPriceBands(a: string, b: string) {
-    return parseBandRank(a) - parseBandRank(b);
-}
-
-function matchesPriceBand(msrp: number, selectedPriceBand: string | 'all') {
-    if (selectedPriceBand === 'all') return true;
-    const bandMap: Record<string, [number, number]> = {
-        PB1: [199, 299],
-        PB2: [300, 399],
-        PB3: [400, 499],
-        PB4: [500, 599],
-        PB5: [600, 699],
-        PB6: [700, 9999],
-        PB7: [800, 9999],
-    };
-    const range = bandMap[selectedPriceBand];
-    if (!range) return true;
-    return msrp >= range[0] && msrp <= range[1];
-}
-
 function matchesTargetAudience(sku: DimSku, selectedAudience: string | 'all') {
-    if (selectedAudience === 'all') return true;
-    if (sku.target_audience === selectedAudience) return true;
-    if (sku.target_age_group === selectedAudience) return true;
-    if (sku.target_age_group) {
-        const mapped = AUDIENCE_TO_AGE_GROUP[selectedAudience];
-        if (mapped?.includes(sku.target_age_group)) return true;
-    }
-    return false;
+    return matchesAudienceFilter(sku.target_audience, sku.target_age_group, selectedAudience);
 }
 
 function matchesColor(sku: DimSku, selectedColor: string | 'all') {
@@ -168,7 +132,8 @@ function shouldIncludeRecord(
     if (filters.season_year !== 'all' && String(sale.season_year) !== String(filters.season_year)) return false;
     if (filters.season !== 'all' && sale.season !== filters.season) return false;
     if (filters.wave !== 'all' && sale.wave !== filters.wave) return false;
-    if (filters.category_id !== 'all' && sku.category_id !== filters.category_id) return false;
+    if (!matchCategoryL1(filters.category_id, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
+    if (!matchCategoryL2(filters.sub_category, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
     if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
     if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
     if (filters.region !== 'all' && channel.region !== filters.region) return false;
@@ -176,7 +141,7 @@ function shouldIncludeRecord(
     if (filters.store_format !== 'all' && channel.store_format !== filters.store_format) return false;
     if (!matchesTargetAudience(sku, filters.target_audience)) return false;
     if (!matchesColor(sku, filters.color)) return false;
-    if (!matchesPriceBand(sku.msrp, filters.price_band)) return false;
+    if (!matchesPriceBandFilter(sku.msrp, filters.price_band, sku.price_band)) return false;
     return true;
 }
 
@@ -274,9 +239,16 @@ export function useProductAnalysis(filters: DashboardFilters) {
 
             const age_group = sku.target_age_group || '未知';
             const product_line = sku.product_line || '未定义产品线';
-            const price_band = sku.price_band || 'PBX';
+            const price_band = normalizePriceBandKey(sku.price_band);
             const color_family = sku.color_family || '未知';
-            const category = sku.category_name || sku.category_id || '未知品类';
+            const categoryMeta = resolveFootwearCategory(
+                sku.category_name,
+                sku.category_id,
+                sku.sku_name,
+                sku.category_l2,
+                sku.product_line,
+            );
+            const category = categoryMeta.categoryL2 || '未知品类';
 
             const ageLineKey = `${age_group}__${product_line}`;
             if (!ageLineMap[ageLineKey]) {
@@ -402,25 +374,32 @@ export function useProductAnalysis(filters: DashboardFilters) {
         }));
 
         const skuDrillRows: SkuDrillRow[] = Object.entries(skuAggMap)
-            .map(([skuId, agg]) => {
+            .reduce<SkuDrillRow[]>((rows, [skuId, agg]) => {
                 const sku = skuMap[skuId];
-                if (!sku) return null;
-                return {
+                if (!sku) return rows;
+                rows.push({
                     sku_id: skuId,
                     sku_name: sku.sku_name || skuId,
                     age_group: sku.target_age_group || '未知',
                     product_line: sku.product_line || '未定义产品线',
-                    category: sku.category_name || sku.category_id || '未知品类',
-                    price_band: sku.price_band || 'PBX',
+                    category:
+                        resolveFootwearCategory(
+                            sku.category_name,
+                            sku.category_id,
+                            sku.sku_name,
+                            sku.category_l2,
+                            sku.product_line,
+                        ).categoryL2 || '未知品类',
+                    price_band: normalizePriceBandKey(sku.price_band),
                     color_family: sku.color_family || '未知',
                     pairs_sold: agg.pairs_sold,
                     net_sales: agg.net_sales,
                     sell_through: safeDiv(agg.st_weighted, agg.st_weight),
                     gm_rate: safeDiv(agg.gm_weighted, agg.gm_weight),
                     asp: safeDiv(agg.net_sales, agg.pairs_sold),
-                };
-            })
-            .filter((row): row is SkuDrillRow => Boolean(row))
+                });
+                return rows;
+            }, [])
             .sort((a, b) => b.net_sales - a.net_sales);
 
         const productLineTotals = ageLineCells.reduce<Record<string, number>>((acc, item) => {
@@ -447,7 +426,8 @@ export function useProductAnalysis(filters: DashboardFilters) {
         const productLines = Array.from(new Set(ageLineCells.map((item) => item.product_line)))
             .sort((a, b) => (productLineTotals[b] || 0) - (productLineTotals[a] || 0));
 
-        const priceBands = Array.from(new Set(agePriceCells.map((item) => item.price_band))).sort(sortPriceBands);
+        const priceBands = Array.from(new Set(agePriceCells.map((item) => item.price_band)))
+            .sort((a, b) => getPriceBandSortRank(a) - getPriceBandSortRank(b));
         const categories = Array.from(new Set(colorCategoryCells.map((item) => item.category))).sort((a, b) => a.localeCompare(b, 'zh-CN'));
         const colorFamilies = colorStats.map((item) => item.color_family);
 

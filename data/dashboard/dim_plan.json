@@ -1,126 +1,122 @@
 {
-    "season_year": 2024,
-    "generated_at": "2024-01-01",
-    "note": "OTB计划数据（Mock）- 用于计划vs实际对比图",
-    "category_plan": [
-        {
-            "category_id": "跑步",
-            "plan_sales_amt": 3200000,
-            "plan_units": 4800,
-            "plan_sell_through": 0.82,
-            "plan_margin_rate": 0.44,
-            "plan_sku_count": 65
-        },
-        {
-            "category_id": "篮球",
-            "plan_sales_amt": 2400000,
-            "plan_units": 3200,
-            "plan_sell_through": 0.78,
-            "plan_margin_rate": 0.42,
-            "plan_sku_count": 48
-        },
-        {
-            "category_id": "训练",
-            "plan_sales_amt": 1800000,
-            "plan_units": 2800,
-            "plan_sell_through": 0.80,
-            "plan_margin_rate": 0.43,
-            "plan_sku_count": 42
-        },
-        {
-            "category_id": "休闲",
-            "plan_sales_amt": 2800000,
-            "plan_units": 5200,
-            "plan_sell_through": 0.85,
-            "plan_margin_rate": 0.46,
-            "plan_sku_count": 78
-        },
-        {
-            "category_id": "户外",
-            "plan_sales_amt": 1600000,
-            "plan_units": 2000,
-            "plan_sell_through": 0.76,
-            "plan_margin_rate": 0.41,
-            "plan_sku_count": 38
-        }
-    ],
-    "channel_plan": [
-        {
-            "channel_type": "电商",
-            "plan_sales_amt": 4800000,
-            "plan_sell_through": 0.88,
-            "plan_margin_rate": 0.40,
-            "plan_sales_share": 0.38
-        },
-        {
-            "channel_type": "直营",
-            "plan_sales_amt": 3600000,
-            "plan_sell_through": 0.82,
-            "plan_margin_rate": 0.50,
-            "plan_sales_share": 0.29
-        },
-        {
-            "channel_type": "加盟",
-            "plan_sales_amt": 2400000,
-            "plan_sell_through": 0.75,
-            "plan_margin_rate": 0.35,
-            "plan_sales_share": 0.19
-        },
-        {
-            "channel_type": "KA",
-            "plan_sales_amt": 1800000,
-            "plan_sell_through": 0.78,
-            "plan_margin_rate": 0.38,
-            "plan_sales_share": 0.14
-        }
-    ],
-    "overall_plan": {
-        "plan_total_sales": 12600000,
-        "plan_total_units": 18000,
-        "plan_avg_sell_through": 0.82,
-        "plan_avg_margin_rate": 0.44,
-        "plan_avg_discount_depth": 0.12,
-        "plan_active_skus": 240,
-        "plan_ending_inventory_units": 3200,
-        "plan_ending_inventory_amt": 1440000,
-        "plan_wos": 5.2
+  "season_year": 2024,
+  "generated_at": "2024-01-01",
+  "note": "OTB计划数据（Mock）- 用于计划vs实际对比图",
+  "category_plan": [
+    {
+      "category_id": "休闲/街头",
+      "plan_sales_amt": 7410612,
+      "plan_units": 11624,
+      "plan_sell_through": 0.8153,
+      "plan_margin_rate": 0.439,
+      "plan_sku_count": 169
     },
-    "price_band_plan": [
-        {
-            "price_band": "¥199-299",
-            "plan_sales_amt": 1890000,
-            "plan_sku_count": 48,
-            "plan_sell_through": 0.88
-        },
-        {
-            "price_band": "¥300-399",
-            "plan_sales_amt": 2520000,
-            "plan_sku_count": 62,
-            "plan_sell_through": 0.84
-        },
-        {
-            "price_band": "¥400-499",
-            "plan_sales_amt": 2520000,
-            "plan_sku_count": 55,
-            "plan_sell_through": 0.81
-        },
-        {
-            "price_band": "¥500-599",
-            "plan_sales_amt": 2520000,
-            "plan_sku_count": 46,
-            "plan_sell_through": 0.79
-        },
-        {
-            "price_band": "¥600-699",
-            "plan_sales_amt": 1890000,
-            "plan_sku_count": 30,
-            "plan_sell_through": 0.76
-        },
-        {
-            "price_band": "¥700+",
-            "plan_sales_amt": 1260000,
-            "plan_sku_count": 18,
-            "plan_sell_through": 0.72
-        }
-    ]
+    {
+      "category_id": "时尚/通勤",
+      "plan_sales_amt": 457959,
+      "plan_units": 718,
+      "plan_sell_through": 0.8153,
+      "plan_margin_rate": 0.439,
+      "plan_sku_count": 10
+    },
+    {
+      "category_id": "正装/通勤",
+      "plan_sales_amt": 1790204,
+      "plan_units": 2808,
+      "plan_sell_through": 0.8153,
+      "plan_margin_rate": 0.439,
+      "plan_sku_count": 41
+    },
+    {
+      "category_id": "靴类",
+      "plan_sales_amt": 374694,
+      "plan_units": 588,
+      "plan_sell_through": 0.8153,
+      "plan_margin_rate": 0.439,
+      "plan_sku_count": 9
+    },
+    {
+      "category_id": "凉拖鞋",
+      "plan_sales_amt": 166531,
+      "plan_units": 261,
+      "plan_sell_through": 0.8153,
+      "plan_margin_rate": 0.439,
+      "plan_sku_count": 4
+    },
+    {
+      "category_id": "户外鞋",
+      "plan_sales_amt": 1600000,
+      "plan_units": 2000,
+      "plan_sell_through": 0.76,
+      "plan_margin_rate": 0.41,
+      "plan_sku_count": 38
+    }
+  ],
+  "channel_plan": [
+    {
+      "channel_type": "电商",
+      "plan_sales_amt": 4800000,
+      "plan_sell_through": 0.88,
+      "plan_margin_rate": 0.4,
+      "plan_sales_share": 0.38
+    },
+    {
+      "channel_type": "直营",
+      "plan_sales_amt": 3600000,
+      "plan_sell_through": 0.82,
+      "plan_margin_rate": 0.5,
+      "plan_sales_share": 0.29
+    },
+    {
+      "channel_type": "加盟",
+      "plan_sales_amt": 2400000,
+      "plan_sell_through": 0.75,
+      "plan_margin_rate": 0.35,
+      "plan_sales_share": 0.19
+    },
+    {
+      "channel_type": "KA",
+      "plan_sales_amt": 1800000,
+      "plan_sell_through": 0.78,
+      "plan_margin_rate": 0.38,
+      "plan_sales_share": 0.14
+    }
+  ],
+  "overall_plan": {
+    "plan_total_sales": 12600000,
+    "plan_total_units": 18000,
+    "plan_avg_sell_through": 0.82,
+    "plan_avg_margin_rate": 0.44,
+    "plan_avg_discount_depth": 0.12,
+    "plan_active_skus": 240,
+    "plan_ending_inventory_units": 3200,
+    "plan_ending_inventory_amt": 1440000,
+    "plan_wos": 5.2
+  },
+  "price_band_plan": [
+    {
+      "price_band": "199-399",
+      "plan_sales_amt": 4410000,
+      "plan_sku_count": 110,
+      "plan_sell_through": 0.86
+    },
+    {
+      "price_band": "399-599",
+      "plan_sales_amt": 5040000,
+      "plan_sku_count": 101,
+      "plan_sell_through": 0.8
+    },
+    {
+      "price_band": "599-799",
+      "plan_sales_amt": 3150000,
+      "plan_sku_count": 48,
+      "plan_sell_through": 0.75
+    },
+    {
+      "price_band": "800+",
+      "plan_sales_amt": 1260000,
+      "plan_sku_count": 18,
+      "plan_sell_through": 0.72
+    }
+  ]
 }

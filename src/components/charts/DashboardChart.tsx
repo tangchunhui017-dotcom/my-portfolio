@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import * as echarts from 'echarts';
 import { THRESHOLDS } from '@/config/thresholds';
+import { FOOTWEAR_CATEGORY_CORE_ORDER } from '@/config/categoryMapping';
+import { PRICE_BANDS, PRICE_BAND_LABELS } from '@/config/priceBand';
 
 type SellThroughCaliber = 'cohort' | 'active' | 'stage';
 
@@ -38,10 +40,12 @@ interface DashboardChartProps {
     onSkuClick?: (sku: { name: string; price: number; sellThrough: number; units: number; lifecycle: '新品' | '常青' | '清仓' }) => void;
 }
 
-const PRICE_BAND_NAMES: Record<string, string> = {
-    PB1: '¥199-299', PB2: '¥300-399', PB3: '¥400-499',
-    PB4: '¥500-599', PB5: '¥600-699', PB6: '¥700+',
-};
+const PRICE_BAND_KEYS = PRICE_BANDS.map((band) => band.id);
+const PRICE_BAND_NAMES: Record<string, string> = PRICE_BANDS.reduce((acc, band) => {
+    acc[band.id] = PRICE_BAND_LABELS[band.id];
+    return acc;
+}, {} as Record<string, string>);
+const PRICE_BAND_LABEL_LIST = PRICE_BANDS.map((band) => band.label);
 
 const CHART_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
 
@@ -65,12 +69,12 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
         switch (type) {
             case 'bar': {
                 // SKU 价格带分布（计划 vs 实际）
-                const bands = ['PB1', 'PB2', 'PB3', 'PB4', 'PB5', 'PB6'];
+                const bands = PRICE_BAND_KEYS;
                 const actualUnits = bands.map(b => kpis.priceBandSales[b]?.units ?? 0);
                 const totalUnits = actualUnits.reduce((a, b) => a + b, 0);
                 const actualPct = actualUnits.map(u => totalUnits > 0 ? Math.round(u / totalUnits * 100) : 0);
                 // 模拟计划结构（理想金字塔）
-                const plannedPct = [15, 25, 30, 18, 8, 4];
+                const plannedPct = [32, 34, 22, 12];
                 // 各价格带的平均毛利率
                 const marginRates = bands.map(b => {
                     const d = kpis.priceBandSales[b];
@@ -299,8 +303,8 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
 
             case 'heatmap': {
                 // SKU × 价格带热力图（匹配 useDashboardFilter 的实际数据）
-                const categories = ['跳步', '篮球', '训练', '休闲', '户外'];
-                const bands = ['¥199-299', '¥300-399', '¥400-499', '¥500-599', '¥600-699', '¥700+'];
+                const categories = FOOTWEAR_CATEGORY_CORE_ORDER;
+                const bands = PRICE_BAND_LABEL_LIST;
 
                 const data = kpis.heatmapChartData ? (
                     heatmapMetric === 'sales' ? kpis.heatmapChartData.sales :
@@ -525,8 +529,8 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
     // 热力图行列合计 + 结构空缺清单
     const heatmapTotals = (() => {
         if (type !== 'heatmap' || !kpis?.heatmapChartData) return null;
-        const CATS = ['跳步', '篮球', '训练', '休闲', '户外'];
-        const BANDS = ['¥199-299', '¥300-399', '¥400-499', '¥500-599', '¥600-699', '¥700+'];
+        const CATS = FOOTWEAR_CATEGORY_CORE_ORDER;
+        const BANDS = PRICE_BAND_LABEL_LIST;
         const raw = heatmapMetric === 'sales' ? kpis.heatmapChartData.sales
             : heatmapMetric === 'st' ? kpis.heatmapChartData.sellThrough
                 : kpis.heatmapChartData.skuCounts;

@@ -36,8 +36,7 @@ function generateSummary(kpis: SummaryProps['kpis'], filterSummary: string): str
     // 价格带最强
     const bandEntries = Object.entries(kpis.priceBandSales).sort((a, b) => b[1].sales - a[1].sales);
     const topBandMap: Record<string, string> = {
-        PB1: '¥199-299', PB2: '¥300-399', PB3: '¥400-499',
-        PB4: '¥500-599', PB5: '¥600-699', PB6: '¥700+',
+        PB1: '199-399', PB2: '399-599', PB3: '599-799', PB4: '800+',
     };
     const topBand = topBandMap[bandEntries[0]?.[0]] ?? '--';
 

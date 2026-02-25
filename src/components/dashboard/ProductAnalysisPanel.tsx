@@ -40,7 +40,7 @@ export default function ProductAnalysisPanel({
                                 : 'text-slate-600 hover:text-slate-800'
                         }`}
                     >
-                        大盘与要素链路
+                        商品分析
                     </button>
                 </div>
             </div>

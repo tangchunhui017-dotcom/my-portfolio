@@ -17,6 +17,7 @@ import ChannelAnalysisPanel from '@/components/dashboard/ChannelAnalysisPanel';
 import CompetitorTrendPanel from '@/components/dashboard/CompetitorTrendPanel';
 import MonthlyAchievementPanel from '@/components/dashboard/MonthlyAchievementPanel';
 import { useState, useRef } from 'react';
+import { FOOTWEAR_CATEGORY_CORE_ORDER } from '@/config/categoryMapping';
 
 type DashboardTab = 'overview' | 'product' | 'channel' | 'planning' | 'otb' | 'competitor';
 
@@ -137,16 +138,16 @@ export default function DashboardPage() {
         const scatter = kpis.scatterSkus;
         const total = kpis.totalSkuCount ?? scatter.length;
         const lowSTCount = scatter.filter(s => s.sellThrough < 0.70).length;
-        const highPriceLowSTCount = scatter.filter(s => s.price >= 600 && s.sellThrough < 0.75).length;
-        const lowPriceEvergreen = scatter.filter(s => s.price < 400 && s.lifecycle === '常青');
+        const highPriceLowSTCount = scatter.filter(s => s.price >= 599 && s.sellThrough < 0.75).length;
+        const lowPriceEvergreen = scatter.filter(s => s.price < 399 && s.lifecycle === '常青');
         const lowPriceAvgST = lowPriceEvergreen.length > 0
             ? Math.round(lowPriceEvergreen.reduce((s, r) => s + r.sellThrough, 0) / lowPriceEvergreen.length * 100)
             : 0;
         const finding = lowPriceAvgST > 0
-            ? `¥400 以下常青款均值售罄率 ${lowPriceAvgST}%，位于高效区；¥600+ 新品中 ${highPriceLowSTCount} 款低于 75% 警戒线（共 ${total} 款中 ${lowSTCount} 款需关注）。`
-            : `当前筛选下共 ${lowSTCount} 款低售罄 SKU，其中 ¥600+ 高价新品 ${highPriceLowSTCount} 款风险最高。`;
+            ? `199-399 常青款均值售罄率 ${lowPriceAvgST}%，位于高效区；599+ 新品中 ${highPriceLowSTCount} 款低于 75% 警戒线（共 ${total} 款中 ${lowSTCount} 款需关注）。`
+            : `当前筛选下共 ${lowSTCount} 款低售罄 SKU，其中 599+ 高价新品 ${highPriceLowSTCount} 款风险最高。`;
         const decision = highPriceLowSTCount > 0
-            ? `对 ${highPriceLowSTCount} 款 ¥600+ 低售罄新品：W8 前启动渠道调拨；W10 后视情况降价 10-15%。`
+            ? `对 ${highPriceLowSTCount} 款 599+ 低售罄新品：W8 前启动渠道调拨；W10 后视情况降价 10-15%。`
             : '当前高价带售罄健康，维持现有定价策略，关注库存深度。';
         return { finding, decision, impact: '预计清仓库存减少 30%，避免季末大幅折扣，保护毛利 +1-2pp。' };
     })();
@@ -164,20 +165,19 @@ export default function DashboardPage() {
         const bands = Object.entries(pb).sort((a, b) => b[1].sales - a[1].sales);
         const topBand = bands[0];
         const BAND_LABELS: Record<string, string> = {
-            PB1: '¥199-299', PB2: '¥300-399', PB3: '¥400-499',
-            PB4: '¥500-599', PB5: '¥600-699', PB6: '¥700+',
+            PB1: '199-399', PB2: '399-599', PB3: '599-799', PB4: '800+',
         };
         const topBandPct = topBand && totalSales > 0 ? Math.round(topBand[1].sales / totalSales * 100) : 0;
         const topBandLabel = topBand ? BAND_LABELS[topBand[0]] : '--';
-        // 高价带（PB5+PB6）占比
-        const highPriceSales = (pb['PB5']?.sales ?? 0) + (pb['PB6']?.sales ?? 0);
+        // 高价带（PB3+PB4）占比
+        const highPriceSales = (pb['PB3']?.sales ?? 0) + (pb['PB4']?.sales ?? 0);
         const highPricePct = totalSales > 0 ? Math.round(highPriceSales / totalSales * 100) : 0;
         // 低价带（PB1）占比
         const lowPricePct = totalSales > 0 ? Math.round((pb['PB1']?.sales ?? 0) / totalSales * 100) : 0;
         return {
-            finding: `${topBandLabel} 为最高贡献价格带，占净销售额 ${topBandPct}%；¥600+ 高价带贡献 ${highPricePct}%，¥199-299 低价带占比 ${lowPricePct}%。`,
+            finding: `${topBandLabel} 为最高贡献价格带，占净销售额 ${topBandPct}%；599+ 高价带贡献 ${highPricePct}%，199-399 低价带占比 ${lowPricePct}%。`,
             decision: highPricePct < 15
-                ? `高价带占比偏低，下季度建议增加 ¥600+ SKU 数量（目标 +3 款），收缩低价带至 10% 以内。`
+                ? '高价带占比偏低，下季度建议增加 599+ SKU 数量（目标 +3 款），收缩低价带至 10% 以内。'
                 : `价格带结构合理，维持现有布局，重点提升 ${topBandLabel} 主力价格带深度。`,
             impact: '预计优化后均价提升 ¥30-50，毛利率改善 +1-2pp。',
         };
@@ -224,7 +224,7 @@ export default function DashboardPage() {
         return {
             finding: `${top.type} 渠道贡献最高（${top.pct}%），${bottom.type} 渠道贡献最低（${bottom.pct}%）；电商渠道合计占比 ${onlinePct}%。`,
             decision: bottom.pct < 15
-                ? `优化 ${bottom.type} 渠道陈列策略，聚焦 ¥399-599 主力价格带，减少清仓款比例。`
+                ? `优化 ${bottom.type} 渠道陈列策略，聚焦 399-599 主力价格带，减少清仓款比例。`
                 : '渠道结构均衡，维持现有分配，关注各渠道售罄节奏差异。',
             impact: `预计 ${bottom.type} 渠道售罄率提升 +5-8pp，减少折扣损失。`,
         };
@@ -239,8 +239,8 @@ export default function DashboardPage() {
         };
         const skuCounts = kpis.heatmapChartData.skuCounts;
         const maxCell = skuCounts.reduce((a, b) => b[2] > a[2] ? b : a, [0, 0, 0]);
-        const CATEGORIES = ['跑步', '篮球', '训练', '休闲', '户外'];
-        const BANDS = ['¥199-299', '¥300-399', '¥400-499', '¥500-599', '¥600-699', '¥700+'];
+        const CATEGORIES = FOOTWEAR_CATEGORY_CORE_ORDER;
+        const BANDS = ['199-399', '399-599', '599-799', '800+'];
         const maxCat = CATEGORIES[maxCell[1]] ?? '--';
         const maxBand = BANDS[maxCell[0]] ?? '--';
         const maxCount = maxCell[2];

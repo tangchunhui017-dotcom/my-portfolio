@@ -2,8 +2,8 @@
   {
     "sku_id": "S001",
     "sku_name": "Zoom Force v5",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB1",
@@ -16,13 +16,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "户外鞋",
+    "category_l2": "越野鞋"
   },
   {
     "sku_id": "S002",
     "sku_name": "Speed Trainer v4",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB1",
@@ -35,13 +37,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "户外鞋",
+    "category_l2": "越野鞋"
   },
   {
     "sku_id": "S003",
     "sku_name": "Pro Trainer v5",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "凉拖鞋",
+    "category_name": "凉拖鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB1",
@@ -54,13 +58,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "凉拖鞋",
+    "category_l2": "前空鞋"
   },
   {
     "sku_id": "S004",
     "sku_name": "Speed Dunk v1",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB1",
@@ -73,13 +79,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S005",
     "sku_name": "Zoom Hiker v10",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB1",
@@ -92,13 +100,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "拼色/跳色",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S006",
     "sku_name": "Speed Walker v8",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB1",
@@ -111,13 +121,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S007",
     "sku_name": "Max Walker v2",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB1",
@@ -130,13 +142,15 @@
     "gender": "中性",
     "launch_wave": "W3",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S008",
     "sku_name": "Pro Walker v5",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "靴类",
+    "category_name": "靴类",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB1",
@@ -149,13 +163,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "靴类",
+    "category_l2": "长筒靴"
   },
   {
     "sku_id": "S009",
     "sku_name": "Pro Trainer v8",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB1",
@@ -168,13 +184,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S010",
     "sku_name": "Ultra Force v1",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB1",
@@ -187,13 +205,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S011",
     "sku_name": "Zoom Walker v2",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB1",
@@ -206,13 +226,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "户外鞋",
+    "category_l2": "徒步登山"
   },
   {
     "sku_id": "S012",
     "sku_name": "Ultra Hiker v4",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB1",
@@ -225,13 +247,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S013",
     "sku_name": "Speed Dunk v1",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB1",
@@ -244,13 +268,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "户外鞋",
+    "category_l2": "徒步登山"
   },
   {
     "sku_id": "S014",
     "sku_name": "Air Hiker v1",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB1",
@@ -263,13 +289,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "牛津鞋"
   },
   {
     "sku_id": "S015",
     "sku_name": "Lite Force v9",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB1",
@@ -282,13 +310,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S016",
     "sku_name": "Ultra Glide v4",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB1",
@@ -301,13 +331,15 @@
     "gender": "中性",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S017",
     "sku_name": "Speed Force v4",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB1",
@@ -320,13 +352,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S018",
     "sku_name": "Pro Hiker v2",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB1",
@@ -339,13 +373,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S019",
     "sku_name": "Ultra Force v6",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB1",
@@ -358,13 +394,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S020",
     "sku_name": "Speed Dunk v3",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB1",
@@ -377,13 +415,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S021",
     "sku_name": "Pro Dunk v7",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB1",
@@ -396,13 +436,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S022",
     "sku_name": "Max Walker v2",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB1",
@@ -415,13 +457,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S023",
     "sku_name": "Ultra Trainer v8",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB1",
@@ -434,13 +478,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "灰",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S024",
     "sku_name": "Ultra Trainer v1",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB1",
@@ -453,13 +499,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S025",
     "sku_name": "Air Glide v8",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB1",
@@ -472,13 +520,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S026",
     "sku_name": "Lite Walker v7",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB1",
@@ -491,13 +541,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "徒步登山"
   },
   {
     "sku_id": "S027",
     "sku_name": "Lite Trainer v10",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB1",
@@ -510,13 +562,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S028",
     "sku_name": "Max Force v8",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB1",
@@ -529,13 +583,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S029",
     "sku_name": "Cloud Hiker v7",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB1",
@@ -548,13 +604,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S030",
     "sku_name": "Ultra Glide v1",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB1",
@@ -567,13 +625,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S031",
     "sku_name": "Max Runner v10",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB2",
@@ -586,13 +646,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "拼色/跳色",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S032",
     "sku_name": "Lite Force v4",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB2",
@@ -605,13 +667,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "拼色/跳色",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S033",
     "sku_name": "Air Dunk v6",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "靴类",
+    "category_name": "靴类",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB2",
@@ -624,13 +688,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "靴类",
+    "category_l2": "长筒靴"
   },
   {
     "sku_id": "S034",
     "sku_name": "Pro Runner v1",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "时尚/通勤",
+    "category_name": "时尚/通勤",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB2",
@@ -643,13 +709,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "时尚/通勤",
+    "category_l2": "芭蕾舞鞋"
   },
   {
     "sku_id": "S035",
     "sku_name": "Air Walker v8",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "凉拖鞋",
+    "category_name": "凉拖鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB2",
@@ -662,13 +730,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "凉拖鞋",
+    "category_l2": "前空鞋"
   },
   {
     "sku_id": "S036",
     "sku_name": "Air Hiker v2",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -681,13 +751,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S037",
     "sku_name": "Cloud Dunk v9",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB2",
@@ -700,13 +772,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S038",
     "sku_name": "Speed Force v6",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "靴类",
+    "category_name": "靴类",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB2",
@@ -719,13 +793,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "靴类",
+    "category_l2": "长筒靴"
   },
   {
     "sku_id": "S039",
     "sku_name": "Lite Trainer v5",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -738,13 +814,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "德比鞋"
   },
   {
     "sku_id": "S040",
     "sku_name": "Air Trainer v1",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB2",
@@ -757,13 +835,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "灰",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "牛津鞋"
   },
   {
     "sku_id": "S041",
     "sku_name": "Lite Walker v2",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -776,13 +856,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S042",
     "sku_name": "Pro Trainer v7",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -795,13 +877,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S043",
     "sku_name": "Ultra Runner v5",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB2",
@@ -814,13 +898,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "拼色/跳色",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S044",
     "sku_name": "Zoom Runner v3",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB2",
@@ -833,13 +919,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S045",
     "sku_name": "Max Dunk v3",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB2",
@@ -852,13 +940,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S046",
     "sku_name": "Zoom Trainer v2",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -871,13 +961,15 @@
     "gender": "中性",
     "launch_wave": "W3",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S047",
     "sku_name": "Ultra Glide v4",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -890,13 +982,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S048",
     "sku_name": "Pro Runner v1",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -909,13 +1003,15 @@
     "gender": "中性",
     "launch_wave": "W3",
     "color": "灰",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "溯溪鞋"
   },
   {
     "sku_id": "S049",
     "sku_name": "Speed Hiker v10",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -928,13 +1024,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "户外鞋",
+    "category_l2": "徒步登山"
   },
   {
     "sku_id": "S050",
     "sku_name": "Pro Glide v6",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB2",
@@ -947,13 +1045,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S051",
     "sku_name": "Zoom Walker v6",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -966,13 +1066,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "拼色/跳色",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S052",
     "sku_name": "Lite Hiker v9",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB2",
@@ -985,13 +1087,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S053",
     "sku_name": "Lite Hiker v1",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB2",
@@ -1004,13 +1108,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "拼色/跳色",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S054",
     "sku_name": "Lite Glide v3",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -1023,13 +1129,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S055",
     "sku_name": "Air Force v8",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB2",
@@ -1042,13 +1150,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "灰",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "正装/通勤",
+    "category_l2": "德比鞋"
   },
   {
     "sku_id": "S056",
     "sku_name": "Zoom Walker v8",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -1061,13 +1171,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S057",
     "sku_name": "Max Force v10",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB2",
@@ -1080,13 +1192,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S058",
     "sku_name": "Max Hiker v4",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB2",
@@ -1099,13 +1213,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S059",
     "sku_name": "Cloud Glide v4",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "凉拖鞋",
+    "category_name": "凉拖鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB2",
@@ -1118,13 +1234,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "凉拖鞋",
+    "category_l2": "前空鞋"
   },
   {
     "sku_id": "S060",
     "sku_name": "Zoom Dunk v7",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -1137,13 +1255,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S061",
     "sku_name": "Ultra Hiker v8",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -1156,13 +1276,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S062",
     "sku_name": "Max Glide v1",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB2",
@@ -1175,13 +1297,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S063",
     "sku_name": "Air Dunk v8",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -1194,13 +1318,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S064",
     "sku_name": "Cloud Force v8",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -1213,13 +1339,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "正装/通勤",
+    "category_l2": "牛津鞋"
   },
   {
     "sku_id": "S065",
     "sku_name": "Lite Hiker v4",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB2",
@@ -1232,13 +1360,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S066",
     "sku_name": "Max Force v10",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB2",
@@ -1251,13 +1381,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S067",
     "sku_name": "Ultra Walker v8",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB2",
@@ -1270,13 +1402,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "正装/通勤",
+    "category_l2": "豆豆鞋"
   },
   {
     "sku_id": "S068",
     "sku_name": "Lite Glide v8",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB2",
@@ -1289,13 +1423,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "拼色/跳色",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S069",
     "sku_name": "Speed Runner v5",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -1308,13 +1444,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "越野鞋"
   },
   {
     "sku_id": "S070",
     "sku_name": "Speed Trainer v9",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB2",
@@ -1327,13 +1465,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S071",
     "sku_name": "Speed Walker v6",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB2",
@@ -1346,13 +1486,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "溯溪鞋"
   },
   {
     "sku_id": "S072",
     "sku_name": "Pro Walker v2",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "时尚/通勤",
+    "category_name": "时尚/通勤",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB2",
@@ -1365,13 +1507,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "时尚/通勤",
+    "category_l2": "浅口单鞋"
   },
   {
     "sku_id": "S073",
     "sku_name": "Max Glide v9",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB2",
@@ -1384,13 +1528,15 @@
     "gender": "中性",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "户外鞋",
+    "category_l2": "越野鞋"
   },
   {
     "sku_id": "S074",
     "sku_name": "Max Force v4",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB2",
@@ -1403,13 +1549,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "拼色/跳色",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S075",
     "sku_name": "Speed Dunk v7",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "凉拖鞋",
+    "category_name": "凉拖鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB2",
@@ -1422,13 +1570,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "凉拖鞋",
+    "category_l2": "前空鞋"
   },
   {
     "sku_id": "S076",
     "sku_name": "Air Dunk v9",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB3",
@@ -1441,13 +1591,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "灰",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S077",
     "sku_name": "Zoom Force v9",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -1460,13 +1612,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S078",
     "sku_name": "Speed Dunk v10",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -1479,13 +1633,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "溯溪鞋"
   },
   {
     "sku_id": "S079",
     "sku_name": "Ultra Trainer v10",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -1498,13 +1654,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "拼色/跳色",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S080",
     "sku_name": "Zoom Force v1",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -1517,13 +1675,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S081",
     "sku_name": "Pro Force v5",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -1536,13 +1696,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "溯溪鞋"
   },
   {
     "sku_id": "S082",
     "sku_name": "Lite Glide v8",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -1555,13 +1717,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "越野鞋"
   },
   {
     "sku_id": "S083",
     "sku_name": "Air Runner v4",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "靴类",
+    "category_name": "靴类",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB3",
@@ -1574,13 +1738,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "靴类",
+    "category_l2": "长筒靴"
   },
   {
     "sku_id": "S084",
     "sku_name": "Ultra Trainer v5",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -1593,13 +1759,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S085",
     "sku_name": "Pro Glide v4",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -1612,13 +1780,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "沙/大地",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "正装/通勤",
+    "category_l2": "德比鞋"
   },
   {
     "sku_id": "S086",
     "sku_name": "Lite Runner v6",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -1631,13 +1801,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S087",
     "sku_name": "Lite Dunk v8",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -1650,13 +1822,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S088",
     "sku_name": "Speed Dunk v1",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -1669,13 +1843,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S089",
     "sku_name": "Air Trainer v10",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB3",
@@ -1688,13 +1864,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "银/金属",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S090",
     "sku_name": "Pro Hiker v4",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -1707,13 +1885,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S091",
     "sku_name": "Speed Runner v10",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -1726,13 +1906,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S092",
     "sku_name": "Lite Hiker v5",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -1745,13 +1927,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S093",
     "sku_name": "Air Dunk v1",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "靴类",
+    "category_name": "靴类",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB3",
@@ -1764,13 +1948,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "灰",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "靴类",
+    "category_l2": "长筒靴"
   },
   {
     "sku_id": "S094",
     "sku_name": "Max Glide v2",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -1783,13 +1969,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S095",
     "sku_name": "Zoom Runner v3",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -1802,13 +1990,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S096",
     "sku_name": "Zoom Hiker v10",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -1821,13 +2011,15 @@
     "gender": "中性",
     "launch_wave": "W3",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S097",
     "sku_name": "Lite Trainer v4",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -1840,13 +2032,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S098",
     "sku_name": "Speed Walker v2",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -1859,13 +2053,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S099",
     "sku_name": "Zoom Force v5",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -1878,13 +2074,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "牛津鞋"
   },
   {
     "sku_id": "S100",
     "sku_name": "Pro Force v1",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -1897,13 +2095,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "豆豆鞋"
   },
   {
     "sku_id": "S101",
     "sku_name": "Cloud Hiker v10",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -1916,13 +2116,15 @@
     "gender": "中性",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "徒步登山"
   },
   {
     "sku_id": "S102",
     "sku_name": "Zoom Runner v10",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -1935,13 +2137,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S103",
     "sku_name": "Cloud Glide v6",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -1954,13 +2158,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S104",
     "sku_name": "Speed Trainer v9",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -1973,13 +2179,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S105",
     "sku_name": "Speed Walker v8",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -1992,13 +2200,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "沙/大地",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "正装/通勤",
+    "category_l2": "豆豆鞋"
   },
   {
     "sku_id": "S106",
     "sku_name": "Pro Hiker v10",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2011,13 +2221,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "拼色/跳色",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S107",
     "sku_name": "Speed Trainer v4",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB3",
@@ -2030,13 +2242,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S108",
     "sku_name": "Zoom Trainer v10",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB3",
@@ -2049,13 +2263,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "徒步登山"
   },
   {
     "sku_id": "S109",
     "sku_name": "Speed Runner v5",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -2068,13 +2284,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S110",
     "sku_name": "Zoom Force v6",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB3",
@@ -2087,13 +2305,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S111",
     "sku_name": "Cloud Walker v6",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2106,13 +2326,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S112",
     "sku_name": "Air Hiker v10",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -2125,13 +2347,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S113",
     "sku_name": "Cloud Trainer v5",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB3",
@@ -2144,13 +2368,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S114",
     "sku_name": "Pro Walker v5",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -2163,13 +2389,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "银/金属",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S115",
     "sku_name": "Cloud Runner v8",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -2182,13 +2410,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "溯溪鞋"
   },
   {
     "sku_id": "S116",
     "sku_name": "Pro Force v7",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2201,13 +2431,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S117",
     "sku_name": "Max Glide v8",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -2220,13 +2452,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "银/金属",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S118",
     "sku_name": "Lite Trainer v1",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2239,13 +2473,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "拼色/跳色",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S119",
     "sku_name": "Ultra Trainer v10",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -2258,13 +2494,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "正装/通勤",
+    "category_l2": "牛津鞋"
   },
   {
     "sku_id": "S120",
     "sku_name": "Pro Force v9",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -2277,13 +2515,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "正装/通勤",
+    "category_l2": "德比鞋"
   },
   {
     "sku_id": "S121",
     "sku_name": "Lite Dunk v1",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2296,13 +2536,15 @@
     "gender": "中性",
     "launch_wave": "W3",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "户外鞋",
+    "category_l2": "徒步登山"
   },
   {
     "sku_id": "S122",
     "sku_name": "Speed Trainer v7",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2315,13 +2557,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S123",
     "sku_name": "Ultra Trainer v3",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -2334,13 +2578,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "正装/通勤",
+    "category_l2": "牛津鞋"
   },
   {
     "sku_id": "S124",
     "sku_name": "Pro Force v4",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -2353,13 +2599,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S125",
     "sku_name": "Max Walker v4",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -2372,13 +2620,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "银/金属",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S126",
     "sku_name": "Pro Walker v8",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2391,13 +2641,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S127",
     "sku_name": "Pro Dunk v8",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -2410,13 +2662,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "灰",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S128",
     "sku_name": "Zoom Dunk v5",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -2429,13 +2683,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S129",
     "sku_name": "Pro Glide v10",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -2448,13 +2704,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S130",
     "sku_name": "Lite Force v3",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -2467,13 +2725,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S131",
     "sku_name": "Speed Walker v10",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB3",
@@ -2486,13 +2746,15 @@
     "gender": "中性",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "越野鞋"
   },
   {
     "sku_id": "S132",
     "sku_name": "Air Runner v4",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB3",
@@ -2505,13 +2767,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S133",
     "sku_name": "Speed Glide v7",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -2524,13 +2788,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "溯溪鞋"
   },
   {
     "sku_id": "S134",
     "sku_name": "Zoom Force v7",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -2543,13 +2809,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S135",
     "sku_name": "Ultra Force v10",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -2562,13 +2830,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S136",
     "sku_name": "Zoom Trainer v3",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2581,13 +2851,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S137",
     "sku_name": "Air Dunk v4",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2600,13 +2872,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S138",
     "sku_name": "Max Force v2",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -2619,13 +2893,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "银/金属",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S139",
     "sku_name": "Zoom Hiker v1",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2638,13 +2914,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S140",
     "sku_name": "Air Walker v5",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -2657,13 +2935,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "银/金属",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S141",
     "sku_name": "Pro Trainer v9",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -2676,13 +2956,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S142",
     "sku_name": "Max Hiker v1",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -2695,13 +2977,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S143",
     "sku_name": "Air Glide v7",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB3",
@@ -2714,13 +2998,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "牛津鞋"
   },
   {
     "sku_id": "S144",
     "sku_name": "Lite Trainer v2",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2733,13 +3019,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S145",
     "sku_name": "Speed Hiker v10",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB3",
@@ -2752,13 +3040,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S146",
     "sku_name": "Speed Runner v7",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2771,13 +3061,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S147",
     "sku_name": "Air Glide v2",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2790,13 +3082,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "黑",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S148",
     "sku_name": "Ultra Glide v5",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2809,13 +3103,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S149",
     "sku_name": "Pro Hiker v4",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB3",
@@ -2828,13 +3124,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S150",
     "sku_name": "Pro Glide v10",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB3",
@@ -2847,13 +3145,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S151",
     "sku_name": "Air Dunk v8",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB4",
@@ -2866,13 +3166,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S152",
     "sku_name": "Pro Force v3",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -2885,13 +3187,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S153",
     "sku_name": "Air Trainer v9",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB4",
@@ -2904,13 +3208,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S154",
     "sku_name": "Air Dunk v5",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB4",
@@ -2923,13 +3229,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S155",
     "sku_name": "Ultra Glide v10",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB4",
@@ -2942,13 +3250,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "拼色/跳色",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S156",
     "sku_name": "Ultra Hiker v6",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB4",
@@ -2961,13 +3271,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "户外鞋",
+    "category_l2": "越野鞋"
   },
   {
     "sku_id": "S157",
     "sku_name": "Lite Dunk v8",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "时尚/通勤",
+    "category_name": "时尚/通勤",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB4",
@@ -2980,13 +3292,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "时尚/通勤",
+    "category_l2": "芭蕾舞鞋"
   },
   {
     "sku_id": "S158",
     "sku_name": "Pro Force v6",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -2999,13 +3313,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "正装/通勤",
+    "category_l2": "德比鞋"
   },
   {
     "sku_id": "S159",
     "sku_name": "Ultra Force v4",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB4",
@@ -3018,13 +3334,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S160",
     "sku_name": "Ultra Walker v2",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "时尚/通勤",
+    "category_name": "时尚/通勤",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB4",
@@ -3037,13 +3355,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "时尚/通勤",
+    "category_l2": "浅口单鞋"
   },
   {
     "sku_id": "S161",
     "sku_name": "Air Glide v5",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "时尚/通勤",
+    "category_name": "时尚/通勤",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB4",
@@ -3056,13 +3376,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "时尚/通勤",
+    "category_l2": "芭蕾舞鞋"
   },
   {
     "sku_id": "S162",
     "sku_name": "Air Hiker v6",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB4",
@@ -3075,13 +3397,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S163",
     "sku_name": "Speed Force v2",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB4",
@@ -3094,13 +3418,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S164",
     "sku_name": "Speed Walker v9",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3113,13 +3439,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "正装/通勤",
+    "category_l2": "牛津鞋"
   },
   {
     "sku_id": "S165",
     "sku_name": "Air Hiker v4",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB4",
@@ -3132,13 +3460,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "溯溪鞋"
   },
   {
     "sku_id": "S166",
     "sku_name": "Ultra Trainer v9",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB4",
@@ -3151,13 +3481,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S167",
     "sku_name": "Speed Runner v9",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB4",
@@ -3170,13 +3502,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S168",
     "sku_name": "Ultra Runner v1",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3189,13 +3523,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S169",
     "sku_name": "Speed Glide v2",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB4",
@@ -3208,13 +3544,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S170",
     "sku_name": "Lite Glide v8",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB4",
@@ -3227,13 +3565,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S171",
     "sku_name": "Speed Trainer v6",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB4",
@@ -3246,13 +3586,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S172",
     "sku_name": "Lite Force v10",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB4",
@@ -3265,13 +3607,15 @@
     "gender": "男",
     "launch_wave": "W4",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S173",
     "sku_name": "Ultra Walker v2",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB4",
@@ -3284,13 +3628,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S174",
     "sku_name": "Max Glide v7",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3303,13 +3649,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S175",
     "sku_name": "Max Dunk v7",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB4",
@@ -3322,13 +3670,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "拼色/跳色",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S176",
     "sku_name": "Lite Walker v9",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB4",
@@ -3341,13 +3691,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S177",
     "sku_name": "Max Glide v10",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB4",
@@ -3360,13 +3712,15 @@
     "gender": "男",
     "launch_wave": "W4",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S178",
     "sku_name": "Pro Dunk v8",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB4",
@@ -3379,13 +3733,15 @@
     "gender": "男",
     "launch_wave": "W4",
     "color": "银/金属",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S179",
     "sku_name": "Cloud Glide v2",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB4",
@@ -3398,13 +3754,15 @@
     "gender": "中性",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S180",
     "sku_name": "Speed Glide v8",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3417,13 +3775,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "豆豆鞋"
   },
   {
     "sku_id": "S181",
     "sku_name": "Max Hiker v10",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3436,13 +3796,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "正装/通勤",
+    "category_l2": "德比鞋"
   },
   {
     "sku_id": "S182",
     "sku_name": "Pro Dunk v4",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3455,13 +3817,15 @@
     "gender": "中性",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "户外鞋",
+    "category_l2": "越野鞋"
   },
   {
     "sku_id": "S183",
     "sku_name": "Zoom Glide v5",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB4",
@@ -3474,13 +3838,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S184",
     "sku_name": "Max Runner v4",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3493,13 +3859,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S185",
     "sku_name": "Air Runner v2",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3512,13 +3880,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S186",
     "sku_name": "Lite Hiker v4",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB4",
@@ -3531,13 +3901,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S187",
     "sku_name": "Zoom Runner v3",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB4",
@@ -3550,13 +3922,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "银/金属",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S188",
     "sku_name": "Cloud Dunk v6",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3569,13 +3943,15 @@
     "gender": "中性",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "徒步登山"
   },
   {
     "sku_id": "S189",
     "sku_name": "Zoom Dunk v6",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3588,13 +3964,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S190",
     "sku_name": "Pro Trainer v5",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3607,13 +3985,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S191",
     "sku_name": "Cloud Glide v1",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB4",
@@ -3626,13 +4006,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S192",
     "sku_name": "Cloud Hiker v3",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB4",
@@ -3645,13 +4027,15 @@
     "gender": "男",
     "launch_wave": "W4",
     "color": "黑",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "户外鞋",
+    "category_l2": "溯溪鞋"
   },
   {
     "sku_id": "S193",
     "sku_name": "Pro Dunk v5",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB4",
@@ -3664,13 +4048,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S194",
     "sku_name": "Cloud Trainer v10",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB4",
@@ -3683,13 +4069,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "拼色/跳色",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S195",
     "sku_name": "Ultra Runner v3",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "靴类",
+    "category_name": "靴类",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB4",
@@ -3702,13 +4090,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "靴类",
+    "category_l2": "长筒靴"
   },
   {
     "sku_id": "S196",
     "sku_name": "Lite Runner v8",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB4",
@@ -3721,13 +4111,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S197",
     "sku_name": "Speed Walker v2",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3740,13 +4132,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "灰",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S198",
     "sku_name": "Cloud Force v7",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB4",
@@ -3759,13 +4153,15 @@
     "gender": "男",
     "launch_wave": "W4",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S199",
     "sku_name": "Cloud Force v2",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB4",
@@ -3778,13 +4174,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S200",
     "sku_name": "Pro Hiker v8",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "靴类",
+    "category_name": "靴类",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB4",
@@ -3797,13 +4195,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "靴类",
+    "category_l2": "长筒靴"
   },
   {
     "sku_id": "S201",
     "sku_name": "Ultra Glide v10",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB4",
@@ -3816,13 +4216,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "黑",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S202",
     "sku_name": "Lite Glide v5",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB4",
@@ -3835,13 +4237,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "户外鞋",
+    "category_l2": "溯溪鞋"
   },
   {
     "sku_id": "S203",
     "sku_name": "Pro Glide v9",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3854,13 +4258,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S204",
     "sku_name": "Max Walker v8",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3873,13 +4279,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "正装/通勤",
+    "category_l2": "德比鞋"
   },
   {
     "sku_id": "S205",
     "sku_name": "Cloud Hiker v5",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "时尚/通勤",
+    "category_name": "时尚/通勤",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB4",
@@ -3892,13 +4300,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "时尚/通勤",
+    "category_l2": "浅口单鞋"
   },
   {
     "sku_id": "S206",
     "sku_name": "Speed Glide v4",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3911,13 +4321,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S207",
     "sku_name": "Cloud Force v7",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3930,13 +4342,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "徒步登山"
   },
   {
     "sku_id": "S208",
     "sku_name": "Lite Runner v5",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3949,13 +4363,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S209",
     "sku_name": "Air Force v5",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB4",
@@ -3968,13 +4384,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S210",
     "sku_name": "Air Dunk v3",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB4",
@@ -3987,13 +4405,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "正装/通勤",
+    "category_l2": "牛津鞋"
   },
   {
     "sku_id": "S211",
     "sku_name": "Speed Force v8",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB5",
@@ -4006,13 +4426,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "正装/通勤",
+    "category_l2": "德比鞋"
   },
   {
     "sku_id": "S212",
     "sku_name": "Ultra Hiker v4",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB5",
@@ -4025,13 +4447,15 @@
     "gender": "中性",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "户外鞋",
+    "category_l2": "溯溪鞋"
   },
   {
     "sku_id": "S213",
     "sku_name": "Cloud Runner v10",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB5",
@@ -4044,13 +4468,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S214",
     "sku_name": "Ultra Force v8",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4063,13 +4489,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "拼色/跳色",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S215",
     "sku_name": "Speed Dunk v2",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB5",
@@ -4082,13 +4510,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "拼色/跳色",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S216",
     "sku_name": "Cloud Force v4",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4101,13 +4531,15 @@
     "gender": "男",
     "launch_wave": "W4",
     "color": "灰",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S217",
     "sku_name": "Ultra Glide v8",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4120,13 +4552,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "黑",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S218",
     "sku_name": "Zoom Runner v7",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB5",
@@ -4139,13 +4573,15 @@
     "gender": "中性",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S219",
     "sku_name": "Air Glide v10",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4158,13 +4594,15 @@
     "gender": "男",
     "launch_wave": "W4",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S220",
     "sku_name": "Lite Runner v5",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB5",
@@ -4177,13 +4615,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S221",
     "sku_name": "Pro Force v10",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB5",
@@ -4196,13 +4636,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S222",
     "sku_name": "Air Glide v6",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4215,13 +4657,15 @@
     "gender": "男",
     "launch_wave": "W4",
     "color": "银/金属",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S223",
     "sku_name": "Air Runner v3",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB5",
@@ -4234,13 +4678,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S224",
     "sku_name": "Ultra Walker v4",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB5",
@@ -4253,13 +4699,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "灰",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S225",
     "sku_name": "Air Dunk v8",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB5",
@@ -4272,13 +4720,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S226",
     "sku_name": "Lite Runner v10",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB5",
@@ -4291,13 +4741,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "越野鞋"
   },
   {
     "sku_id": "S227",
     "sku_name": "Max Walker v7",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB5",
@@ -4310,13 +4762,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S228",
     "sku_name": "Lite Force v10",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB5",
@@ -4329,13 +4783,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "银/金属",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S229",
     "sku_name": "Speed Runner v1",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB5",
@@ -4348,13 +4804,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S230",
     "sku_name": "Ultra Dunk v1",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4367,13 +4825,15 @@
     "gender": "男",
     "launch_wave": "W4",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S231",
     "sku_name": "Ultra Glide v6",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "靴类",
+    "category_name": "靴类",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB5",
@@ -4386,13 +4846,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "靴类",
+    "category_l2": "长筒靴"
   },
   {
     "sku_id": "S232",
     "sku_name": "Max Trainer v8",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB5",
@@ -4405,13 +4867,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S233",
     "sku_name": "Pro Walker v8",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4424,13 +4888,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S234",
     "sku_name": "Air Runner v9",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB5",
@@ -4443,13 +4909,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "溯溪鞋"
   },
   {
     "sku_id": "S235",
     "sku_name": "Ultra Glide v10",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4462,13 +4930,15 @@
     "gender": "中性",
     "launch_wave": "W4",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "越野鞋"
   },
   {
     "sku_id": "S236",
     "sku_name": "Speed Runner v7",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4481,13 +4951,15 @@
     "gender": "男",
     "launch_wave": "W4",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S237",
     "sku_name": "Zoom Glide v5",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB5",
@@ -4500,13 +4972,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "拼色/跳色",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S238",
     "sku_name": "Speed Force v4",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4519,13 +4993,15 @@
     "gender": "中性",
     "launch_wave": "W4",
     "color": "沙/大地",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S239",
     "sku_name": "Lite Hiker v10",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "时尚/通勤",
+    "category_name": "时尚/通勤",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB5",
@@ -4538,13 +5014,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "时尚/通勤",
+    "category_l2": "浅口单鞋"
   },
   {
     "sku_id": "S240",
     "sku_name": "Zoom Glide v2",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4557,13 +5035,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S241",
     "sku_name": "Cloud Runner v2",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB5",
@@ -4576,13 +5056,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S242",
     "sku_name": "Max Force v8",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB5",
@@ -4595,13 +5077,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S243",
     "sku_name": "Max Hiker v1",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB5",
@@ -4614,13 +5098,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S244",
     "sku_name": "Ultra Force v5",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB5",
@@ -4633,13 +5119,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S245",
     "sku_name": "Speed Dunk v1",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB5",
@@ -4652,13 +5140,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S246",
     "sku_name": "Max Walker v9",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4671,13 +5161,15 @@
     "gender": "女",
     "launch_wave": "W4",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S247",
     "sku_name": "Lite Runner v2",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "时尚/通勤",
+    "category_name": "时尚/通勤",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB5",
@@ -4690,13 +5182,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "时尚/通勤",
+    "category_l2": "浅口单鞋"
   },
   {
     "sku_id": "S248",
     "sku_name": "Max Force v2",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4709,13 +5203,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S249",
     "sku_name": "Pro Walker v9",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB5",
@@ -4728,13 +5224,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "牛津鞋"
   },
   {
     "sku_id": "S250",
     "sku_name": "Ultra Force v1",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4747,13 +5245,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S251",
     "sku_name": "Air Hiker v9",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4766,13 +5266,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S252",
     "sku_name": "Ultra Hiker v8",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB5",
@@ -4785,13 +5287,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S253",
     "sku_name": "Zoom Dunk v4",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4804,13 +5308,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S254",
     "sku_name": "Pro Dunk v4",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "靴类",
+    "category_name": "靴类",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB5",
@@ -4823,13 +5329,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "靴类",
+    "category_l2": "长筒靴"
   },
   {
     "sku_id": "S255",
     "sku_name": "Ultra Force v1",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB5",
@@ -4842,13 +5350,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S256",
     "sku_name": "Lite Trainer v10",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB6",
@@ -4861,13 +5371,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "拼色/跳色",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S257",
     "sku_name": "Ultra Runner v3",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB6",
@@ -4880,13 +5392,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S258",
     "sku_name": "Ultra Glide v1",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB6",
@@ -4899,13 +5413,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S259",
     "sku_name": "Speed Trainer v4",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB6",
@@ -4918,13 +5434,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "银/金属",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S260",
     "sku_name": "Lite Hiker v1",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB6",
@@ -4937,13 +5455,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "拼色/跳色",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S261",
     "sku_name": "Ultra Walker v7",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB6",
@@ -4956,13 +5476,15 @@
     "gender": "中性",
     "launch_wave": "W3",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "户外鞋",
+    "category_l2": "溯溪鞋"
   },
   {
     "sku_id": "S262",
     "sku_name": "Pro Walker v9",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "时尚/通勤",
+    "category_name": "时尚/通勤",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB6",
@@ -4975,13 +5497,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "时尚/通勤",
+    "category_l2": "芭蕾舞鞋"
   },
   {
     "sku_id": "S263",
     "sku_name": "Pro Force v8",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB6",
@@ -4994,13 +5518,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S264",
     "sku_name": "Cloud Walker v2",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB6",
@@ -5013,13 +5539,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S265",
     "sku_name": "Pro Hiker v3",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB6",
@@ -5032,13 +5560,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "正装/通勤",
+    "category_l2": "豆豆鞋"
   },
   {
     "sku_id": "S266",
     "sku_name": "Lite Runner v2",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB6",
@@ -5051,13 +5581,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "户外鞋",
+    "category_l2": "溯溪鞋"
   },
   {
     "sku_id": "S267",
     "sku_name": "Air Walker v1",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB6",
@@ -5070,13 +5602,15 @@
     "gender": "中性",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "户外鞋",
+    "category_l2": "越野鞋"
   },
   {
     "sku_id": "S268",
     "sku_name": "Speed Runner v2",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB6",
@@ -5089,13 +5623,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S269",
     "sku_name": "Max Force v2",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB6",
@@ -5108,13 +5644,15 @@
     "gender": "中性",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "越野鞋"
   },
   {
     "sku_id": "S270",
     "sku_name": "Zoom Force v7",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB6",
@@ -5127,13 +5665,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "徒步登山"
   },
   {
     "sku_id": "S271",
     "sku_name": "Pro Trainer v6",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB6",
@@ -5146,13 +5686,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "户外鞋",
+    "category_l2": "溯溪鞋"
   },
   {
     "sku_id": "S272",
     "sku_name": "Ultra Trainer v7",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB6",
@@ -5165,13 +5707,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S273",
     "sku_name": "Air Runner v8",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB6",
@@ -5184,13 +5728,15 @@
     "gender": "男",
     "launch_wave": "W3",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "户外鞋",
+    "category_l2": "徒步登山"
   },
   {
     "sku_id": "S274",
     "sku_name": "Zoom Trainer v7",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB6",
@@ -5203,13 +5749,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S275",
     "sku_name": "Ultra Glide v2",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB6",
@@ -5222,13 +5770,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "银/金属",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S276",
     "sku_name": "Air Glide v1",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB6",
@@ -5241,13 +5791,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "沙/大地",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S277",
     "sku_name": "Zoom Hiker v10",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB6",
@@ -5260,13 +5812,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S278",
     "sku_name": "Pro Dunk v10",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB6",
@@ -5279,13 +5833,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "银/金属",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S279",
     "sku_name": "Air Glide v5",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB6",
@@ -5298,13 +5854,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S280",
     "sku_name": "Zoom Force v2",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB6",
@@ -5317,13 +5875,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "拼色/跳色",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S281",
     "sku_name": "Lite Dunk v7",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB6",
@@ -5336,13 +5896,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "银/金属",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S282",
     "sku_name": "Air Dunk v9",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB6",
@@ -5355,13 +5917,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S283",
     "sku_name": "Zoom Walker v4",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB6",
@@ -5374,13 +5938,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S284",
     "sku_name": "Cloud Dunk v5",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB6",
@@ -5393,13 +5959,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "灰",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S285",
     "sku_name": "Zoom Trainer v8",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "时尚/通勤",
+    "category_name": "时尚/通勤",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB6",
@@ -5412,13 +5980,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "白",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "时尚/通勤",
+    "category_l2": "芭蕾舞鞋"
   },
   {
     "sku_id": "S286",
     "sku_name": "Speed Runner v3",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB7",
@@ -5431,13 +6001,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S287",
     "sku_name": "Cloud Hiker v6",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB7",
@@ -5450,13 +6022,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S288",
     "sku_name": "Pro Runner v7",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB7",
@@ -5469,13 +6043,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S289",
     "sku_name": "Lite Force v10",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB7",
@@ -5488,13 +6064,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "户外鞋",
+    "category_l2": "越野鞋"
   },
   {
     "sku_id": "S290",
     "sku_name": "Ultra Force v1",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "时尚/通勤",
+    "category_name": "时尚/通勤",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB7",
@@ -5507,13 +6085,15 @@
     "gender": "女",
     "launch_wave": "W2",
     "color": "灰",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "时尚/通勤",
+    "category_l2": "浅口单鞋"
   },
   {
     "sku_id": "S291",
     "sku_name": "Air Force v10",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB7",
@@ -5526,13 +6106,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "乐福鞋"
   },
   {
     "sku_id": "S292",
     "sku_name": "Speed Trainer v9",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB7",
@@ -5545,13 +6127,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "灰",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S293",
     "sku_name": "Lite Trainer v8",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB7",
@@ -5564,13 +6148,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S294",
     "sku_name": "Max Trainer v4",
-    "category_id": "跑步",
-    "category_name": "跑步",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB7",
@@ -5583,13 +6169,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "29-35岁 资深中产"
+    "target_audience": "29-35岁 资深中产",
+    "category_l1": "休闲/街头",
+    "category_l2": "阿甘鞋"
   },
   {
     "sku_id": "S295",
     "sku_name": "Air Walker v6",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB7",
@@ -5602,13 +6190,15 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S296",
     "sku_name": "Speed Walker v8",
-    "category_id": "户外",
-    "category_name": "户外",
+    "category_id": "户外鞋",
+    "category_name": "户外鞋",
     "season_year": "2024",
     "season": "Q2",
     "price_band": "PB7",
@@ -5621,13 +6211,15 @@
     "gender": "男",
     "launch_wave": "W2",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "户外鞋",
+    "category_l2": "潮流机能"
   },
   {
     "sku_id": "S297",
     "sku_name": "Max Force v4",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q4",
     "price_band": "PB7",
@@ -5640,13 +6232,15 @@
     "gender": "女",
     "launch_wave": "W3",
     "color": "白",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S298",
     "sku_name": "Zoom Trainer v7",
-    "category_id": "训练",
-    "category_name": "训练",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q3",
     "price_band": "PB7",
@@ -5659,13 +6253,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "35岁以上"
+    "target_audience": "35岁以上",
+    "category_l1": "休闲/街头",
+    "category_l2": "德训鞋"
   },
   {
     "sku_id": "S299",
     "sku_name": "Zoom Dunk v6",
-    "category_id": "篮球",
-    "category_name": "篮球",
+    "category_id": "休闲/街头",
+    "category_name": "休闲/街头",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB7",
@@ -5678,13 +6274,15 @@
     "gender": "女",
     "launch_wave": "W1",
     "color": "黑",
-    "target_audience": "18-23岁 GenZ"
+    "target_audience": "18-23岁 GenZ",
+    "category_l1": "休闲/街头",
+    "category_l2": "板鞋"
   },
   {
     "sku_id": "S300",
     "sku_name": "Pro Runner v7",
-    "category_id": "休闲",
-    "category_name": "休闲",
+    "category_id": "正装/通勤",
+    "category_name": "正装/通勤",
     "season_year": "2024",
     "season": "Q1",
     "price_band": "PB7",
@@ -5697,6 +6295,8 @@
     "gender": "男",
     "launch_wave": "W1",
     "color": "沙/大地",
-    "target_audience": "24-28岁 职场新人"
+    "target_audience": "24-28岁 职场新人",
+    "category_l1": "正装/通勤",
+    "category_l2": "豆豆鞋"
   }
 ]

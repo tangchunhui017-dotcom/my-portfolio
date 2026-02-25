@@ -1,0 +1,213 @@
+{
+  "meta": {
+    "version": "v1.2",
+    "owner": "planning-standards",
+    "note": "鞋类品类主销季、次销季与推荐波段映射，供商品分析与波段企划统一引用。"
+  },
+  "category_groups": [
+    {
+      "group": "户外鞋",
+      "sub_categories": [
+        {
+          "name": "徒步登山",
+          "primary_seasons": ["autumn", "spring"],
+          "secondary_seasons": ["winter"],
+          "recommended_waves": ["S2", "S3", "A1", "A2", "W1"]
+        },
+        {
+          "name": "溯溪鞋",
+          "primary_seasons": ["summer"],
+          "secondary_seasons": ["spring"],
+          "recommended_waves": ["S3", "U1", "U2"]
+        },
+        {
+          "name": "越野鞋",
+          "primary_seasons": ["autumn", "spring"],
+          "secondary_seasons": ["winter"],
+          "recommended_waves": ["S2", "A1", "A2", "W1"]
+        },
+        {
+          "name": "潮流机能",
+          "primary_seasons": ["autumn", "spring"],
+          "secondary_seasons": ["winter"],
+          "recommended_waves": ["S2", "A1", "A2", "W1"]
+        }
+      ]
+    },
+    {
+      "group": "休闲/街头",
+      "sub_categories": [
+        {
+          "name": "板鞋",
+          "primary_seasons": ["spring", "autumn"],
+          "secondary_seasons": ["summer"],
+          "recommended_waves": ["S1", "S2", "A1"]
+        },
+        {
+          "name": "老爹鞋",
+          "primary_seasons": ["spring", "autumn"],
+          "secondary_seasons": ["summer"],
+          "recommended_waves": ["S1", "S2", "A1"]
+        },
+        {
+          "name": "德训鞋",
+          "primary_seasons": ["spring", "autumn"],
+          "secondary_seasons": ["summer"],
+          "recommended_waves": ["S1", "S2", "A1"]
+        },
+        {
+          "name": "阿甘鞋",
+          "primary_seasons": ["spring", "autumn"],
+          "secondary_seasons": ["summer"],
+          "recommended_waves": ["S1", "S2", "A1"]
+        },
+        {
+          "name": "帆布鞋",
+          "primary_seasons": ["summer", "spring"],
+          "secondary_seasons": ["autumn"],
+          "recommended_waves": ["S2", "S3", "U1"]
+        }
+      ]
+    },
+    {
+      "group": "时尚/通勤",
+      "sub_categories": [
+        {
+          "name": "浅口单鞋",
+          "primary_seasons": ["spring", "autumn"],
+          "secondary_seasons": ["summer"],
+          "recommended_waves": ["S1", "S2", "A1", "A2"]
+        },
+        {
+          "name": "芭蕾舞鞋",
+          "primary_seasons": ["spring", "autumn"],
+          "secondary_seasons": ["summer"],
+          "recommended_waves": ["S1", "S2", "A1", "A2"]
+        },
+        {
+          "name": "玛丽珍鞋",
+          "primary_seasons": ["spring", "autumn"],
+          "secondary_seasons": ["summer"],
+          "recommended_waves": ["S1", "S2", "A1", "A2"]
+        }
+      ]
+    },
+    {
+      "group": "正装/通勤",
+      "sub_categories": [
+        {
+          "name": "乐福鞋",
+          "primary_seasons": ["spring", "autumn"],
+          "secondary_seasons": ["winter"],
+          "recommended_waves": ["S2", "S3", "A1", "W1"]
+        },
+        {
+          "name": "牛津鞋",
+          "primary_seasons": ["spring", "autumn"],
+          "secondary_seasons": ["winter"],
+          "recommended_waves": ["S2", "S3", "A1", "W1"]
+        },
+        {
+          "name": "德比鞋",
+          "primary_seasons": ["spring", "autumn"],
+          "secondary_seasons": ["winter"],
+          "recommended_waves": ["S2", "S3", "A1", "W1"]
+        },
+        {
+          "name": "豆豆鞋",
+          "primary_seasons": ["spring", "autumn"],
+          "secondary_seasons": ["winter"],
+          "recommended_waves": ["S2", "S3", "A1", "W1"]
+        },
+        {
+          "name": "穆勒鞋",
+          "primary_seasons": ["summer", "spring"],
+          "secondary_seasons": ["autumn"],
+          "recommended_waves": ["S3", "U1", "U2"]
+        }
+      ]
+    },
+    {
+      "group": "靴类",
+      "sub_categories": [
+        {
+          "name": "裸靴",
+          "primary_seasons": ["autumn", "winter"],
+          "secondary_seasons": ["spring"],
+          "recommended_waves": ["A1", "A2", "W1", "W2"]
+        },
+        {
+          "name": "切尔西靴",
+          "primary_seasons": ["autumn", "winter"],
+          "secondary_seasons": ["spring"],
+          "recommended_waves": ["A1", "A2", "W1", "W2"]
+        },
+        {
+          "name": "马丁靴",
+          "primary_seasons": ["autumn", "winter"],
+          "secondary_seasons": ["spring"],
+          "recommended_waves": ["A1", "A2", "W1", "W2"]
+        },
+        {
+          "name": "长筒靴",
+          "primary_seasons": ["autumn", "winter"],
+          "secondary_seasons": [],
+          "recommended_waves": ["A2", "A3", "W1", "W2"]
+        },
+        {
+          "name": "雪地靴",
+          "primary_seasons": ["winter"],
+          "secondary_seasons": ["autumn"],
+          "recommended_waves": ["A3", "W1", "W2", "W3"]
+        },
+        {
+          "name": "短靴",
+          "primary_seasons": ["autumn", "winter"],
+          "secondary_seasons": ["spring"],
+          "recommended_waves": ["A1", "A2", "W1", "W2"]
+        }
+      ]
+    },
+    {
+      "group": "凉拖鞋",
+      "sub_categories": [
+        {
+          "name": "凉鞋",
+          "primary_seasons": ["summer"],
+          "secondary_seasons": ["spring"],
+          "recommended_waves": ["S3", "U1", "U2", "U3"]
+        },
+        {
+          "name": "洞洞鞋",
+          "primary_seasons": ["summer"],
+          "secondary_seasons": ["spring"],
+          "recommended_waves": ["S3", "U1", "U2", "U3"]
+        },
+        {
+          "name": "拖鞋",
+          "primary_seasons": ["summer"],
+          "secondary_seasons": ["spring"],
+          "recommended_waves": ["S3", "U1", "U2", "U3"]
+        },
+        {
+          "name": "前空鞋",
+          "primary_seasons": ["summer"],
+          "secondary_seasons": ["spring"],
+          "recommended_waves": ["S3", "U1", "U2"]
+        },
+        {
+          "name": "中空鞋",
+          "primary_seasons": ["summer"],
+          "secondary_seasons": ["spring"],
+          "recommended_waves": ["S3", "U1", "U2"]
+        },
+        {
+          "name": "后空鞋",
+          "primary_seasons": ["summer"],
+          "secondary_seasons": ["spring"],
+          "recommended_waves": ["S3", "U1", "U2"]
+        }
+      ]
+    }
+  ]
+}

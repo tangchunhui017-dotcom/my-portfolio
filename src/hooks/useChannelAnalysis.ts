@@ -3,6 +3,8 @@ import rawSalesData from '../../data/dashboard/fact_sales.json';
 import rawChannelData from '../../data/dashboard/dim_channel.json';
 import rawSkuData from '../../data/dashboard/dim_sku.json';
 import { DashboardFilters } from '@/hooks/useDashboardFilter';
+import { matchCategoryL1, matchCategoryL2 } from '@/config/categoryMapping';
+import { matchesPriceBandFilter } from '@/config/priceBand';
 
 interface DimChannel {
     channel_id: string;
@@ -17,6 +19,10 @@ interface DimChannel {
 interface DimSku {
     sku_id: string;
     category_id: string;
+    category_name?: string;
+    category_l2?: string;
+    sku_name?: string;
+    product_line?: string;
     msrp: number;
     lifecycle: string;
     target_audience?: string;
@@ -204,15 +210,6 @@ const DEFAULT_CHANNEL_SCOPE: ChannelFilterScope = {
     platform: 'all',
 };
 
-const PRICE_BANDS = [
-    { id: 'PB1', min: 199, max: 299 },
-    { id: 'PB2', min: 300, max: 399 },
-    { id: 'PB3', min: 400, max: 499 },
-    { id: 'PB4', min: 500, max: 599 },
-    { id: 'PB5', min: 600, max: 699 },
-    { id: 'PB6', min: 700, max: 9999 },
-];
-
 const AUDIENCE_TO_AGE_GROUP: Record<string, string[]> = {
     '18-23岁 GenZ': ['18-25'],
     '24-28岁 职场新人': ['26-35'],
@@ -251,10 +248,7 @@ function getSalesBucketByRank(index: number, total: number) {
 }
 
 function matchesPriceBand(msrp: number, selectedPriceBand: string | 'all') {
-    if (selectedPriceBand === 'all') return true;
-    const band = PRICE_BANDS.find((item) => item.id === selectedPriceBand);
-    if (!band) return true;
-    return msrp >= band.min && msrp <= band.max;
+    return matchesPriceBandFilter(msrp, selectedPriceBand);
 }
 
 function matchesTargetAudience(sku: DimSku, selectedAudience: string | 'all') {
@@ -295,7 +289,8 @@ function shouldIncludeRecord(
     if (scope.system === 'offline' && channel.is_online) return false;
     if (scope.system === 'online' && scope.platform !== 'all' && channel.region !== scope.platform) return false;
 
-    if (filters.category_id !== 'all' && sku.category_id !== filters.category_id) return false;
+    if (!matchCategoryL1(filters.category_id, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
+    if (!matchCategoryL2(filters.sub_category, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
     if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
     if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
 

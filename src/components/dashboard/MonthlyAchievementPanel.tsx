@@ -20,6 +20,8 @@ import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
 import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
 import dimPlanRaw from '@/../data/dashboard/dim_plan.json';
 import { formatMoneyCny } from '@/config/numberFormat';
+import { matchCategoryL1, matchCategoryL2 } from '@/config/categoryMapping';
+import { matchesPriceBandFilter } from '@/config/priceBand';
 
 type FactSales = {
     sku_id: string;
@@ -32,6 +34,11 @@ type FactSales = {
 type DimSku = {
     sku_id: string;
     category_id: string;
+    category_name?: string;
+    category_l2?: string;
+    sku_name?: string;
+    product_line?: string;
+    price_band?: string;
     msrp: number;
     lifecycle?: string;
     target_audience?: string;
@@ -83,14 +90,6 @@ const dimSku = dimSkuRaw as unknown as DimSku[];
 const dimChannel = dimChannelRaw as unknown as DimChannel[];
 const dimPlan = dimPlanRaw as unknown as DimPlan;
 
-const PRICE_BANDS = [
-    { id: 'PB1', min: 199, max: 299 },
-    { id: 'PB2', min: 300, max: 399 },
-    { id: 'PB3', min: 400, max: 499 },
-    { id: 'PB4', min: 500, max: 599 },
-    { id: 'PB5', min: 600, max: 699 },
-    { id: 'PB6', min: 700, max: 9999 },
-];
 const SEASON_MONTH_START: Record<string, number> = { Q1: 1, Q2: 4, Q3: 7, Q4: 10 };
 
 const fmtAmt = (v: number | null | undefined) => {
@@ -105,9 +104,6 @@ function toMonth(record: FactSales): number | null {
     if (!start) return null;
     const week = Math.max(1, Math.min(12, Number(record.week_num) || 1));
     return start + Math.floor((week - 1) / 4);
-}
-function toBand(msrp: number) {
-    return PRICE_BANDS.find(b => msrp >= b.min && msrp <= b.max)?.id ?? null;
 }
 function matchAudience(sku: DimSku, selected: string | 'all') {
     return selected === 'all' || sku.target_audience === selected || sku.target_age_group === selected;
@@ -180,7 +176,8 @@ export default function MonthlyAchievementPanel({
             const sku = skuMap[r.sku_id] as DimSku | undefined;
             const ch = channelMap[r.channel_id] as DimChannel | undefined;
             if (!sku || !ch) return false;
-            if (filters.category_id !== 'all' && sku.category_id !== filters.category_id) return false;
+            if (!matchCategoryL1(filters.category_id, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
+            if (!matchCategoryL2(filters.sub_category, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
             if (filters.channel_type !== 'all' && ch.channel_type !== filters.channel_type) return false;
             if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
             if (filters.region !== 'all' && ch.region !== filters.region) return false;
@@ -188,7 +185,7 @@ export default function MonthlyAchievementPanel({
             if (filters.store_format !== 'all' && ch.store_format !== filters.store_format) return false;
             if (!matchAudience(sku, filters.target_audience)) return false;
             if (!matchColor(sku, filters.color)) return false;
-            if (filters.price_band !== 'all' && toBand(sku.msrp) !== filters.price_band) return false;
+        if (!matchesPriceBandFilter(sku.msrp, filters.price_band, sku.price_band)) return false;
             return true;
         };
         factSales.forEach(r => {

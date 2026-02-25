@@ -1,14 +1,18 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import {
     APPAREL_TO_FOOTWEAR_TERMS,
-    FOOTWEAR_CATEGORY_TAXONOMY,
     FOOTWEAR_CORE_METRICS,
     FOOTWEAR_SERIES_POSITIONING,
     FOOTWEAR_PLANNING_CUBE_AXES,
     FOOTWEAR_EXECUTION_MANDATES,
 } from '@/config/footwearLanguage';
+import {
+    FOOTWEAR_CATEGORY_HIERARCHY,
+    FOOTWEAR_PUBLIC_ATTRIBUTE_TAGS,
+    FOOTWEAR_SCENE_CATEGORY_PICKS,
+} from '@/config/footwearTaxonomy';
 
 const CATEGORY_COLORS: Record<string, string> = {
     经营结果: 'bg-blue-100 text-blue-700',
@@ -21,7 +25,6 @@ export default function MetricsDrawer() {
 
     return (
         <>
-            {/* Trigger Button */}
             <button
                 onClick={() => setOpen(true)}
                 className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors"
@@ -31,35 +34,28 @@ export default function MetricsDrawer() {
                 <span className="hidden sm:inline">指标口径</span>
             </button>
 
-            {/* Overlay */}
             {open && (
                 <div className="fixed inset-0 z-50 flex">
-                    {/* Backdrop */}
-                    <div
-                        className="flex-1 bg-black/40 backdrop-blur-sm"
-                        onClick={() => setOpen(false)}
-                    />
+                    <div className="flex-1 bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)} />
 
-                    {/* Drawer */}
                     <div className="w-full max-w-3xl bg-white shadow-2xl flex flex-col overflow-hidden">
-                        {/* Header */}
                         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
                             <div>
-                                <h2 className="text-lg font-bold text-slate-900">鞋类标准指标与字段口径</h2>
-                                <p className="text-xs text-slate-400 mt-0.5">依据你给出的 2.1 / 2.2 标准，统一到当前看板展示口径</p>
+                                <h2 className="text-lg font-bold text-slate-900">鞋类指标口径与企划标准</h2>
+                                <p className="text-xs text-slate-500 mt-0.5">统一字段定义，保证看板口径一致、可追溯。</p>
                             </div>
                             <button
                                 onClick={() => setOpen(false)}
                                 className="w-8 h-8 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors"
+                                aria-label="关闭"
                             >
                                 ✕
                             </button>
                         </div>
 
-                        {/* Content */}
                         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
                             <section>
-                                <h3 className="text-sm font-bold text-slate-900 mb-3">2.1 核心指标字段口径</h3>
+                                <h3 className="text-sm font-bold text-slate-900 mb-3">核心指标口径</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     {FOOTWEAR_CORE_METRICS.map((metric) => (
                                         <div key={metric.id} className="border border-slate-100 rounded-lg p-3">
@@ -82,7 +78,7 @@ export default function MetricsDrawer() {
                             </section>
 
                             <section>
-                                <h3 className="text-sm font-bold text-slate-900 mb-3">服装字段 → 鞋类标准字段</h3>
+                                <h3 className="text-sm font-bold text-slate-900 mb-3">服装字段 → 鞋类字段映射</h3>
                                 <div className="overflow-x-auto border border-slate-100 rounded-lg">
                                     <table className="min-w-full text-xs">
                                         <thead className="bg-slate-50">
@@ -106,41 +102,90 @@ export default function MetricsDrawer() {
                             </section>
 
                             <section>
-                                <h3 className="text-sm font-bold text-slate-900 mb-3">2.2 鞋类类目与系列标准</h3>
+                                <h3 className="text-sm font-bold text-slate-900 mb-3">类目与场景标准</h3>
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                                     <div className="border border-slate-100 rounded-lg p-3">
-                                        <div className="text-xs font-semibold text-slate-700 mb-2">一级/二级品类</div>
-                                        <div className="space-y-2">
-                                            {FOOTWEAR_CATEGORY_TAXONOMY.map((item) => (
-                                                <div key={item.category_l1}>
-                                                    <div className="text-xs font-medium text-slate-800 mb-1">{item.category_l1}</div>
-                                                    <div className="flex flex-wrap gap-1">
-                                                        {item.category_l2.map((sub) => (
-                                                            <span key={`${item.category_l1}-${sub}`} className="text-[11px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
-                                                                {sub}
-                                                            </span>
+                                        <div className="text-xs font-semibold text-slate-700 mb-2">类目层级</div>
+                                        <div className="space-y-3">
+                                            {FOOTWEAR_CATEGORY_HIERARCHY.map((group) => (
+                                                <div key={group.l1} className="rounded-md border border-slate-100 bg-slate-50 px-2.5 py-2">
+                                                    <div className="text-xs font-semibold text-slate-800">{group.l1}</div>
+                                                    <div className="mt-2 space-y-2">
+                                                        {group.items.map((item) => (
+                                                            <div key={`${group.l1}-${item.l2}`} className="rounded border border-slate-200 bg-white px-2 py-1.5">
+                                                                <div className="text-[11px] font-medium text-slate-700">{item.l2}</div>
+                                                                <div className="mt-1 flex flex-wrap gap-1">
+                                                                    {item.l3.map((leaf) => (
+                                                                        <span
+                                                                            key={`${group.l1}-${item.l2}-${leaf}`}
+                                                                            className="text-[11px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600"
+                                                                        >
+                                                                            {leaf}
+                                                                        </span>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
                                                         ))}
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
-                                    <div className="border border-slate-100 rounded-lg p-3">
-                                        <div className="text-xs font-semibold text-slate-700 mb-2">系列/定位（替代黑标/红标）</div>
-                                        <div className="space-y-2">
-                                            {FOOTWEAR_SERIES_POSITIONING.map((item) => (
-                                                <div key={item.series} className="rounded-md bg-slate-50 px-2.5 py-2">
-                                                    <div className="text-xs font-medium text-slate-800">{item.series}</div>
-                                                    <div className="text-[11px] text-slate-500 mt-0.5">{item.description}</div>
-                                                </div>
-                                            ))}
+
+                                    <div className="border border-slate-100 rounded-lg p-3 space-y-3">
+                                        <div>
+                                            <div className="text-xs font-semibold text-slate-700 mb-2">系列定位</div>
+                                            <div className="space-y-2">
+                                                {FOOTWEAR_SERIES_POSITIONING.map((item) => (
+                                                    <div key={item.series} className="rounded-md bg-slate-50 px-2.5 py-2">
+                                                        <div className="text-xs font-medium text-slate-800">{item.series}</div>
+                                                        <div className="text-[11px] text-slate-500 mt-0.5">{item.description}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
+
+                                        <div>
+                                            <div className="text-xs font-semibold text-slate-700 mb-2">公共属性标签</div>
+                                            <div className="space-y-2">
+                                                {FOOTWEAR_PUBLIC_ATTRIBUTE_TAGS.map((attr) => (
+                                                    <div key={attr.group} className="rounded-md border border-slate-100 bg-slate-50 px-2.5 py-2">
+                                                        <div className="text-[11px] font-medium text-slate-700 mb-1">{attr.group}</div>
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {attr.tags.map((tag) => (
+                                                                <span
+                                                                    key={`${attr.group}-${tag}`}
+                                                                    className="text-[11px] px-1.5 py-0.5 rounded border border-slate-200 bg-white text-slate-600"
+                                                                >
+                                                                    {tag}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-3 border border-slate-100 rounded-lg p-3">
+                                    <div className="text-xs font-semibold text-slate-700 mb-2">场景选品建议</div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                        {FOOTWEAR_SCENE_CATEGORY_PICKS.map((scene) => (
+                                            <div key={scene.scene} className="rounded-md border border-slate-100 bg-slate-50 px-2.5 py-2">
+                                                <div className="text-xs font-semibold text-slate-800">{scene.scene}</div>
+                                                <div className="text-[11px] text-slate-600 mt-1">适用一级：{scene.l1Focus.join(' / ')}</div>
+                                                <div className="text-[11px] text-slate-600 mt-1">推荐二级：{scene.l2Recommended.join('、')}</div>
+                                                <div className="text-[11px] text-slate-600 mt-1">推荐三级：{scene.l3Recommended.join('、')}</div>
+                                                <div className="text-[11px] text-slate-500 mt-1">{scene.notes}</div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             </section>
 
                             <section>
-                                <h3 className="text-sm font-bold text-slate-900 mb-3">3. 三维商品企划魔方口径（X / Y / Z）</h3>
+                                <h3 className="text-sm font-bold text-slate-900 mb-3">三维企划魔方（X/Y/Z）</h3>
                                 <div className="space-y-3">
                                     {FOOTWEAR_PLANNING_CUBE_AXES.map((axis) => (
                                         <div key={axis.axis} className="border border-slate-100 rounded-lg p-3">
@@ -167,7 +212,7 @@ export default function MetricsDrawer() {
                             </section>
 
                             <section>
-                                <h3 className="text-sm font-bold text-slate-900 mb-3">4. 执行要求（上线前强校验）</h3>
+                                <h3 className="text-sm font-bold text-slate-900 mb-3">执行要求（上线前强校验）</h3>
                                 <div className="space-y-2">
                                     {FOOTWEAR_EXECUTION_MANDATES.map((item) => (
                                         <div key={item.id} className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
@@ -179,10 +224,9 @@ export default function MetricsDrawer() {
                             </section>
                         </div>
 
-                        {/* Footer */}
                         <div className="px-6 py-3 border-t border-slate-100 bg-slate-50">
-                            <p className="text-xs text-slate-400">
-                                ⚠️ 当前为 Demo 数据口径。后续接入真实 ERP/CRM 后，可按同一标准直接替换字段。
+                            <p className="text-xs text-slate-500">
+                                当前为 Demo 口径。接入真实 ERP/CRM 后，只需替换数据源，不改口径定义。
                             </p>
                         </div>
                     </div>

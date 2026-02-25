@@ -1,44 +1,30 @@
-[
-    {
-        "price_band_id": "PB1",
-        "price_band_name": "199-299",
-        "price_min": 199,
-        "price_max": 299,
-        "price_level": "低"
-    },
-    {
-        "price_band_id": "PB2",
-        "price_band_name": "300-399",
-        "price_min": 300,
-        "price_max": 399,
-        "price_level": "中低"
-    },
-    {
-        "price_band_id": "PB3",
-        "price_band_name": "400-499",
-        "price_min": 400,
-        "price_max": 499,
-        "price_level": "中"
-    },
-    {
-        "price_band_id": "PB4",
-        "price_band_name": "500-599",
-        "price_min": 500,
-        "price_max": 599,
-        "price_level": "中高"
-    },
-    {
-        "price_band_id": "PB5",
-        "price_band_name": "600-699",
-        "price_min": 600,
-        "price_max": 699,
-        "price_level": "高"
-    },
-    {
-        "price_band_id": "PB6",
-        "price_band_name": "700+",
-        "price_min": 700,
-        "price_max": 9999,
-        "price_level": "超高"
-    }
+﻿[
+  {
+    "price_band_id": "PB1",
+    "price_band_name": "199-399",
+    "price_min": 199,
+    "price_max": 398,
+    "price_level": "主力入门"
+  },
+  {
+    "price_band_id": "PB2",
+    "price_band_name": "399-599",
+    "price_min": 399,
+    "price_max": 598,
+    "price_level": "主力中段"
+  },
+  {
+    "price_band_id": "PB3",
+    "price_band_name": "599-799",
+    "price_min": 599,
+    "price_max": 799,
+    "price_level": "中高端"
+  },
+  {
+    "price_band_id": "PB4",
+    "price_band_name": "800+",
+    "price_min": 800,
+    "price_max": 9999,
+    "price_level": "高端"
+  }
 ]

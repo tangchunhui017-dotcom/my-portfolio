@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useMemo } from 'react';
 
@@ -30,6 +30,8 @@ interface DimSku {
     sku_name: string;
     category_id: string;
     category_name: string;
+    category_l2?: string;
+    product_line?: string;
     season_year: string;
     season: string;
     price_band: string;
@@ -56,6 +58,13 @@ import factSalesRaw from '@/../data/dashboard/fact_sales.json';
 import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
 import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
 import dimPlanRaw from '@/../data/dashboard/dim_plan.json';
+import { FOOTWEAR_CATEGORY_CORE_ORDER, matchCategoryL1, matchCategoryL2, resolveFootwearCategory } from '@/config/categoryMapping';
+import {
+    PRICE_BANDS,
+    formatPriceBandLabel,
+    matchesPriceBandFilter,
+    resolvePriceBandByMsrp,
+} from '@/config/priceBand';
 
 const factSales = factSalesRaw as unknown as FactSalesRecord[];
 const dimSku = dimSkuRaw as unknown as DimSku[];
@@ -74,6 +83,7 @@ export interface DashboardFilters {
     season: string | 'all';
     wave: string | 'all';
     category_id: string | 'all';   // 匹配 dim_sku.json 的字段名
+    sub_category: string | 'all';  // 二级品类筛选
     channel_type: string | 'all';
     price_band: string | 'all';
     lifecycle: string | 'all';
@@ -91,6 +101,7 @@ export const DEFAULT_FILTERS: DashboardFilters = {
     season: 'all',
     wave: 'all',
     category_id: 'all',
+    sub_category: 'all',
     channel_type: 'all',
     price_band: 'all',
     lifecycle: 'all',
@@ -100,15 +111,6 @@ export const DEFAULT_FILTERS: DashboardFilters = {
     target_audience: 'all',
     color: 'all',
 };
-
-const PRICE_BANDS = [
-    { id: 'PB1', min: 199, max: 299 },
-    { id: 'PB2', min: 300, max: 399 },
-    { id: 'PB3', min: 400, max: 499 },
-    { id: 'PB4', min: 500, max: 599 },
-    { id: 'PB5', min: 600, max: 699 },
-    { id: 'PB6', min: 700, max: 9999 },
-];
 
 const AUDIENCE_TO_AGE_GROUP: Record<string, string[]> = {
     '18-23岁 GenZ': ['18-25'],
@@ -158,7 +160,8 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
             if (filters.season_year !== 'all' && String(record.season_year) !== String(filters.season_year)) return false;
             if (filters.season !== 'all' && record.season !== filters.season) return false;
             if (filters.wave !== 'all' && record.wave !== filters.wave) return false;
-            if (filters.category_id !== 'all' && sku.category_id !== filters.category_id) return false;
+            if (!matchCategoryL1(filters.category_id, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
+            if (!matchCategoryL2(filters.sub_category, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
             if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
             if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
 
@@ -169,10 +172,7 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
             if (!matchesTargetAudience(sku, filters.target_audience)) return false;
             if (!matchesColor(sku, filters.color)) return false;
 
-            if (filters.price_band !== 'all') {
-                const band = PRICE_BANDS.find(b => b.id === filters.price_band);
-                if (band && (sku.msrp < band.min || sku.msrp > band.max)) return false;
-            }
+            if (!matchesPriceBandFilter(sku.msrp, filters.price_band, sku.price_band)) return false;
 
             return true;
         });
@@ -222,22 +222,22 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
         filteredRecords.forEach(r => {
             const sku = skuMap[r.sku_id];
             if (!sku) return;
-            const band = PRICE_BANDS.find(b => sku.msrp >= b.min && sku.msrp <= b.max);
-            if (band) {
-                if (!priceBandSales[band.id]) priceBandSales[band.id] = { units: 0, sales: 0, grossProfit: 0, onHandUnits: 0 };
-                priceBandSales[band.id].units += r.unit_sold;
-                priceBandSales[band.id].sales += r.net_sales_amt;
-                priceBandSales[band.id].grossProfit += r.gross_profit_amt;
+            const bandId = resolvePriceBandByMsrp(sku.msrp);
+            if (bandId !== 'PBX') {
+                if (!priceBandSales[bandId]) priceBandSales[bandId] = { units: 0, sales: 0, grossProfit: 0, onHandUnits: 0 };
+                priceBandSales[bandId].units += r.unit_sold;
+                priceBandSales[bandId].sales += r.net_sales_amt;
+                priceBandSales[bandId].grossProfit += r.gross_profit_amt;
                 // 只取最新周的库存（取最大周号的库存数）
-                priceBandSales[band.id].onHandUnits = Math.max(priceBandSales[band.id].onHandUnits, r.on_hand_unit);
+                priceBandSales[bandId].onHandUnits = Math.max(priceBandSales[bandId].onHandUnits, r.on_hand_unit);
             }
         });
 
         // 热力图数据（品类 × 价格带）
         const heatmapData: Record<string, { skus: Set<string>; sales: number; st: number }> = {};
         // 预初始化所有格子
-        const CATEGORIES = ['跑步', '篮球', '训练', '休闲', '户外'];
-        const BANDS = ['PB1', 'PB2', 'PB3', 'PB4', 'PB5', 'PB6'];
+        const CATEGORIES = FOOTWEAR_CATEGORY_CORE_ORDER;
+        const BANDS = PRICE_BANDS.map((band) => band.id);
         CATEGORIES.forEach(cat => {
             BANDS.forEach(band => {
                 heatmapData[`${cat}_${band}`] = { skus: new Set(), sales: 0, st: 0 };
@@ -247,10 +247,17 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
         filteredRecords.forEach(r => {
             const sku = skuMap[r.sku_id];
             if (!sku) return;
-            const band = PRICE_BANDS.find(b => sku.msrp >= b.min && sku.msrp <= b.max);
-            if (!band) return;
+            const bandId = resolvePriceBandByMsrp(sku.msrp);
+            if (bandId === 'PBX') return;
 
-            const key = `${sku.category_id}_${band.id}`;
+            const { categoryL1 } = resolveFootwearCategory(
+                sku.category_name,
+                sku.category_id,
+                sku.sku_name,
+                sku.category_l2,
+                sku.product_line,
+            );
+            const key = `${categoryL1}_${bandId}`;
             if (heatmapData[key]) {
                 heatmapData[key].skus.add(sku.sku_id);
                 heatmapData[key].sales += r.net_sales_amt;
@@ -455,13 +462,31 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
         filteredRecords.forEach(r => {
             const sku = skuMap[r.sku_id];
             if (!sku) return;
-            if (!categoryActual[sku.category_id]) categoryActual[sku.category_id] = { actual_sales: 0, actual_units: 0, actual_sell_through: 0, actual_margin_rate: 0, sku_count: 0 };
-            categoryActual[sku.category_id].actual_sales += r.net_sales_amt;
-            categoryActual[sku.category_id].actual_units += r.unit_sold;
+            const { categoryL1 } = resolveFootwearCategory(
+                sku.category_name,
+                sku.category_id,
+                sku.sku_name,
+                sku.category_l2,
+                sku.product_line,
+            );
+            if (!categoryActual[categoryL1]) categoryActual[categoryL1] = { actual_sales: 0, actual_units: 0, actual_sell_through: 0, actual_margin_rate: 0, sku_count: 0 };
+            categoryActual[categoryL1].actual_sales += r.net_sales_amt;
+            categoryActual[categoryL1].actual_units += r.unit_sold;
         });
         // 填充品类售罄率和毛利率
         Object.keys(categoryActual).forEach(cat => {
-            const catRecords = filteredRecords.filter(r => skuMap[r.sku_id]?.category_id === cat);
+            const catRecords = filteredRecords.filter((record) => {
+                const sku = skuMap[record.sku_id];
+                if (!sku) return false;
+                const { categoryL1 } = resolveFootwearCategory(
+                    sku.category_name,
+                    sku.category_id,
+                    sku.sku_name,
+                    sku.category_l2,
+                    sku.product_line,
+                );
+                return categoryL1 === cat;
+            });
             const catSkuIds = [...new Set(catRecords.map(r => r.sku_id))];
             const latestSTs = catSkuIds.map(id => skuLatestST[id] || 0);
             categoryActual[cat].actual_sell_through = latestSTs.length > 0 ? latestSTs.reduce((a, b) => a + b, 0) / latestSTs.length : 0;
@@ -564,7 +589,8 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
             if (baselineSeason !== 'all' && record.season !== baselineSeason) return false;
 
             // 复用其余筛选条件（品类/渠道/价格带/生命周期/新增扩展维度）
-            if (filters.category_id !== 'all' && sku.category_id !== filters.category_id) return false;
+            if (!matchCategoryL1(filters.category_id, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
+            if (!matchCategoryL2(filters.sub_category, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
             if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
             if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
 
@@ -574,10 +600,7 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
             if (!matchesTargetAudience(sku, filters.target_audience)) return false;
             if (!matchesColor(sku, filters.color)) return false;
 
-            if (filters.price_band !== 'all') {
-                const band = PRICE_BANDS.find(b => b.id === filters.price_band);
-                if (band && (sku.msrp < band.min || sku.msrp > band.max)) return false;
-            }
+            if (!matchesPriceBandFilter(sku.msrp, filters.price_band, sku.price_band)) return false;
             return true;
         });
     }, [compareMode, filters, skuMap, channelMap]);
@@ -631,6 +654,7 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
         if (filters.season !== 'all') parts.push(`${filters.season}季`);
         if (filters.wave !== 'all') parts.push(filters.wave);
         if (filters.category_id !== 'all') parts.push(filters.category_id);
+        if (filters.sub_category !== 'all') parts.push(filters.sub_category);
         if (filters.channel_type !== 'all') parts.push(filters.channel_type);
         if (filters.lifecycle !== 'all') parts.push(filters.lifecycle);
 
@@ -641,10 +665,7 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
         if (filters.target_audience !== 'all') parts.push(filters.target_audience);
         if (filters.color !== 'all') parts.push(filters.color);
 
-        if (filters.price_band !== 'all') {
-            const band = PRICE_BANDS.find(b => b.id === filters.price_band);
-            if (band) parts.push(`¥${band.min}-${band.max === 9999 ? '700+' : band.max}`);
-        }
+        if (filters.price_band !== 'all') parts.push(formatPriceBandLabel(filters.price_band));
         return parts.length > 0 ? parts.join(' · ') : '全部数据';
     }, [filters]);
 
@@ -659,3 +680,4 @@ export function useDashboardFilter(compareMode: CompareMode = 'none') {
         channelMap,
     };
 }
+

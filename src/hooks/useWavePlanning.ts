@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useMemo } from 'react';
 import wavePlanRaw from '@/../data/dashboard/dim_wave_plan.json';
@@ -6,6 +6,7 @@ import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
 import factSalesRaw from '@/../data/dashboard/fact_sales.json';
 import factInventoryRaw from '@/../data/dashboard/fact_inventory.json';
 import factPlanRaw from '@/../data/dashboard/fact_plan.json';
+import { resolveFootwearCategory } from '@/config/categoryMapping';
 
 interface WavePlanRecord {
     id: string;
@@ -28,6 +29,8 @@ interface DimSkuRecord {
     sku_name?: string;
     category_id?: string;
     category_name?: string;
+    category_l2?: string;
+    product_line?: string;
     price_band?: string;
     msrp?: number;
     launch_wave?: string;
@@ -167,18 +170,58 @@ const factSales = factSalesRaw as FactSalesRecord[];
 const factInventory = factInventoryRaw as FactInventoryRecord[];
 const factPlan = factPlanRaw as FactPlanRecord[];
 
-const CATEGORY_ALIAS: Record<string, string> = {
-    潮流: '休闲',
-    综训: '训练',
-};
-
-const CATEGORY_ORDER = ['跑步', '训练', '篮球', '户外', '休闲', '童鞋', '其他'];
+const CATEGORY_ORDER = [
+    '跑步',
+    '竞速',
+    '篮球',
+    '综训',
+    '徒步登山',
+    '溯溪鞋',
+    '越野鞋',
+    '潮流机能',
+    '板鞋',
+    '老爹鞋',
+    '德训鞋',
+    '阿甘鞋',
+    '帆布鞋',
+    '浅口单鞋',
+    '芭蕾舞鞋',
+    '玛丽珍鞋',
+    '乐福鞋',
+    '牛津鞋',
+    '德比鞋',
+    '豆豆鞋',
+    '穆勒鞋',
+    '裸靴',
+    '切尔西靴',
+    '马丁靴',
+    '长筒靴',
+    '雪地靴',
+    '短靴',
+    '凉鞋',
+    '洞洞鞋',
+    '拖鞋',
+    '前空鞋',
+    '中空鞋',
+    '后空鞋',
+    '学步鞋',
+    '校园鞋',
+    '雨靴',
+    '鞋垫',
+    '鞋带',
+    '袜品',
+    '其他',
+];
 const MONTH_TEMP = [6, 8, 13, 19, 24, 28, 31, 30, 25, 18, 12, 7];
-const REGION_ORDER = ['华北', '华东', '华南', '全国统管'];
+const REGION_ORDER = ['华东', '华南', '西南', '西北', '华北', '东北', '华中', '全国统管'];
 const REGION_TEMP_RULES: Record<string, { temp_range: string; temp_shift: number; target_min: number; target_max: number }> = {
-    华北: { temp_range: '冷凉带 5-18°C', temp_shift: -3.2, target_min: 8, target_max: 20 },
     华东: { temp_range: '温和带 10-24°C', temp_shift: 0, target_min: 12, target_max: 24 },
     华南: { temp_range: '暖热带 18-32°C', temp_shift: 4.2, target_min: 18, target_max: 30 },
+    西南: { temp_range: '山地温差 8-24°C', temp_shift: -0.8, target_min: 10, target_max: 24 },
+    西北: { temp_range: '干冷带 2-18°C', temp_shift: -4.5, target_min: 6, target_max: 18 },
+    华北: { temp_range: '冷凉带 5-18°C', temp_shift: -3.2, target_min: 8, target_max: 20 },
+    东北: { temp_range: '极寒带 -8-10°C', temp_shift: -7.2, target_min: 2, target_max: 12 },
+    华中: { temp_range: '湿冷热带 8-26°C', temp_shift: 1.2, target_min: 10, target_max: 26 },
     全国统管: { temp_range: '多温域混合', temp_shift: 0.5, target_min: 10, target_max: 28 },
 };
 
@@ -198,10 +241,15 @@ function normalizeWaveCode(wave: string | undefined) {
     return `W${Number(match[0])}`;
 }
 
-function normalizeCategory(category: string | undefined) {
-    if (!category) return '其他';
-    const trimmed = category.trim();
-    return CATEGORY_ALIAS[trimmed] || trimmed;
+function normalizeCategory(
+    categoryName: string | undefined,
+    categoryId: string | undefined,
+    skuName: string | undefined,
+    categoryL2: string | undefined,
+    productLine?: string,
+) {
+    const resolved = resolveFootwearCategory(categoryName, categoryId, skuName, categoryL2, productLine);
+    return resolved.categoryL2 || '其他';
 }
 
 function parseDateMs(dateStr: string) {
@@ -364,7 +412,7 @@ export function useWavePlanning() {
 
             const normalizedMix: Record<string, number> = {};
             Object.entries(wave.category_mix || {}).forEach(([raw, value]) => {
-                const category = normalizeCategory(raw);
+                const category = normalizeCategory(raw, raw, raw, undefined);
                 normalizedMix[category] = (normalizedMix[category] || 0) + (value || 0);
             });
 
@@ -376,13 +424,13 @@ export function useWavePlanning() {
 
             const styleCountByCategory: Record<string, number> = {};
             waveSkus.forEach((sku) => {
-                const category = normalizeCategory(sku.category_id || sku.category_name);
+                const category = normalizeCategory(sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line);
                 styleCountByCategory[category] = (styleCountByCategory[category] || 0) + 1;
             });
 
             const storeBase = 10;
             const drillSourceRows: WaveSkuSource[] = waveSkus.map((sku) => {
-                const category = normalizeCategory(sku.category_id || sku.category_name);
+                const category = normalizeCategory(sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line);
                 const salesAgg = salesBySku.get(sku.sku_id);
                 const invAgg = inventoryBySku.get(sku.sku_id);
                 return {

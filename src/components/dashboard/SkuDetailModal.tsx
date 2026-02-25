@@ -1,5 +1,7 @@
 'use client';
 
+import { formatPriceBandLabel, resolvePriceBandByMsrp } from '@/config/priceBand';
+
 export interface SkuDrillData {
     name: string;
     price: number;
@@ -141,7 +143,7 @@ export default function SkuDetailModal({ sku, onClose }: SkuDetailModalProps) {
                         />
                         <MetricRow
                             label="价格带"
-                            value={sku.price >= 700 ? '¥700+' : sku.price >= 600 ? '¥600-699' : sku.price >= 500 ? '¥500-599' : sku.price >= 400 ? '¥400-499' : sku.price >= 300 ? '¥300-399' : '¥199-299'}
+                            value={formatPriceBandLabel(resolvePriceBandByMsrp(sku.price))}
                         />
                     </div>
 

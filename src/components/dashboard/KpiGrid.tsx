@@ -89,8 +89,7 @@ export default function KpiGrid({ kpis, compareMode = 'none', baselineKpis, onSe
     const topPriceBand = priceBandEntries[0];
 
     const PRICE_BAND_NAMES: Record<string, string> = {
-        PB1: '¥199-299', PB2: '¥300-399', PB3: '¥400-499',
-        PB4: '¥500-599', PB5: '¥600-699', PB6: '¥700+',
+        PB1: '199-399', PB2: '399-599', PB3: '599-799', PB4: '800+',
     };
 
     // 生成 Sparkline 数据（12周趋势）
