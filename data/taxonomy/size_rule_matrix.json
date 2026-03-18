@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "version": "v1.0",
+    "owner": "planning-standards",
+    "note": "Rule matrix to map gender/line/region/channel to a size curve and band definition."
+  },
+  "band_definitions": {
+    "WOMEN_FASHION": {
+      "size_range": ["34", "35", "36", "37", "38", "39"],
+      "small": ["34", "35"],
+      "core": ["36", "37", "38"],
+      "large": ["39"]
+    },
+    "WOMEN_SPORT": {
+      "size_range": ["35", "36", "37", "38", "39", "40"],
+      "small": ["35", "36"],
+      "core": ["37", "38", "39"],
+      "large": ["40"]
+    },
+    "MEN_FASHION": {
+      "size_range": ["38", "39", "40", "41", "42", "43"],
+      "small": ["38", "39"],
+      "core": ["40", "41", "42"],
+      "large": ["43"]
+    },
+    "MEN_SPORT": {
+      "size_range": ["39", "40", "41", "42", "43", "44"],
+      "small": ["39", "40"],
+      "core": ["41", "42", "43"],
+      "large": ["44"]
+    }
+  },
+  "base_profiles": [
+    {
+      "profile_id": "P_W_FASHION",
+      "gender": "women",
+      "line_type": "fashion_casual",
+      "band_definition": "WOMEN_FASHION",
+      "curve_default": "WOMEN_FASHION_STD_10",
+      "curve_north": "WOMEN_FASHION_NORTH_10",
+      "curve_south": "WOMEN_FASHION_SOUTH_10"
+    },
+    {
+      "profile_id": "P_W_SPORT",
+      "gender": "women",
+      "line_type": "sport_casual",
+      "band_definition": "WOMEN_SPORT",
+      "curve_default": "WOMEN_SPORT_STD_10",
+      "curve_north": "WOMEN_SPORT_NORTH_10",
+      "curve_south": "WOMEN_SPORT_SOUTH_10"
+    },
+    {
+      "profile_id": "P_M_FASHION",
+      "gender": "men",
+      "line_type": "fashion_casual",
+      "band_definition": "MEN_FASHION",
+      "curve_default": "MEN_FASHION_STD_10",
+      "curve_north": "MEN_FASHION_NORTH_10",
+      "curve_south": "MEN_FASHION_SOUTH_10"
+    },
+    {
+      "profile_id": "P_M_SPORT",
+      "gender": "men",
+      "line_type": "sport_casual",
+      "band_definition": "MEN_SPORT",
+      "curve_default": "MEN_SPORT_STD_10",
+      "curve_north": "MEN_SPORT_NORTH_10",
+      "curve_south": "MEN_SPORT_SOUTH_10"
+    }
+  ],
+  "dynamic_adjustments": {
+    "region_clusters": {
+      "north": ["north_china", "northeast_china", "northwest_china"],
+      "south": ["south_china", "southwest_china", "east_china"]
+    },
+    "category_bias": {
+      "upsize": ["boots", "dad_shoes", "running", "outdoor"],
+      "fit_strict": ["heels", "pumps", "ballet", "mary_jane"]
+    },
+    "channel_bias": {
+      "offline": {
+        "edge_size_factor": 0.7,
+        "note": "Reduce edge size depth due shelf capacity."
+      },
+      "online": {
+        "edge_size_factor": 1.2,
+        "note": "Keep edge sizes in DC for long-tail demand."
+      }
+    }
+  },
+  "mapping_priority": [
+    "gender",
+    "line_type",
+    "region_cluster",
+    "category_bias",
+    "channel_type"
+  ]
+}

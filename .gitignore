@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# temp/debug files
+build-log.txt
+excel_preview*
+tmp_write_test.txt
+read_excel.js
+read_excel_temp.js
+read_region_excel.js
+read_store_excel.js
+region_excel_preview_utf8.txt
+store_excel_preview_utf8.txt
+*.bat

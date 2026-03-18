@@ -5,6 +5,8 @@ import factSalesRaw from '@/../data/dashboard/fact_sales.json';
 import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
 import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
 import dimPlanRaw from '@/../data/dashboard/dim_plan.json';
+import sizeRuleMatrixRaw from '@/../data/taxonomy/size_rule_matrix.json';
+import sizeCurvesRaw from '@/../data/taxonomy/size_curves.json';
 import type { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
 import { matchCategoryL1, matchCategoryL2, resolveFootwearCategory } from '@/config/categoryMapping';
 import {
@@ -47,6 +49,7 @@ interface DimSkuRecord {
     target_audience?: string;
     color?: string;
     color_family?: string;
+    gender?: string;
 }
 
 interface DimChannelRecord {
@@ -55,6 +58,50 @@ interface DimChannelRecord {
     region: string;
     city_tier: string;
     store_format: string;
+}
+
+type SizeGenderKey = 'women' | 'men';
+type SizeLineTypeKey = 'fashion_casual' | 'sport_casual';
+type SizeRegionClusterKey = 'north' | 'south' | 'default';
+type SizeCategoryBiasKey = 'upsize' | 'fit_strict' | 'none';
+type SizeChannelBiasKey = 'online' | 'offline';
+
+interface SizeBandDefinition {
+    size_range: string[];
+    small: string[];
+    core: string[];
+    large: string[];
+}
+
+interface SizeRuleProfile {
+    profile_id: string;
+    gender: SizeGenderKey;
+    line_type: SizeLineTypeKey;
+    band_definition: string;
+    curve_default: string;
+    curve_north: string;
+    curve_south: string;
+}
+
+interface SizeRuleMatrixData {
+    band_definitions: Record<string, SizeBandDefinition>;
+    base_profiles: SizeRuleProfile[];
+    dynamic_adjustments: {
+        region_clusters: Record<'north' | 'south', string[]>;
+        category_bias: Record<'upsize' | 'fit_strict', string[]>;
+        channel_bias: Record<SizeChannelBiasKey, { edge_size_factor: number; note: string }>;
+    };
+}
+
+interface SizeCurvesData {
+    curves: Record<string, Record<string, number>>;
+}
+
+interface SizeCurveSummary {
+    curveId: string;
+    primarySize: string;
+    coreShare: number;
+    edgeShare: number;
 }
 
 interface AggregateBucket {
@@ -252,6 +299,15 @@ export interface CategoryOpsSkuActionRow {
     lifecycleLabel: string;
     action: string;
     reason: string;
+    size?: string;
+    size_code?: string;
+    full_size_rate?: number;
+    stockout_rate?: number;
+    core_size_sales_share?: number;
+    last_id?: string;
+    last_name?: string;
+    size_profile_id?: string;
+    size_curve_id?: string;
 }
 
 export interface CategoryOpsHeatPoint {
@@ -379,6 +435,8 @@ const factSales = factSalesRaw as FactSalesRecord[];
 const dimSku = dimSkuRaw as DimSkuRecord[];
 const dimChannel = dimChannelRaw as DimChannelRecord[];
 const dimPlan = dimPlanRaw as DimPlanRecord;
+const sizeRuleMatrix = sizeRuleMatrixRaw as SizeRuleMatrixData;
+const sizeCurves = sizeCurvesRaw as SizeCurvesData;
 
 export type CategoryOpsHeatXAxis = 'element' | 'category' | 'price_band';
 
@@ -390,6 +448,40 @@ const LIFECYCLE_LABEL: Record<LifecycleKey, string> = {
     clearance: '清仓',
     other: '其他',
 };
+
+const WOMEN_HINTS = ['women', 'woman', 'female', 'lady', 'ladies', 'girl', '女'];
+const MEN_HINTS = ['men', 'man', 'male', 'boy', '男'];
+const UNISEX_HINTS = ['unisex', 'neutral', '中性'];
+const SPORT_LINE_HINTS = [
+    'sport',
+    'sports',
+    'running',
+    'runner',
+    'trail',
+    'hiking',
+    'outdoor',
+    'training',
+    'basket',
+    'soccer',
+    'tennis',
+    '运动',
+    '跑',
+    '越野',
+    '徒步',
+    '登山',
+    '溯溪',
+    '户外',
+    '机能',
+];
+const UPSIZE_HINTS = ['boots', 'boot', 'dad', 'running', 'outdoor', '靴', '老爹', '跑', '户外', '越野', '徒步', '登山'];
+const FIT_STRICT_HINTS = ['heels', 'heel', 'pump', 'pumps', 'ballet', 'mary_jane', 'maryjane', '高跟', '浅口', '芭蕾', '玛丽珍', '单鞋'];
+const ONLINE_CHANNEL_HINTS = ['online', 'ecom', 'e-commerce', 'ec', '电商', '线上'];
+const NORTH_REGION_HINTS = ['north_china', 'northeast_china', 'northwest_china', 'north', 'northeast', 'northwest', '华北', '东北', '西北'];
+const SOUTH_REGION_HINTS = ['south_china', 'southwest_china', 'east_china', 'south', 'southwest', 'east', '华南', '西南', '华东'];
+
+const sizeProfileMap = new Map<string, SizeRuleProfile>(
+    (sizeRuleMatrix.base_profiles || []).map((profile) => [`${profile.gender}__${profile.line_type}`, profile] as const),
+);
 
 function safeDiv(numerator: number, denominator: number) {
     if (denominator <= 0) return 0;
@@ -409,6 +501,184 @@ function formatPairs(value: number) {
 
 function clamp(value: number, min: number, max: number) {
     return Math.max(min, Math.min(max, value));
+}
+
+function normalizeToken(value?: string | null) {
+    return String(value || '').trim().toLowerCase();
+}
+
+function includesAnyToken(text: string, tokens: string[]) {
+    if (!text) return false;
+    return tokens.some((token) => token && text.includes(token));
+}
+
+function resolveSizeLineType(sku: DimSkuRecord): SizeLineTypeKey {
+    const text = normalizeToken([sku.product_line, sku.category_l2, sku.category_name, sku.sku_name].filter(Boolean).join(' '));
+    if (includesAnyToken(text, SPORT_LINE_HINTS)) return 'sport_casual';
+    return 'fashion_casual';
+}
+
+function resolveSizeGender(sku: DimSkuRecord, lineType: SizeLineTypeKey): SizeGenderKey {
+    const genderRaw = normalizeToken(sku.gender);
+    if (includesAnyToken(genderRaw, WOMEN_HINTS)) return 'women';
+    if (includesAnyToken(genderRaw, MEN_HINTS)) return 'men';
+    if (includesAnyToken(genderRaw, UNISEX_HINTS)) return lineType === 'sport_casual' ? 'men' : 'women';
+
+    const text = normalizeToken([sku.category_l2, sku.product_line, sku.category_name, sku.sku_name].filter(Boolean).join(' '));
+    if (includesAnyToken(text, FIT_STRICT_HINTS)) return 'women';
+    if (includesAnyToken(text, UPSIZE_HINTS)) return lineType === 'sport_casual' ? 'men' : 'women';
+    return lineType === 'fashion_casual' ? 'women' : 'men';
+}
+
+function normalizeRegionCluster(regionRaw?: string | null): 'north' | 'south' | null {
+    const region = normalizeToken(regionRaw);
+    if (!region) return null;
+
+    const northClusters = (sizeRuleMatrix.dynamic_adjustments?.region_clusters?.north || []).map((item) => normalizeToken(item));
+    const southClusters = (sizeRuleMatrix.dynamic_adjustments?.region_clusters?.south || []).map((item) => normalizeToken(item));
+    if (includesAnyToken(region, northClusters) || includesAnyToken(region, NORTH_REGION_HINTS)) return 'north';
+    if (includesAnyToken(region, southClusters) || includesAnyToken(region, SOUTH_REGION_HINTS)) return 'south';
+
+    return null;
+}
+
+function normalizeChannelBias(channelTypeRaw?: string | null): SizeChannelBiasKey {
+    const channelType = normalizeToken(channelTypeRaw);
+    if (includesAnyToken(channelType, ONLINE_CHANNEL_HINTS)) return 'online';
+    return 'offline';
+}
+
+function resolveSizeCategoryBias(sku: DimSkuRecord): SizeCategoryBiasKey {
+    const text = normalizeToken([sku.category_l2, sku.product_line, sku.category_name, sku.sku_name].filter(Boolean).join(' '));
+    const upsizeCodes = (sizeRuleMatrix.dynamic_adjustments?.category_bias?.upsize || []).map((item) => normalizeToken(item));
+    const fitStrictCodes = (sizeRuleMatrix.dynamic_adjustments?.category_bias?.fit_strict || []).map((item) => normalizeToken(item));
+    if (includesAnyToken(text, upsizeCodes) || includesAnyToken(text, UPSIZE_HINTS)) return 'upsize';
+    if (includesAnyToken(text, fitStrictCodes) || includesAnyToken(text, FIT_STRICT_HINTS)) return 'fit_strict';
+    return 'none';
+}
+
+function resolveSizeProfile(gender: SizeGenderKey, lineType: SizeLineTypeKey): SizeRuleProfile | null {
+    return (
+        sizeProfileMap.get(`${gender}__${lineType}`) ||
+        sizeProfileMap.get(`women__${lineType}`) ||
+        sizeProfileMap.get(`men__${lineType}`) ||
+        sizeRuleMatrix.base_profiles?.[0] ||
+        null
+    );
+}
+
+function resolveDominantRegionCluster(northSales: number, southSales: number): SizeRegionClusterKey {
+    if (northSales > southSales * 1.05) return 'north';
+    if (southSales > northSales * 1.05) return 'south';
+    return 'default';
+}
+
+function summarizeSizeCurve(profile: SizeRuleProfile, regionCluster: SizeRegionClusterKey): SizeCurveSummary {
+    const resolvedCurveId = regionCluster === 'north'
+        ? profile.curve_north
+        : regionCluster === 'south'
+            ? profile.curve_south
+            : profile.curve_default;
+    const fallbackCurveId = profile.curve_default;
+    const curveId = sizeCurves.curves[resolvedCurveId] ? resolvedCurveId : fallbackCurveId;
+    const curve = sizeCurves.curves[curveId] || {};
+    const band = sizeRuleMatrix.band_definitions[profile.band_definition];
+
+    const entries = Object.entries(curve)
+        .map(([size, qty]) => ({ size, qty: Math.max(0, Number(qty) || 0) }))
+        .sort((a, b) => Number(a.size) - Number(b.size));
+    const totalQty = entries.reduce((sum, item) => sum + item.qty, 0);
+    const primary = entries.reduce(
+        (best, item) => (item.qty > best.qty ? item : best),
+        entries[0] || { size: String(band?.core?.[0] || ''), qty: 0 },
+    );
+    const coreSet = new Set((band?.core || []).map((size) => String(size)));
+    const edgeSet = new Set([...(band?.small || []), ...(band?.large || [])].map((size) => String(size)));
+    const coreQty = entries.reduce((sum, item) => sum + (coreSet.has(item.size) ? item.qty : 0), 0);
+    const edgeQty = entries.reduce((sum, item) => sum + (edgeSet.has(item.size) ? item.qty : 0), 0);
+
+    return {
+        curveId,
+        primarySize: primary.size || String(band?.core?.[0] || ''),
+        coreShare: safeDiv(coreQty, Math.max(totalQty, 1)),
+        edgeShare: safeDiv(edgeQty, Math.max(totalQty, 1)),
+    };
+}
+
+function resolveEdgeSizeFactor(onlineMix: number, offlineMix: number) {
+    const onlineFactor = Number(sizeRuleMatrix.dynamic_adjustments?.channel_bias?.online?.edge_size_factor || 1);
+    const offlineFactor = Number(sizeRuleMatrix.dynamic_adjustments?.channel_bias?.offline?.edge_size_factor || 1);
+    const totalMix = onlineMix + offlineMix;
+    if (totalMix <= 0) return safeDiv(onlineFactor + offlineFactor, 2);
+    return safeDiv(onlineMix * onlineFactor + offlineMix * offlineFactor, totalMix);
+}
+
+function deriveSizeHealthMetrics(
+    sku: DimSkuRecord,
+    sellThrough: number,
+    pairsSold: number,
+    onHandUnits: number,
+    northSales: number,
+    southSales: number,
+    onlineSales: number,
+    offlineSales: number,
+) {
+    const lineType = resolveSizeLineType(sku);
+    const gender = resolveSizeGender(sku, lineType);
+    const profile = resolveSizeProfile(gender, lineType);
+    if (!profile) {
+        return {
+            sizeCode: '',
+            fullSizeRate: 0,
+            stockoutRate: 0,
+            coreSizeSalesShare: 0,
+            lastId: '',
+            lastName: '',
+            profileId: '',
+            curveId: '',
+        };
+    }
+
+    const regionCluster = resolveDominantRegionCluster(northSales, southSales);
+    const curveSummary = summarizeSizeCurve(profile, regionCluster);
+    const edgeFactor = resolveEdgeSizeFactor(onlineSales, offlineSales);
+    const categoryBias = resolveSizeCategoryBias(sku);
+    const inventoryPressure = safeDiv(onHandUnits, Math.max(onHandUnits + pairsSold, 1));
+    const demandHeat = clamp(sellThrough - 0.68, -0.2, 0.32);
+
+    let fullSizeRate =
+        0.86 -
+        curveSummary.edgeShare * 0.18 +
+        demandHeat * 0.12 -
+        Math.max(0, inventoryPressure - 0.55) * 0.14 -
+        Math.max(0, edgeFactor - 1) * 0.08 +
+        Math.max(0, 1 - edgeFactor) * 0.03;
+    if (categoryBias === 'upsize') fullSizeRate -= 0.02;
+    if (categoryBias === 'fit_strict') fullSizeRate -= 0.01;
+    fullSizeRate = clamp(fullSizeRate, 0.52, 0.96);
+
+    let stockoutRate = 1 - fullSizeRate + Math.max(0, demandHeat) * 0.12;
+    if (categoryBias === 'upsize') stockoutRate += 0.02;
+    if (categoryBias === 'fit_strict') stockoutRate -= 0.01;
+    stockoutRate = clamp(stockoutRate, 0.04, 0.45);
+
+    let coreSizeSalesShare =
+        curveSummary.coreShare +
+        Math.max(0, demandHeat) * 0.06 -
+        Math.max(0, stockoutRate - 0.2) * 0.18;
+    if (categoryBias === 'fit_strict') coreSizeSalesShare += 0.03;
+    coreSizeSalesShare = clamp(coreSizeSalesShare, 0.42, 0.88);
+
+    return {
+        sizeCode: curveSummary.primarySize,
+        fullSizeRate,
+        stockoutRate,
+        coreSizeSalesShare,
+        lastId: `${gender}_${lineType}`,
+        lastName: sku.product_line || sku.category_l2 || sku.category_name || '标准楦型',
+        profileId: profile.profile_id,
+        curveId: curveSummary.curveId,
+    };
 }
 
 function normalizeLifecycle(rawLifecycle?: string): LifecycleKey {
@@ -1050,6 +1320,7 @@ function quantile(values: number[], q: number) {
 type SkuActionAgg = {
     skuId: string;
     skuName: string;
+    skuMeta: DimSkuRecord;
     categoryId: string;
     categoryFilterId: string;
     category: string;
@@ -1065,6 +1336,10 @@ type SkuActionAgg = {
     discountWeighted: number;
     discountWeight: number;
     onHandUnits: number;
+    northSales: number;
+    southSales: number;
+    onlineSales: number;
+    offlineSales: number;
 };
 
 function buildSkuActionRows(
@@ -1102,6 +1377,7 @@ function buildSkuActionRows(
         const row = skuMapAgg.get(sale.sku_id) || {
             skuId: sale.sku_id,
             skuName: sku.sku_name || sale.sku_id,
+            skuMeta: sku,
             categoryId: resolvedCategoryId,
             categoryFilterId,
             category: resolvedCategory,
@@ -1117,6 +1393,10 @@ function buildSkuActionRows(
             discountWeighted: 0,
             discountWeight: 0,
             onHandUnits: 0,
+            northSales: 0,
+            southSales: 0,
+            onlineSales: 0,
+            offlineSales: 0,
         };
 
         const units = Math.max(0, sale.unit_sold || 0);
@@ -1136,6 +1416,13 @@ function buildSkuActionRows(
         row.gmWeight += Math.max(sales, 1);
         row.discountWeighted += (sale.discount_rate || 0) * discountWeight;
         row.discountWeight += discountWeight;
+        const mixWeight = Math.max(sales, units, 1);
+        const regionCluster = normalizeRegionCluster(channel.region);
+        if (regionCluster === 'north') row.northSales += mixWeight;
+        if (regionCluster === 'south') row.southSales += mixWeight;
+        const channelBias = normalizeChannelBias(channel.channel_type);
+        if (channelBias === 'online') row.onlineSales += mixWeight;
+        else row.offlineSales += mixWeight;
 
         const snapshotKey = `${sale.sku_id}__${sale.channel_id}`;
         const latestSnapshot = latestInventoryBySkuChannel.get(snapshotKey);
@@ -1165,6 +1452,16 @@ function buildSkuActionRows(
             const gmRate = safeDiv(row.gmWeighted, row.gmWeight);
             const stockToSales = safeDiv(row.onHandUnits, Math.max(row.pairsSold, 1));
             const fillRate = deriveFillRate(sellThrough, 0, safeDiv(row.onHandUnits, row.onHandUnits + row.pairsSold));
+            const sizeMetrics = deriveSizeHealthMetrics(
+                row.skuMeta,
+                sellThrough,
+                row.pairsSold,
+                row.onHandUnits,
+                row.northSales,
+                row.southSales,
+                row.onlineSales,
+                row.offlineSales,
+            );
 
             let action = '维持观察';
             let reason = '供需结构接近样本均值，维持正常陈列与补货频率。';
@@ -1201,6 +1498,15 @@ function buildSkuActionRows(
                 lifecycleLabel: getLifecycleLabel(row.lifecycle),
                 action,
                 reason,
+                size: sizeMetrics.sizeCode,
+                size_code: sizeMetrics.sizeCode,
+                full_size_rate: sizeMetrics.fullSizeRate,
+                stockout_rate: sizeMetrics.stockoutRate,
+                core_size_sales_share: sizeMetrics.coreSizeSalesShare,
+                last_id: sizeMetrics.lastId,
+                last_name: sizeMetrics.lastName,
+                size_profile_id: sizeMetrics.profileId,
+                size_curve_id: sizeMetrics.curveId,
             } satisfies CategoryOpsSkuActionRow;
         })
         .sort((a, b) => b.netSales - a.netSales);

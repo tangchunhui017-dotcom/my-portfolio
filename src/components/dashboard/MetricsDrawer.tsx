@@ -13,12 +13,97 @@ import {
     FOOTWEAR_PUBLIC_ATTRIBUTE_TAGS,
     FOOTWEAR_SCENE_CATEGORY_PICKS,
 } from '@/config/footwearTaxonomy';
+import sizeRuleMatrixRaw from '@/../data/taxonomy/size_rule_matrix.json';
+import sizeCurvesRaw from '@/../data/taxonomy/size_curves.json';
 
 const CATEGORY_COLORS: Record<string, string> = {
     经营结果: 'bg-blue-100 text-blue-700',
     价格折扣: 'bg-amber-100 text-amber-700',
     效率结构: 'bg-emerald-100 text-emerald-700',
 };
+
+type SizeBandDefinition = {
+    size_range: string[];
+    small: string[];
+    core: string[];
+    large: string[];
+};
+
+type SizeRuleProfile = {
+    profile_id: string;
+    gender: string;
+    line_type: string;
+    band_definition: string;
+    curve_default: string;
+    curve_north: string;
+    curve_south: string;
+};
+
+type SizeRuleMatrixData = {
+    band_definitions: Record<string, SizeBandDefinition>;
+    base_profiles: SizeRuleProfile[];
+    dynamic_adjustments: {
+        region_clusters: Record<string, string[]>;
+        category_bias: Record<string, string[]>;
+        channel_bias: Record<string, { edge_size_factor: number; note: string }>;
+    };
+};
+
+type SizeCurvesData = {
+    curves: Record<string, Record<string, number>>;
+};
+
+const sizeRuleMatrix = sizeRuleMatrixRaw as SizeRuleMatrixData;
+const sizeCurves = sizeCurvesRaw as SizeCurvesData;
+
+const GENDER_LABEL: Record<string, string> = {
+    women: '女鞋',
+    men: '男鞋',
+    unisex: '中性',
+};
+
+const LINE_TYPE_LABEL: Record<string, string> = {
+    fashion_casual: '时装休闲',
+    sport_casual: '运动休闲',
+};
+
+const REGION_CLUSTER_LABEL: Record<string, string> = {
+    north_china: '华北',
+    northeast_china: '东北',
+    northwest_china: '西北',
+    south_china: '华南',
+    southwest_china: '西南',
+    east_china: '华东',
+};
+
+const CATEGORY_BIAS_LABEL: Record<string, string> = {
+    boots: '冬靴',
+    dad_shoes: '老爹鞋',
+    running: '运动跑鞋',
+    outdoor: '户外鞋',
+    heels: '高跟鞋',
+    pumps: '浅口单鞋',
+    ballet: '芭蕾鞋',
+    mary_jane: '玛丽珍',
+};
+
+const CHANNEL_BIAS_LABEL: Record<string, string> = {
+    offline: '线下门店',
+    online: '线上电商',
+};
+
+function formatCurve(curve: Record<string, number> | undefined) {
+    if (!curve) return '—';
+    return Object.entries(curve)
+        .sort((a, b) => Number(a[0]) - Number(b[0]))
+        .map(([size, qty]) => `${size}:${qty}`)
+        .join(' / ');
+}
+
+function formatCodeList(codes: string[], labelMap: Record<string, string>) {
+    if (!codes.length) return '—';
+    return codes.map((code) => labelMap[code] || code).join('、');
+}
 
 export default function MetricsDrawer() {
     const [open, setOpen] = useState(false);
@@ -74,6 +159,80 @@ export default function MetricsDrawer() {
                                             <p className="text-xs text-slate-500 leading-relaxed">{metric.note}</p>
                                         </div>
                                     ))}
+                                </div>
+                            </section>
+
+                            <section>
+                                <h3 className="text-sm font-bold text-slate-900 mb-3">尺码标准、配比与动态修正规则</h3>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                                    <div className="border border-slate-100 rounded-lg p-3">
+                                        <div className="text-xs font-semibold text-slate-700 mb-2">码段标准（小码 / 核心码 / 大码）</div>
+                                        <div className="space-y-2">
+                                            {sizeRuleMatrix.base_profiles.map((profile) => {
+                                                const band = sizeRuleMatrix.band_definitions[profile.band_definition];
+                                                return (
+                                                    <div key={profile.profile_id} className="rounded-md border border-slate-100 bg-slate-50 px-2.5 py-2">
+                                                        <div className="text-xs font-semibold text-slate-800">
+                                                            {(GENDER_LABEL[profile.gender] || profile.gender)} · {(LINE_TYPE_LABEL[profile.line_type] || profile.line_type)}
+                                                        </div>
+                                                        <div className="text-[11px] text-slate-600 mt-1">尺码池：{band?.size_range.join(' / ') || '—'}</div>
+                                                        <div className="text-[11px] text-slate-600 mt-0.5">
+                                                            小码：{band?.small.join(' / ') || '—'} ｜ 核心码：{band?.core.join(' / ') || '—'} ｜ 大码：{band?.large.join(' / ') || '—'}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    <div className="border border-slate-100 rounded-lg p-3">
+                                        <div className="text-xs font-semibold text-slate-700 mb-2">标准配比组（10双装）</div>
+                                        <div className="space-y-2">
+                                            {sizeRuleMatrix.base_profiles.map((profile) => (
+                                                <div key={`${profile.profile_id}-curve`} className="rounded-md border border-slate-100 bg-slate-50 px-2.5 py-2">
+                                                    <div className="text-xs font-semibold text-slate-800">
+                                                        {(GENDER_LABEL[profile.gender] || profile.gender)} · {(LINE_TYPE_LABEL[profile.line_type] || profile.line_type)}
+                                                    </div>
+                                                    <div className="text-[11px] text-slate-600 mt-1">标准：{formatCurve(sizeCurves.curves[profile.curve_default])}</div>
+                                                    <div className="text-[11px] text-slate-500 mt-0.5">北区：{formatCurve(sizeCurves.curves[profile.curve_north])}</div>
+                                                    <div className="text-[11px] text-slate-500 mt-0.5">南区：{formatCurve(sizeCurves.curves[profile.curve_south])}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-3 border border-slate-100 rounded-lg p-3">
+                                    <div className="text-xs font-semibold text-slate-700 mb-2">动态修正规则</div>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                        <div className="rounded-md border border-slate-100 bg-slate-50 px-2.5 py-2">
+                                            <div className="text-[11px] font-semibold text-slate-700">地域变量</div>
+                                            <div className="text-[11px] text-slate-600 mt-1">
+                                                北区：{formatCodeList(sizeRuleMatrix.dynamic_adjustments.region_clusters.north || [], REGION_CLUSTER_LABEL)}
+                                            </div>
+                                            <div className="text-[11px] text-slate-600 mt-0.5">
+                                                南区：{formatCodeList(sizeRuleMatrix.dynamic_adjustments.region_clusters.south || [], REGION_CLUSTER_LABEL)}
+                                            </div>
+                                        </div>
+                                        <div className="rounded-md border border-slate-100 bg-slate-50 px-2.5 py-2">
+                                            <div className="text-[11px] font-semibold text-slate-700">品类变量</div>
+                                            <div className="text-[11px] text-slate-600 mt-1">
+                                                偏大一码：{formatCodeList(sizeRuleMatrix.dynamic_adjustments.category_bias.upsize || [], CATEGORY_BIAS_LABEL)}
+                                            </div>
+                                            <div className="text-[11px] text-slate-600 mt-0.5">
+                                                贴脚精配：{formatCodeList(sizeRuleMatrix.dynamic_adjustments.category_bias.fit_strict || [], CATEGORY_BIAS_LABEL)}
+                                            </div>
+                                        </div>
+                                        <div className="rounded-md border border-slate-100 bg-slate-50 px-2.5 py-2">
+                                            <div className="text-[11px] font-semibold text-slate-700">渠道变量</div>
+                                            {Object.entries(sizeRuleMatrix.dynamic_adjustments.channel_bias || {}).map(([channel, rule]) => (
+                                                <div key={channel} className="text-[11px] text-slate-600 mt-1">
+                                                    <span className="font-medium text-slate-700">{CHANNEL_BIAS_LABEL[channel] || channel}：</span>
+                                                    边缘码系数 {rule.edge_size_factor}，{rule.note}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             </section>
 

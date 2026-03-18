@@ -10,6 +10,7 @@ type AgeHeatMetric = 'net_sales' | 'sell_through' | 'gm_rate';
 type ColorHeatMetric = 'net_sales' | 'sell_through';
 type TreemapAreaMetric = 'net_sales' | 'pairs_sold';
 type TreemapColorMetric = 'sell_through' | 'gm_rate';
+type ColorQuadrantKey = 'highEffHighSt' | 'highEffLowSt' | 'lowEffHighSt' | 'lowEffLowSt';
 
 const AGE_COLORS: Record<string, string> = {
     '18-25': '#38BDF8',
@@ -17,6 +18,22 @@ const AGE_COLORS: Record<string, string> = {
     '36-45': '#7C3AED',
     '46+': '#C026D3',
     未知: '#94A3B8',
+};
+
+const AGE_SCENE_HINTS = [
+    '18-23：拉新潮流/社交场景（更吃辨识度与新廓形）',
+    '24-33：通勤+周末两用（易搭配、显脚型、舒适）',
+    '34-45：品质通勤（材质质感、脚感、耐穿）',
+    '46+：舒适功能（足弓、防滑、轻量、易穿脱）',
+];
+
+const LINE_SELLING_POINT: Record<string, string> = {
+    户外鞋: '抓地与耐磨',
+    '休闲/街头': '穿搭辨识度与耐穿',
+    '时尚/通勤': '楦型修饰与轻量舒适',
+    '正装/通勤': '脚感与通勤耐用',
+    靴类: '保暖防滑与版型',
+    凉拖鞋: '透气快干与易穿脱',
 };
 
 function safeDiv(numerator: number, denominator: number) {
@@ -316,10 +333,37 @@ export default function ProductBasicPanel({
     );
 
     const treemapColorRange = useMemo(() => {
-        const values = colorStats.map((item) => item[treemapColorMetric]);
+        const values = colorStats
+            .map((item) => item[treemapColorMetric])
+            .filter((value) => Number.isFinite(value));
+
+        if (!values.length) {
+            return { min: 0, max: 1 };
+        }
+
+        const rawMin = Math.min(...values);
+        const rawMax = Math.max(...values);
+        const rawSpan = rawMax - rawMin;
+
+        if (rawSpan <= 0) {
+            const center = rawMax;
+            return {
+                min: clamp(center - 0.05, 0, 1),
+                max: clamp(center + 0.05, 0, 1),
+            };
+        }
+
+        if (rawSpan < 0.03) {
+            const center = (rawMin + rawMax) / 2;
+            return {
+                min: clamp(center - 0.04, 0, 1),
+                max: clamp(center + 0.04, 0, 1),
+            };
+        }
+
         return {
-            min: Math.min(...values, 0),
-            max: Math.max(...values, 1),
+            min: rawMin,
+            max: rawMax,
         };
     }, [colorStats, treemapColorMetric]);
 
@@ -549,18 +593,112 @@ export default function ProductBasicPanel({
             .sort((a, b) => b.net_sales - a.net_sales)[0] || null;
     }, [agePriceCells, topAudience]);
 
+    const topAudienceLine = useMemo(() => {
+        if (!topAudience) return null;
+        return ageLineCells
+            .filter((item) => item.age_group === topAudience.ageGroup)
+            .sort((a, b) => b.net_sales - a.net_sales)[0] || null;
+    }, [ageLineCells, topAudience]);
+
+    const productLineRanking = useMemo(() => {
+        const lineSalesMap = ageLineCells.reduce<Record<string, number>>((acc, item) => {
+            acc[item.product_line] = (acc[item.product_line] || 0) + item.net_sales;
+            return acc;
+        }, {});
+        return Object.entries(lineSalesMap)
+            .map(([line, sales]) => ({ line, sales }))
+            .sort((a, b) => b.sales - a.sales);
+    }, [ageLineCells]);
+
+    const topProductLine = productLineRanking[0]?.line || '--';
+    const secondProductLine = productLineRanking[1]?.line || '--';
+    const colorRanking = useMemo(() => [...colorStats].sort((a, b) => b.net_sales - a.net_sales), [colorStats]);
+
+    const colorStrategySummary = useMemo(() => {
+        if (!colorRanking.length) {
+            return {
+                topColor: null as (typeof colorRanking)[number] | null,
+                oppColor: null as (typeof colorRanking)[number] | null,
+                riskColor: null as (typeof colorRanking)[number] | null,
+                sellThroughMedian: 0,
+                quadrants: {
+                    highEffHighSt: [] as typeof colorRanking,
+                    highEffLowSt: [] as typeof colorRanking,
+                    lowEffHighSt: [] as typeof colorRanking,
+                    lowEffLowSt: [] as typeof colorRanking,
+                },
+            };
+        }
+
+        const topColor = colorRanking[0];
+        const totalPairs = colorRanking.reduce((sum, item) => sum + item.pairs_sold, 0);
+        const totalSkc = colorRanking.reduce((sum, item) => sum + item.skc_cnt, 0);
+        const stSorted = [...colorRanking].map((item) => item.sell_through).sort((a, b) => a - b);
+        const middleIndex = Math.floor(stSorted.length / 2);
+        const sellThroughMedian =
+            stSorted.length % 2 === 0
+                ? safeDiv(stSorted[middleIndex - 1] + stSorted[middleIndex], 2)
+                : stSorted[middleIndex];
+
+        const enriched = colorRanking.map((item) => {
+            const pairsShare = safeDiv(item.pairs_sold, totalPairs);
+            const skcShare = safeDiv(item.skc_cnt, totalSkc);
+            return {
+                ...item,
+                pairsShare,
+                skcShare,
+                structureGap: pairsShare - skcShare,
+                riskScore: (1 - item.sell_through) * item.net_sales,
+            };
+        });
+
+        const oppColor =
+            [...enriched]
+                .filter((item) => item.sell_through >= sellThroughMedian)
+                .sort((a, b) => b.structureGap - a.structureGap)[0] || enriched[0];
+        const riskColor = [...enriched].sort((a, b) => b.riskScore - a.riskScore)[0];
+
+        const quadrants = {
+            highEffHighSt: enriched
+                .filter((item) => item.structureGap >= 0 && item.sell_through >= sellThroughMedian)
+                .sort((a, b) => b.structureGap - a.structureGap),
+            highEffLowSt: enriched
+                .filter((item) => item.structureGap >= 0 && item.sell_through < sellThroughMedian)
+                .sort((a, b) => b.structureGap - a.structureGap),
+            lowEffHighSt: enriched
+                .filter((item) => item.structureGap < 0 && item.sell_through >= sellThroughMedian)
+                .sort((a, b) => b.sell_through - a.sell_through),
+            lowEffLowSt: enriched
+                .filter((item) => item.structureGap < 0 && item.sell_through < sellThroughMedian)
+                .sort((a, b) => b.riskScore - a.riskScore),
+        };
+
+        return { topColor, oppColor, riskColor, sellThroughMedian, quadrants };
+    }, [colorRanking]);
+
+    const personaSnapshotSummary = useMemo(() => {
+        const topColor = colorStrategySummary.topColor?.color_family || '--';
+        const oppColor = colorStrategySummary.oppColor?.color_family || '--';
+        const riskColor = colorStrategySummary.riskColor?.color_family || '--';
+        const topAge = topAudience?.ageGroup || '--';
+
+        return `主力客群：${topAge}；主力场景线：${topProductLine}；主色系：${topColor}；机会色：${oppColor}；风险色：${riskColor}。`;
+    }, [colorStrategySummary, topAudience, topProductLine]);
+
     const audienceCoreFinding = useMemo(() => {
         if (!topAudience) return '当前口径下暂无可用客群数据。';
-        return `主力客群为 ${topAudience.ageGroup}（销售占比 ${formatPct(topAudience.salesShare)}）。`;
-    }, [topAudience]);
+        const topBand = topAudiencePriceBand?.price_band || '--';
+        const leadLine = topAudienceLine?.product_line || '--';
+        return `主力客群为 ${topAudience.ageGroup}（销售占比 ${formatPct(topAudience.salesShare)}），主要贡献来自 ${leadLine}；该客群对 ${topBand} 价带支撑最明显。`;
+    }, [topAudience, topAudienceLine, topAudiencePriceBand]);
 
     const audienceAction = useMemo(() => {
         if (!topAudience) return '建议先补齐客群画像数据后再进行投放策略细分。';
-        if (!topAudiencePriceBand) return `建议围绕 ${topAudience.ageGroup} 做主力价带聚焦，提高资源效率。`;
-        return `高价带主要由 ${topAudience.ageGroup} 支撑，建议将该客群重点资源投向 ${topAudiencePriceBand.price_band} 价带。`;
-    }, [topAudience, topAudiencePriceBand]);
-
-    const colorRanking = useMemo(() => [...colorStats].sort((a, b) => b.net_sales - a.net_sales), [colorStats]);
+        const topBand = topAudiencePriceBand?.price_band || '--';
+        const leadLine = topAudienceLine?.product_line || '--';
+        const sceneHint = AGE_SCENE_HINTS.find((hint) => hint.startsWith(topAudience.ageGroup)) || '请结合终端反馈补充场景画像。';
+        return `围绕 ${topAudience.ageGroup} 做场景线配置（${sceneHint}），在 ${leadLine} 保障主色系与核心楦型覆盖，并于 ${topBand} 形成核心款/升级款/形象款价带梯度。`;
+    }, [topAudience, topAudienceLine, topAudiencePriceBand]);
 
     const colorCoreFinding = useMemo(() => {
         if (!colorRanking.length) return '当前口径下暂无色系结构数据。';
@@ -569,18 +707,85 @@ export default function ProductBasicPanel({
             .filter((item) => baseColorSet.has(item.color_family))
             .reduce((sum, item) => sum + item.net_sales, 0);
         const baseShare = safeDiv(baseSales, totals.net_sales);
-        return `基础色盘贡献 ${formatPct(baseShare)}，当前色盘结构${baseShare >= 0.7 ? '稳健' : '偏离主盘'}。`;
+        return `基础色盘贡献 ${formatPct(baseShare)}，当前色盘结构${baseShare >= 0.7 ? '稳健' : '偏离主盘'}。鞋类黑/白/灰属于场景可穿性与搭配兼容性底盘色，应稳定覆盖通勤与常青款。`;
     }, [colorRanking, totals.net_sales]);
 
     const colorAction = useMemo(() => {
         if (!colorRanking.length) return '建议先补齐色系销售数据后再做结构动作。';
-        const riskColor = [...colorRanking].sort((a, b) => {
-            const scoreA = (1 - a.sell_through) * a.net_sales;
-            const scoreB = (1 - b.sell_through) * b.net_sales;
-            return scoreB - scoreA;
-        })[0];
-        return `${riskColor.color_family} 需列入库存预警，建议收缩该色在低动销品类中的配比。`;
-    }, [colorRanking]);
+        const riskColor = colorStrategySummary.riskColor?.color_family || '--';
+        return `${riskColor} 列入结构预警：企划侧收缩低动销品类配比，设计侧减少同质化配色，改用材质/细节（如金属件、皮料纹理、拼接）做差异化。`;
+    }, [colorRanking, colorStrategySummary.riskColor]);
+
+    const topAudienceSecond = audienceRanking[1] || null;
+
+    const personaCards = useMemo(() => {
+        const topColor = colorStrategySummary.topColor;
+        const oppColor = colorStrategySummary.oppColor;
+        const riskColor = colorStrategySummary.riskColor;
+
+        return {
+            audience: {
+                top1: topAudience,
+                top2: topAudienceSecond,
+            },
+            color: {
+                top: topColor,
+            },
+            opportunityAndRisk: {
+                opportunity: oppColor,
+                risk: riskColor,
+            },
+        };
+    }, [colorStrategySummary, topAudience, topAudienceSecond]);
+
+    const colorQuadrantMeta: Array<{
+        key: ColorQuadrantKey;
+        title: string;
+        action: string;
+    }> = [
+        {
+            key: 'highEffHighSt',
+            title: '高效率 × 高售罄（常青主色）',
+            action: '加深度：核心楦型/核心场景全覆盖，首配优先。',
+        },
+        {
+            key: 'highEffLowSt',
+            title: '高效率 × 低售罄（结构偏差）',
+            action: '不急扩色：先优化材质观感、卖点表达与终端陈列。',
+        },
+        {
+            key: 'lowEffHighSt',
+            title: '低效率 × 高售罄（机会色）',
+            action: '小步扩张：增加陈列位或少量扩 SKC，在热销品类先试点。',
+        },
+        {
+            key: 'lowEffLowSt',
+            title: '低效率 × 低售罄（风险色）',
+            action: '缩 SKU 做点缀：集中节庆/主题节点，不做全季铺开。',
+        },
+    ];
+
+    const topGlobalPriceBand = useMemo(() => {
+        const ranking = [...agePriceCells].sort((a, b) => b.net_sales - a.net_sales);
+        return ranking[0]?.price_band || '--';
+    }, [agePriceCells]);
+
+    const playbookRows = useMemo(() => {
+        const topAge = topAudience?.ageGroup || '--';
+        const topColor = colorStrategySummary.topColor?.color_family || '--';
+        const oppColor = colorStrategySummary.oppColor?.color_family || '--';
+        const riskColor = colorStrategySummary.riskColor?.color_family || '--';
+        const linePoint = LINE_SELLING_POINT[topProductLine] || '脚感与穿着场景表达';
+
+        return [
+            `目标客群：${topAge}（围绕通勤/周末双场景配置主推款）。`,
+            `场景线主推：${topProductLine}（主推） / ${secondProductLine}（次推）。`,
+            `价带梯度：${topGlobalPriceBand} 为核心款价带，向上预留形象款价带。`,
+            `配色策略：主色=${topColor}；机会色=${oppColor}（试点放量）；风险色=${riskColor}（收缩）。`,
+            `设计卖点模板：${linePoint}，同步强调楦型修饰与材质工艺。`,
+            '渠道表达要点：门店陈列主推色与电商主图统一，避免线上线下表达割裂。',
+        ];
+    }, [colorStrategySummary, secondProductLine, topAudience, topGlobalPriceBand, topProductLine]);
 
     return (
         <div className="space-y-5">
@@ -588,7 +793,7 @@ export default function ProductBasicPanel({
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <div className="text-xs uppercase tracking-wide text-slate-400">Basic Demographics</div>
-                        <h2 className="text-lg font-bold text-slate-900">基础画像：年龄与颜色</h2>
+                        <h2 className="text-lg font-bold text-slate-900">基础画像：客群 × 场景 × 配色策略（鞋类）</h2>
                         <p className="mt-1 text-xs text-slate-500">全图统一 ECharts；点击图元可联动全局筛选。</p>
                     </div>
                     <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
@@ -597,10 +802,54 @@ export default function ProductBasicPanel({
                 </div>
             </section>
 
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="text-sm font-semibold text-slate-400">Persona Snapshot</div>
+                <div className="mt-2 text-base font-medium text-slate-800">{personaSnapshotSummary}</div>
+                <div className="mt-3 grid grid-cols-1 gap-3 xl:grid-cols-3">
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                        <div className="text-xs font-medium text-slate-500">主力年龄段 Top1/Top2</div>
+                        <div className="mt-2 text-sm text-slate-700">
+                            <div className="font-semibold">
+                                Top1：{personaCards.audience.top1?.ageGroup || '--'}（销占 {formatPct(personaCards.audience.top1?.salesShare || 0)}，双占{' '}
+                                {formatPct(personaCards.audience.top1?.pairsShare || 0)}，ASP {formatAmount(personaCards.audience.top1?.asp || 0)}）
+                            </div>
+                            <div className="mt-1">
+                                Top2：{personaCards.audience.top2?.ageGroup || '--'}（销占 {formatPct(personaCards.audience.top2?.salesShare || 0)}，双占{' '}
+                                {formatPct(personaCards.audience.top2?.pairsShare || 0)}，ASP {formatAmount(personaCards.audience.top2?.asp || 0)}）
+                            </div>
+                        </div>
+                    </div>
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                        <div className="text-xs font-medium text-slate-500">主力色系 Top1</div>
+                        <div className="mt-2 text-sm text-slate-700">
+                            <div className="font-semibold">{personaCards.color.top?.color_family || '--'}</div>
+                            <div className="mt-1">
+                                销量 {Math.round(personaCards.color.top?.pairs_sold || 0).toLocaleString('zh-CN')} 双 · 售罄{' '}
+                                {formatPct(personaCards.color.top?.sell_through || 0)}
+                            </div>
+                            <div className="mt-1">SKC {personaCards.color.top?.skc_cnt || 0}</div>
+                        </div>
+                    </div>
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                        <div className="text-xs font-medium text-slate-500">机会色 & 风险色</div>
+                        <div className="mt-2 text-sm text-slate-700">
+                            <div className="font-semibold">机会色：{personaCards.opportunityAndRisk.opportunity?.color_family || '--'}</div>
+                            <div className="mt-1">
+                                结构效率领先，售罄 {formatPct(personaCards.opportunityAndRisk.opportunity?.sell_through || 0)}。
+                            </div>
+                            <div className="mt-2 font-semibold">风险色：{personaCards.opportunityAndRisk.risk?.color_family || '--'}</div>
+                            <div className="mt-1">
+                                风险得分高，建议优先排查低动销品类配比。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section className="grid grid-cols-1 gap-4 xl:grid-cols-3">
                 <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm xl:col-span-2">
                     <div className="mb-2 flex items-center justify-between gap-2">
-                        <div className="text-xl font-bold text-slate-900">年龄段占比堆叠条（产品线）</div>
+                        <div className="text-lg font-bold text-slate-900">年龄段占比堆叠条（产品线）</div>
                         <div className="text-xs text-slate-400">单位：各产品线内销售占比 %</div>
                         {filters.target_audience !== 'all' && (
                             <button
@@ -611,25 +860,30 @@ export default function ProductBasicPanel({
                             </button>
                         )}
                     </div>
+                    <div className="mb-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                        {AGE_SCENE_HINTS.map((hint) => (
+                            <div key={hint}>{hint}</div>
+                        ))}
+                    </div>
                     <ReactECharts option={ageStackOption} onEvents={ageStackEvents} style={{ height: 300 }} notMerge />
                 </div>
 
                 <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm xl:col-span-1">
-                    <div className="text-xl font-bold text-slate-900">主力客群结构</div>
+                    <div className="text-lg font-bold text-slate-900">主力客群结构</div>
                     <div className="mt-4 space-y-3">
                         {audienceRanking.slice(0, 4).map((item) => (
                             <div key={item.ageGroup} className="rounded-2xl border border-slate-200 bg-white p-4">
                                 <div className="flex items-start justify-between gap-3">
                                     <div>
-                                        <div className="text-2xl font-bold leading-none text-slate-900">{item.ageGroup}</div>
-                                        <div className="mt-2 text-base text-slate-600">
+                                        <div className="text-xl font-bold leading-none text-slate-900">{item.ageGroup}</div>
+                                        <div className="mt-2 text-sm text-slate-600">
                                             销售占比 {formatPct(item.salesShare)} · 双数占比 {formatPct(item.pairsShare)}
                                         </div>
-                                        <div className="text-base text-slate-600">
+                                        <div className="text-sm text-slate-600">
                                             ASP {formatAmount(item.asp)} · 销售额 {formatAmount(item.sales)}
                                         </div>
                                     </div>
-                                    <div className="text-2xl font-bold text-slate-900">{formatPct(item.salesShare)}</div>
+                                    <div className="text-xl font-bold text-slate-900">{formatPct(item.salesShare)}</div>
                                 </div>
                             </div>
                         ))}
@@ -642,11 +896,11 @@ export default function ProductBasicPanel({
                 <div className="mt-3 grid grid-cols-1 gap-3 xl:grid-cols-2">
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                         <div className="text-pink-500 text-sm font-medium">核心发现</div>
-                        <div className="mt-2 text-xl text-slate-800">{audienceCoreFinding}</div>
+                        <div className="mt-2 text-base leading-7 text-slate-800">{audienceCoreFinding}</div>
                     </div>
                     <div className="rounded-xl border border-blue-200 bg-blue-50/30 p-4">
                         <div className="text-blue-500 text-sm font-medium">建议动作</div>
-                        <div className="mt-2 text-xl text-slate-800">{audienceAction}</div>
+                        <div className="mt-2 text-base leading-7 text-slate-800">{audienceAction}</div>
                     </div>
                 </div>
             </section>
@@ -655,7 +909,7 @@ export default function ProductBasicPanel({
                 <div className="mb-2 flex items-center justify-between gap-2">
                     <div>
                         <div className="text-xs uppercase tracking-wide text-slate-400">年龄段 × 价格带</div>
-                        <div className="text-xl font-bold text-slate-900">偏好热力图（销售 / 售罄 / 毛利）</div>
+                        <div className="text-lg font-bold text-slate-900">偏好热力图（销售 / 售罄 / 毛利）</div>
                     </div>
                     <div className="flex items-center gap-1 rounded-xl border border-slate-200 p-1">
                         {(['net_sales', 'sell_through', 'gm_rate'] as AgeHeatMetric[]).map((metric) => (
@@ -675,14 +929,14 @@ export default function ProductBasicPanel({
                 </div>
                 <ReactECharts option={ageHeatOption} onEvents={ageHeatEvents} style={{ height: 360 }} notMerge />
                 <div className="mt-3 text-sm text-slate-500">
-                    点击任意格子可联动筛选 年龄段 + 价格带，用于定位年轻人低价偏好或高价带支撑客群。
+                    点击格子定位“客群 × 价带”策略组合：用于确定核心款价带与形象款上探价带，指导下季 SKU 价带梯度与主推资源分配。
                 </div>
             </section>
 
             <section className="grid grid-cols-1 gap-4 xl:grid-cols-3">
                 <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm xl:col-span-2">
                     <div className="mb-2 flex items-center justify-between gap-2">
-                        <div className="text-xl font-bold text-slate-900">色系 Treemap（面积可切换）</div>
+                        <div className="text-lg font-bold text-slate-900">色系 Treemap（面积可切换）</div>
                         <div className="flex flex-wrap gap-1">
                             <div className="flex items-center gap-1 rounded-md border border-slate-200 p-1">
                                 {(['net_sales', 'pairs_sold'] as TreemapAreaMetric[]).map((metric) => (
@@ -720,23 +974,23 @@ export default function ProductBasicPanel({
                 </div>
 
                 <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm xl:col-span-1">
-                    <div className="text-xl font-bold text-slate-900">色系排行榜</div>
+                    <div className="text-lg font-bold text-slate-900">色系排行榜</div>
                     <div className="mt-4 space-y-3">
                         {colorRanking.slice(0, 6).map((item, index) => (
                             <div key={`${item.color_family}-${index}`} className="rounded-2xl border border-slate-200 bg-white p-4">
                                 <div className="flex items-start justify-between gap-3">
                                     <div>
-                                        <div className="text-2xl font-bold leading-none text-slate-900">
+                                        <div className="text-xl font-bold leading-none text-slate-900">
                                             {index + 1}. {item.color_family}
                                         </div>
-                                        <div className="mt-2 text-base text-slate-600">
+                                        <div className="mt-2 text-sm text-slate-600">
                                             销量 {Math.round(item.pairs_sold).toLocaleString('zh-CN')} 双 · SKC {item.skc_cnt}
                                         </div>
-                                        <div className="text-base text-slate-600">
+                                        <div className="text-sm text-slate-600">
                                             售罄 {formatPct(item.sell_through)} · 毛利 {formatPct(item.gm_rate)}
                                         </div>
                                     </div>
-                                    <div className="text-2xl font-bold leading-none text-slate-900">{formatAmount(item.net_sales)}</div>
+                                    <div className="text-xl font-bold leading-none text-slate-900">{formatAmount(item.net_sales)}</div>
                                 </div>
                             </div>
                         ))}
@@ -745,15 +999,38 @@ export default function ProductBasicPanel({
             </section>
 
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                    <div>
+                        <div className="text-xs uppercase tracking-wide text-slate-400">Color Strategy</div>
+                        <div className="text-lg font-bold text-slate-900">色系策略四象限（结构效率 × 售罄）</div>
+                    </div>
+                    <div className="text-xs text-slate-500">结构效率差 = 销量占比 - SKC占比；售罄中位数：{formatPct(colorStrategySummary.sellThroughMedian)}</div>
+                </div>
+                <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+                    {colorQuadrantMeta.map((item) => {
+                        const rows = colorStrategySummary.quadrants[item.key];
+                        const preview = rows.slice(0, 3).map((row) => row.color_family).join('、') || '—';
+                        return (
+                            <div key={item.key} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                                <div className="text-base font-bold text-slate-900">{item.title}</div>
+                                <div className="mt-2 text-sm text-slate-600">代表色：{preview}</div>
+                                <div className="mt-2 text-sm text-slate-700">{item.action}</div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </section>
+
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
                 <div className="text-sm font-semibold text-slate-400">颜色结论</div>
                 <div className="mt-3 grid grid-cols-1 gap-3 xl:grid-cols-2">
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                         <div className="text-slate-600 text-sm font-medium">核心发现</div>
-                        <div className="mt-2 text-xl text-slate-800">{colorCoreFinding}</div>
+                        <div className="mt-2 text-base leading-7 text-slate-800">{colorCoreFinding}</div>
                     </div>
                     <div className="rounded-xl border border-pink-200 bg-pink-50/30 p-4">
                         <div className="text-pink-500 text-sm font-medium">建议动作</div>
-                        <div className="mt-2 text-xl text-slate-800">{colorAction}</div>
+                        <div className="mt-2 text-base leading-7 text-slate-800">{colorAction}</div>
                     </div>
                 </div>
             </section>
@@ -762,7 +1039,7 @@ export default function ProductBasicPanel({
                 <div className="mb-2 flex items-center justify-between gap-2">
                     <div>
                         <div className="text-xs uppercase tracking-wide text-slate-400">色系 × 品类</div>
-                        <div className="text-xl font-bold text-slate-900">颜色错配热力图</div>
+                        <div className="text-lg font-bold text-slate-900">颜色 × 品类适配热力图（用于配色策略校准）</div>
                     </div>
                     <div className="flex items-center gap-1 rounded-xl border border-slate-200 p-1">
                         {(['net_sales', 'sell_through'] as ColorHeatMetric[]).map((metric) => (
@@ -781,6 +1058,23 @@ export default function ProductBasicPanel({
                     </div>
                 </div>
                 <ReactECharts option={colorHeatOption} onEvents={colorHeatEvents} style={{ height: 360 }} notMerge />
+            </section>
+
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                    <div>
+                        <div className="text-xs uppercase tracking-wide text-slate-400">Default Playbook</div>
+                        <h3 className="text-lg font-bold text-slate-900">鞋类企划&设计默认配置（基于画像）</h3>
+                    </div>
+                    <div className="text-xs text-slate-500">用于给下季企划给出默认配置，不替代商品分析与 OTB 预算模块</div>
+                </div>
+                <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+                    {playbookRows.map((row) => (
+                        <div key={row} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                            {row}
+                        </div>
+                    ))}
+                </div>
             </section>
 
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">

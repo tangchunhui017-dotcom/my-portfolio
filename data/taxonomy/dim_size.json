@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "version": "v1.0",
+    "owner": "planning-standards",
+    "scope": "adult-footwear",
+    "note": "Canonical EU size dimension for footwear planning. Band assignment is resolved by size_rule_matrix."
+  },
+  "sizes": [
+    { "size_code": "34", "size_order": 34, "size_label": "EU34", "active": true },
+    { "size_code": "35", "size_order": 35, "size_label": "EU35", "active": true },
+    { "size_code": "36", "size_order": 36, "size_label": "EU36", "active": true },
+    { "size_code": "37", "size_order": 37, "size_label": "EU37", "active": true },
+    { "size_code": "38", "size_order": 38, "size_label": "EU38", "active": true },
+    { "size_code": "39", "size_order": 39, "size_label": "EU39", "active": true },
+    { "size_code": "40", "size_order": 40, "size_label": "EU40", "active": true },
+    { "size_code": "41", "size_order": 41, "size_label": "EU41", "active": true },
+    { "size_code": "42", "size_order": 42, "size_label": "EU42", "active": true },
+    { "size_code": "43", "size_order": 43, "size_label": "EU43", "active": true },
+    { "size_code": "44", "size_order": 44, "size_label": "EU44", "active": true }
+  ]
+}

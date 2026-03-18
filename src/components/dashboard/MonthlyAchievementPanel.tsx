@@ -287,7 +287,7 @@ export default function MonthlyAchievementPanel({
         if (compareMode === 'plan' && (totals.gap ?? 0) < 0) {
             return [
                 { title: '渠道补缺口', detail: '优先修复低效率渠道转化与店态效率。', jumpLabel: '去区域&门店', onClick: onJumpToChannel },
-                { title: '商品结构修正', detail: '聚焦主推系列与核心价带，压缩低转化组合。', jumpLabel: '去消费者&产品要素', onClick: onJumpToProduct },
+                { title: '商品结构修正', detail: '聚焦主推系列与核心价带，压缩低转化组合。', jumpLabel: '去消费者&商品分析', onClick: onJumpToProduct },
                 { title: '库存动作包', detail: '对低售罄SKU执行调拨/下架/清仓，降低期末挤压。', jumpLabel: '去SKU风险清单', onClick: onJumpToSkuRisk },
                 { title: '波段节奏校正', detail: '检查上市节奏与月销错配，微调补单窗口。', jumpLabel: '去波段&企划', onClick: onJumpToPlanning },
             ];
@@ -295,7 +295,7 @@ export default function MonthlyAchievementPanel({
         if (compareMode === 'yoy' && (totals.yoyDiff ?? 0) < 0) {
             return [
                 { title: '止跌渠道修复', detail: '优先处理同比下滑区域与渠道组合。', jumpLabel: '去区域&门店', onClick: onJumpToChannel },
-                { title: '价格带回正', detail: '回收高库存低动销价带，防止毛利继续受损。', jumpLabel: '去消费者&产品要素', onClick: onJumpToProduct },
+                { title: '价格带回正', detail: '回收高库存低动销价带，防止毛利继续受损。', jumpLabel: '去消费者&商品分析', onClick: onJumpToProduct },
                 { title: '波段错配排查', detail: '复盘上市节奏与当月需求偏差，及时纠偏。', jumpLabel: '去波段&企划', onClick: onJumpToPlanning },
                 { title: '风险SKU止损', detail: '对高库存且同比下滑SKU执行强制动作。', jumpLabel: '去SKU风险清单', onClick: onJumpToSkuRisk },
             ];

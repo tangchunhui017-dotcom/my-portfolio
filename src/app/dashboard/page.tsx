@@ -24,7 +24,7 @@ type DashboardTab = 'overview' | 'product' | 'channel' | 'planning' | 'otb' | 'c
 const TABS: { key: DashboardTab; label: string; labelEn: string; icon: string }[] = [
     { key: 'overview', label: '总览', labelEn: 'Overview', icon: '📊' },
     { key: 'channel', label: '区域&门店', labelEn: 'Region&Store', icon: '🏪' },
-    { key: 'product', label: '消费者&产品要素', labelEn: 'Consumer&Product', icon: '🧑‍🤝‍🧑' },
+    { key: 'product', label: '消费者&商品分析', labelEn: 'Consumer&Product', icon: '🧑‍🤝‍🧑' },
     { key: 'planning', label: '波段企划', labelEn: 'Wave Planning', icon: '🗓️' },
     { key: 'otb', label: 'OTB预算', labelEn: 'OTB Budget', icon: '💰' },
     { key: 'competitor', label: '竞品&趋势', labelEn: 'Competitor&Trend', icon: '🧭' },

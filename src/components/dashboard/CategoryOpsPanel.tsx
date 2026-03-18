@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import type { EChartsOption } from 'echarts';
 import ReactECharts from 'echarts-for-react';
 import type { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
@@ -47,9 +47,24 @@ function formatPct(value: number) {
     return `${(value * 100).toFixed(1)}%`;
 }
 
+function formatRatio(value: number) {
+    if (!Number.isFinite(value)) return '--';
+    return `${(value * 100).toFixed(1)}%`;
+}
+
 function formatCategoryList(items: string[], limit = 3) {
     const list = items.filter(Boolean).slice(0, limit);
     return list.length ? list.join('、') : '—';
+}
+
+function parseNumberFromLabel(label?: string) {
+    const text = String(label || '');
+    const matched = text.match(/(\d[\d,]*\.?\d*)/);
+    if (!matched) return 0;
+    const numeric = Number(matched[1].replace(/,/g, ''));
+    if (!Number.isFinite(numeric)) return 0;
+    if (text.includes('万')) return numeric * 10_000;
+    return numeric;
 }
 
 function formatPp(value: number) {
@@ -194,6 +209,14 @@ function getDecisionTone(index: number) {
     return 'border-sky-200 bg-sky-50/60';
 }
 
+function toCsvSafeCell(value: string | number) {
+    const raw = String(value ?? '');
+    if (raw.includes(',') || raw.includes('"') || raw.includes('\n')) {
+        return `"${raw.replace(/"/g, '""')}"`;
+    }
+    return raw;
+}
+
 const HEATMAP_METRIC_OPTIONS: Array<{
     value: 'sku_count' | 'net_sales' | 'sell_through';
     label: string;
@@ -202,6 +225,12 @@ const HEATMAP_METRIC_OPTIONS: Array<{
     { value: 'net_sales', label: '销售额' },
     { value: 'sell_through', label: '售罄率' },
 ];
+
+const SELL_SHIP_HEALTH_MIN = 0.35;
+const SELL_SHIP_HEALTH_MAX = 0.75;
+const SKU_UTILIZATION_RISK = 0.55;
+const SKU_UTILIZATION_GOOD = 0.85;
+const STOCKOUT_RISK = 0.25;
 
 export default function CategoryOpsPanel({
     filters,
@@ -218,6 +247,9 @@ export default function CategoryOpsPanel({
     const [selectedHeatPointId, setSelectedHeatPointId] = useState<string>('all');
     const [depthGroupBy, setDepthGroupBy] = useState<DepthGroupBy>('all');
     const [depthGroupValue, setDepthGroupValue] = useState<string>('all');
+    const [supplyRankingDimension, setSupplyRankingDimension] = useState<'category' | 'series'>('category');
+    const [showPlanningEfficiency, setShowPlanningEfficiency] = useState<boolean>(false);
+    const [showSizeHealth, setShowSizeHealth] = useState<boolean>(false);
     const [showSkuPhase2, setShowSkuPhase2] = useState<boolean>(false);
 
     const {
@@ -288,6 +320,373 @@ export default function CategoryOpsPanel({
         filteredDepthBins,
         filteredDepthSummary,
     } = useSkuDepthAnalysis(depth.scatterPoints, depthGroupBy, depthGroupValue);
+
+    const businessKpiMap = useMemo(() => {
+        const map = new Map<string, CategoryOpsBizKpi>();
+        businessKpis.forEach((card) => map.set(card.id, card));
+        return map;
+    }, [businessKpis]);
+
+    const sellInPairs = Number(businessKpiMap.get('ship_pairs')?.value ?? totals.shipPairs ?? 0);
+    const sellOutPairs = Number(businessKpiMap.get('sales_qty')?.value ?? totals.pairsSold ?? 0);
+    const sellShipRatio = Number(businessKpiMap.get('sell_ship_ratio')?.value ?? totals.sellShipRatio ?? 0);
+    const sellInDeltaPct = businessKpiMap.get('ship_pairs')?.deltaValue ?? null;
+    const sellOutDeltaPct = businessKpiMap.get('sales_qty')?.deltaValue ?? null;
+    const sellShipDeltaPp = businessKpiMap.get('sell_ship_ratio')?.deltaValue ?? null;
+    const hasSupplyCardData = Number.isFinite(sellInPairs) && sellInPairs > 0 && Number.isFinite(sellOutPairs);
+
+    const supplyRatioTone = useMemo<'risk' | 'warn' | 'good'>(() => {
+        if (!Number.isFinite(sellShipRatio) || sellShipRatio <= 0) return 'warn';
+        if (sellShipRatio < SELL_SHIP_HEALTH_MIN || sellShipRatio > SELL_SHIP_HEALTH_MAX) return 'risk';
+        if (sellShipRatio < SELL_SHIP_HEALTH_MIN + 0.05 || sellShipRatio > SELL_SHIP_HEALTH_MAX - 0.05) return 'warn';
+        return 'good';
+    }, [sellShipRatio]);
+
+    const supplyRatioToneClass = useMemo(() => {
+        if (supplyRatioTone === 'good') return 'border-emerald-200 bg-emerald-50/70 text-emerald-700';
+        if (supplyRatioTone === 'risk') return 'border-rose-200 bg-rose-50/70 text-rose-700';
+        return 'border-amber-200 bg-amber-50/70 text-amber-700';
+    }, [supplyRatioTone]);
+
+    const supplyRanking = useMemo(() => {
+        const sourceRows = scatterPoints.filter((row) => row.netSales > 0 && row.fillRate > 0);
+        if (!sourceRows.length) {
+            return {
+                rows: [] as Array<{ label: string; ratio: number; netSales: number; tone: 'high' | 'low' }>,
+                topRows: [] as Array<{ label: string; ratio: number; netSales: number; tone: 'high' | 'low' }>,
+                bottomRows: [] as Array<{ label: string; ratio: number; netSales: number; tone: 'high' | 'low' }>,
+            };
+        }
+
+        const rankedRows = supplyRankingDimension === 'series'
+            ? Array.from(sourceRows.reduce((acc, row) => {
+                const key = row.productLine || '未分系列';
+                const current = acc.get(key) || { label: key, weightedRatio: 0, weight: 0, netSales: 0 };
+                current.weightedRatio += safeDiv(row.sellThrough, Math.max(row.fillRate, 1e-6)) * row.netSales;
+                current.weight += row.netSales;
+                current.netSales += row.netSales;
+                acc.set(key, current);
+                return acc;
+            }, new Map<string, { label: string; weightedRatio: number; weight: number; netSales: number }>())
+                .values())
+                .map((row) => ({
+                    label: row.label,
+                    ratio: Math.max(0, Math.min(1.5, safeDiv(row.weightedRatio, Math.max(row.weight, 1e-6)))),
+                    netSales: row.netSales,
+                }))
+            : sourceRows.map((row) => ({
+                label: row.category,
+                ratio: Math.max(0, Math.min(1.5, safeDiv(row.sellThrough, Math.max(row.fillRate, 1e-6)))),
+                netSales: row.netSales,
+            }));
+
+        const sorted = rankedRows
+            .filter((row) => Number.isFinite(row.ratio))
+            .sort((a, b) => a.ratio - b.ratio);
+
+        const bottomRows = sorted.slice(0, Math.min(6, sorted.length)).map((row) => ({ ...row, tone: 'low' as const }));
+        const topRows = sorted.slice(Math.max(0, sorted.length - 6)).reverse().map((row) => ({ ...row, tone: 'high' as const }));
+        const rows = [...bottomRows, ...topRows];
+
+        return { rows, topRows, bottomRows };
+    }, [scatterPoints, supplyRankingDimension]);
+
+    const supplyRankingOption = useMemo<EChartsOption>(() => {
+        const rows = supplyRanking.rows;
+        const maxValue = Math.max(100, ...rows.map((row) => row.ratio * 100));
+
+        return {
+            animationDuration: 400,
+            grid: {
+                left: 96,
+                right: 24,
+                top: 12,
+                bottom: 24,
+            },
+            tooltip: {
+                trigger: 'item',
+                borderColor: '#E5E7EB',
+                textStyle: { color: '#111827', fontSize: 12 },
+                formatter: (params: unknown) => {
+                    const item = params as { dataIndex?: number; value?: number };
+                    const row = rows[item.dataIndex ?? -1];
+                    if (!row) return '--';
+                    const toneText = row.tone === 'high' ? 'Top' : 'Bottom';
+                    return [
+                        `<div style="font-weight:600;margin-bottom:4px;">${row.label || '-'}</div>`,
+                        `销发比：${formatRatio(Number(item.value || 0) / 100)}`,
+                        `分组：${toneText}`,
+                    ].join('<br/>');
+                },
+            },
+            xAxis: {
+                type: 'value',
+                max: Math.min(150, Math.ceil(maxValue / 10) * 10),
+                axisLine: { lineStyle: { color: '#E5E7EB' } },
+                axisLabel: { color: '#64748B', formatter: (value: number) => `${value.toFixed(0)}%` },
+                splitLine: { lineStyle: { color: '#E5E7EB', type: 'dashed' } },
+            },
+            yAxis: {
+                type: 'category',
+                data: rows.map((row) => row.label),
+                axisLine: { lineStyle: { color: '#E5E7EB' } },
+                axisLabel: { color: '#475569', fontSize: 11 },
+                inverse: true,
+            },
+            series: [
+                {
+                    type: 'bar',
+                    data: rows.map((row) => row.ratio * 100),
+                    barWidth: 12,
+                    itemStyle: {
+                        borderRadius: [0, 4, 4, 0],
+                        color: (params: unknown) => {
+                            const idx = (params as { dataIndex?: number }).dataIndex ?? -1;
+                            return rows[idx]?.tone === 'high' ? '#16A34A' : '#DC2626';
+                        },
+                    },
+                    label: {
+                        show: true,
+                        position: 'right',
+                        color: '#475569',
+                        fontSize: 10,
+                        formatter: (params: unknown) => {
+                            const item = params as { value?: number };
+                            return `${Number(item?.value || 0).toFixed(1)}%`;
+                        },
+                    },
+                    markLine: {
+                        symbol: ['none', 'none'],
+                        lineStyle: { color: '#94A3B8', type: 'dashed' },
+                        label: {
+                            show: true,
+                            color: '#64748B',
+                            formatter: (params: unknown) => `${Number((params as { value?: number }).value || 0).toFixed(0)}%`,
+                        },
+                        data: [{ xAxis: SELL_SHIP_HEALTH_MIN * 100 }, { xAxis: SELL_SHIP_HEALTH_MAX * 100 }],
+                    },
+                },
+            ],
+        };
+    }, [supplyRanking.rows]);
+
+    const supplyActionText = useMemo(() => {
+        if (!supplyRanking.rows.length) {
+            return '销发比低时优先调拨/减量；销发比高时先查缺码/缺货，再决定是否追加。';
+        }
+        const lowTargets = formatCategoryList(supplyRanking.bottomRows.map((row) => row.label), 2);
+        const highTargets = formatCategoryList(supplyRanking.topRows.map((row) => row.label), 2);
+        return `低销发比（${lowTargets}）优先调拨/减量；高销发比（${highTargets}）先查缺码/缺货再决定追加。`;
+    }, [supplyRanking.bottomRows, supplyRanking.rows.length, supplyRanking.topRows]);
+
+    const planSkuCard = useMemo(
+        () => planBiasCards.find((card) => card.id === 'plan_sku_gap') || null,
+        [planBiasCards],
+    );
+    const planDepthCard = useMemo(
+        () => planBiasCards.find((card) => card.id === 'plan_depth_gap') || null,
+        [planBiasCards],
+    );
+    const planSku = useMemo(() => parseNumberFromLabel(planSkuCard?.planLabel), [planSkuCard?.planLabel]);
+    const activeSku = useMemo(() => Number(businessKpiMap.get('active_sku_count')?.value ?? 0), [businessKpiMap]);
+    const skuUtilization = useMemo(
+        () => (planSku > 0 ? safeDiv(activeSku, planSku) : null),
+        [activeSku, planSku],
+    );
+    const salesPerSku = useMemo(() => {
+        const kpiValue = Number(businessKpiMap.get('sales_per_sku')?.value ?? 0);
+        if (Number.isFinite(kpiValue) && kpiValue > 0) return kpiValue;
+        return safeDiv(totals.netSales, Math.max(activeSku, 1));
+    }, [activeSku, businessKpiMap, totals.netSales]);
+    const planSalesPerSku = useMemo(
+        () => parseNumberFromLabel(planDepthCard?.planLabel),
+        [planDepthCard?.planLabel],
+    );
+
+    const planningRules = useMemo(() => {
+        const rules: string[] = [];
+        const hasPlanSku = planSku > 0;
+        const depthLow = planSalesPerSku > 0 ? salesPerSku < planSalesPerSku * 0.85 : false;
+
+        if (!hasPlanSku) {
+            rules.push('当前缺计划 SKU 字段，建议先补齐计划口径再判定利用率。');
+            return rules;
+        }
+        if (skuUtilization !== null && skuUtilization < SKU_UTILIZATION_RISK) {
+            rules.push('SKU利用率偏低：建议砍长尾，聚焦核心楦型和系列化。');
+        }
+        if (depthLow || planDepthCard?.tone === 'risk') {
+            rules.push('单款产出偏低：建议减少上新密度，提升主推集中度。');
+        }
+        if (skuUtilization !== null && skuUtilization > SKU_UTILIZATION_GOOD && (depthLow || planDepthCard?.tone !== 'good')) {
+            rules.push('利用率高但产出低：建议优化价带结构与渠道首配深度。');
+        }
+        if (!rules.length) {
+            rules.push('当前企划落地效率处于可控区间，建议维持节奏并按周复盘偏差。');
+        }
+        return rules.slice(0, 3);
+    }, [planDepthCard?.tone, planSalesPerSku, planSku, salesPerSku, skuUtilization]);
+
+    const skuUtilizationToneClass = useMemo(() => {
+        if (skuUtilization === null) return 'border-amber-200 bg-amber-50/70';
+        if (skuUtilization < SKU_UTILIZATION_RISK) return 'border-rose-200 bg-rose-50/70';
+        if (skuUtilization > SKU_UTILIZATION_GOOD) return 'border-emerald-200 bg-emerald-50/70';
+        return 'border-amber-200 bg-amber-50/70';
+    }, [skuUtilization]);
+
+    const hasSizeData = useMemo(() => {
+        return skuActionRows.some((row) => {
+            const r = row as unknown as Record<string, unknown>;
+            return ['size', 'size_code', 'sizeCode', 'last', 'last_id', 'lastId', 'stockout_rate', 'full_size_rate']
+                .some((key) => r[key] !== undefined && r[key] !== null && r[key] !== '');
+        });
+    }, [skuActionRows]);
+
+    const sizeHealth = useMemo(() => {
+        if (!hasSizeData) {
+            return {
+                hasData: false,
+                fullSizeRate: null as number | null,
+                stockoutRate: null as number | null,
+                coreSizeSalesShare: null as number | null,
+                topStockoutRows: [] as Array<{ label: string; stockoutRate: number }>,
+            };
+        }
+
+        const fullSizeValues: number[] = [];
+        const stockoutValues: number[] = [];
+        const coreShareValues: number[] = [];
+        const topRows: Array<{ label: string; stockoutRate: number }> = [];
+
+        skuActionRows.forEach((row) => {
+            const r = row as unknown as Record<string, unknown>;
+            const fullSize = Number(r.full_size_rate ?? r.fullSizeRate ?? NaN);
+            const stockout = Number(r.stockout_rate ?? r.stockoutRate ?? NaN);
+            const coreShare = Number(r.core_size_sales_share ?? r.coreSizeSalesShare ?? NaN);
+            const lastLabel = String(r.last_name ?? r.last ?? r.lastId ?? '—');
+
+            if (Number.isFinite(fullSize)) fullSizeValues.push(fullSize);
+            if (Number.isFinite(stockout)) {
+                stockoutValues.push(stockout);
+                topRows.push({
+                    label: `${row.category} / ${lastLabel} / ${row.skuId}`,
+                    stockoutRate: stockout,
+                });
+            }
+            if (Number.isFinite(coreShare)) coreShareValues.push(coreShare);
+        });
+
+        return {
+            hasData: fullSizeValues.length > 0 || stockoutValues.length > 0 || coreShareValues.length > 0,
+            fullSizeRate: fullSizeValues.length
+                ? fullSizeValues.reduce((sum, value) => sum + value, 0) / fullSizeValues.length
+                : null,
+            stockoutRate: stockoutValues.length
+                ? stockoutValues.reduce((sum, value) => sum + value, 0) / stockoutValues.length
+                : null,
+            coreSizeSalesShare: coreShareValues.length
+                ? coreShareValues.reduce((sum, value) => sum + value, 0) / coreShareValues.length
+                : null,
+            topStockoutRows: topRows
+                .sort((a, b) => b.stockoutRate - a.stockoutRate)
+                .slice(0, 6),
+        };
+    }, [hasSizeData, skuActionRows]);
+
+    const sizeHealthActionText = useMemo(() => {
+        if (!sizeHealth.hasData) {
+            return '缺尺码结构字段时，建议补齐后再启用断码纠偏动作。';
+        }
+        if ((sizeHealth.stockoutRate || 0) > STOCKOUT_RISK) {
+            return '断码率偏高：先补核心尺码并向热区调拨，再评估是否追加。';
+        }
+        if ((sizeHealth.fullSizeRate || 0) >= 0.85 && (skuUtilization || 0) < SKU_UTILIZATION_RISK) {
+            return '齐码率高但动销低：回到商品要素链路排查款式/价带/渠道匹配。';
+        }
+        return '尺码结构整体可控，维持周度复盘与滚动配货。';
+    }, [sizeHealth, skuUtilization]);
+
+    const planningChecklistRows = useMemo(() => {
+        const scatterMap = new Map(scatterPoints.map((row) => [row.categoryId, row]));
+        const waveLabel = filters.wave === 'all' ? '全部波段' : String(filters.wave);
+        const rows = otbSuggestions.slice(0, 20).map((row) => {
+            const scatter = scatterMap.get(row.categoryId);
+            const ratio = scatter ? safeDiv(scatter.sellThrough, Math.max(scatter.fillRate, 1e-6)) : sellShipRatio;
+            const localSalesPerSku = scatter ? safeDiv(scatter.netSales, Math.max(scatter.skuCount, 1)) : salesPerSku;
+            let trigger = '结构与动销匹配需持续跟踪。';
+            let priority = 'P2';
+            let action = '维持现配，按周复盘并滚动修正。';
+
+            if (ratio < SELL_SHIP_HEALTH_MIN) {
+                trigger = '销发比偏低，发货压力高于零售消化。';
+                priority = 'P1';
+                action = '优先调拨/减量，收缩低效投放并压实去化节奏。';
+            } else if (ratio > SELL_SHIP_HEALTH_MAX) {
+                trigger = '销发比偏高，疑似缺码/缺货导致放量受限。';
+                priority = 'P1';
+                action = '先排查核心尺码缺货，再决定是否追加补单。';
+            } else if (skuUtilization !== null && skuUtilization < SKU_UTILIZATION_RISK) {
+                trigger = 'SKU利用率偏低，企划宽度落地效率不足。';
+                priority = 'P2';
+                action = '削减长尾，集中核心系列与主力价带。';
+            }
+
+            return {
+                dimension: `${row.category} / ${scatter?.productLine || '—'} / ${waveLabel} / —`,
+                sellShipRatio: ratio,
+                skuUtilization,
+                salesPerSku: localSalesPerSku,
+                stockoutRate: sizeHealth.stockoutRate,
+                trigger,
+                priority,
+                action,
+                owner: '',
+                dueDate: '',
+            };
+        });
+
+        if (rows.length) return rows;
+        return [{
+            dimension: `全部品类 / — / ${waveLabel} / —`,
+            sellShipRatio,
+            skuUtilization,
+            salesPerSku,
+            stockoutRate: sizeHealth.stockoutRate,
+            trigger: '当前筛选下暂无可导出明细，建议放宽筛选后导出。',
+            priority: 'P3',
+            action: '先补齐样本后再执行纠偏。',
+            owner: '',
+            dueDate: '',
+        }];
+    }, [filters.wave, otbSuggestions, salesPerSku, scatterPoints, sellShipRatio, sizeHealth.stockoutRate, skuUtilization]);
+
+    const exportPlanningChecklist = useCallback(() => {
+        const headers = ['维度（品类/系列/波段/楦型）', '销发比', 'SKU利用率', '单款产出', '断码率', '触发原因', '优先级', '建议动作', '负责人', '截止时间'];
+        const lines = [
+            headers.map((cell) => toCsvSafeCell(cell)).join(','),
+            ...planningChecklistRows.map((row) => [
+                toCsvSafeCell(row.dimension),
+                toCsvSafeCell(formatRatio(row.sellShipRatio)),
+                toCsvSafeCell(row.skuUtilization === null ? '—' : formatRatio(row.skuUtilization)),
+                toCsvSafeCell(formatAmount(row.salesPerSku)),
+                toCsvSafeCell(row.stockoutRate === null ? '' : formatRatio(row.stockoutRate)),
+                toCsvSafeCell(row.trigger),
+                toCsvSafeCell(row.priority),
+                toCsvSafeCell(row.action),
+                toCsvSafeCell(row.owner),
+                toCsvSafeCell(row.dueDate),
+            ].join(',')),
+        ];
+
+        const blob = new Blob([`\uFEFF${lines.join('\n')}`], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        const dateLabel = new Date().toISOString().slice(0, 10);
+        anchor.href = url;
+        anchor.download = `企划纠偏清单（鞋类）_${dateLabel}.csv`;
+        anchor.click();
+        URL.revokeObjectURL(url);
+    }, [planningChecklistRows]);
 
     const chartDecisions = useMemo(() => {
         const fallback = decisionRows[0] || null;
@@ -1189,6 +1588,81 @@ export default function CategoryOpsPanel({
                 </div>
             </section>
 
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div className="text-sm font-semibold text-slate-900">供需匹配（销发比）</div>
+                    <div className="text-xs text-slate-500">单位：双 / 比例 ｜ 对比：{compareMeta.modeLabel}</div>
+                </div>
+
+                {hasSupplyCardData ? (
+                    <>
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <div className="text-xs text-slate-500">到货/发货量（Sell-in）</div>
+                                <div className="mt-1 text-xl font-semibold text-slate-900">{formatPairs(sellInPairs)}</div>
+                                <div className={`mt-1 text-xs ${sellInDeltaPct !== null && sellInDeltaPct < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                                    {sellInDeltaPct === null ? '—' : `${sellInDeltaPct >= 0 ? '+' : ''}${(sellInDeltaPct * 100).toFixed(1)}%`}
+                                </div>
+                            </div>
+                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <div className="text-xs text-slate-500">零售销量（Sell-out）</div>
+                                <div className="mt-1 text-xl font-semibold text-slate-900">{formatPairs(sellOutPairs)}</div>
+                                <div className={`mt-1 text-xs ${sellOutDeltaPct !== null && sellOutDeltaPct < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                                    {sellOutDeltaPct === null ? '—' : `${sellOutDeltaPct >= 0 ? '+' : ''}${(sellOutDeltaPct * 100).toFixed(1)}%`}
+                                </div>
+                            </div>
+                            <div className={`rounded-xl border p-3 ${supplyRatioToneClass}`}>
+                                <div className="text-xs">销发比（Sell-out / Sell-in）</div>
+                                <div className="mt-1 text-xl font-semibold">{formatRatio(sellShipRatio)}</div>
+                                <div className="mt-1 text-xs">
+                                    健康区间 {formatRatio(SELL_SHIP_HEALTH_MIN)} ~ {formatRatio(SELL_SHIP_HEALTH_MAX)}
+                                    {sellShipDeltaPp !== null ? ` ｜ ${sellShipDeltaPp >= 0 ? '+' : ''}${sellShipDeltaPp.toFixed(1)}pp` : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                                <div className="text-xs font-semibold text-slate-700">
+                                    销发比 Top6 & Bottom6（按{supplyRankingDimension === 'category' ? '二级品类' : '系列'}）
+                                </div>
+                                <div className="inline-flex rounded-lg bg-slate-100 p-1 text-xs">
+                                    <button
+                                        onClick={() => setSupplyRankingDimension('category')}
+                                        className={`rounded px-2 py-1 ${supplyRankingDimension === 'category' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}
+                                    >
+                                        二级品类
+                                    </button>
+                                    <button
+                                        onClick={() => setSupplyRankingDimension('series')}
+                                        className={`rounded px-2 py-1 ${supplyRankingDimension === 'series' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}
+                                    >
+                                        系列
+                                    </button>
+                                </div>
+                            </div>
+                            {supplyRanking.rows.length ? (
+                                <ReactECharts option={supplyRankingOption} style={{ height: 300 }} notMerge />
+                            ) : (
+                                <div className="rounded-md border border-dashed border-slate-300 bg-white px-3 py-6 text-center text-xs text-slate-500">
+                                    当前筛选下暂无可用于销发比榜单的样本。
+                                </div>
+                            )}
+                            <div className="mt-2 rounded-md border border-blue-100 bg-blue-50/60 px-2.5 py-2 text-xs leading-6 text-slate-700">
+                                自动动作：{supplyActionText}
+                            </div>
+                            <div className="mt-2 text-xs text-amber-700">
+                                当前发货/到货口径来自 v0 推导；建议补齐发货/到货字段以提高准确性。
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <div className="rounded-md border border-dashed border-slate-300 bg-slate-50 px-3 py-6 text-center text-sm text-slate-500">
+                        建议补齐发货/到货字段
+                    </div>
+                )}
+            </section>
+
             <section className="space-y-4">
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                     <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
@@ -1266,6 +1740,108 @@ export default function CategoryOpsPanel({
                         </div>
                     </div>
                 </div>
+            </section>
+
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <div className="text-sm font-semibold text-slate-900">企划落地效率（计划SKU → 动销SKU）</div>
+                        <div className="text-xs text-slate-500">单位：款 / 元 ｜ 对比：{compareMeta.modeLabel}</div>
+                    </div>
+                    <button
+                        onClick={() => setShowPlanningEfficiency((prev) => !prev)}
+                        className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                    >
+                        {showPlanningEfficiency ? '收起模块' : '展开模块'}
+                    </button>
+                </div>
+
+                {showPlanningEfficiency ? (
+                    <div className="mt-4 space-y-3">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <div className="text-xs text-slate-500">企划SKU</div>
+                                <div className="mt-1 text-lg font-semibold text-slate-900">
+                                    {planSku > 0 ? formatCount(planSku) : '—'}
+                                </div>
+                            </div>
+                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <div className="text-xs text-slate-500">动销SKU</div>
+                                <div className="mt-1 text-lg font-semibold text-slate-900">{formatCount(activeSku)}</div>
+                            </div>
+                            <div className={`rounded-xl border p-3 ${skuUtilizationToneClass}`}>
+                                <div className="text-xs text-slate-500">SKU利用率</div>
+                                <div className="mt-1 text-lg font-semibold text-slate-900">
+                                    {skuUtilization === null ? '—' : formatRatio(skuUtilization)}
+                                </div>
+                            </div>
+                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <div className="text-xs text-slate-500">单款产出（净销额/动销SKU）</div>
+                                <div className="mt-1 text-lg font-semibold text-slate-900">{formatAmount(salesPerSku)}</div>
+                            </div>
+                        </div>
+
+                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                            <div className="mb-2 text-xs font-semibold text-slate-600">规则建议（最多3条）</div>
+                            <ul className="space-y-1.5 text-sm leading-6 text-slate-700">
+                                {planningRules.map((rule, index) => (
+                                    <li key={`planning-rule-${index + 1}`}>{`${index + 1}. ${rule}`}</li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                <div className="text-xs font-semibold text-slate-700">鞋类专属：尺码健康度</div>
+                                <button
+                                    onClick={() => setShowSizeHealth((prev) => !prev)}
+                                    className="rounded border border-slate-300 bg-white px-2.5 py-1 text-xs text-slate-600 hover:bg-slate-50"
+                                >
+                                    {showSizeHealth ? '收起' : '展开'}
+                                </button>
+                            </div>
+
+                            {showSizeHealth ? (
+                                <div className="mt-3 space-y-3">
+                                    {sizeHealth.hasData ? (
+                                        <>
+                                            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                                                <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                                                    齐码率：<span className="font-semibold text-slate-900">{formatRatio(sizeHealth.fullSizeRate || 0)}</span>
+                                                </div>
+                                                <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                                                    断码率：<span className={`font-semibold ${(sizeHealth.stockoutRate || 0) > STOCKOUT_RISK ? 'text-rose-600' : 'text-slate-900'}`}>{formatRatio(sizeHealth.stockoutRate || 0)}</span>
+                                                </div>
+                                                <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                                                    核心尺码销量占比：<span className="font-semibold text-slate-900">{formatRatio(sizeHealth.coreSizeSalesShare || 0)}</span>
+                                                </div>
+                                            </div>
+                                            <div className="rounded-lg border border-slate-200 bg-white p-3">
+                                                <div className="mb-1 text-xs font-semibold text-slate-600">断码Top榜（系列/楦型/SKU）</div>
+                                                <ul className="space-y-1 text-xs leading-6 text-slate-700">
+                                                    {sizeHealth.topStockoutRows.map((row, index) => (
+                                                        <li key={`size-top-${index + 1}`}>{`${index + 1}. ${row.label}（${formatRatio(row.stockoutRate)}）`}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="rounded-md border border-dashed border-slate-300 bg-white px-3 py-5 text-center text-xs text-slate-500">
+                                            建议补齐尺码明细字段（尺码、核心尺码标记、断码率、楦型）后启用该模块。
+                                        </div>
+                                    )}
+                                    <div className="rounded-md border border-blue-100 bg-blue-50/60 px-2.5 py-2 text-xs leading-6 text-slate-700">
+                                        动作逻辑：{sizeHealthActionText}
+                                    </div>
+                                </div>
+                            ) : null}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-xs text-slate-500">
+                        默认收起；展开后可查看企划SKU、利用率、单款产出与尺码健康度。
+                    </div>
+                )}
             </section>
 
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
@@ -1457,7 +2033,15 @@ export default function CategoryOpsPanel({
             </section>
 
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                <div className="mb-3 text-sm font-semibold text-slate-900">模块D：行动清单（Insight & Actions）</div>
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div className="text-sm font-semibold text-slate-900">模块D：行动清单（Insight & Actions）</div>
+                    <button
+                        onClick={exportPlanningChecklist}
+                        className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                    >
+                        导出《企划纠偏清单（鞋类）》
+                    </button>
+                </div>
                 <div className="mb-3 grid grid-cols-1 gap-3 xl:grid-cols-3">
                     {decisionRows.slice(0, 3).map((row, index) => (
                         <div key={row.id} className={`rounded-xl border p-3 ${getDecisionTone(index)}`}>
