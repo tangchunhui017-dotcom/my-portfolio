@@ -1,0 +1,35 @@
+{
+  "id": "otb-2024ss-w1",
+  "title": "2024SS W1 OTB预算执行报告",
+  "season": "2024SS",
+  "wave": "W1",
+  "category": "全品类",
+  "product_role": "budget-control",
+  "occasion_tag": "all",
+  "agent": "planner",
+  "owner": "陈企划",
+  "updated_at": "2024-03-20T16:00:00+08:00",
+  "publish_level": "dashboard",
+  "summary": "W1 OTB总额2800万，已使用1850万（66%），剩余950万。整体预算偏差-5%，户外鞋品类超支需关注。",
+  "source_type": "otb-report",
+  "source_file": "otb-2024ss-w1.json",
+  "otb_total": 28000000,
+  "otb_used": 18500000,
+  "otb_remaining": 9500000,
+  "category_allocation": [
+    { "category": "户外鞋", "amount": 8400000, "pct": 0.30 },
+    { "category": "凉鞋", "amount": 7000000, "pct": 0.25 },
+    { "category": "运动休闲鞋", "amount": 8400000, "pct": 0.30 },
+    { "category": "商务休闲鞋", "amount": 4200000, "pct": 0.15 }
+  ],
+  "wave_allocation": [
+    { "wave": "W1", "amount": 12000000, "status": "已执行" },
+    { "wave": "W2", "amount": 10000000, "status": "执行中" },
+    { "wave": "W3", "amount": 6000000, "status": "待启动" }
+  ],
+  "budget_variance": -0.05,
+  "risk_alerts": [
+    "户外鞋品类W1实际采购超预算8%，主要因Vibram大底单价上涨12%",
+    "运动休闲鞋W2面料成本预估偏高，建议切换至国产飞织供应商以控制BOM"
+  ]
+}

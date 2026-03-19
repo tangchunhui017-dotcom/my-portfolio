@@ -1,0 +1,42 @@
+{
+  "id": "dr-002",
+  "title": "通勤乐福鞋 经典翻新款",
+  "season": "2024SS",
+  "wave": "W2",
+  "category": "正装/通勤",
+  "product_role": "margin-driver",
+  "occasion_tag": "urban-commute",
+  "agent": "design-review",
+  "owner": "王芳",
+  "updated_at": "2024-03-20T10:00:00+08:00",
+  "publish_level": "dashboard",
+  "summary": "SMS 阶段待复审，帮面材质手感不达标，需更换供应商样品。",
+  "source_type": "design-review",
+  "source_file": "dr-002.json",
+  "style_number": "OC-24S-LF-012",
+  "series": "City Classic",
+  "stage": "SMS",
+  "review_date": "2024-03-19",
+  "reviewer": "张设计总监",
+  "conclusion": "Review",
+  "risk_level": "medium",
+  "price_band": "PB2",
+  "dimensions": {
+    "last": { "score": 82, "comment": "楦型成熟，沿用经典楦", "risk": "low" },
+    "upper": { "score": 60, "comment": "帮面皮料手感偏硬，需换供应商", "risk": "medium" },
+    "outsole": { "score": 85, "comment": "橡胶底耐磨性好", "risk": "low" },
+    "material": { "score": 55, "comment": "当前皮料供应商交期不稳定", "risk": "high" },
+    "bom": { "score": 75, "comment": "BOM偏高，需优化辅料成本", "risk": "medium" },
+    "mold_reuse": { "score": 70, "comment": "大底可复用2个SKU", "risk": "low" }
+  },
+  "change_actions": [
+    { "type": "材质修改", "detail": "更换帮面皮料供应商，要求3天内提供新样", "responsible": "采购部-陈工" },
+    { "type": "成本优化", "detail": "辅料从进口改国产，预计降本8%", "responsible": "开发部-刘工" }
+  ],
+  "next_review_date": "2024-03-28",
+  "version_history": [
+    { "version": "V1", "date": "2024-02-28", "summary": "初版设计，配色方案确认" },
+    { "version": "V2", "date": "2024-03-10", "summary": "调整鞋口高度" },
+    { "version": "V3", "date": "2024-03-19", "summary": "SMS样品到货，材质待改进" }
+  ]
+}

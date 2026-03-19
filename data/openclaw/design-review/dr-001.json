@@ -1,0 +1,38 @@
+{
+  "id": "dr-001",
+  "title": "城市轻户外徒步鞋 V2",
+  "season": "2024SS",
+  "wave": "W1",
+  "category": "户外鞋",
+  "product_role": "volume-driver",
+  "occasion_tag": "light-outdoor",
+  "agent": "design-review",
+  "owner": "李明",
+  "updated_at": "2024-03-18T14:30:00+08:00",
+  "publish_level": "dashboard",
+  "summary": "Proto 阶段通过，鞋楦轮廓与轻户外定位匹配，大底抓地力测试达标。",
+  "source_type": "design-review",
+  "source_file": "dr-001.json",
+  "style_number": "OC-24S-HK-001",
+  "series": "Urban Trail",
+  "stage": "Proto",
+  "review_date": "2024-03-15",
+  "reviewer": "张设计总监",
+  "conclusion": "Pass",
+  "risk_level": "low",
+  "price_band": "PB3",
+  "dimensions": {
+    "last": { "score": 85, "comment": "楦型偏宽适合亚洲脚型，前掌空间充足", "risk": "low" },
+    "upper": { "score": 80, "comment": "网布+TPU支撑结构合理，透气性好", "risk": "low" },
+    "outsole": { "score": 88, "comment": "Vibram公模大底，抓地力优秀", "risk": "low" },
+    "material": { "score": 78, "comment": "主材料供应稳定，配色需微调", "risk": "low" },
+    "bom": { "score": 82, "comment": "BOM成本在目标范围内，毛利率可达48%", "risk": "low" },
+    "mold_reuse": { "score": 90, "comment": "大底可复用3个SKU，共模率高", "risk": "low" }
+  },
+  "change_actions": [],
+  "next_review_date": "2024-04-05",
+  "version_history": [
+    { "version": "V1", "date": "2024-02-20", "summary": "初版打样，楦型偏窄" },
+    { "version": "V2", "date": "2024-03-15", "summary": "调整楦型宽度，通过Proto评审" }
+  ]
+}

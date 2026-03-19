@@ -1,0 +1,33 @@
+{
+  "id": "trend-2024ss",
+  "title": "2024SS 趋势洞察与转化报告",
+  "season": "2024SS",
+  "wave": "W1-W2",
+  "category": "全品类",
+  "product_role": "trend-translation",
+  "occasion_tag": "all",
+  "agent": "research",
+  "owner": "刘研究员",
+  "updated_at": "2024-03-19T10:30:00+08:00",
+  "publish_level": "dashboard",
+  "summary": "本季核心趋势围绕轻户外、可持续材料和复古跑鞋展开，竞品动作密集，已完成3项趋势转化落地。",
+  "source_type": "trend-insights",
+  "source_file": "trend-2024ss.json",
+  "trend_keywords": [
+    { "keyword": "轻户外Gorpcore", "heat": 92, "source": "小红书/得物趋势榜" },
+    { "keyword": "可持续再生材料", "heat": 85, "source": "ISPO Munich 2024展会" },
+    { "keyword": "复古慢跑鞋", "heat": 88, "source": "天猫搜索热度+35% MoM" },
+    { "keyword": "厚底松糕凉鞋", "heat": 76, "source": "抖音穿搭话题播放量12亿" },
+    { "keyword": "都市通勤轻量化", "heat": 81, "source": "京东鞋靴品类报告Q1" }
+  ],
+  "competitor_summary": [
+    { "brand": "安踏", "insight": "推出「山野系列」轻户外鞋，定价299-499元，主打PB2价格带下沉策略" },
+    { "brand": "李宁", "insight": "复古跑鞋「超轻21」系列爆发，单月销量破50万双，带动品类增长42%" },
+    { "brand": "斯凯奇", "insight": "厚底凉鞋系列在抖音直播渠道GMV环比增长68%，重点布局女性用户" }
+  ],
+  "translation_results": [
+    { "trend": "轻户外Gorpcore", "action": "Urban Trail系列增加2个配色SKU，强化城市户外场景穿搭", "confidence": 0.88 },
+    { "trend": "可持续再生材料", "action": "W2新增3款再生EVA中底产品，包装切换至可降解材料", "confidence": 0.75 },
+    { "trend": "复古慢跑鞋", "action": "启动Heritage Runner企划，W3投放4个SKU覆盖PB2-PB3", "confidence": 0.82 }
+  ]
+}

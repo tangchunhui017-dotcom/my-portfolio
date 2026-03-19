@@ -1,0 +1,125 @@
+﻿{
+  "reviews": [
+    {
+      "itemId": "di001",
+      "reviewStatus": "fail",
+      "riskLevel": "high",
+      "nextReviewDate": "2024-03-26",
+      "updatedBy": "设计评审组",
+      "outputPath": "exports/design-review/di001.json",
+      "reviewSummary": "大底比例和帮面层次需要重做。",
+      "openclawReviewId": "dr-003"
+    },
+    {
+      "itemId": "di002",
+      "reviewStatus": "pass",
+      "riskLevel": "low",
+      "nextReviewDate": null,
+      "updatedBy": "设计评审组",
+      "outputPath": "exports/design-review/di002.json",
+      "reviewSummary": "样鞋通过，可进入成本核算。",
+      "openclawReviewId": "dr-001"
+    },
+    {
+      "itemId": "di003",
+      "reviewStatus": "review",
+      "riskLevel": "medium",
+      "nextReviewDate": "2024-03-25",
+      "updatedBy": "设计评审组",
+      "outputPath": "exports/design-review/di003.json",
+      "reviewSummary": "配色方向通过，鞋口包边仍需微调。"
+    },
+    {
+      "itemId": "di004",
+      "reviewStatus": "pending",
+      "riskLevel": "medium",
+      "nextReviewDate": "2024-03-29",
+      "updatedBy": "项目经理",
+      "outputPath": "exports/design-review/di004.json",
+      "reviewSummary": "概念已立项，待进入原型评审。"
+    },
+    {
+      "itemId": "di005",
+      "reviewStatus": "review",
+      "riskLevel": "high",
+      "nextReviewDate": "2024-03-28",
+      "updatedBy": "项目经理",
+      "outputPath": "exports/design-review/di005.json",
+      "reviewSummary": "供应链风险较高，需要确认替代材料。"
+    },
+    {
+      "itemId": "di006",
+      "reviewStatus": "review",
+      "riskLevel": "medium",
+      "nextReviewDate": "2024-03-27",
+      "updatedBy": "设计评审组",
+      "outputPath": "exports/design-review/di006.json",
+      "reviewSummary": "撞色方向成立，但荧光绿色占比偏高。"
+    },
+    {
+      "itemId": "di007",
+      "reviewStatus": "pending",
+      "riskLevel": "medium",
+      "nextReviewDate": "2024-03-30",
+      "updatedBy": "项目经理",
+      "outputPath": "exports/design-review/di007.json",
+      "reviewSummary": "等待成本方案和材料板确认后进入评审。"
+    },
+    {
+      "itemId": "di008",
+      "reviewStatus": "review",
+      "riskLevel": "medium",
+      "nextReviewDate": "2024-03-24",
+      "updatedBy": "设计评审组",
+      "outputPath": "exports/design-review/di008.json",
+      "reviewSummary": "通勤向配色通过，鞋头包覆还需加强。"
+    },
+    {
+      "itemId": "di009",
+      "reviewStatus": "pending",
+      "riskLevel": "low",
+      "nextReviewDate": "2024-03-31",
+      "updatedBy": "项目经理",
+      "outputPath": "exports/design-review/di009.json",
+      "reviewSummary": "概念阶段，待确认楦型方向。"
+    },
+    {
+      "itemId": "di010",
+      "reviewStatus": "pending",
+      "riskLevel": "medium",
+      "nextReviewDate": "2024-04-02",
+      "updatedBy": "项目经理",
+      "outputPath": "exports/design-review/di010.json",
+      "reviewSummary": "等待商业评审后进入原型开发。"
+    },
+    {
+      "itemId": "di011",
+      "reviewStatus": "review",
+      "riskLevel": "medium",
+      "nextReviewDate": "2024-03-30",
+      "updatedBy": "设计评审组",
+      "outputPath": "exports/design-review/di011.json",
+      "reviewSummary": "一脚蹬结构需要补强鞋口稳定性。",
+      "openclawReviewId": "dr-002",
+      "changeOrderIds": ["co-001"]
+    },
+    {
+      "itemId": "di012",
+      "reviewStatus": "pending",
+      "riskLevel": "high",
+      "nextReviewDate": "2024-04-03",
+      "updatedBy": "项目经理",
+      "outputPath": "exports/design-review/di012.json",
+      "reviewSummary": "舒适卖点清晰，但材料交期存在不确定性。"
+    },
+    {
+      "itemId": "di013",
+      "reviewStatus": "pending",
+      "riskLevel": "medium",
+      "nextReviewDate": "2024-04-05",
+      "updatedBy": "项目经理",
+      "outputPath": "exports/design-review/di013.json",
+      "reviewSummary": "女性向方向明确，待补色板和楦型确认。"
+    }
+  ]
+}

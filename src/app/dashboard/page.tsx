@@ -11,23 +11,27 @@ import SkuDetailModal, { SkuDrillData } from '@/components/dashboard/SkuDetailMo
 import ChartMenu from '@/components/dashboard/ChartMenu';
 import OverviewKpiBar from '@/components/dashboard/OverviewKpiBar';
 import NarrativeSummary from '@/components/dashboard/NarrativeSummary';
-import ProductAnalysisPanel from '@/components/dashboard/ProductAnalysisPanel';
+import ProductBasicPanel from '@/components/dashboard/ProductBasicPanel';
+import CategoryOpsPanel from '@/components/dashboard/CategoryOpsPanel';
 import WavePlanningPanel from '@/components/dashboard/WavePlanningPanel';
 import ChannelAnalysisPanel from '@/components/dashboard/ChannelAnalysisPanel';
 import CompetitorTrendPanel from '@/components/dashboard/CompetitorTrendPanel';
 import MonthlyAchievementPanel from '@/components/dashboard/MonthlyAchievementPanel';
-import { useState, useRef } from 'react';
+import InventoryHealth from '@/components/dashboard/InventoryHealth';
+import { useState, useRef, useMemo } from 'react';
 import { FOOTWEAR_CATEGORY_CORE_ORDER } from '@/config/categoryMapping';
 
-type DashboardTab = 'overview' | 'product' | 'channel' | 'planning' | 'otb' | 'competitor';
+type DashboardTab = 'overview' | 'consumer' | 'category' | 'channel' | 'planning' | 'otb' | 'competitor' | 'inventory';
 
 const TABS: { key: DashboardTab; label: string; labelEn: string; icon: string }[] = [
     { key: 'overview', label: '总览', labelEn: 'Overview', icon: '📊' },
     { key: 'channel', label: '区域&门店', labelEn: 'Region&Store', icon: '🏪' },
-    { key: 'product', label: '消费者&商品分析', labelEn: 'Consumer&Product', icon: '🧑‍🤝‍🧑' },
+    { key: 'consumer', label: '消费者画像', labelEn: 'Consumer', icon: '🧑‍🤝‍🧑' },
+    { key: 'category', label: '品类运营', labelEn: 'Category Ops', icon: '📋' },
     { key: 'planning', label: '波段企划', labelEn: 'Wave Planning', icon: '🗓️' },
     { key: 'otb', label: 'OTB预算', labelEn: 'OTB Budget', icon: '💰' },
     { key: 'competitor', label: '竞品&趋势', labelEn: 'Competitor&Trend', icon: '🧭' },
+    { key: 'inventory', label: '库存健康', labelEn: 'Inventory', icon: '📦' },
 ];
 
 interface ConclusionCardProps {
@@ -98,10 +102,43 @@ function ChartCard({ title, type, kpis, conclusion, headerAction, span = 'half',
 
 export default function DashboardPage() {
     const [compareMode, setCompareMode] = useState<CompareMode>('plan');
-    const { filters, setFilters, kpis, filterSummary, baselineKpis, filteredRecords } = useDashboardFilter(compareMode);
+    const { filters, setFilters, kpis, filterSummary, baselineKpis, filteredRecords, skuMap } = useDashboardFilter(compareMode);
     const [heatmapMetric, setHeatmapMetric] = useState<'sku' | 'sales' | 'st'>('sku');
     const [selectedSku, setSelectedSku] = useState<SkuDrillData | null>(null);
     const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
+
+    // ── SKU-level WOS data for Inventory Health tab ──
+    const skuWosData = useMemo(() => {
+        if (!filteredRecords || filteredRecords.length === 0) return [];
+        const skuAgg: Record<string, { onHand: number; weeklyUnits: number[]; week: number; st: number }> = {};
+        filteredRecords.forEach((r: { sku_id: string; week_num: number; on_hand_unit: number; unit_sold: number; cumulative_sell_through: number }) => {
+            if (!skuAgg[r.sku_id]) {
+                skuAgg[r.sku_id] = { onHand: 0, weeklyUnits: [], week: 0, st: 0 };
+            }
+            const entry = skuAgg[r.sku_id];
+            entry.weeklyUnits.push(r.unit_sold);
+            if (r.week_num > entry.week) {
+                entry.onHand = r.on_hand_unit;
+                entry.week = r.week_num;
+                entry.st = r.cumulative_sell_through;
+            }
+        });
+        return Object.entries(skuAgg).map(([skuId, d]) => {
+            const sku = skuMap[skuId];
+            const avgWeekly = d.weeklyUnits.length > 0 ? d.weeklyUnits.reduce((a, b) => a + b, 0) / d.weeklyUnits.length : 0;
+            const wos = avgWeekly > 0 ? Math.round((d.onHand / avgWeekly) * 10) / 10 : 0;
+            return {
+                skuId,
+                name: sku?.sku_name || skuId,
+                category: sku?.category_name || '-',
+                wos,
+                onHandUnits: d.onHand,
+                sellThrough: d.st,
+                lifecycle: sku?.lifecycle || '-',
+                msrp: sku?.msrp || 0,
+            };
+        });
+    }, [filteredRecords, skuMap]);
 
     // Refs for scroll targets
     const lineChartRef = useRef<HTMLDivElement>(null);
@@ -282,12 +319,12 @@ export default function DashboardPage() {
                     </div>
 
                     {/* ── Tab 导航栏 ────────────────────────────────── */}
-                    <div className="flex items-center gap-1 mb-6 border-b border-slate-200">
+                    <div className="flex items-center gap-1 mb-6 border-b border-slate-200 overflow-x-auto scrollbar-hide">
                         {TABS.map(tab => (
                             <button
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key)}
-                                className={`px-4 py-2.5 text-sm font-medium flex items-center gap-1.5 border-b-2 transition-all duration-150 ${activeTab === tab.key
+                                className={`px-4 py-2.5 text-sm font-medium flex items-center gap-1.5 border-b-2 transition-all duration-150 whitespace-nowrap ${activeTab === tab.key
                                     ? 'border-pink-500 text-pink-600'
                                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                                     }`}
@@ -313,9 +350,14 @@ export default function DashboardPage() {
                         />
                     )}
 
-                    {/* ── 商品分析 Tab ──────────────────────────────── */}
-                    {activeTab === 'product' && (
-                        <ProductAnalysisPanel filters={filters} setFilters={setFilters} compareMode={compareMode} />
+                    {/* ── 消费者画像 Tab ──────────────────────────────── */}
+                    {activeTab === 'consumer' && (
+                        <ProductBasicPanel filters={filters} setFilters={setFilters} />
+                    )}
+
+                    {/* ── 品类运营 Tab ──────────────────────────────── */}
+                    {activeTab === 'category' && (
+                        <CategoryOpsPanel filters={filters} setFilters={setFilters} compareMode={compareMode} />
                     )}
 
                     {/* ── 渠道分析 Tab ──────────────────────────────── */}
@@ -369,6 +411,13 @@ export default function DashboardPage() {
                         />
                     )}
 
+                    {/* ── 库存健康 Tab ──────────────────────────────── */}
+                    {activeTab === 'inventory' && (
+                        <div className="space-y-6">
+                            <InventoryHealth skuWosData={skuWosData} />
+                        </div>
+                    )}
+
 
                     {/* ── Overview Tab 内容 ───────────────────────── */}
                     {activeTab === 'overview' && (
@@ -377,7 +426,7 @@ export default function DashboardPage() {
                                 filters={filters}
                                 compareMode={compareMode}
                                 onJumpToPlanning={() => jumpToTab('planning')}
-                                onJumpToProduct={() => jumpToTab('product')}
+                                onJumpToProduct={() => jumpToTab('category')}
                                 onJumpToChannel={() => jumpToTab('channel')}
                                 onJumpToSkuRisk={jumpToSkuRisk}
                             />

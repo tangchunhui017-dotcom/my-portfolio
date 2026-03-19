@@ -522,8 +522,8 @@ export default function WavePlanningPanel({
                             {waveCompare.note && <div className="mt-1 text-[11px] text-slate-500">{waveCompare.note}</div>}
                         </div>
                         <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
-                            <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                                <div className="flex items-center text-xs text-slate-500">
+                            <div className="rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-3 shadow-sm">
+                                <div className="flex items-center text-xs font-semibold text-slate-600">
                                     波段SKU容量
                                     <InfoTip text="计划SKU=波段企划计划款数；实际落地=当前已落地款数；落地率=实际落地/计划SKU。" />
                                 </div>
@@ -531,42 +531,42 @@ export default function WavePlanningPanel({
                                     <div className="rounded-md border border-slate-200 bg-white px-2 py-1.5"><div className="text-[11px] text-slate-500">计划SKU</div><div className="text-sm font-semibold text-slate-900">{activeWave.sku_plan}</div></div>
                                     <div className="rounded-md border border-slate-200 bg-white px-2 py-1.5"><div className="text-[11px] text-slate-500">实际落地</div><div className="text-sm font-semibold text-slate-900">{activeWave.sku_actual}</div></div>
                                 </div>
-                                <div className={`mt-2 text-xl font-semibold ${getToneClass(landingRate, 0.95)}`}>{formatPct(landingRate)}</div>
+                                <div className={`mt-2 text-2xl font-bold ${getToneClass(landingRate, 0.95)}`}>{formatPct(landingRate)}</div>
                                 <div className="text-[11px] text-slate-500">落地率 = 实际落地 / 计划SKU</div>
                             </div>
-                            <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                                <div className="flex items-center text-xs text-slate-500">
+                            <div className="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-3 shadow-sm">
+                                <div className="flex items-center text-xs font-semibold text-emerald-700">
                                     新品占比
                                     <InfoTip text="新品占比=新品SKU数/波段总SKU数。用于判断本波段的新旧货结构是否符合策略。" />
                                 </div>
-                                <div className="mt-1 text-xl font-semibold text-emerald-600">{formatPct(activeWave.new_ratio)}</div>
-                                <div className="text-[11px] text-slate-500">新品SKU主导波段节奏</div>
+                                <div className="mt-2 text-2xl font-bold text-emerald-600">{formatPct(activeWave.new_ratio)}</div>
+                                <div className="text-[11px] text-emerald-600">新品SKU主导波段节奏</div>
                             </div>
-                            <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                                <div className="flex items-center text-xs text-slate-500">
+                            <div className="rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-3 shadow-sm">
+                                <div className="flex items-center text-xs font-semibold text-amber-700">
                                     旧货消化占比
                                     <InfoTip text="旧货消化占比=旧货相关SKU销售贡献/波段总销售贡献。占比过高通常提示压库风险。" />
                                 </div>
-                                <div className="mt-1 text-xl font-semibold text-amber-600">{formatPct(activeWave.old_ratio)}</div>
-                                <div className="text-[11px] text-slate-500">旧货占比高需防压库</div>
+                                <div className="mt-2 text-2xl font-bold text-amber-600">{formatPct(activeWave.old_ratio)}</div>
+                                <div className="text-[11px] text-amber-600">旧货占比高需防压库</div>
                             </div>
-                            <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                                <div className="flex items-center text-xs text-slate-500">
+                            <div className="rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-3 shadow-sm">
+                                <div className="flex items-center text-xs font-semibold text-slate-600">
                                     销发比
-                                    <InfoTip text="销发比=销量/配货(或到货)。当缺少库存或到货字段时，按降级策略显示“-”并给出口径提示。" />
+                                    <InfoTip text='销发比=销量/配货(或到货)。当缺少库存或到货字段时，按降级策略显示"-"并给出口径提示。' />
                                 </div>
-                                <div className="mt-1 text-xl font-semibold text-slate-900">{sellShipText}</div>
+                                <div className="mt-2 text-2xl font-bold text-slate-900">{sellShipText}</div>
                                 <div className="text-[11px] text-slate-500">{activeWave.sell_ship_note}</div>
                             </div>
-                            <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                                <div className="flex items-center text-xs text-slate-500">
+                            <div className="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-3 shadow-sm">
+                                <div className="flex items-center text-xs font-semibold text-blue-700">
                                     OTB预算
                                     <InfoTip text="OTB预算（Open-To-Buy）=在目标售罄率、毛利红线和库存约束下的建议可采购预算。" />
                                 </div>
-                                <div className="mt-1 text-xl font-semibold text-slate-900">{formatWan(activeWave.otb_budget)}</div>
+                                <div className="mt-2 text-2xl font-bold text-blue-600">{formatWan(activeWave.otb_budget)}</div>
                                 <div className="text-[11px] text-slate-500">计划销额 {formatWan(activeWave.plan_sales)}</div>
-                                <button onClick={() => setPlanningView('otb')} className="mt-2 rounded-md border border-slate-300 bg-white px-2 py-1 text-[11px] text-slate-600 transition-colors hover:bg-slate-50">
-                                    进入 OTB 推算
+                                <button onClick={() => setPlanningView('otb')} className="mt-2 rounded-md border border-blue-300 bg-blue-50 px-2 py-1 text-[11px] font-medium text-blue-700 transition-colors hover:bg-blue-100">
+                                    进入 OTB 推算 &rarr;
                                 </button>
                             </div>
                         </div>
@@ -606,9 +606,21 @@ export default function WavePlanningPanel({
                         </div>
                     </div>
                     <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-3">
-                        <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3"><div className="text-xs text-slate-500">预测销售额</div><div className="mt-1 text-2xl font-semibold text-slate-900">{formatWan(otbSummary.totalPlanSales)}</div></div>
-                        <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3"><div className="text-xs text-slate-500">建议 OTB</div><div className="mt-1 text-2xl font-semibold text-blue-600">{formatWan(otbSummary.suggestedOtb)}</div></div>
-                        <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3"><div className="text-xs text-slate-500">预算差额（预算口径 - 建议OTB）</div><div className={`mt-1 text-2xl font-semibold ${budgetGapClass}`}>{formatWan(otbSummary.budgetGap)}</div></div>
+                        <div className="rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
+                            <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">预测销售额</div>
+                            <div className="mt-2 text-3xl font-bold text-slate-900">{formatWan(otbSummary.totalPlanSales)}</div>
+                            <div className="mt-1 text-xs text-slate-500">基于历史数据与波段企划</div>
+                        </div>
+                        <div className="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-4">
+                            <div className="text-xs font-semibold uppercase tracking-wide text-blue-600">建议 OTB</div>
+                            <div className="mt-2 text-3xl font-bold text-blue-600">{formatWan(otbSummary.suggestedOtb)}</div>
+                            <div className="mt-1 text-xs text-blue-500">考虑库存覆盖与售罄目标</div>
+                        </div>
+                        <div className={`rounded-xl border p-4 ${budgetGapClass === 'text-emerald-600' ? 'border-emerald-200 bg-gradient-to-br from-emerald-50 to-white' : budgetGapClass === 'text-rose-600' ? 'border-rose-200 bg-gradient-to-br from-rose-50 to-white' : 'border-amber-200 bg-gradient-to-br from-amber-50 to-white'}`}>
+                            <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">预算差额</div>
+                            <div className={`mt-2 text-3xl font-bold ${budgetGapClass}`}>{formatWan(otbSummary.budgetGap)}</div>
+                            <div className="mt-1 text-xs text-slate-500">预算口径 - 建议 OTB</div>
+                        </div>
                     </div>
                     <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-2">
                         <div className="rounded-xl border border-slate-200 bg-white p-3">

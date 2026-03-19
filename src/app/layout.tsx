@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
+import OpenClawEntryButton from "@/components/business/OpenClawEntryButton";
 
 
 const geistSans = Geist({
@@ -15,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tang-Design Project | Footwear Design & Product Planning",
-  description: "鞋类企划设计总监作品集 - 从趋势洞察到商品企划，从设计开发到上市复盘",
+  title: "OpenClaw Studio | Footwear Planning & Design Platform",
+  description: "鞋履产品企划与设计平台 - 从趋势洞察到商品企划，从设计开发到上市复盘",
 };
 
 export default function RootLayout({
@@ -32,6 +33,7 @@ export default function RootLayout({
       >
         <Navigation />
         {children}
+        <OpenClawEntryButton />
       </body>
     </html>
   );

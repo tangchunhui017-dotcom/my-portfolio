@@ -1,0 +1,33 @@
+{
+  "id": "weekly-summary-2024W12",
+  "title": "2024SS 第12周运营周报",
+  "season": "2024SS",
+  "wave": "W2",
+  "category": "全品类",
+  "product_role": "overview",
+  "occasion_tag": "all",
+  "agent": "director",
+  "owner": "王总监",
+  "updated_at": "2024-03-22T09:00:00+08:00",
+  "publish_level": "dashboard",
+  "summary": "本周净销售额1280万，售罄率78%高于目标5个百分点，毛利率46%符合预期。W2波段已启动，重点关注户外鞋和凉鞋品类备货节奏。",
+  "source_type": "weekly-summary",
+  "source_file": "weekly-summary-2024W12.json",
+  "kpi_snapshot": {
+    "net_sales": 12800000,
+    "sell_through": 0.78,
+    "margin_rate": 0.46,
+    "active_skus": 156
+  },
+  "key_issues": [
+    "户外鞋W1尾货库存偏高，售罄率仅62%，需加速清理",
+    "凉鞋品类核心材料TPU粒子交期延迟7天，影响W2上新节奏",
+    "竞品安踏同期推出轻户外系列，价格带下探至PB2，需关注市场反应"
+  ],
+  "key_actions": [
+    "启动户外鞋W1尾货促销方案，目标两周内售罄率提升至75%",
+    "协调TPU粒子备选供应商，确保凉鞋W2按时交货",
+    "研究部完成竞品轻户外系列对标分析，下周一提交报告"
+  ],
+  "wave_status": "W2 进行中"
+}

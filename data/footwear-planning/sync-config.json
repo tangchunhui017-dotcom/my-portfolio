@@ -1,0 +1,7 @@
+{
+  "syncMode": "manual",
+  "conflictResolution": "manual",
+  "lastSyncTime": null,
+  "openclawEndpoint": "https://api.openclaw.studio/v1",
+  "syncedEntities": ["design-items", "series-briefs", "assets"]
+}

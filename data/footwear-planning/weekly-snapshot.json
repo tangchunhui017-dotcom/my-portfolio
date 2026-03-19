@@ -1,0 +1,14 @@
+{
+  "weekId": "2024-W12",
+  "previousWeek": "2024-W11",
+  "snapshotDate": "2024-03-21T16:00:00Z",
+  "completedMilestones": ["m001", "m002"],
+  "newRisks": ["rsk001"],
+  "resolvedRisks": ["rsk003"],
+  "newTasks": ["tsk001", "tsk002"],
+  "completedTasks": ["tsk005"],
+  "seriesProgressDelta": {
+    "s001": { "from": 55, "to": 65 },
+    "s002": { "from": 40, "to": 50 }
+  }
+}

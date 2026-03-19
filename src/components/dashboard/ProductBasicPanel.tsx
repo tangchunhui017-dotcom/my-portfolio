@@ -20,6 +20,28 @@ const AGE_COLORS: Record<string, string> = {
     未知: '#94A3B8',
 };
 
+// 色系真实颜色映射
+const COLOR_FAMILY_COLORS: Record<string, string> = {
+    '黑色': '#1E293B',
+    '白色': '#F8FAFC',
+    '灰色': '#94A3B8',
+    '米色': '#D4C5B9',
+    '棕色': '#92400E',
+    '卡其': '#A16207',
+    '驼色': '#C2A679',
+    '红色': '#DC2626',
+    '粉色': '#EC4899',
+    '橙色': '#F97316',
+    '黄色': '#EAB308',
+    '绿色': '#16A34A',
+    '蓝色': '#2563EB',
+    '紫色': '#9333EA',
+    '彩色·鲜': '#10B981',
+    '彩色·柔': '#F472B6',
+    '中性色': '#78716C',
+    '金属色': '#A8A29E',
+};
+
 const AGE_SCENE_HINTS = [
     '18-23：拉新潮流/社交场景（更吃辨识度与新廓形）',
     '24-33：通勤+周末两用（易搭配、显脚型、舒适）',
@@ -285,7 +307,13 @@ export default function ProductBasicPanel({
                 bottom: 10,
                 text: ['高', '低'],
                 textStyle: { color: '#64748B', fontSize: 10 },
-                inRange: { color: ['#F8FAFC', '#93C5FD', '#1D4ED8'] },
+                inRange: {
+                    color: ageHeatMetric === 'sell_through'
+                        ? ['#FEE2E2', '#FCA5A5', '#EF4444', '#DC2626', '#10B981']
+                        : ageHeatMetric === 'gm_rate'
+                        ? ['#FEF3C7', '#FCD34D', '#F59E0B', '#D97706', '#2563EB']
+                        : ['#F1F5F9', '#CBD5E1', '#64748B', '#475569', '#1E293B']
+                },
                 calculable: false,
             },
             series: [
@@ -368,18 +396,32 @@ export default function ProductBasicPanel({
     }, [colorStats, treemapColorMetric]);
 
     const treemapOption = useMemo<EChartsOption>(() => {
-        const data = colorStats.map((item) => ({
-            name: item.color_family,
-            value: treemapAreaMetric === 'net_sales' ? item.net_sales : item.pairs_sold,
-            sellThrough: item.sell_through,
-            gmRate: item.gm_rate,
-            netSales: item.net_sales,
-            pairsSold: item.pairs_sold,
-            skcCnt: item.skc_cnt,
-            itemStyle: {
-                color: getMetricColor(item[treemapColorMetric], treemapColorRange.min, treemapColorRange.max, treemapColorMetric),
-            },
-        }));
+        const data = colorStats.map((item) => {
+            // 使用真实色系颜色
+            const baseColor = COLOR_FAMILY_COLORS[item.color_family] || '#94A3B8';
+
+            // 根据指标调整透明度（售罄率或毛利率越高，颜色越饱和）
+            const metricValue = item[treemapColorMetric];
+            const opacity = treemapColorRange.max > treemapColorRange.min
+                ? 0.5 + 0.5 * clamp((metricValue - treemapColorRange.min) / (treemapColorRange.max - treemapColorRange.min), 0, 1)
+                : 0.85;
+
+            return {
+                name: item.color_family,
+                value: treemapAreaMetric === 'net_sales' ? item.net_sales : item.pairs_sold,
+                sellThrough: item.sell_through,
+                gmRate: item.gm_rate,
+                netSales: item.net_sales,
+                pairsSold: item.pairs_sold,
+                skcCnt: item.skc_cnt,
+                itemStyle: {
+                    color: baseColor,
+                    opacity: opacity,
+                    borderColor: metricValue >= (treemapColorRange.min + treemapColorRange.max) / 2 ? '#10B981' : '#F59E0B',
+                    borderWidth: 2,
+                },
+            };
+        });
 
         return {
             animationDuration: 500,
@@ -406,9 +448,11 @@ export default function ProductBasicPanel({
                     breadcrumb: { show: false },
                     label: {
                         show: true,
-                        formatter: '{b}',
-                        color: '#0F172A',
-                        fontSize: 12,
+                        formatter: (params: { data?: { name?: string } }) => {
+                            return params?.data?.name || '';
+                        },
+                        color: '#FFFFFF',
+                        fontSize: 13,
                         fontWeight: 600,
                     },
                     upperLabel: { show: false },
@@ -416,7 +460,7 @@ export default function ProductBasicPanel({
                         borderColor: '#ffffff',
                         borderWidth: 1,
                     },
-                },
+                } as any,
             ],
         };
     }, [colorStats, treemapAreaMetric, treemapColorMetric, treemapColorRange]);
@@ -519,7 +563,9 @@ export default function ProductBasicPanel({
                 text: ['高', '低'],
                 textStyle: { color: '#64748B', fontSize: 10 },
                 inRange: {
-                    color: ['#F8FAFC', '#BBF7D0', '#16A34A'],
+                    color: colorHeatMetric === 'sell_through'
+                        ? ['#FEE2E2', '#FCA5A5', '#EF4444', '#DC2626', '#10B981']
+                        : ['#F1F5F9', '#CBD5E1', '#64748B', '#475569', '#1E293B']
                 },
                 calculable: false,
             },

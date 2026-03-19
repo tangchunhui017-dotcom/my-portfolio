@@ -1,0 +1,37 @@
+{
+  "id": "case-trend-translation",
+  "title": "运动休闲趋势转译与快速落地案例",
+  "season": "2024SS",
+  "wave": "W2",
+  "category": "休闲鞋",
+  "product_role": "trend-test",
+  "occasion_tag": "weekend-casual",
+  "agent": "research",
+  "owner": "李研究员",
+  "updated_at": "2024-04-10T14:00:00+08:00",
+  "publish_level": "dashboard",
+  "summary": "通过趋势热度监控发现「德训鞋」搜索量3周内增长220%，快速转译为2款试水SKU，上市首周即进入品类TOP10，验证了趋势快反机制的可行性。",
+  "source_type": "case-study",
+  "source_file": "case-trend-translation.json",
+  "case_type": "趋势转译案例",
+  "background": "2024SS W2期间，研究引擎监测到「德训鞋/German Army Trainer」关键词在小红书、得物、抖音三平台搜索热度3周内增长220%，竞品New Balance、Maison Margiela相关款已开始放量。品牌当前产品线中无对应款型。",
+  "inputs": "三平台趋势热度数据、竞品上新节奏、现有楦型库匹配度分析、BOM成本预估、渠道买手反馈",
+  "planning_judgement": "企划判断德训鞋趋势窗口期约为8-12周，需在4周内完成从设计到首批铺货。建议采用「轻量试水」策略：仅投放2个SKU（经典白/复古绿），首批各1500双，OTB控制在45万以内。",
+  "design_judgement": "设计评审确认可复用CT-03休闲楦，鞋面改用翻毛皮+网布拼接方案，外底采用现有生胶底模具。打样周期压缩至5天，整体开发周期控制在21天。",
+  "key_actions": [
+    "复用CT-03楦型，鞋面方案改为翻毛皮+透气网布，外底复用生胶底模具",
+    "首批2个SKU各1500双，OTB 45万，锁定得物+抖音旗舰店首发",
+    "同步准备3个追加配色方案，若首周售罄率>40%立即启动追加生产",
+    "投放小红书KOC种草30篇+抖音短视频15条，预热期7天"
+  ],
+  "data_results": {
+    "before": { "category_rank": "无该品类", "brand_search_index": 1200 },
+    "after": { "category_rank": "TOP 8", "brand_search_index": 3800 }
+  },
+  "postmortem": "本次快反验证了「趋势监测→快速转译→轻量试水→数据追加」的完整链路。核心经验：1）楦型和模具复用是快反的基础能力；2）首批量控制在安全水位，用数据驱动追加决策；3）渠道选择应匹配趋势人群画像。",
+  "reusable_methods": [
+    "建立趋势热度阈值：3周增长>150%即触发转译评审",
+    "快反SKU开发必须基于现有楦型/模具库，开发周期≤21天",
+    "首批投放量按「安全水位」原则控制，售罄率>40%触发追加"
+  ]
+}

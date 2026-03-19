@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     ComposedChart,
     Bar,
@@ -1704,9 +1704,9 @@ export default function ChannelAnalysisPanel({
                                     if (!row) return regionLabel;
                                     return `${regionLabel} ｜ ${regionDimensionLabel}业绩占比 ${(row.share_pct || 0).toFixed(1)}%`;
                                 }}
-                                formatter={(value: number | string | undefined, name: string | undefined) => {
+                                formatter={(value, name) => {
                                     const numeric = Number(value);
-                                    const label = name ?? '-';
+                                    const label = String(name ?? '-');
                                     if (!Number.isFinite(numeric)) return ['—', label];
                                     if (compareMode === 'none' && label === regionReferenceMeta.seriesName) return null;
                                     if (!label.includes('%') && numeric === 0 && (label.includes('线上') || label.includes('线下') || label.includes('电商'))) {
@@ -2035,7 +2035,7 @@ export default function ChannelAnalysisPanel({
                                 <ZAxis type="number" dataKey="net_sales_w" range={[80, 520]} />
                                 <Tooltip
                                     cursor={{ strokeDasharray: '3 3' }}
-                                    formatter={(value: number | string | undefined, name: string | undefined) => {
+                                    formatter={(value, name) => {
                                         const numericValue = typeof value === 'number' ? value : Number(value ?? 0);
                                         if (name === 'inventory_turnover') return [`${numericValue.toFixed(2)}x`, '库存周转'];
                                         if (name === 'sell_through_pct') return [`${numericValue.toFixed(1)}%`, '售罄率'];

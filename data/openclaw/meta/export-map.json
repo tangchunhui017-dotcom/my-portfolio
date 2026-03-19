@@ -1,0 +1,34 @@
+{
+  "agents": {
+    "planner": {
+      "outputs": [
+        { "type": "otb-report", "target": "otb-reports/", "format": "json", "publish_level": "dashboard" },
+        { "type": "change-order", "target": "change-orders/", "format": "json", "publish_level": "dashboard" },
+        { "type": "weekly-summary", "target": "summaries/", "format": "json", "publish_level": "dashboard" }
+      ]
+    },
+    "design-review": {
+      "outputs": [
+        { "type": "design-review", "target": "design-review/", "format": "json", "publish_level": "dashboard" },
+        { "type": "design-signals", "target": "design-signals/", "format": "json", "publish_level": "dashboard" },
+        { "type": "material-signals", "target": "material-signals/", "format": "json", "publish_level": "dashboard" }
+      ]
+    },
+    "research": {
+      "outputs": [
+        { "type": "trend-insights", "target": "trend-insights/", "format": "json", "publish_level": "dashboard" }
+      ]
+    },
+    "director": {
+      "outputs": [
+        { "type": "weekly-summary", "target": "summaries/", "format": "json", "publish_level": "dashboard" },
+        { "type": "case-study", "target": "case-studies/", "format": "json", "publish_level": "dashboard" }
+      ]
+    },
+    "ops-merch": {
+      "outputs": [
+        { "type": "launch-case", "target": "launch-cases/", "format": "json", "publish_level": "dashboard" }
+      ]
+    }
+  }
+}

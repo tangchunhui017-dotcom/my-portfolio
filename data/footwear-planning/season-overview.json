@@ -1,0 +1,16 @@
+﻿{
+  "season": "2024SS",
+  "currentWave": "W1",
+  "currentOwner": "王五",
+  "milestoneCountdown": {
+    "nextMilestone": "W2 样鞋评审",
+    "daysLeft": 7
+  },
+  "totalSeries": 4,
+  "activeSeries": 3,
+  "completedSeries": 0,
+  "delayedMilestones": 1,
+  "highRiskItems": 3,
+  "assetCompletionRate": 0.73,
+  "designHealthScore": 76
+}

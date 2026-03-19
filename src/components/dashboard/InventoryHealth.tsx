@@ -65,7 +65,7 @@ export default function InventoryHealth({ skuWosData }: InventoryHealthProps) {
     const sc = statusConfig[healthStatus];
 
     return (
-        <div className={`rounded-xl border ${sc.border} overflow-hidden shadow-sm`}>
+        <div className={`rounded-2xl border ${sc.border} overflow-hidden shadow-sm`}>
             <div className="flex">
                 {/* 左侧竖条 */}
                 <div className={`w-1.5 shrink-0 ${sc.accentBar}`} />

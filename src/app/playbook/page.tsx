@@ -2,12 +2,25 @@
 
 import { useMemo, useState } from 'react';
 import {
+    COLOR_ROLE_TYPES,
+    OCCASION_TAGS,
+    PRODUCT_ROLE_OPTIONS,
+    TREND_SOURCE_OPTIONS,
+} from '@/config/business-dictionaries';
+import {
     BUILTIN_METHODOLOGY_TEMPLATES,
     FormulaRule,
     MethodologyTemplate,
     ThresholdRule,
     cloneMethodologyTemplate,
 } from '@/config/methodologyTemplates';
+import {
+    PLANNING_FORMULAS,
+    PLANNING_PRINCIPLES,
+    PLANNING_WORKFLOW_STEPS,
+    REQUIRED_PLANNING_FIELDS,
+} from '@/config/planningFramework';
+import { SOP_DOCUMENTS } from '@/config/sopDocuments';
 
 const CUSTOM_TEMPLATE_STORAGE_KEY = 'portfolio-playbook-custom-templates-v1';
 const ACTIVE_TEMPLATE_STORAGE_KEY = 'portfolio-playbook-active-template-id-v1';
@@ -25,31 +38,35 @@ const THRESHOLD_INPUTS: Array<{ field: ThresholdNumericField; label: string }> =
 
 const PLANNING_TEMPLATES = [
     {
-        name: 'Range Plan 模板',
-        description: 'SKU × 价格带 × 渠道规划表',
+        name: '波段-系列-场合矩阵',
+        description: '先锁时间波段，再定义系列、场合和角色坑位。',
     },
     {
-        name: '季节波段计划',
-        description: '上市节奏与补货建议模板',
+        name: 'Bottom-up OTB 预算表',
+        description: '按品类 / SKU 自下而上推量化预算和财务预算。',
     },
     {
-        name: 'OTB 预算表',
-        description: '预算测算与采购额度模板',
+        name: '镜像市调对比表',
+        description: '从鞋墙结构、主推色、材质细节到品牌差值一次看清。',
+    },
+    {
+        name: '宽度 / 深度推演表',
+        description: '把目标销售额、单价、售罄率和单款深度联动起来。',
     },
 ];
 
 const REVIEW_MECHANISMS = [
     {
-        title: '设计评审清单',
-        description: '从企划意图、楦型匹配、尺码结构到终端上架条件，逐条校验。',
+        title: '趋势过滤漏斗',
+        description: '全量趋势 → 品牌 DNA → 历史表现 → 开发立项，先过滤再开发。',
     },
     {
-        title: '成本与毛利评审',
-        description: '按价格带和渠道拆解目标毛利，避免上市后被动折扣。',
+        title: '虚拟鞋墙校验',
+        description: '用波段色盘、材质和陈列故事反推单款是否真的能上墙。',
     },
     {
-        title: '企划执行偏差复盘',
-        description: '聚焦销发比、SKU利用率、单款产出和断码风险，形成闭环动作。',
+        title: '评审与修改单闭环',
+        description: '明确评审结论、改稿动作、责任人与下一次评审时间。',
     },
 ];
 
@@ -389,15 +406,175 @@ export default function PlaybookPage() {
                 <header>
                     <h1 className="text-4xl font-bold text-slate-900">Playbook</h1>
                     <p className="mt-3 text-lg text-slate-600">方法论与资产中心：模板、评审机制、阈值配置、核心公式。</p>
+                    <div className="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-5">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <h2 className="text-base font-semibold text-blue-950">外部课程内容已沉淀为业务框架</h2>
+                                <p className="mt-1 text-sm leading-6 text-blue-900">
+                                    当前页面已吸收商品企划、设计企划、OTB、色彩企划、场合企划和镜像市调中的高价值方法，
+                                    重点沉淀为统一字典、判断链、公式和字段规范，便于后续接入 Dashboard、Design Review 与 OpenClaw。
+                                </p>
+                            </div>
+                            <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-blue-700">Reference distilled</span>
+                        </div>
+                    </div>
                 </header>
 
                 <section>
+                    <div className="mb-6 flex items-end justify-between gap-4">
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-900">企划操作系统</h2>
+                            <p className="mt-2 text-sm text-slate-600">把外部课程中的工作方法沉淀为后续页面可以直接消费的业务骨架。</p>
+                        </div>
+                        <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">Planning OS</span>
+                    </div>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                        {PLANNING_PRINCIPLES.map((item) => (
+                            <article key={item.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                                <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
+                                <p className="mt-3 text-sm leading-6 text-slate-600">{item.summary}</p>
+                                <div className="mt-4 rounded-xl bg-slate-50 p-3 text-xs leading-5 text-slate-500">
+                                    业务含义：{item.impact}
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-900">统一业务字典</h2>
+                            <p className="mt-2 text-sm text-slate-600">先把角色、场合、色彩和趋势来源统一下来，后续 Dashboard 和 Review 直接复用。</p>
+                        </div>
+                        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Shared vocabulary</span>
+                    </div>
+
+                    <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
+                        <div>
+                            <h3 className="text-lg font-semibold text-slate-900">产品角色</h3>
+                            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+                                {PRODUCT_ROLE_OPTIONS.map((item) => (
+                                    <article key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                                        <div className="flex items-baseline justify-between gap-3">
+                                            <span className="font-semibold text-slate-900">{item.label}</span>
+                                            <span className="text-xs uppercase tracking-wide text-slate-400">{item.english}</span>
+                                        </div>
+                                        <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
+                                    </article>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 className="text-lg font-semibold text-slate-900">色彩角色</h3>
+                            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+                                {COLOR_ROLE_TYPES.map((item) => (
+                                    <article key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                                        <div className="flex items-baseline justify-between gap-3">
+                                            <span className="font-semibold text-slate-900">{item.label}</span>
+                                            <span className="text-sm font-semibold text-emerald-700">{item.recommendedShare}</span>
+                                        </div>
+                                        <div className="mt-1 text-xs uppercase tracking-wide text-slate-400">{item.english}</div>
+                                        <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
+                                    </article>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-8">
+                        <h3 className="text-lg font-semibold text-slate-900">场合标签</h3>
+                        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+                            {OCCASION_TAGS.map((item) => (
+                                <article key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                                    <div className="font-semibold text-slate-900">{item.label}</div>
+                                    <div className="mt-1 text-xs uppercase tracking-wide text-slate-400">{item.english}</div>
+                                    <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
+                                </article>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mt-8">
+                        <h3 className="text-lg font-semibold text-slate-900">趋势来源口径</h3>
+                        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
+                            {TREND_SOURCE_OPTIONS.map((item) => (
+                                <article key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                                    <div className="font-semibold text-slate-900">{item.label}</div>
+                                    <div className="mt-1 text-xs uppercase tracking-wide text-slate-400">{item.english}</div>
+                                    <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
+                                </article>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-900">标准判断链</h2>
+                            <p className="mt-2 text-sm text-slate-600">后续 Dashboard、Design Review、Case Studies 都可以复用这条企划判断链。</p>
+                        </div>
+                        <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">Workflow</span>
+                    </div>
+
+                    <div className="mt-6 space-y-4">
+                        {PLANNING_WORKFLOW_STEPS.map((step, index) => (
+                            <article key={step.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                                <div className="flex flex-wrap items-start justify-between gap-3">
+                                    <div className="flex items-start gap-3">
+                                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
+                                            {String(index + 1).padStart(2, '0')}
+                                        </span>
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-slate-900">{step.title}</h3>
+                                            <p className="mt-1 text-sm leading-6 text-slate-600">{step.description}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {step.openClawAgents.map((agent) => (
+                                            <span key={agent} className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-600">
+                                                {agent}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
+                                    <div className="rounded-xl bg-white p-4">
+                                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">输入</div>
+                                        <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+                                            {step.inputs.map((item) => (
+                                                <li key={item}>{item}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <div className="rounded-xl bg-white p-4">
+                                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">判断</div>
+                                        <p className="mt-3 text-sm leading-6 text-slate-600">{step.judgement}</p>
+                                    </div>
+                                    <div className="rounded-xl bg-white p-4">
+                                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">输出</div>
+                                        <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+                                            {step.outputs.map((item) => (
+                                                <li key={item}>{item}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                </section>
+
+                <section>
                     <h2 className="text-2xl font-bold text-slate-900 mb-6">企划模板</h2>
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
                         {PLANNING_TEMPLATES.map((item) => (
                             <article key={item.name} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                                <h3 className="text-2xl font-bold text-slate-900">{item.name}</h3>
-                                <p className="mt-4 text-2xl text-slate-600">{item.description}</p>
+                                <h3 className="text-xl font-bold text-slate-900">{item.name}</h3>
+                                <p className="mt-4 text-base leading-7 text-slate-600">{item.description}</p>
                                 <button
                                     type="button"
                                     className="mt-6 inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
@@ -419,6 +596,143 @@ export default function PlaybookPage() {
                             </article>
                         ))}
                     </div>
+                </section>
+
+                <section>
+                    <div className="mb-6 flex items-end justify-between gap-4">
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-900">SOP 文档</h2>
+                            <p className="mt-2 text-sm text-slate-600">标准操作流程：把关键业务动作沉淀为可复用的步骤、阈值和决策节点。</p>
+                        </div>
+                        <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">Standard Operating Procedures</span>
+                    </div>
+
+                    <div className="space-y-6">
+                        {SOP_DOCUMENTS.map((sop) => (
+                            <details key={sop.id} className="group rounded-2xl border border-amber-200 bg-white shadow-sm">
+                                <summary className="cursor-pointer list-none rounded-2xl px-6 py-5 group-open:rounded-b-none group-open:border-b group-open:border-amber-100">
+                                    <div className="flex flex-wrap items-center justify-between gap-3">
+                                        <div>
+                                            <h3 className="text-xl font-bold text-slate-900">{sop.title}</h3>
+                                            <p className="mt-1 text-sm text-slate-600">{sop.subtitle}</p>
+                                        </div>
+                                        <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
+                                            {sop.steps.length} 步骤
+                                        </span>
+                                    </div>
+                                </summary>
+
+                                <div className="space-y-6 px-6 pb-6 pt-4">
+                                    <div>
+                                        <h4 className="text-sm font-semibold uppercase tracking-wide text-amber-700">步骤流程</h4>
+                                        <div className="mt-3 space-y-3">
+                                            {sop.steps.map((step, idx) => (
+                                                <div key={step.order} className="flex items-start gap-3">
+                                                    <div className="flex flex-col items-center">
+                                                        <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-500 text-xs font-bold text-white">
+                                                            {String(step.order).padStart(2, '0')}
+                                                        </span>
+                                                        {idx < sop.steps.length - 1 && (
+                                                            <span className="mt-1 h-6 w-px bg-amber-200" />
+                                                        )}
+                                                    </div>
+                                                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 flex-1">
+                                                        <div className="flex flex-wrap items-baseline justify-between gap-2">
+                                                            <span className="text-sm font-semibold text-slate-900">{step.title}</span>
+                                                            {step.duration && (
+                                                                <span className="text-[11px] text-slate-400">{step.duration}</span>
+                                                            )}
+                                                        </div>
+                                                        <p className="mt-1 text-sm leading-6 text-slate-600">{step.description}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                                        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+                                            <h4 className="text-sm font-semibold uppercase tracking-wide text-amber-700">关键阈值</h4>
+                                            <ul className="mt-3 space-y-2">
+                                                {sop.thresholds.map((t) => (
+                                                    <li key={t} className="flex items-start gap-2 text-sm leading-6 text-slate-700">
+                                                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
+                                                        {t}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+                                            <h4 className="text-sm font-semibold uppercase tracking-wide text-amber-700">决策节点</h4>
+                                            <div className="mt-3 space-y-3">
+                                                {sop.decisionNodes.map((node) => (
+                                                    <div key={node.condition} className="text-sm">
+                                                        <div className="font-semibold text-slate-800">{node.condition}</div>
+                                                        <div className="mt-1 grid grid-cols-2 gap-2 text-xs">
+                                                            <span className="rounded-md bg-emerald-100 px-2 py-1 text-emerald-800">Y: {node.yesAction}</span>
+                                                            <span className="rounded-md bg-rose-100 px-2 py-1 text-rose-800">N: {node.noAction}</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+                                            <h4 className="text-sm font-semibold uppercase tracking-wide text-amber-700">输出模板</h4>
+                                            <div className="mt-3 space-y-2">
+                                                {sop.outputTemplates.map((tpl) => (
+                                                    <div key={tpl.name} className="rounded-lg bg-white p-2.5">
+                                                        <div className="text-sm font-semibold text-slate-800">{tpl.name}</div>
+                                                        <p className="mt-0.5 text-xs leading-5 text-slate-500">{tpl.description}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.2fr_1fr]">
+                    <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <h2 className="text-2xl font-bold text-slate-900">关键公式</h2>
+                        <p className="mt-2 text-sm text-slate-600">这些公式适合进入 Dashboard、Playbook 和 OpenClaw normalizer 的统一口径层。</p>
+                        <div className="mt-6 space-y-4">
+                            {PLANNING_FORMULAS.map((item) => (
+                                <div key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                                    <h3 className="text-base font-semibold text-slate-900">{item.title}</h3>
+                                    <div className="mt-3 rounded-lg bg-slate-900 px-3 py-2 font-mono text-sm text-slate-100">
+                                        {item.formula}
+                                    </div>
+                                    <p className="mt-3 text-sm leading-6 text-slate-600">{item.description}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </article>
+
+                    <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <h2 className="text-2xl font-bold text-slate-900">核心字段规范</h2>
+                        <p className="mt-2 text-sm text-slate-600">后面做 OpenClaw 文件接入时，应优先统一这些字段，避免页面层各写一套口径。</p>
+                        <div className="mt-6 space-y-3">
+                            {REQUIRED_PLANNING_FIELDS.map((item) => (
+                                <div key={item.field} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                                    <div className="flex flex-wrap items-baseline justify-between gap-3">
+                                        <div>
+                                            <div className="font-semibold text-slate-900">{item.label}</div>
+                                            <div className="mt-1 font-mono text-xs text-slate-400">{item.field}</div>
+                                        </div>
+                                        <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-slate-500">
+                                            {item.usedIn.join(' / ')}
+                                        </span>
+                                    </div>
+                                    <p className="mt-3 text-sm leading-6 text-slate-600">{item.description}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </article>
                 </section>
 
                 <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -691,3 +1005,4 @@ export default function PlaybookPage() {
         </div>
     );
 }
+

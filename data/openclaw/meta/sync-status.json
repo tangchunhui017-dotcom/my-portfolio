@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.1.0",
+  "source_system": "openclaw",
+  "export_batch_id": "batch-2024-03-22-083000",
+  "last_sync": "2024-03-22T08:30:00+08:00",
+  "agents": [
+    { "name": "planner", "last_export": "2024-03-22T08:25:00+08:00", "record_count": 47, "last_batch_id": "batch-2024-03-22-082500", "mode": "delta" },
+    { "name": "design-review", "last_export": "2024-03-22T07:50:00+08:00", "record_count": 32, "last_batch_id": "batch-2024-03-22-075000", "mode": "delta" },
+    { "name": "research", "last_export": "2024-03-21T18:00:00+08:00", "record_count": 15, "last_batch_id": "batch-2024-03-21-180000", "mode": "full" },
+    { "name": "director", "last_export": "2024-03-22T08:30:00+08:00", "record_count": 8, "last_batch_id": "batch-2024-03-22-083000", "mode": "delta" },
+    { "name": "ops-merch", "last_export": "2024-03-22T06:00:00+08:00", "record_count": 23, "last_batch_id": "batch-2024-03-22-060000", "mode": "full" }
+  ],
+  "status": "healthy"
+}

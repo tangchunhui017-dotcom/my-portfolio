@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.1.0",
+  "source_system": "openclaw",
+  "export_batch_id": "batch-2024-03-22-083000",
+  "exported_at": "2024-03-22T08:30:00+08:00",
+  "mode": "delta",
+  "status": "healthy",
+  "files": [
+    { "path": "summaries/director-weekly-summary-2024-03-22.json", "record_type": "summary", "record_count": 1, "checksum": "sha256-summary-001" },
+    { "path": "design-review/design-review-2024-03-22.json", "record_type": "design-review", "record_count": 6, "checksum": "sha256-review-001" },
+    { "path": "trend-insights/trend-weekly-2024-03-21.json", "record_type": "trend-insight", "record_count": 4, "checksum": "sha256-trend-001" },
+    { "path": "otb-reports/otb-2024-03-22.json", "record_type": "otb-report", "record_count": 2, "checksum": "sha256-otb-001" }
+  ],
+  "notes": [
+    "planner and design-review outputs were exported as incremental updates",
+    "all files are ready for dashboard consumption"
+  ]
+}

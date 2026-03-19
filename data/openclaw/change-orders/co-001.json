@@ -1,0 +1,22 @@
+{
+  "id": "co-001",
+  "title": "OC-24S-LF-012 材质修改变更单",
+  "season": "2024SS",
+  "wave": "W1",
+  "category": "休闲鞋",
+  "product_role": "volume-driver",
+  "occasion_tag": "daily-casual",
+  "agent": "planner",
+  "owner": "陈企划",
+  "updated_at": "2024-03-17T15:20:00+08:00",
+  "publish_level": "dashboard",
+  "summary": "因原定进口头层牛皮交期延迟且成本超标，变更为国产优质头层牛皮，预计BOM降低12%，交期缩短10天。",
+  "source_type": "change-order",
+  "source_file": "co-001.json",
+  "style_number": "OC-24S-LF-012",
+  "change_type": "材质修改",
+  "change_detail": "鞋面主材由意大利进口头层牛皮（供应商Conceria Walpier）变更为国产头层牛皮（供应商兴业皮革），厚度1.2mm不变，色号从Pantone 19-1234调整为最接近色Pantone 19-1230。需重新打色样确认，预计BOM单价从￥68降至￥60。",
+  "responsible": "赵采购经理",
+  "deadline": "2024-03-25",
+  "status": "进行中"
+}

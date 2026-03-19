@@ -1,0 +1,37 @@
+{
+  "id": "case-otb-adjustment",
+  "title": "户外鞋品类OTB动态调整案例",
+  "season": "2024SS",
+  "wave": "W1",
+  "category": "户外鞋",
+  "product_role": "volume-driver",
+  "occasion_tag": "light-outdoor",
+  "agent": "director",
+  "owner": "王总监",
+  "updated_at": "2024-03-21T17:00:00+08:00",
+  "publish_level": "dashboard",
+  "summary": "基于W1前4周销售数据，户外鞋售罄率低于预期，通过OTB动态调整将剩余预算向高动销款倾斜，最终售罄率从58%提升至73%。",
+  "source_type": "case-study",
+  "source_file": "case-otb-adjustment.json",
+  "case_type": "OTB调整案例",
+  "background": "2024SS W1户外鞋品类投放32个SKU，首批OTB 840万。上市前4周整体售罄率仅58%，低于目标70%。其中Urban Trail系列表现突出（售罄率82%），但基础徒步鞋系列严重滞销（售罄率仅35%）。",
+  "inputs": "W1前4周分SKU销售数据、各渠道动销排名、竞品同期售罄率对标、库存周转天数、退货率数据",
+  "planning_judgement": "企划判断基础徒步鞋定价偏高（PB3），与竞品安踏山野系列（PB2）形成直接竞争劣势。建议将基础徒步鞋剩余OTB的60%转移至Urban Trail系列追加补货。",
+  "design_judgement": "设计评审确认Urban Trail系列可快速追加2个新配色（城市灰/森林绿），复用现有模具，打样周期仅7天。基础徒步鞋建议保留核心3个SKU，其余进入促销通道。",
+  "key_actions": [
+    "将基础徒步鞋剩余OTB 180万中的108万转移至Urban Trail追加订单",
+    "Urban Trail新增城市灰/森林绿配色各2000双，利用现有模具7天出样",
+    "基础徒步鞋非核心SKU启动8折促销，目标2周内清理至安全库存水位",
+    "建立周度OTB动态监控看板，售罄率低于60%的SKU自动触发预警"
+  ],
+  "data_results": {
+    "before": { "sell_through": 0.58, "margin_rate": 0.42 },
+    "after": { "sell_through": 0.73, "margin_rate": 0.44 }
+  },
+  "postmortem": "本次调整验证了OTB动态分配机制的有效性。核心经验：1）首批投放应预留15-20%弹性预算用于追加高动销款；2）模具复用能力是快速响应的关键前提；3）滞销款应在上市第3周即启动干预，而非等到波段结束。",
+  "reusable_methods": [
+    "建立SKU级售罄率周监控机制，第3周触发OTB再分配评审",
+    "高动销款追加订单优先选择可复用模具的配色延展方案",
+    "滞销款分级处理：核心款保留+非核心款促销+尾货渠道分流"
+  ]
+}

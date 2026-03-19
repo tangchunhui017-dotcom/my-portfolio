@@ -1,0 +1,36 @@
+{
+  "id": "signals-2024ss",
+  "title": "2024SS 设计评审信号汇总",
+  "season": "2024SS",
+  "wave": "W1-W2",
+  "category": "全品类",
+  "product_role": "design-quality",
+  "occasion_tag": "all",
+  "agent": "design-review",
+  "owner": "张设计总监",
+  "updated_at": "2024-03-21T11:00:00+08:00",
+  "publish_level": "dashboard",
+  "summary": "本季设计评审通过率72%，高风险材料集中在进口真皮和特种橡胶，鞋底模具复用率有提升空间。",
+  "source_type": "design-signals",
+  "source_file": "signals-2024ss.json",
+  "pass_rate": 0.72,
+  "high_risk_materials": [
+    { "material": "意大利进口头层牛皮", "risk": "交期不稳定，MOQ高", "affected_skus": 8 },
+    { "material": "Ortholite高弹鞋垫", "risk": "供应商产能紧张，备选方案成本+15%", "affected_skus": 12 },
+    { "material": "环保再生EVA", "risk": "色牢度不达标，需二次调色", "affected_skus": 5 }
+  ],
+  "high_risk_outsoles": [
+    { "outsole": "Vibram定制登山底", "risk": "开模周期45天，W2排期紧张", "affected_skus": 4 },
+    { "outsole": "双密度PU商务底", "risk": "模具老化需翻新，成本增加8%", "affected_skus": 6 }
+  ],
+  "high_return_signals": [
+    { "style": "OC-24S-SD-003", "issue": "凉鞋鞋带断裂投诉率2.3%", "action": "加固鞋带缝合工艺" },
+    { "style": "OC-24S-CS-007", "issue": "商务鞋脱胶率1.8%", "action": "切换至热熔胶粘合方案" }
+  ],
+  "top_revision_reasons": [
+    { "reason": "楦型舒适度不达标", "count": 14 },
+    { "reason": "BOM成本超目标毛利线", "count": 11 },
+    { "reason": "配色与季节主题不符", "count": 8 },
+    { "reason": "大底耐磨测试未通过", "count": 6 }
+  ]
+}

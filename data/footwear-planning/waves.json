@@ -1,0 +1,22 @@
+{
+  "waves": [
+    {
+      "waveId": "w1",
+      "waveName": "W1 春季首发",
+      "launchWindow": "2024-03-01 ~ 2024-03-31",
+      "theme": "城市户外",
+      "status": "in_progress",
+      "plannedSkuCount": 12,
+      "actualSkuCount": 7
+    },
+    {
+      "waveId": "w2",
+      "waveName": "W2 夏季主推",
+      "launchWindow": "2024-05-01 ~ 2024-06-15",
+      "theme": "轻量舒适",
+      "status": "planning",
+      "plannedSkuCount": 14,
+      "actualSkuCount": 6
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "dr-003",
+  "title": "厚底德训鞋 趋势款",
+  "season": "2024SS",
+  "wave": "W1",
+  "category": "休闲/街头",
+  "product_role": "trend-test",
+  "occasion_tag": "weekend-casual",
+  "agent": "design-review",
+  "owner": "赵强",
+  "updated_at": "2024-03-21T16:00:00+08:00",
+  "publish_level": "dashboard",
+  "summary": "PP 阶段不通过，BOM 成本超标 22%，大底模具费用过高，建议终止或大幅简化。",
+  "source_type": "design-review",
+  "source_file": "dr-003.json",
+  "style_number": "OC-24S-DX-008",
+  "series": "Street Wave",
+  "stage": "PP",
+  "review_date": "2024-03-21",
+  "reviewer": "张设计总监",
+  "conclusion": "Fail",
+  "risk_level": "high",
+  "price_band": "PB4",
+  "dimensions": {
+    "last": { "score": 75, "comment": "楦型偏激进，舒适度一般", "risk": "medium" },
+    "upper": { "score": 70, "comment": "多材质拼接工艺复杂", "risk": "medium" },
+    "outsole": { "score": 45, "comment": "新开模具费用28万，无法分摊", "risk": "high" },
+    "material": { "score": 65, "comment": "进口面料交期45天，影响上市节奏", "risk": "high" },
+    "bom": { "score": 35, "comment": "BOM成本超目标22%，毛利率仅32%", "risk": "high" },
+    "mold_reuse": { "score": 20, "comment": "全新大底，无法复用", "risk": "high" }
+  },
+  "change_actions": [
+    { "type": "成本评估", "detail": "评估是否可简化大底结构降低模具费", "responsible": "开发部-刘工" },
+    { "type": "方案B", "detail": "考虑改用公模大底+换面料方案", "responsible": "设计部-赵强" }
+  ],
+  "next_review_date": "",
+  "version_history": [
+    { "version": "V1", "date": "2024-01-15", "summary": "概念设计" },
+    { "version": "V2", "date": "2024-02-10", "summary": "Proto打样" },
+    { "version": "V3", "date": "2024-03-05", "summary": "SMS确认" },
+    { "version": "V4", "date": "2024-03-21", "summary": "PP阶段成本超标，评审不通过" }
+  ]
+}

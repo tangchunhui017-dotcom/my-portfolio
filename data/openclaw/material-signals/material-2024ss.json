@@ -1,0 +1,29 @@
+{
+  "id": "material-2024ss",
+  "title": "2024SS 材料风险信号报告",
+  "season": "2024SS",
+  "wave": "W1-W2",
+  "category": "全品类",
+  "product_role": "material-risk",
+  "occasion_tag": "all",
+  "agent": "design-review",
+  "owner": "张设计总监",
+  "updated_at": "2024-03-20T09:45:00+08:00",
+  "publish_level": "dashboard",
+  "summary": "本季材料供应链存在3项高风险材料、2项成本预警和2项供应问题，需重点关注进口皮料和特种橡胶的替代方案。",
+  "source_type": "material-signals",
+  "source_file": "material-2024ss.json",
+  "risk_materials": [
+    { "material": "意大利进口头层牛皮", "supplier": "Conceria Walpier", "risk_level": "high", "detail": "交期从30天延长至45天，MOQ从500平尺提高至800平尺，影响W2共8个SKU的排产计划" },
+    { "material": "Vibram定制橡胶大底", "supplier": "Vibram China", "risk_level": "high", "detail": "原材料天然橡胶价格上涨18%，定制模具排期已满至4月中旬，W2户外鞋4个SKU面临延期风险" },
+    { "material": "Ortholite高弹鞋垫", "supplier": "Ortholite亚太", "risk_level": "medium", "detail": "产能分配优先给大客户，我司订单排期延后2周，备选方案国产记忆棉鞋垫成本低15%但脚感差异明显" }
+  ],
+  "cost_alerts": [
+    { "material": "天然橡胶", "current_price": 14500, "unit": "元/吨", "change_pct": 0.18, "impact": "大底成本整体上涨约8%，影响全品类毛利率约1.2个百分点" },
+    { "material": "进口飞织面料", "current_price": 42, "unit": "元/米", "change_pct": 0.12, "impact": "运动休闲鞋BOM成本上升5%，PB2价格带产品毛利率跌破40%红线" }
+  ],
+  "availability_issues": [
+    { "material": "环保再生EVA粒子", "supplier": "华峰新材料", "issue": "新产线调试中，良品率仅78%，稳定供应预计4月初", "workaround": "临时使用常规EVA粒子，W3再切换至再生EVA" },
+    { "material": "TPU透明鞋带扣", "supplier": "东莞精密注塑", "issue": "模具损坏维修中，预计停产10天", "workaround": "启用备选供应商佛山鑫达注塑，单价高5%但可3天内交货" }
+  ]
+}
