@@ -268,6 +268,120 @@ export interface SeriesDevelopmentPlanRow {
   phase: DesignPhase;
 }
 
+export interface ThemeDirectionRecord {
+  themeId: string;
+  season: string;
+  waveId: string;
+  waveName: string;
+  launchWindow: string;
+  themeName: string;
+  themeStory: string;
+  consumerMood: string;
+  keywords: string[];
+  consumerScenes: string[];
+  colorDirections: string[];
+  materialDirections: string[];
+  benchmarkReferences: string[];
+  reviewFocus: string[];
+  seriesIds: string[];
+  seriesNames: string[];
+  moodboardAssetIds: string[];
+  source: 'manual' | 'openclaw';
+  sourceId: string | null;
+  updatedAt: string;
+  updatedBy: string;
+  syncStatus: SyncStatus;
+}
+
+export interface ProductArchitectureRecord {
+  architectureId: string;
+  season: string;
+  waveId: string;
+  seriesId: string;
+  seriesName: string;
+  designTheme: string;
+  targetConsumer: string;
+  consumerScene: string;
+  priceBand: string;
+  progress: number;
+  phase: DesignPhase;
+  riskLevel: RiskLevel;
+  heroImage: string;
+  roleMix: {
+    hero: number;
+    core: number;
+    filler: number;
+  };
+  plannedSkuCount: number;
+  categoryMix: string[];
+  silhouetteDirections: string[];
+  upperDirections: string[];
+  outsoleDirections: string[];
+  reviewFocus: string[];
+  architectureDecision: string;
+  source: 'manual' | 'openclaw';
+  sourceId: string | null;
+  updatedAt: string;
+  updatedBy: string;
+  syncStatus: SyncStatus;
+}
+
+export interface CategoryBreakdownRecord {
+  breakdownId: string;
+  season: string;
+  waveId: string;
+  seriesId: string;
+  seriesName: string;
+  designConcept: string;
+  category: string;
+  plannedSkuCount: number;
+  productRoles: string[];
+  keyStructures: string[];
+  weekLabels: string[];
+  focusNote: string;
+  source: 'manual' | 'openclaw';
+  sourceId: string | null;
+  updatedAt: string;
+  updatedBy: string;
+  syncStatus: SyncStatus;
+}
+
+export interface DevelopmentWaveRecord {
+  rowId: string;
+  season: string;
+  waveId: string;
+  waveName: string;
+  seriesId: string;
+  seriesName: string;
+  weekLabel: string;
+  skuCode: string;
+  itemName: string;
+  category: string;
+  productRole: string;
+  silhouette: string;
+  upperConstruction: string;
+  outsoleDirection: string;
+  materialFocus: string;
+  colorDirection: string;
+  referenceAssetIds: string[];
+  reviewFocus: string;
+  phase: DesignPhase;
+  owner: string;
+  riskLevel: RiskLevel;
+  targetCostEstimate: number | null;
+  sampleQuotedCost: number | null;
+  finalLockedCost: number | null;
+  techPackStatus: 'not_started' | 'in_progress' | 'completed' | 'blocked';
+  toolingStatus: 'not_started' | 'in_progress' | 'completed' | 'blocked';
+  toolingNotes?: string;
+  nextReviewDate: string | null;
+  source: 'manual' | 'openclaw';
+  sourceId: string | null;
+  updatedAt: string;
+  updatedBy: string;
+  syncStatus: SyncStatus;
+}
+
 export interface WeeklySnapshot {
   weekId: string;
   previousWeek?: string;

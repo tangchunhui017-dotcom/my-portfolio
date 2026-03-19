@@ -1,0 +1,52 @@
+{
+  "themes": [
+    {
+      "themeId": "th001",
+      "season": "2024SS",
+      "waveId": "w1",
+      "waveName": "W1 春季首发",
+      "launchWindow": "2024-03-01 ~ 2024-03-31",
+      "themeName": "街头机能复古",
+      "themeStory": "把 90 年代街头厚底语言和城市机能细节放到春季首发波段，先建立视觉记忆点，再通过材料和功能细节补强性能认知。",
+      "consumerMood": "适合在通勤、社交和短途徒步之间切换的年轻潮流表达。",
+      "keywords": ["复古", "街头", "厚底", "机能", "拼接", "撞色"],
+      "consumerScenes": ["城市通勤", "周末社交", "短途徒步"],
+      "colorDirections": ["黑色", "白色", "灰色", "荧光绿", "橙色"],
+      "materialDirections": ["反绒牛皮", "网眼布", "防水面料", "橡胶大底"],
+      "benchmarkReferences": ["90s Skate", "Campus Court", "Urban Hiker"],
+      "reviewFocus": ["主推款大底比例", "鞋头包覆", "荧光色占比"],
+      "seriesIds": ["s001", "s002"],
+      "seriesNames": ["Street Wave", "Urban Trail"],
+      "moodboardAssetIds": ["ast001", "ast008"],
+      "source": "manual",
+      "sourceId": null,
+      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedBy": "设计企划组",
+      "syncStatus": "synced"
+    },
+    {
+      "themeId": "th002",
+      "season": "2024SS",
+      "waveId": "w2",
+      "waveName": "W2 夏季主推",
+      "launchWindow": "2024-05-01 ~ 2024-06-15",
+      "themeName": "商务舒适通勤",
+      "themeStory": "以现代商务鞋型为基底，加入轻量、柔软和易穿脱的舒适体验，让正式感和通勤舒适度同时成立。",
+      "consumerMood": "面向需要全天通勤、开会和轻社交切换的成熟消费人群。",
+      "keywords": ["商务", "舒适", "经典", "轻便", "一脚蹬", "品质"],
+      "consumerScenes": ["商务通勤", "正式社交", "轻度休闲"],
+      "colorDirections": ["黑色", "深棕", "深蓝", "米白", "驼色"],
+      "materialDirections": ["头层牛皮", "小牛皮", "软面牛皮", "弹力布", "EVA 中底"],
+      "benchmarkReferences": ["Modern Derby", "Soft Loafer", "Daily Comfort"],
+      "reviewFocus": ["楦型舒适度", "一脚蹬稳定性", "材料交期"],
+      "seriesIds": ["s003", "s004"],
+      "seriesNames": ["City Classic", "Comfort Flex"],
+      "moodboardAssetIds": ["ast009", "ast011"],
+      "source": "manual",
+      "sourceId": null,
+      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedBy": "设计企划组",
+      "syncStatus": "synced"
+    }
+  ]
+}

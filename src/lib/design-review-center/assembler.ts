@@ -1,6 +1,10 @@
-﻿import type {
+import type {
+  CategoryBreakdownRecord,
+  DevelopmentWaveRecord,
+  ProductArchitectureRecord,
   SeasonOverview,
   SyncConfig,
+  ThemeDirectionRecord,
   Timeline,
   Wave,
   WeeklySnapshot,
@@ -8,8 +12,11 @@
 } from './types';
 import {
   loadAssets,
+  loadCategoryBreakdowns,
   loadDesignItemReviews,
   loadDesignItems,
+  loadDevelopmentWaveRows,
+  loadProductArchitectures,
   loadRisks,
   loadSeasonOverview,
   loadSeries,
@@ -17,6 +24,7 @@ import {
   loadSeriesDevelopmentPlans,
   loadSyncConfig,
   loadTasks,
+  loadThemeDirections,
   loadTimeline,
   loadWaves,
   loadWeeklySnapshot,
@@ -29,6 +37,10 @@ export interface DesignReviewCenterData {
   weeklySnapshot: WeeklySnapshot;
   syncConfig: SyncConfig;
   series: SeriesWithBrief[];
+  themeDirections: ThemeDirectionRecord[];
+  productArchitectures: ProductArchitectureRecord[];
+  categoryBreakdowns: CategoryBreakdownRecord[];
+  developmentWaveRows: DevelopmentWaveRecord[];
 }
 
 export async function assembleDesignReviewCenter(): Promise<DesignReviewCenterData> {
@@ -46,6 +58,10 @@ export async function assembleDesignReviewCenter(): Promise<DesignReviewCenterDa
     risks,
     tasks,
     developmentPlans,
+    themeDirections,
+    productArchitectures,
+    categoryBreakdowns,
+    developmentWaveRows,
   ] = await Promise.all([
     loadSeasonOverview(),
     loadTimeline(),
@@ -60,6 +76,10 @@ export async function assembleDesignReviewCenter(): Promise<DesignReviewCenterDa
     loadRisks(),
     loadTasks(),
     loadSeriesDevelopmentPlans(),
+    loadThemeDirections(),
+    loadProductArchitectures(),
+    loadCategoryBreakdowns(),
+    loadDevelopmentWaveRows(),
   ]);
 
   const reviewByItemId = new Map(designItemReviews.map((review) => [review.itemId, review]));
@@ -97,5 +117,9 @@ export async function assembleDesignReviewCenter(): Promise<DesignReviewCenterDa
     weeklySnapshot,
     syncConfig,
     series: seriesWithBriefs,
+    themeDirections,
+    productArchitectures,
+    categoryBreakdowns,
+    developmentWaveRows,
   };
 }

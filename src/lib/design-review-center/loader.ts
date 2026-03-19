@@ -1,9 +1,12 @@
-﻿import { promises as fs } from 'fs';
+import { promises as fs } from 'fs';
 import path from 'path';
 import type {
   Asset,
+  CategoryBreakdownRecord,
   DesignItem,
   DesignItemReviewSummary,
+  DevelopmentWaveRecord,
+  ProductArchitectureRecord,
   Risk,
   SeasonOverview,
   Series,
@@ -11,6 +14,7 @@ import type {
   SeriesDevelopmentPlanRow,
   SyncConfig,
   Task,
+  ThemeDirectionRecord,
   Timeline,
   Wave,
   WeeklySnapshot,
@@ -76,6 +80,26 @@ export async function loadTasks(): Promise<Task[]> {
 export async function loadSeriesDevelopmentPlans(): Promise<SeriesDevelopmentPlanRow[]> {
   const data = await readJsonFile<{ plans: SeriesDevelopmentPlanRow[] }>('series-development-plans.json');
   return data.plans;
+}
+
+export async function loadThemeDirections(): Promise<ThemeDirectionRecord[]> {
+  const data = await readJsonFile<{ themes: ThemeDirectionRecord[] }>('theme-directions.json');
+  return data.themes;
+}
+
+export async function loadProductArchitectures(): Promise<ProductArchitectureRecord[]> {
+  const data = await readJsonFile<{ architectures: ProductArchitectureRecord[] }>('product-architectures.json');
+  return data.architectures;
+}
+
+export async function loadCategoryBreakdowns(): Promise<CategoryBreakdownRecord[]> {
+  const data = await readJsonFile<{ breakdowns: CategoryBreakdownRecord[] }>('category-breakdowns.json');
+  return data.breakdowns;
+}
+
+export async function loadDevelopmentWaveRows(): Promise<DevelopmentWaveRecord[]> {
+  const data = await readJsonFile<{ rows: DevelopmentWaveRecord[] }>('development-wave-table.json');
+  return data.rows;
 }
 
 export async function loadWeeklySnapshot(): Promise<WeeklySnapshot> {

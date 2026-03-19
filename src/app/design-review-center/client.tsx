@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 import AssetWall from '@/components/design-review-center/asset-wall';
@@ -312,12 +312,29 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
     });
   }, [currentOwner, filters, referenceDate, scopedSeries]);
 
+  const filteredSeriesIds = useMemo(() => new Set(filteredSeries.map((series) => series.seriesId)), [filteredSeries]);
   const filteredWaveIds = useMemo(() => new Set(filteredSeries.map((series) => series.waveId)), [filteredSeries]);
   const filteredWaves = useMemo(() => data.waves.filter((wave) => filteredWaveIds.has(wave.waveId)), [data.waves, filteredWaveIds]);
   const filteredAssets = useMemo(() => filteredSeries.flatMap((series) => series.assets), [filteredSeries]);
   const filteredItems = useMemo(() => filteredSeries.flatMap((series) => series.designItems), [filteredSeries]);
   const filteredTasks = useMemo(() => filteredSeries.flatMap((series) => series.tasks), [filteredSeries]);
   const filteredRisks = useMemo(() => filteredSeries.flatMap((series) => series.risks), [filteredSeries]);
+  const filteredThemeDirections = useMemo(
+    () => data.themeDirections.filter((record) => record.seriesIds.some((seriesId) => filteredSeriesIds.has(seriesId)) || filteredWaveIds.has(record.waveId)),
+    [data.themeDirections, filteredSeriesIds, filteredWaveIds],
+  );
+  const filteredProductArchitectures = useMemo(
+    () => data.productArchitectures.filter((record) => filteredSeriesIds.has(record.seriesId)),
+    [data.productArchitectures, filteredSeriesIds],
+  );
+  const filteredCategoryBreakdowns = useMemo(
+    () => data.categoryBreakdowns.filter((record) => filteredSeriesIds.has(record.seriesId)),
+    [data.categoryBreakdowns, filteredSeriesIds],
+  );
+  const filteredDevelopmentWaveRows = useMemo(
+    () => data.developmentWaveRows.filter((record) => filteredSeriesIds.has(record.seriesId)),
+    [data.developmentWaveRows, filteredSeriesIds],
+  );
 
   const filteredTimeline = useMemo(() => {
     const milestones = data.timeline.milestones.filter((milestone) => {
@@ -611,7 +628,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
               <h2 className="text-3xl font-semibold text-slate-950">主题方向</h2>
               <p className="mt-2 text-sm text-slate-500">围绕主题、情绪板、色彩和材料方向讲清设计意图。</p>
             </div>
-            <ThemeDirectionPanel waves={filteredWaves} series={filteredSeries} assets={filteredAssets} />
+            <ThemeDirectionPanel themes={filteredThemeDirections} assets={filteredAssets} />
           </div>
         ) : null}
 
@@ -621,7 +638,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
               <h2 className="text-3xl font-semibold text-slate-950">产品架构</h2>
               <p className="mt-2 text-sm text-slate-500">围绕系列、角色、场景与价格带确认本季鞋类骨架。</p>
             </div>
-            <ProductArchitecturePanel series={filteredSeries} />
+            <ProductArchitecturePanel architectures={filteredProductArchitectures} />
           </div>
         ) : null}
 
@@ -631,7 +648,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
               <h2 className="text-3xl font-semibold text-slate-950">开发品类分解</h2>
               <p className="mt-2 text-sm text-slate-500">把系列拆到开发品类和结构重点，便于样式与数量收敛。</p>
             </div>
-            <CategoryBreakdownPanel series={filteredSeries} />
+            <CategoryBreakdownPanel breakdowns={filteredCategoryBreakdowns} />
           </div>
         ) : null}
 
@@ -641,7 +658,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
               <h2 className="text-3xl font-semibold text-slate-950">产品研发波段表</h2>
               <p className="mt-2 text-sm text-slate-500">按周次推进阶段、成本、Tech Pack 与开模状态。</p>
             </div>
-            <DevelopmentWaveTable series={filteredSeries} />
+            <DevelopmentWaveTable rows={filteredDevelopmentWaveRows} />
           </div>
         ) : null}
 
