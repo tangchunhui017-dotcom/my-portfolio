@@ -140,7 +140,7 @@ export interface SeriesBrief {
 
 export interface Asset {
   assetId: string;
-  assetType: 'moodboard' | 'material' | 'outsole' | 'color';
+  assetType: 'moodboard' | 'material' | 'outsole' | 'color' | 'effect' | 'reference';
   seriesId: string;
   title: string;
   description: string;
@@ -150,6 +150,15 @@ export interface Asset {
   uploadedBy: string;
   uploadedAt: string;
   featuredInReport?: boolean;
+  relatedItemId?: string | null;
+  comparisonGroupId?: string | null;
+  versionStage?: 'sketch' | 'render' | 'first_sample' | 'final_sample' | null;
+  versionNo?: number | null;
+  capturedAt?: string | null;
+  selectedForReview?: boolean;
+  bomSummary?: string[];
+  cmfSummary?: string[];
+  estimatedCost?: number | null;
   source: 'manual' | 'openclaw';
   sourceId: string | null;
   syncStatus: SyncStatus;
@@ -277,12 +286,23 @@ export interface ThemeDirectionRecord {
   themeName: string;
   themeStory: string;
   consumerMood: string;
+  brandLongTermStrength: string;
+  brandCoreStyles: string[];
+  historicalAnchors: string[];
   keywords: string[];
   consumerScenes: string[];
   colorDirections: string[];
   materialDirections: string[];
   benchmarkReferences: string[];
+  trendSignals: string[];
+  marketOpportunities: string[];
+  opportunitySummary: string;
   reviewFocus: string[];
+  cmfFocus: {
+    keyColors: string[];
+    keyMaterials: string[];
+    supplierPriorities: string[];
+  };
   seriesIds: string[];
   seriesNames: string[];
   moodboardAssetIds: string[];
@@ -292,6 +312,9 @@ export interface ThemeDirectionRecord {
   updatedBy: string;
   syncStatus: SyncStatus;
 }
+
+export type ToolingStrategy = 'new_tooling' | 'new_upper_same_outsole' | 'carry_over';
+export type ToolingBudgetLevel = 'tight' | 'controlled' | 'strategic';
 
 export interface ProductArchitectureRecord {
   architectureId: string;
@@ -313,6 +336,15 @@ export interface ProductArchitectureRecord {
     filler: number;
   };
   plannedSkuCount: number;
+  plannedSkuLimit: number;
+  plannedSkuDepth: number;
+  toolingStrategy: ToolingStrategy;
+  toolingBudgetLevel: ToolingBudgetLevel;
+  lastReuseType: string;
+  outsoleReuseType: string;
+  carryOverRatio: number;
+  sameOutsoleNewUpperRatio: number;
+  newToolingRatio: number;
   categoryMix: string[];
   silhouetteDirections: string[];
   upperDirections: string[];
@@ -334,10 +366,18 @@ export interface CategoryBreakdownRecord {
   seriesName: string;
   designConcept: string;
   category: string;
+  subcategory: string;
   plannedSkuCount: number;
   productRoles: string[];
   keyStructures: string[];
   weekLabels: string[];
+  processTags: string[];
+  factoryProfile: string;
+  lineType: string;
+  capacityBand: string;
+  technicalRiskLevel: RiskLevel;
+  leadTimeRisk: RiskLevel;
+  materialDependency: string[];
   focusNote: string;
   source: 'manual' | 'openclaw';
   sourceId: string | null;
@@ -345,6 +385,8 @@ export interface CategoryBreakdownRecord {
   updatedBy: string;
   syncStatus: SyncStatus;
 }
+
+export type CriticalPathLevel = 'normal' | 'watch' | 'critical';
 
 export interface DevelopmentWaveRecord {
   rowId: string;
@@ -354,6 +396,7 @@ export interface DevelopmentWaveRecord {
   seriesId: string;
   seriesName: string;
   weekLabel: string;
+  dropDate: string;
   skuCode: string;
   itemName: string;
   category: string;
@@ -363,6 +406,13 @@ export interface DevelopmentWaveRecord {
   outsoleDirection: string;
   materialFocus: string;
   colorDirection: string;
+  longLeadMaterial: string[];
+  materialLockDate: string | null;
+  toolingStartDate: string | null;
+  toolingTrialDate: string | null;
+  toolingFreezeDate: string | null;
+  techPackDueDate: string | null;
+  criticalPathLevel: CriticalPathLevel;
   referenceAssetIds: string[];
   reviewFocus: string;
   phase: DesignPhase;

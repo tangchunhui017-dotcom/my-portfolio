@@ -1,5 +1,5 @@
 import type { DesignItem, Task } from '@/lib/design-review-center/types';
-import type { DesignReviewActionIntent } from '@/lib/openclaw/tasks';
+import type { DesignReviewActionIntent, DesignReviewGateReason } from '@/lib/openclaw/tasks';
 
 interface ApplyDesignReviewActionIntentsInput {
   baseItems: DesignItem[];
@@ -14,6 +14,11 @@ export interface DesignReviewCommittedState {
   export_batch_id: string | null;
 }
 
+export interface DesignReviewPhaseTransitionEvaluation {
+  allowedItemIds: string[];
+  blockedReasons: DesignReviewGateReason[];
+}
+
 export const DESIGN_REVIEW_COMMITTED_STATE_STORAGE_KEY = 'openclaw-design-review-committed-state-v1';
 
 function resolveTaskGroup(taskType: string): Task['taskGroup'] {
@@ -21,6 +26,83 @@ function resolveTaskGroup(taskType: string): Task['taskGroup'] {
   if (taskType === 'sample' || taskType === 'testing') return 'development';
   if (taskType === 'sourcing') return 'cost';
   return 'planning';
+}
+
+function roundCost(value: number) {
+  return Math.round(value * 100) / 100;
+}
+
+function buildGateReason(
+  item: DesignItem,
+  code: DesignReviewGateReason['code'],
+  reason: string,
+): DesignReviewGateReason {
+  return {
+    item_id: item.itemId,
+    item_name: item.itemName,
+    sku_code: item.skuCode,
+    code,
+    reason,
+  };
+}
+
+function getBlockedItemCount(blockedReasons: DesignReviewGateReason[]) {
+  return new Set(blockedReasons.map((reason) => reason.item_id)).size;
+}
+
+export function evaluateDesignReviewPhaseTransition(items: DesignItem[]): DesignReviewPhaseTransitionEvaluation {
+  const blockedReasons = items.flatMap((item) => {
+    const reasons: DesignReviewGateReason[] = [];
+
+    if (
+      typeof item.targetCostEstimate === 'number' &&
+      typeof item.sampleQuotedCost === 'number' &&
+      item.targetCostEstimate > 0 &&
+      item.sampleQuotedCost > item.targetCostEstimate * 1.1
+    ) {
+      const variance = roundCost(((item.sampleQuotedCost - item.targetCostEstimate) / item.targetCostEstimate) * 100);
+      reasons.push(
+        buildGateReason(
+          item,
+          'cost_over_target',
+          `预估成本 ${roundCost(item.sampleQuotedCost)} 超出目标成本 ${roundCost(item.targetCostEstimate)} 的 ${variance}%，需特批后再流转。`,
+        ),
+      );
+    }
+
+    if (item.techPackStatus === 'blocked') {
+      reasons.push(buildGateReason(item, 'techpack_blocked', 'Tech Pack 当前阻塞，需先完成工艺包与工厂交接。'));
+    }
+
+    if (item.toolingStatus === 'blocked') {
+      reasons.push(buildGateReason(item, 'tooling_blocked', '开模状态阻塞，需先解除模具问题后再进入下一阶段。'));
+    }
+
+    return reasons;
+  });
+
+  const blockedIds = new Set(blockedReasons.map((reason) => reason.item_id));
+
+  return {
+    allowedItemIds: items.filter((item) => !blockedIds.has(item.itemId)).map((item) => item.itemId),
+    blockedReasons,
+  };
+}
+
+export function summarizeDesignReviewPhaseTransitionEvaluation(
+  evaluation: DesignReviewPhaseTransitionEvaluation,
+): string {
+  const blockedCount = getBlockedItemCount(evaluation.blockedReasons);
+
+  if (blockedCount === 0) {
+    return `已加入动作队列：${evaluation.allowedItemIds.length} 款单款待批量改阶段。`;
+  }
+
+  if (evaluation.allowedItemIds.length === 0) {
+    return `本次流转被门禁拦截：${blockedCount} 款单款需先解除成本、Tech Pack 或开模阻塞。`;
+  }
+
+  return `已加入动作队列：${evaluation.allowedItemIds.length} 款允许流转，${blockedCount} 款因门禁被拦截。`;
 }
 
 export function createDesignReviewCommittedState(baseItems: DesignItem[], baseTasks: Task[]): DesignReviewCommittedState {
@@ -34,18 +116,21 @@ export function createDesignReviewCommittedState(baseItems: DesignItem[], baseTa
 
 export function getDesignReviewActionMessage(intent: DesignReviewActionIntent): string {
   if (intent.type === 'batch-phase-transition') {
-    return `\u5df2\u52a0\u5165\u52a8\u4f5c\u961f\u5217\uff1a${intent.item_ids.length} \u6b3e\u5355\u6b3e\u5f85\u6279\u91cf\u6539\u9636\u6bb5\u3002`;
+    return summarizeDesignReviewPhaseTransitionEvaluation({
+      allowedItemIds: intent.item_ids,
+      blockedReasons: intent.payload.blocked_reasons,
+    });
   }
 
   if (intent.type === 'batch-owner-assignment') {
-    return `\u5df2\u52a0\u5165\u52a8\u4f5c\u961f\u5217\uff1a${intent.item_ids.length} \u6b3e\u5355\u6b3e\u5f85\u6279\u91cf\u6539\u8d1f\u8d23\u4eba\u3002`;
+    return `已加入动作队列：${intent.item_ids.length} 款单款待批量改负责人。`;
   }
 
   if (intent.type === 'batch-next-review-date') {
-    return `\u5df2\u52a0\u5165\u52a8\u4f5c\u961f\u5217\uff1a${intent.item_ids.length} \u6b3e\u5355\u6b3e\u5f85\u6279\u91cf\u8bbe\u7f6e\u4e0b\u6b21\u8bc4\u5ba1\u65f6\u95f4\u3002`;
+    return `已加入动作队列：${intent.item_ids.length} 款单款待批量设置下次评审时间。`;
   }
 
-  return `\u5df2\u52a0\u5165\u52a8\u4f5c\u961f\u5217\uff1a${intent.item_ids.length} \u6b3e\u5355\u6b3e\u5f85\u6279\u91cf\u751f\u6210\u4efb\u52a1\u3002`;
+  return `已加入动作队列：${intent.item_ids.length} 款单款待批量生成任务。`;
 }
 
 export function applyDesignReviewActionIntents({
@@ -112,8 +197,8 @@ export function applyDesignReviewActionIntents({
         priority: intent.payload.priority,
         title: `${intent.payload.title} / ${item.itemName}`,
         description: intent.payload.description
-          ? `${intent.payload.description}\uff08\u5173\u8054\u6b3e\u53f7 ${item.skuCode}\uff09`
-          : `\u5173\u8054\u6b3e\u53f7 ${item.skuCode}\uff0c\u8bf7\u6309\u8bc4\u5ba1\u7ed3\u8bba\u7ee7\u7eed\u63a8\u8fdb\u3002`,
+          ? `${intent.payload.description}（关联款号 ${item.skuCode}）`
+          : `关联款号 ${item.skuCode}，请按评审结论继续推进。`,
         assignee: intent.payload.assignee || item.designer,
         status: 'pending',
         dueDate: intent.payload.dueDate,

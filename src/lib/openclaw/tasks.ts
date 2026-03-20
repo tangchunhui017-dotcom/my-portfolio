@@ -18,6 +18,20 @@ export interface DesignReviewTaskDraft {
 }
 
 export type DesignReviewActionIntentStatus = 'pending_sync' | 'synced' | 'error';
+export type DesignReviewGateCode = 'cost_over_target' | 'tooling_blocked' | 'techpack_blocked';
+
+export interface DesignReviewGateReason {
+  item_id: string;
+  item_name: string;
+  sku_code: string;
+  code: DesignReviewGateCode;
+  reason: string;
+}
+
+export interface DesignReviewPhaseTransitionGateContext {
+  requestedItemIds?: string[];
+  blockedReasons?: DesignReviewGateReason[];
+}
 
 interface DesignReviewBaseActionIntent {
   id: string;
@@ -38,6 +52,8 @@ export interface DesignReviewPhaseTransitionIntent extends DesignReviewBaseActio
   type: 'batch-phase-transition';
   payload: {
     phase: DesignPhase;
+    requested_item_ids: string[];
+    blocked_reasons: DesignReviewGateReason[];
   };
 }
 
@@ -69,23 +85,23 @@ export type DesignReviewActionIntent =
 export const DESIGN_REVIEW_ACTION_STORAGE_KEY = 'openclaw-design-review-intents-v1';
 
 const TASK_LABELS: Record<OpenClawTask['type'], string> = {
-  'competitor-analysis': '\u53d1\u8d77\u7ade\u54c1\u5206\u6790',
-  'design-review': '\u53d1\u8d77\u6837\u978b\u8bc4\u5ba1',
-  'wave-review': '\u53d1\u8d77\u6ce2\u6bb5\u590d\u76d8',
-  'weekly-summary': '\u53d1\u8d77\u5468\u62a5\u6c47\u603b',
+  'competitor-analysis': 'Run competitor analysis',
+  'design-review': 'Run design review',
+  'wave-review': 'Run wave review',
+  'weekly-summary': 'Run weekly summary',
 };
 
 const DESIGN_REVIEW_ACTION_LABELS: Record<DesignReviewActionIntent['type'], string> = {
-  'batch-phase-transition': '\u6279\u91cf\u6539\u9636\u6bb5',
-  'batch-owner-assignment': '\u6279\u91cf\u6539\u8d1f\u8d23\u4eba',
-  'batch-next-review-date': '\u6279\u91cf\u6539\u4e0b\u6b21\u8bc4\u5ba1\u65f6\u95f4',
-  'batch-task-generation': '\u6279\u91cf\u751f\u6210\u5f85\u529e',
+  'batch-phase-transition': 'Batch phase transition',
+  'batch-owner-assignment': 'Batch owner assignment',
+  'batch-next-review-date': 'Batch next review date',
+  'batch-task-generation': 'Batch task generation',
 };
 
 const DESIGN_REVIEW_ACTION_STATUS_LABELS: Record<DesignReviewActionIntentStatus, string> = {
-  pending_sync: '\u5f85\u540c\u6b65',
-  synced: '\u5df2\u540c\u6b65',
-  error: '\u540c\u6b65\u5931\u8d25',
+  pending_sync: 'Pending sync',
+  synced: 'Synced',
+  error: 'Sync error',
 };
 
 const DESIGN_REVIEW_ACTION_TYPES: DesignReviewActionIntent['type'][] = [
@@ -126,11 +142,16 @@ export function createDesignReviewPhaseTransitionIntent(
   itemIds: string[],
   phase: DesignPhase,
   createdBy: string,
+  gateContext: DesignReviewPhaseTransitionGateContext = {},
 ): DesignReviewPhaseTransitionIntent {
   return {
     ...createBaseIntent(itemIds, createdBy),
     type: 'batch-phase-transition',
-    payload: { phase },
+    payload: {
+      phase,
+      requested_item_ids: gateContext.requestedItemIds ?? itemIds,
+      blocked_reasons: gateContext.blockedReasons ?? [],
+    },
   };
 }
 
@@ -260,37 +281,118 @@ export function getDesignReviewActionStatusLabel(status: DesignReviewActionInten
   return DESIGN_REVIEW_ACTION_STATUS_LABELS[status] ?? status;
 }
 
+function normalizeGateReasons(value: unknown): DesignReviewGateReason[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .filter(
+      (reason): reason is Partial<DesignReviewGateReason> & Pick<DesignReviewGateReason, 'item_id' | 'code' | 'reason'> =>
+        Boolean(
+          reason &&
+            typeof reason === 'object' &&
+            typeof reason.item_id === 'string' &&
+            typeof reason.code === 'string' &&
+            typeof reason.reason === 'string',
+        ),
+    )
+    .map((reason) => ({
+      item_id: reason.item_id,
+      item_name: typeof reason.item_name === 'string' ? reason.item_name : 'Unknown item',
+      sku_code: typeof reason.sku_code === 'string' ? reason.sku_code : '--',
+      code: reason.code as DesignReviewGateCode,
+      reason: reason.reason,
+    }));
+}
+
 export function parseStoredDesignReviewActionIntents(raw: string | null): DesignReviewActionIntent[] {
   if (!raw) return [];
 
   try {
-    const parsed = JSON.parse(raw) as Partial<DesignReviewActionIntent>[];
+    const parsed = JSON.parse(raw) as unknown;
     if (!Array.isArray(parsed)) return [];
 
-    return parsed
-      .filter(
-        (intent): intent is Partial<DesignReviewActionIntent> & { id: string; type: DesignReviewActionIntent['type']; item_ids: string[]; created_at: string; created_by: string } =>
-          Boolean(
-            intent &&
-              typeof intent.id === 'string' &&
-              intent.scope === 'design-review-center' &&
-              Array.isArray(intent.item_ids) &&
-              typeof intent.type === 'string' &&
-              DESIGN_REVIEW_ACTION_TYPES.includes(intent.type as DesignReviewActionIntent['type']) &&
-              typeof intent.created_at === 'string' &&
-              typeof intent.created_by === 'string',
-          ),
-      )
-      .map((intent) => ({
-        ...intent,
-        status: intent.status ?? 'pending_sync',
+    return parsed.reduce<DesignReviewActionIntent[]>((accumulator, entry) => {
+      if (!entry || typeof entry !== 'object') return accumulator;
+
+      const intent = entry as Partial<DesignReviewActionIntent> & { payload?: Record<string, unknown> };
+      if (
+        typeof intent.id !== 'string' ||
+        intent.scope !== 'design-review-center' ||
+        !Array.isArray(intent.item_ids) ||
+        typeof intent.type !== 'string' ||
+        !DESIGN_REVIEW_ACTION_TYPES.includes(intent.type as DesignReviewActionIntent['type']) ||
+        typeof intent.created_at !== 'string' ||
+        typeof intent.created_by !== 'string'
+      ) {
+        return accumulator;
+      }
+
+      const base: DesignReviewBaseActionIntent = {
+        id: intent.id,
+        scope: 'design-review-center',
+        status: (intent.status ?? 'pending_sync') as DesignReviewActionIntentStatus,
+        created_at: intent.created_at,
+        created_by: intent.created_by,
+        item_ids: intent.item_ids.filter((itemId): itemId is string => typeof itemId === 'string'),
         sync_attempts: typeof intent.sync_attempts === 'number' ? intent.sync_attempts : 0,
         last_synced_at: intent.last_synced_at ?? null,
         last_error: intent.last_error ?? null,
         export_batch_id: intent.export_batch_id ?? null,
         output_path: intent.output_path ?? null,
-        source_system: 'portfolio-site' as const,
-      })) as DesignReviewActionIntent[];
+        source_system: 'portfolio-site',
+      };
+
+      if (intent.type === 'batch-phase-transition') {
+        accumulator.push({
+          ...base,
+          type: 'batch-phase-transition',
+          payload: {
+            phase: ((intent.payload?.phase as DesignPhase | undefined) ?? 'sample_review') as DesignPhase,
+            requested_item_ids: Array.isArray(intent.payload?.requested_item_ids)
+              ? (intent.payload.requested_item_ids as unknown[]).filter((itemId): itemId is string => typeof itemId === 'string')
+              : base.item_ids,
+            blocked_reasons: normalizeGateReasons(intent.payload?.blocked_reasons),
+          },
+        });
+        return accumulator;
+      }
+
+      if (intent.type === 'batch-owner-assignment') {
+        accumulator.push({
+          ...base,
+          type: 'batch-owner-assignment',
+          payload: {
+            owner: typeof intent.payload?.owner === 'string' ? intent.payload.owner : '',
+          },
+        });
+        return accumulator;
+      }
+
+      if (intent.type === 'batch-next-review-date') {
+        accumulator.push({
+          ...base,
+          type: 'batch-next-review-date',
+          payload: {
+            nextReviewDate: typeof intent.payload?.nextReviewDate === 'string' ? intent.payload.nextReviewDate : '',
+          },
+        });
+        return accumulator;
+      }
+
+      accumulator.push({
+        ...base,
+        type: 'batch-task-generation',
+        payload: {
+          title: typeof intent.payload?.title === 'string' ? intent.payload.title : '',
+          description: typeof intent.payload?.description === 'string' ? intent.payload.description : '',
+          dueDate: typeof intent.payload?.dueDate === 'string' ? intent.payload.dueDate : '',
+          assignee: typeof intent.payload?.assignee === 'string' ? intent.payload.assignee : '',
+          priority: (intent.payload?.priority as RiskLevel | undefined) ?? 'high',
+          taskType: typeof intent.payload?.taskType === 'string' ? intent.payload.taskType : 'design',
+        },
+      });
+      return accumulator;
+    }, []);
   } catch {
     return [];
   }

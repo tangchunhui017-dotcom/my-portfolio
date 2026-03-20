@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import AssetWall from '@/components/design-review-center/asset-wall';
+import EffectPreviewPanel from '@/components/design-review-center/effect-preview-panel';
 import BulkActionBar from '@/components/design-review-center/bulk-action-bar';
 import CategoryBreakdownPanel from '@/components/design-review-center/category-breakdown-panel';
 import DevelopmentWaveTable from '@/components/design-review-center/development-wave-table';
@@ -638,7 +638,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
               <h2 className="text-3xl font-semibold text-slate-950">产品架构</h2>
               <p className="mt-2 text-sm text-slate-500">围绕系列、角色、场景与价格带确认本季鞋类骨架。</p>
             </div>
-            <ProductArchitecturePanel architectures={filteredProductArchitectures} />
+            <ProductArchitecturePanel architectures={filteredProductArchitectures} breakdowns={filteredCategoryBreakdowns} />
           </div>
         ) : null}
 
@@ -668,7 +668,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
               <h2 className="text-3xl font-semibold text-slate-950">设计效果预览</h2>
               <p className="mt-2 text-sm text-slate-500">集中查看情绪板、材料板、楦底板、配色板和设计效果图。</p>
             </div>
-            <AssetWall assets={filteredAssets} waves={filteredWaves} series={filteredSeries} showFeaturedOnlyByDefault={false} />
+            <EffectPreviewPanel assets={filteredAssets} waves={filteredWaves} series={filteredSeries} items={filteredItems} />
           </div>
         ) : null}
 
