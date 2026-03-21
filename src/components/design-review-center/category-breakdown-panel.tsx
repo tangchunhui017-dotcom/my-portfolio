@@ -13,19 +13,10 @@ function SectionEyebrow({ label }: { label: string }) {
   return <div className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">{label}</div>;
 }
 
-function ChipGroup({
-  items,
-  tone = 'slate',
-}: {
-  items: string[];
-  tone?: 'slate' | 'blue';
-}) {
+function ChipGroup({ items, tone = 'slate' }: { items: string[]; tone?: 'slate' | 'blue' }) {
   if (!items.length) return <div className="text-sm text-slate-400">待补充</div>;
 
-  const className =
-    tone === 'blue'
-      ? 'border-blue-100 bg-blue-50 text-blue-700'
-      : 'border-slate-200 bg-slate-50 text-slate-700';
+  const className = tone === 'blue' ? 'border-blue-100 bg-blue-50 text-blue-700' : 'border-slate-200 bg-slate-50 text-slate-700';
 
   return (
     <div className="flex flex-wrap gap-2">
@@ -66,7 +57,8 @@ export default function CategoryBreakdownPanel({ breakdowns }: CategoryBreakdown
             <SectionEyebrow label="Development Breakdown" />
             <h3 className="text-2xl font-semibold text-slate-950">把产品架构拆到开发与供应链语言</h3>
             <p className="text-sm leading-7 text-slate-600">
-              这一层不只看品类名称，而是把系列拆到二级鞋类、关键结构、工艺标签、工厂画像和交期风险，让企划、设计、开发在同一张表里对齐。
+              这一层不只看品类名称，而是把系列拆到二级鞋类、关键结构、工艺标签、工厂画像和交期风险，
+              让企划、设计和开发在同一张表里对齐。
             </p>
 
             <div className="rounded-2xl bg-slate-50 p-4">
@@ -93,12 +85,12 @@ export default function CategoryBreakdownPanel({ breakdowns }: CategoryBreakdown
             <article className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
               <div className="text-sm text-slate-500">高工艺风险</div>
               <div className="mt-3 text-3xl font-semibold text-slate-950">{highTechRiskCount}</div>
-              <div className="mt-2 text-xs text-slate-500">冷粘、贴膜、TPU 包覆等复杂结构</div>
+              <div className="mt-2 text-xs text-slate-500">冷粘、防水膜贴合、TPU 包覆等复杂结构</div>
             </article>
             <article className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
               <div className="text-sm text-slate-500">产能紧张</div>
               <div className="mt-3 text-3xl font-semibold text-slate-950">{constrainedCapacityCount}</div>
-              <div className="mt-2 text-xs text-slate-500">需要前置锁工厂和关键材料</div>
+              <div className="mt-2 text-xs text-slate-500">需要前置锁定工厂与关键材料</div>
             </article>
           </div>
         </div>
@@ -244,15 +236,7 @@ export default function CategoryBreakdownPanel({ breakdowns }: CategoryBreakdown
                           <div className="mt-3 flex flex-wrap gap-2">
                             <span className={`rounded-full px-3 py-1 text-xs font-semibold ${techRisk.bgColor} ${techRisk.textColor}`}>技术 {techRisk.label}</span>
                             <span className={`rounded-full px-3 py-1 text-xs font-semibold ${leadTimeRisk.bgColor} ${leadTimeRisk.textColor}`}>交期 {leadTimeRisk.label}</span>
-                            <span
-                              className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                                item.capacityBand === '紧张'
-                                  ? 'bg-amber-100 text-amber-700'
-                                  : item.capacityBand === '平衡'
-                                    ? 'bg-slate-100 text-slate-700'
-                                    : 'bg-emerald-100 text-emerald-700'
-                              }`}
-                            >
+                            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${item.capacityBand === '紧张' ? 'bg-amber-100 text-amber-700' : item.capacityBand === '平衡' ? 'bg-slate-100 text-slate-700' : 'bg-emerald-100 text-emerald-700'}`}>
                               产能 {item.capacityBand}
                             </span>
                           </div>

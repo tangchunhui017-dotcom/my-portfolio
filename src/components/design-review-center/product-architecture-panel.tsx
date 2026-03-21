@@ -18,7 +18,7 @@ const TOOLING_STRATEGY_META: Record<ToolingStrategy, { label: string; className:
 };
 
 const BUDGET_LEVEL_META: Record<ToolingBudgetLevel, { label: string; className: string }> = {
-  tight: { label: '预算收敛', className: 'bg-slate-100 text-slate-700' },
+  tight: { label: '预算收紧', className: 'bg-slate-100 text-slate-700' },
   controlled: { label: '预算可控', className: 'bg-sky-100 text-sky-700' },
   strategic: { label: '战略投入', className: 'bg-fuchsia-100 text-fuchsia-700' },
 };
@@ -38,7 +38,6 @@ function sum(items: number[]) {
 function weightedRatio(records: ProductArchitectureRecord[], selector: (record: ProductArchitectureRecord) => number) {
   const totalSku = sum(records.map((record) => record.plannedSkuCount));
   if (totalSku === 0) return 0;
-
   return records.reduce((total, record) => total + record.plannedSkuCount * selector(record), 0) / totalSku;
 }
 
@@ -142,7 +141,8 @@ export default function ProductArchitecturePanel({ architectures, breakdowns }: 
             <SectionEyebrow label="Architecture Summary" />
             <h3 className="text-2xl font-semibold text-slate-950">先定整季骨架，再看系列落点</h3>
             <p className="text-sm leading-7 text-slate-600">
-              产品架构阶段先回答三个问题：哪些品类是主推、哪些系列可以共底共楦、哪些款型必须为主题投入新模具。先把结构收住，再谈单款扩展。
+              产品架构阶段先回答三件事：哪些品类是主推，哪些系列可以共底共楦，哪些款型必须为主题投入新模具。
+              先把整季结构收住，再谈单款扩展。
             </p>
 
             <div className="rounded-2xl bg-slate-50 p-4">
@@ -170,7 +170,7 @@ export default function ProductArchitecturePanel({ architectures, breakdowns }: 
             <article className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
               <div className="text-sm text-slate-500">模具复用率</div>
               <div className="mt-3 text-3xl font-semibold text-slate-950">{percent(reuseRatio)}</div>
-              <div className="mt-2 text-xs text-slate-500">延续款 + 换面不换底</div>
+              <div className="mt-2 text-xs text-slate-500">经典延续 + 换面不换底</div>
             </article>
             <article className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
               <div className="text-sm text-slate-500">覆盖品类</div>
@@ -184,7 +184,7 @@ export default function ProductArchitecturePanel({ architectures, breakdowns }: 
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">开模策略总览</div>
-              <div className="mt-2 text-sm text-slate-600">先看延续、同底换面和全新开模比例，再决定本季的研发预算压在哪些系列上。</div>
+              <div className="mt-2 text-sm text-slate-600">先看延续、同底换面和全新开模比例，再决定本季研发预算压在哪些系列上。</div>
             </div>
             <div className="flex flex-wrap gap-2 text-xs">
               <span className="rounded-full bg-emerald-100 px-3 py-1 font-medium text-emerald-700">经典延续 {percent(carryOverRatio)}</span>
@@ -295,11 +295,7 @@ export default function ProductArchitecturePanel({ architectures, breakdowns }: 
                       <div className="rounded-2xl bg-white p-4">
                         <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">新老款比例</div>
                         <div className="mt-4">
-                          <RatioBar
-                            carryOver={record.carryOverRatio}
-                            sameOutsoleNewUpper={record.sameOutsoleNewUpperRatio}
-                            newTooling={record.newToolingRatio}
-                          />
+                          <RatioBar carryOver={record.carryOverRatio} sameOutsoleNewUpper={record.sameOutsoleNewUpperRatio} newTooling={record.newToolingRatio} />
                         </div>
                       </div>
                     </section>
@@ -329,10 +325,7 @@ export default function ProductArchitecturePanel({ architectures, breakdowns }: 
                           <span>{percent(skuUsage)}</span>
                         </div>
                         <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
-                          <div
-                            className={`h-full rounded-full ${skuUsage >= 100 ? 'bg-rose-500' : skuUsage >= 85 ? 'bg-amber-500' : 'bg-emerald-500'}`}
-                            style={{ width: `${Math.min(skuUsage, 100)}%` }}
-                          />
+                          <div className={`h-full rounded-full ${skuUsage >= 100 ? 'bg-rose-500' : skuUsage >= 85 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${Math.min(skuUsage, 100)}%` }} />
                         </div>
                       </div>
                     </section>
@@ -341,41 +334,44 @@ export default function ProductArchitecturePanel({ architectures, breakdowns }: 
                   <div className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
                     <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
                       <SectionEyebrow label="Role Mix" />
-                      <div className="mt-4 flex h-3 overflow-hidden rounded-full bg-white">
-                        <div className="bg-slate-900" style={{ width: `${totalRoles ? (record.roleMix.hero / totalRoles) * 100 : 0}%` }} />
-                        <div className="bg-slate-500" style={{ width: `${totalRoles ? (record.roleMix.core / totalRoles) * 100 : 0}%` }} />
-                        <div className="bg-slate-300" style={{ width: `${totalRoles ? (record.roleMix.filler / totalRoles) * 100 : 0}%` }} />
-                      </div>
-                      <div className="mt-3 grid grid-cols-3 gap-2 text-xs text-slate-500">
-                        <div>Hero {record.roleMix.hero}</div>
-                        <div>Core {record.roleMix.core}</div>
-                        <div>Filler {record.roleMix.filler}</div>
-                      </div>
-                      <div className="mt-5">
-                        <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">开发品类</div>
-                        <ChipGroup items={record.categoryMix} />
+                      <div className="mt-3 grid gap-3 md:grid-cols-3">
+                        <div className="rounded-2xl bg-white p-4">
+                          <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">Hero</div>
+                          <div className="mt-2 text-2xl font-semibold text-slate-950">{record.roleMix.hero}</div>
+                          <div className="mt-1 text-xs text-slate-500">{totalRoles ? percent((record.roleMix.hero / totalRoles) * 100) : '0%'}</div>
+                        </div>
+                        <div className="rounded-2xl bg-white p-4">
+                          <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">Core</div>
+                          <div className="mt-2 text-2xl font-semibold text-slate-950">{record.roleMix.core}</div>
+                          <div className="mt-1 text-xs text-slate-500">{totalRoles ? percent((record.roleMix.core / totalRoles) * 100) : '0%'}</div>
+                        </div>
+                        <div className="rounded-2xl bg-white p-4">
+                          <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">Filler</div>
+                          <div className="mt-2 text-2xl font-semibold text-slate-950">{record.roleMix.filler}</div>
+                          <div className="mt-1 text-xs text-slate-500">{totalRoles ? percent((record.roleMix.filler / totalRoles) * 100) : '0%'}</div>
+                        </div>
                       </div>
                     </section>
 
                     <section className="rounded-2xl border border-slate-200 bg-white p-5">
-                      <SectionEyebrow label="Shape & Review" />
+                      <SectionEyebrow label="Shape & Bottom" />
                       <div className="mt-4 grid gap-4 md:grid-cols-2">
                         <div>
-                          <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">楦底方向</div>
+                          <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">轮廓方向</div>
                           <ChipGroup items={record.silhouetteDirections} />
+                        </div>
+                        <div>
+                          <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">大底方向</div>
+                          <ChipGroup items={record.outsoleDirections} />
                         </div>
                         <div>
                           <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">帮面方向</div>
                           <ChipGroup items={record.upperDirections} />
                         </div>
-                      </div>
-                      <div className="mt-4">
-                        <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">大底方向</div>
-                        <ChipGroup items={record.outsoleDirections} />
-                      </div>
-                      <div className="mt-4">
-                        <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">当前评审重点</div>
-                        <ChipGroup items={record.reviewFocus} />
+                        <div>
+                          <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">开发品类</div>
+                          <ChipGroup items={record.categoryMix} />
+                        </div>
                       </div>
                     </section>
                   </div>

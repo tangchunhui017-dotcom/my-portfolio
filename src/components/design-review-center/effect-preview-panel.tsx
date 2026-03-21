@@ -27,14 +27,31 @@ interface EffectVersionChain {
   latestCapturedAt: string | null;
 }
 
+const SERIES_NAME_MAP: Record<string, string> = {
+  'Street Wave': '\u8857\u5934\u6d6a\u6f6e',
+  'Urban Trail': '\u57ce\u5e02\u673a\u80fd\u5f92\u6b65',
+  'City Classic': '\u90fd\u5e02\u7ecf\u5178\u5546\u52a1',
+  'Comfort Flex': '\u8212\u9002\u5f39\u884c',
+};
+
 const VERSION_STAGE_ORDER: VersionStage[] = ['sketch', 'render', 'first_sample', 'final_sample'];
 
 const VERSION_STAGE_META: Record<VersionStage, { label: string; hint: string }> = {
   sketch: { label: '\u6982\u5ff5\u8349\u56fe', hint: '\u5148\u770b\u4e3b\u9898\u65b9\u5411\u3001\u8f6e\u5ed3\u6bd4\u4f8b\u548c\u7ed3\u6784\u8bed\u8a00\u3002' },
-  render: { label: '\u6e32\u67d3\u56fe', hint: '\u786e\u8ba4\u914d\u8272\u3001CMF \u548c\u54c1\u724c\u8868\u8fbe\u3002' },
+  render: { label: '\u6e32\u67d3\u56fe', hint: '\u786e\u8ba4\u914d\u8272\u3001\u6750\u6599\u7ec4\u5408\u548c\u54c1\u724c\u8868\u8fbe\u3002' },
   first_sample: { label: '\u9996\u8f6e\u6837\u978b', hint: '\u91cd\u70b9\u770b\u56fe\u7269\u5dee\u5f02\u3001\u7ed3\u6784\u504f\u5dee\u548c\u521d\u7248\u6210\u672c\u3002' },
   final_sample: { label: '\u5b9a\u6837\u5b9e\u62cd', hint: '\u786e\u8ba4\u6700\u7ec8\u6837\u978b\u3001\u6210\u672c\u548c\u4e0a\u5e02\u7248\u672c\u3002' },
 };
+
+function getSeriesDisplayName(label: string) {
+  return SERIES_NAME_MAP[label] ?? label;
+}
+
+function getLocalizedItemName(label: string, seriesId: string) {
+  const seriesName = getSeriesDisplayName(seriesId);
+  const number = label.match(/(\d{2})/)?.[1];
+  return number ? `${seriesName} ${number}` : label.replace(/^(Street Wave|Urban Trail|City Classic|Comfort Flex)/, seriesName);
+}
 
 function formatDate(value: string | null | undefined) {
   if (!value) return '\u5f85\u8865\u5145';
@@ -72,10 +89,10 @@ function buildEffectVersionChains(assets: Asset[], items: DesignItem[], series: 
       return {
         chainId,
         itemId: firstAsset.relatedItemId ?? item?.itemId ?? chainId,
-        itemName: item?.itemName ?? firstAsset.title,
+        itemName: getLocalizedItemName(item?.itemName ?? firstAsset.title, firstAsset.seriesId),
         skuCode: item?.skuCode ?? '--',
         seriesId: firstAsset.seriesId,
-        seriesName: relatedSeries?.seriesName ?? firstAsset.seriesId,
+        seriesName: getSeriesDisplayName(relatedSeries?.seriesName ?? firstAsset.seriesId),
         waveLabel: relatedWave?.waveName ?? relatedSeries?.waveId ?? '-',
         stages,
         stageCount: Object.keys(stages).length,
@@ -116,7 +133,7 @@ export default function EffectPreviewPanel({ assets, waves, series, items }: Eff
           <div>
             <h3 className="text-lg font-semibold text-slate-900">{'\u56fe\u7269\u5bf9\u6bd4\u7248\u672c\u94fe'}</h3>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
-              Compare sketch, render, first sample, and final sample in one chain so the review can focus on visual drift, CMF changes, and cost movement.
+              把概念草图、渲染图、首轮样鞋和定样实拍放在同一条版本链里，直接评估图物偏差、配色材料调整和成本收敛。
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
@@ -140,7 +157,7 @@ export default function EffectPreviewPanel({ assets, waves, series, items }: Eff
 
         {effectChains.length === 0 ? (
           <div className="mt-6 rounded-2xl border border-dashed border-slate-300 px-4 py-10 text-center text-sm text-slate-500">
-            No version-chain assets are available in the current filter scope yet.
+            当前筛选范围内暂时还没有可对比的版本链资产。
           </div>
         ) : (
           <div className="mt-6 grid gap-6 xl:grid-cols-[320px_1fr]">
@@ -174,7 +191,7 @@ export default function EffectPreviewPanel({ assets, waves, series, items }: Eff
                   <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div>
-                        <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Version Chain</div>
+                        <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">版本链</div>
                         <h4 className="mt-2 text-2xl font-semibold text-slate-950">{selectedChain.itemName}</h4>
                         <p className="mt-2 text-sm text-slate-500">{selectedChain.skuCode} / {selectedChain.seriesName} / {selectedChain.waveLabel}</p>
                       </div>
@@ -200,8 +217,8 @@ export default function EffectPreviewPanel({ assets, waves, series, items }: Eff
                               <div className="space-y-3 p-4 text-sm text-slate-600">
                                 <div className="font-medium text-slate-900">{asset.title}</div>
                                 <div className="text-xs text-slate-500">{'\u62cd\u6444 / \u4e0a\u4f20'} {formatDate(asset.capturedAt ?? asset.uploadedAt)}</div>
-                                {asset.bomSummary?.length ? <div><div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">BOM</div><div className="leading-6">{asset.bomSummary.join(' / ')}</div></div> : null}
-                                {asset.cmfSummary?.length ? <div><div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">CMF</div><div className="leading-6">{asset.cmfSummary.join(' / ')}</div></div> : null}
+                                {asset.bomSummary?.length ? <div><div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">物料构成</div><div className="leading-6">{asset.bomSummary.join(' / ')}</div></div> : null}
+                                {asset.cmfSummary?.length ? <div><div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">配色与材料</div><div className="leading-6">{asset.cmfSummary.join(' / ')}</div></div> : null}
                                 {typeof asset.estimatedCost === 'number' ? <div><div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">{'\u9884\u4f30\u6210\u672c'}</div><div>¥ {asset.estimatedCost}</div></div> : null}
                               </div>
                             </>
@@ -222,7 +239,7 @@ export default function EffectPreviewPanel({ assets, waves, series, items }: Eff
       <section className="space-y-4">
         <div>
           <h3 className="text-lg font-semibold text-slate-900">{'\u8f85\u52a9\u8bbe\u8ba1\u8d44\u4ea7'}</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-500">Keep moodboards, material boards, outsole boards, and color boards below the version chain for supporting review context.</p>
+          <p className="mt-2 text-sm leading-6 text-slate-500">把情绪板、材料板、大底楦型板和配色板放在版本链下方，作为评审时的辅助参考。</p>
         </div>
         <AssetWall assets={supportingAssets} waves={waves} series={series} />
       </section>

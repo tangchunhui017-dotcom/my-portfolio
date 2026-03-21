@@ -5,6 +5,13 @@ interface ThemeDirectionPanelProps {
   assets: Asset[];
 }
 
+const SERIES_NAME_MAP: Record<string, string> = {
+  'Street Wave': '\u8857\u5934\u6d6a\u6f6e',
+  'Urban Trail': '\u57ce\u5e02\u673a\u80fd\u5f92\u6b65',
+  'City Classic': '\u90fd\u5e02\u7ecf\u5178\u5546\u52a1',
+  'Comfort Flex': '\u8212\u9002\u5f39\u884c',
+};
+
 const COLOR_SWATCH_MAP: Record<string, string> = {
   黑色: '#111827',
   经典黑: '#111827',
@@ -26,6 +33,10 @@ const COLOR_SWATCH_MAP: Record<string, string> = {
 
 function getSwatchColor(label: string) {
   return COLOR_SWATCH_MAP[label] ?? '#cbd5e1';
+}
+
+function getSeriesDisplayName(label: string) {
+  return SERIES_NAME_MAP[label] ?? label;
 }
 
 function SectionEyebrow({ label }: { label: string }) {
@@ -122,14 +133,14 @@ export default function ThemeDirectionPanel({ themes, assets }: ThemeDirectionPa
                   <h3 className="mt-2 text-2xl font-semibold text-slate-950">{theme.themeName}</h3>
                   <p className="mt-2 text-sm text-slate-500">上市窗口：{theme.launchWindow}</p>
                 </div>
-                <ChipGroup items={theme.seriesNames} />
+                <ChipGroup items={theme.seriesNames.map(getSeriesDisplayName)} />
               </div>
             </header>
 
             <div className="grid gap-0 xl:grid-cols-[1.45fr_0.55fr]">
               <div className="space-y-6 p-6">
                 <section className="rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-6 text-white">
-                  <SectionEyebrow label="Theme Story" />
+                  <SectionEyebrow label={'\u4e3b\u9898\u53d9\u4e8b'} />
                   <div className="mt-4 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
                     <div>
                       <h4 className="text-xl font-semibold">主题叙事</h4>
@@ -154,7 +165,7 @@ export default function ThemeDirectionPanel({ themes, assets }: ThemeDirectionPa
 
                 <section className="grid gap-6 xl:grid-cols-2">
                   <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
-                    <SectionEyebrow label="Brand DNA" />
+                    <SectionEyebrow label={'\u54c1\u724c\u57fa\u56e0'} />
                     <h4 className="mt-3 text-xl font-semibold text-slate-950">品牌长期主风格</h4>
                     <p className="mt-3 text-sm leading-7 text-slate-700">{theme.brandLongTermStrength}</p>
                     <div className="mt-5 space-y-4">
@@ -170,7 +181,7 @@ export default function ThemeDirectionPanel({ themes, assets }: ThemeDirectionPa
                   </div>
 
                   <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
-                    <SectionEyebrow label="Trend & Opportunity" />
+                    <SectionEyebrow label={'\u8d8b\u52bf\u4e0e\u673a\u4f1a'} />
                     <h4 className="mt-3 text-xl font-semibold text-slate-950">市场趋势与新机会</h4>
                     <p className="mt-3 text-sm leading-7 text-slate-700">{theme.opportunitySummary}</p>
                     <div className="mt-5 space-y-4">
@@ -189,7 +200,7 @@ export default function ThemeDirectionPanel({ themes, assets }: ThemeDirectionPa
                 <section className="rounded-3xl border border-slate-200 bg-white p-6">
                   <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
                     <div>
-                      <SectionEyebrow label="CMF Anchor" />
+                      <SectionEyebrow label={'CMF \u951a\u70b9'} />
                       <h4 className="mt-3 text-xl font-semibold text-slate-950">CMF 落地锚点</h4>
                       <p className="mt-3 text-sm leading-7 text-slate-600">
                         主题方向确定后，同步锁定本季主打色、主打材料和优先供应商，避免设计概念和开发资源脱节。
@@ -211,7 +222,7 @@ export default function ThemeDirectionPanel({ themes, assets }: ThemeDirectionPa
                     </div>
 
                     <div className="border-t border-slate-200 pt-6 xl:border-l xl:border-t-0 xl:pl-6 xl:pt-0">
-                      <SectionEyebrow label="Review Notes" />
+                      <SectionEyebrow label={'\u8bc4\u5ba1\u63d0\u793a'} />
                       <div className="space-y-5">
                         <div>
                           <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">评审重点</div>
@@ -236,7 +247,7 @@ export default function ThemeDirectionPanel({ themes, assets }: ThemeDirectionPa
               </div>
 
               <aside className="border-t border-slate-200 bg-slate-50/70 p-6 xl:border-l xl:border-t-0">
-                <SectionEyebrow label="Moodboard" />
+                <SectionEyebrow label={'\u60c5\u7eea\u677f'} />
                 <p className="mt-3 text-sm leading-6 text-slate-600">
                   情绪板保留在右侧，用来承接主题故事、色彩材料和竞品参考，而不是单独承担方向判断。
                 </p>

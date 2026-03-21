@@ -18,14 +18,20 @@
       "outsoleDirection": "外扩厚底 + 前掌弯折槽",
       "materialFocus": "反绒皮 + 网眼布",
       "colorDirection": "黑白基底 + 荧光点缀",
-      "longLeadMaterial": ["TPU 支撑片"],
+      "longLeadMaterial": [
+        "TPU 支撑片"
+      ],
       "materialLockDate": "2024-02-02",
       "toolingStartDate": "2024-01-22",
       "toolingTrialDate": "2024-02-16",
       "toolingFreezeDate": "2024-02-28",
       "techPackDueDate": "2024-02-05",
       "criticalPathLevel": "critical",
-      "referenceAssetIds": ["ast001", "ast003", "ast005"],
+      "referenceAssetIds": [
+        "ast001",
+        "ast003",
+        "ast005"
+      ],
       "reviewFocus": "大底体量与帮面比例",
       "phase": "prototype_review",
       "owner": "王五",
@@ -68,7 +74,10 @@
       "toolingFreezeDate": "2024-03-01",
       "techPackDueDate": "2024-02-08",
       "criticalPathLevel": "watch",
-      "referenceAssetIds": ["ast001", "ast006"],
+      "referenceAssetIds": [
+        "ast001",
+        "ast006"
+      ],
       "reviewFocus": "包边细节和鞋口舒适度",
       "phase": "prototype_review",
       "owner": "王五",
@@ -104,14 +113,19 @@
       "outsoleDirection": "厚底包边外墙",
       "materialFocus": "反绒皮 + 网眼",
       "colorDirection": "黑绿高对比",
-      "longLeadMaterial": ["荧光特殊网布"],
+      "longLeadMaterial": [
+        "荧光特殊网布"
+      ],
       "materialLockDate": "2024-02-10",
       "toolingStartDate": "2024-01-30",
       "toolingTrialDate": "2024-02-24",
       "toolingFreezeDate": "2024-03-05",
       "techPackDueDate": "2024-02-09",
       "criticalPathLevel": "watch",
-      "referenceAssetIds": ["ast005", "ast006"],
+      "referenceAssetIds": [
+        "ast005",
+        "ast006"
+      ],
       "reviewFocus": "荧光色比例与市场接受度",
       "phase": "prototype_review",
       "owner": "王五",
@@ -147,14 +161,21 @@
       "outsoleDirection": "全地形齿纹 + 前翘滚动感",
       "materialFocus": "防水面料 + 耐磨橡胶",
       "colorDirection": "灰黑机能色",
-      "longLeadMaterial": ["防水膜面料", "Vibram 外底"],
+      "longLeadMaterial": [
+        "防水膜面料",
+        "Vibram 外底"
+      ],
       "materialLockDate": "2024-01-25",
       "toolingStartDate": "2024-01-15",
       "toolingTrialDate": "2024-02-08",
       "toolingFreezeDate": "2024-02-22",
       "techPackDueDate": "2024-01-26",
       "criticalPathLevel": "critical",
-      "referenceAssetIds": ["ast008", "ast002", "ast007"],
+      "referenceAssetIds": [
+        "ast008",
+        "ast002",
+        "ast007"
+      ],
       "reviewFocus": "鞋头包覆和防水结构",
       "phase": "sample_review",
       "owner": "张三",
@@ -190,14 +211,19 @@
       "outsoleDirection": "轻量防滑大底",
       "materialFocus": "防水布 + 橡胶底",
       "colorDirection": "全黑商务机能",
-      "longLeadMaterial": ["防水布"],
+      "longLeadMaterial": [
+        "防水布"
+      ],
       "materialLockDate": "2024-02-01",
       "toolingStartDate": "2024-01-20",
       "toolingTrialDate": "2024-02-14",
       "toolingFreezeDate": "2024-02-26",
       "techPackDueDate": "2024-01-30",
       "criticalPathLevel": "watch",
-      "referenceAssetIds": ["ast007", "ast015"],
+      "referenceAssetIds": [
+        "ast007",
+        "ast015"
+      ],
       "reviewFocus": "城市通勤感和户外感平衡",
       "phase": "prototype_review",
       "owner": "张三",
@@ -233,14 +259,19 @@
       "outsoleDirection": "多向防滑纹路",
       "materialFocus": "尼龙 + 橡胶",
       "colorDirection": "橄榄绿户外色",
-      "longLeadMaterial": ["快速系带组件"],
+      "longLeadMaterial": [
+        "快速系带组件"
+      ],
       "materialLockDate": "2024-02-12",
       "toolingStartDate": "2024-02-05",
       "toolingTrialDate": "2024-02-29",
       "toolingFreezeDate": "2024-03-08",
       "techPackDueDate": "2024-02-10",
       "criticalPathLevel": "watch",
-      "referenceAssetIds": ["ast008", "ast015"],
+      "referenceAssetIds": [
+        "ast008",
+        "ast015"
+      ],
       "reviewFocus": "户外属性是否过强",
       "phase": "concept",
       "owner": "张三",
@@ -276,15 +307,21 @@
       "outsoleDirection": "皮底 + 橡胶贴片",
       "materialFocus": "头层牛皮",
       "colorDirection": "深棕商务色",
-      "longLeadMaterial": ["头层牛皮"],
+      "longLeadMaterial": [
+        "头层牛皮"
+      ],
       "materialLockDate": "2024-03-08",
       "toolingStartDate": "2024-02-26",
       "toolingTrialDate": "2024-03-18",
       "toolingFreezeDate": "2024-03-29",
       "techPackDueDate": "2024-03-06",
       "criticalPathLevel": "watch",
-      "referenceAssetIds": ["ast009", "ast004", "ast010"],
-      "reviewFocus": "楦型舒适度和商务纯度",
+      "referenceAssetIds": [
+        "ast009",
+        "ast004",
+        "ast010"
+      ],
+      "reviewFocus": "楷型舒适度和商务感纯度",
       "phase": "concept",
       "owner": "李四",
       "riskLevel": "medium",
@@ -293,7 +330,7 @@
       "finalLockedCost": null,
       "techPackStatus": "not_started",
       "toolingStatus": "not_started",
-      "toolingNotes": "商务楦型待优化后再进入工艺包。",
+      "toolingNotes": "商务楷型待优化后再进入工艺包。",
       "nextReviewDate": "2024-03-29",
       "source": "manual",
       "sourceId": null,
@@ -319,14 +356,19 @@
       "outsoleDirection": "薄底稳定片 + 后跟缓震",
       "materialFocus": "头层牛皮 + 真皮内里",
       "colorDirection": "经典黑",
-      "longLeadMaterial": ["真皮内里"],
+      "longLeadMaterial": [
+        "真皮内里"
+      ],
       "materialLockDate": "2024-03-12",
       "toolingStartDate": "2024-03-01",
       "toolingTrialDate": "2024-03-22",
       "toolingFreezeDate": "2024-04-03",
       "techPackDueDate": "2024-03-08",
       "criticalPathLevel": "watch",
-      "referenceAssetIds": ["ast004", "ast010"],
+      "referenceAssetIds": [
+        "ast004",
+        "ast010"
+      ],
       "reviewFocus": "前掌弯折和行走稳定性",
       "phase": "concept",
       "owner": "李四",
@@ -357,7 +399,7 @@
       "itemName": "City Classic 03",
       "category": "乐福鞋",
       "productRole": "filler",
-      "silhouette": "低帮 / 修长 / 乐福楦",
+      "silhouette": "低帮 / 修长 / 乐福楷",
       "upperConstruction": "一脚蹬结构 + 柔软鞋口",
       "outsoleDirection": "薄底 + 局部贴片",
       "materialFocus": "小牛皮",
@@ -369,7 +411,10 @@
       "toolingFreezeDate": "2024-04-08",
       "techPackDueDate": "2024-03-12",
       "criticalPathLevel": "normal",
-      "referenceAssetIds": ["ast009", "ast004"],
+      "referenceAssetIds": [
+        "ast009",
+        "ast004"
+      ],
       "reviewFocus": "鞋口稳定性和通勤适配",
       "phase": "concept",
       "owner": "李四",
@@ -379,7 +424,7 @@
       "finalLockedCost": null,
       "techPackStatus": "not_started",
       "toolingStatus": "not_started",
-      "toolingNotes": "等楦型优化结果后再推进。",
+      "toolingNotes": "等楷型优化结果后再推进。",
       "nextReviewDate": "2024-03-30",
       "source": "manual",
       "sourceId": null,
@@ -400,20 +445,27 @@
       "itemName": "Comfort Flex 01",
       "category": "乐福鞋",
       "productRole": "filler",
-      "silhouette": "低帮 / 宽楦 / 圆头",
+      "silhouette": "低帮 / 宽楷 / 圆头",
       "upperConstruction": "弹力鞋口 + 一脚蹬",
       "outsoleDirection": "轻量 EVA + 前掌弯折槽",
       "materialFocus": "软皮 + 弹力布",
       "colorDirection": "黑色通勤",
-      "longLeadMaterial": ["EVA 底材", "记忆棉鞋垫"],
+      "longLeadMaterial": [
+        "EVA 底材",
+        "记忆棉鞋垫"
+      ],
       "materialLockDate": "2024-03-01",
       "toolingStartDate": "2024-02-20",
       "toolingTrialDate": "2024-03-15",
       "toolingFreezeDate": "2024-03-27",
       "techPackDueDate": "2024-02-28",
       "criticalPathLevel": "critical",
-      "referenceAssetIds": ["ast011", "ast012", "ast013"],
-      "reviewFocus": "宽楦适配和后跟包裹",
+      "referenceAssetIds": [
+        "ast011",
+        "ast012",
+        "ast013"
+      ],
+      "reviewFocus": "宽楷适配和后跟包裹",
       "phase": "concept",
       "owner": "王五",
       "riskLevel": "high",
@@ -443,19 +495,24 @@
       "itemName": "Comfort Flex 02",
       "category": "乐福鞋",
       "productRole": "filler",
-      "silhouette": "低帮 / 宽楦 / 圆头",
+      "silhouette": "低帮 / 宽楷 / 圆头",
       "upperConstruction": "弹力鞋口 + 无压后跟",
       "outsoleDirection": "轻量 EVA 中底",
       "materialFocus": "软皮 + 弹力布",
       "colorDirection": "深灰通勤",
-      "longLeadMaterial": ["弹力面料"],
+      "longLeadMaterial": [
+        "弹力面料"
+      ],
       "materialLockDate": "2024-03-05",
       "toolingStartDate": "2024-02-26",
       "toolingTrialDate": "2024-03-20",
       "toolingFreezeDate": "2024-04-01",
       "techPackDueDate": "2024-03-01",
       "criticalPathLevel": "watch",
-      "referenceAssetIds": ["ast012", "ast014"],
+      "referenceAssetIds": [
+        "ast012",
+        "ast014"
+      ],
       "reviewFocus": "长时间穿着舒适度",
       "phase": "concept",
       "owner": "王五",
@@ -486,19 +543,24 @@
       "itemName": "Comfort Flex 03",
       "category": "休闲鞋",
       "productRole": "filler",
-      "silhouette": "低帮 / 宽楦 / 圆头",
+      "silhouette": "低帮 / 宽楷 / 圆头",
       "upperConstruction": "宽开口 + 软包边",
       "outsoleDirection": "柔软中底 + 稳定外底",
       "materialFocus": "软皮 + 记忆棉",
       "colorDirection": "米白女性向",
-      "longLeadMaterial": ["记忆棉鞋垫"],
+      "longLeadMaterial": [
+        "记忆棉鞋垫"
+      ],
       "materialLockDate": "2024-03-10",
       "toolingStartDate": "2024-03-03",
       "toolingTrialDate": "2024-03-26",
       "toolingFreezeDate": "2024-04-05",
       "techPackDueDate": "2024-03-06",
       "criticalPathLevel": "normal",
-      "referenceAssetIds": ["ast011", "ast014"],
+      "referenceAssetIds": [
+        "ast011",
+        "ast014"
+      ],
       "reviewFocus": "女性向配色与轻盈感",
       "phase": "concept",
       "owner": "王五",

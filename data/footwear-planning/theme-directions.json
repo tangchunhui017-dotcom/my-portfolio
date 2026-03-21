@@ -4,70 +4,205 @@
       "themeId": "th001",
       "season": "2024SS",
       "waveId": "w1",
-      "waveName": "W1 \u6625\u5b63\u9996\u53d1",
+      "waveName": "W1 春季首发",
       "launchWindow": "2024-03-01 ~ 2024-03-31",
-      "themeName": "\u8857\u5934\u673a\u80fd\u590d\u53e4",
-      "themeStory": "\u628a 90 \u5e74\u4ee3\u8857\u5934\u539a\u5e95\u8bed\u8a00\u548c\u57ce\u5e02\u673a\u80fd\u7ec6\u8282\u653e\u5230\u6625\u5b63\u9996\u53d1\u6ce2\u6bb5\uff0c\u5148\u5efa\u7acb\u89c6\u89c9\u8bb0\u5fc6\u70b9\uff0c\u518d\u901a\u8fc7\u6750\u6599\u548c\u529f\u80fd\u7ec6\u8282\u8865\u5f3a\u6027\u80fd\u8ba4\u77e5\u3002",
-      "consumerMood": "\u9002\u5408\u5728\u901a\u52e4\u3001\u793e\u4ea4\u548c\u77ed\u9014\u5f92\u6b65\u4e4b\u95f4\u5207\u6362\u7684\u5e74\u8f7b\u6f6e\u6d41\u8868\u8fbe\u3002",
-      "brandLongTermStrength": "\u54c1\u724c\u957f\u671f\u64c5\u957f\u628a\u590d\u53e4\u6ed1\u677f\u3001\u57ce\u5e02\u4f11\u95f2\u548c\u529f\u80fd\u7ec6\u8282\u878d\u5408\u6210\u53ef\u5e38\u5e74\u8fd0\u4f5c\u7684\u8857\u5934\u4f11\u95f2\u978b\u7cfb\u5217\u3002",
-      "brandCoreStyles": ["\u590d\u53e4\u8857\u5934", "\u677f\u978b\u8bed\u8a00", "\u57ce\u5e02\u673a\u80fd\u4f11\u95f2"],
-      "historicalAnchors": ["2023AW \u590d\u53e4\u539a\u5e95\u7cfb\u5217\u9500\u552e\u51a0\u519b", "\u53bb\u5e74\u540c\u671f\u9ed1\u767d\u673a\u80fd\u98ce\u552e\u7f44\u7387\u9886\u5148", "Carry-over \u8857\u5934\u5927\u5e95\u5728\u95e8\u5e97\u7a33\u5b9a\u52a8\u9500"],
-      "keywords": ["\u590d\u53e4", "\u8857\u5934", "\u539a\u5e95", "\u673a\u80fd", "\u62fc\u63a5", "\u649e\u8272"],
-      "consumerScenes": ["\u57ce\u5e02\u901a\u52e4", "\u5468\u672b\u793e\u4ea4", "\u77ed\u9014\u5f92\u6b65"],
-      "colorDirections": ["\u9ed1\u8272", "\u767d\u8272", "\u7070\u8272", "\u8367\u5149\u7eff", "\u6a59\u8272"],
-      "materialDirections": ["\u53cd\u7ed2\u725b\u76ae", "\u7f51\u773c\u5e03", "\u9632\u6c34\u9762\u6599", "\u6a61\u80f6\u5927\u5e95"],
-      "benchmarkReferences": ["90s Skate", "Campus Court", "Urban Hiker"],
-      "trendSignals": ["\u673a\u80fd\u901a\u52e4\u98ce\u5728\u9752\u5e74\u5e02\u573a\u6301\u7eed\u589e\u957f", "\u5e73\u53f0\u649e\u8272\u4f11\u95f2\u978b\u70b9\u51fb\u7387\u9ad8", "\u7ade\u54c1\u5728 W1 \u96c6\u4e2d\u4e0a\u65b0\u539a\u5e95\u677f\u978b"],
-      "marketOpportunities": ["\u53ef\u63a8\u51fa\u673a\u80fd\u7248\u4f4e\u5e2e\u677f\u978b\u5361\u4f4d", "\u53ef\u5229\u7528\u8367\u5149\u70b9\u7f00\u62c9\u5f00\u4e0e\u7ade\u54c1\u5dee\u5f02", "\u53ef\u7528\u540c\u5e95\u5ef6\u5c55\u901a\u52e4\u548c\u5468\u672b\u4e24\u79cd\u573a\u666f"],
-      "opportunitySummary": "\u672c\u5b63\u7684\u65b0\u673a\u4f1a\u4e0d\u662f\u505a\u66f4\u591a\u8857\u5934\u6b3e\uff0c\u800c\u662f\u628a\u54c1\u724c\u64c5\u957f\u7684\u8857\u5934\u8bed\u8a00\u548c\u673a\u80fd\u901a\u52e4\u573a\u666f\u5408\u5e76\uff0c\u505a\u51fa\u53ef\u901a\u52e4\u4e5f\u53ef\u793e\u4ea4\u7684\u4e3b\u63a8\u6b3e\u3002",
-      "reviewFocus": ["\u4e3b\u63a8\u6b3e\u5927\u5e95\u6bd4\u4f8b", "\u978b\u5934\u5305\u8986", "\u8367\u5149\u8272\u5360\u6bd4"],
+      "themeName": "街头机能复古",
+      "themeStory": "把 90 年代街头厚底语言和城市机能细节放到春季首发波段，先建立视觉记忆点，再通过材料和功能细节补强性能认知。",
+      "consumerMood": "面向在通勤、社交和短途徒步之间切换的年轻消费群，强调有态度但不过分夸张的日常表达。",
+      "brandLongTermStrength": "品牌长期擅长把复古滑板、城市休闲和功能细节融合成可常年运作的街头休闲鞋系列，这是本季最该继续放大的基础能力。",
+      "brandCoreStyles": [
+        "复古街头",
+        "板鞋语言",
+        "城市机能休闲"
+      ],
+      "historicalAnchors": [
+        "2023AW 复古厚底系列是当季销量冠军",
+        "去年同期黑白机能风款式在门店售罄率领先",
+        "Carry-over 街头大底在核心门店保持稳定动销"
+      ],
+      "keywords": [
+        "复古",
+        "街头",
+        "厚底",
+        "机能",
+        "拼接",
+        "撞色"
+      ],
+      "consumerScenes": [
+        "城市通勤",
+        "周末社交",
+        "短途徒步"
+      ],
+      "colorDirections": [
+        "黑色",
+        "白色",
+        "灰色",
+        "荧光绿",
+        "橙色"
+      ],
+      "materialDirections": [
+        "反绒牛皮",
+        "网眼布",
+        "防水面料",
+        "橡胶大底"
+      ],
+      "benchmarkReferences": [
+        "90 年代滑板鞋",
+        "校园场景复古板鞋",
+        "都市徒步休闲鞋"
+      ],
+      "trendSignals": [
+        "机能通勤风在年轻市场持续增长",
+        "平台撞色休闲鞋在内容平台点击率高",
+        "竞品在 W1 集中上新厚底板鞋与通勤混搭款"
+      ],
+      "marketOpportunities": [
+        "可推出机能版低帮板鞋卡位春季首发",
+        "可利用荧光点缀拉开与竞品的差异",
+        "可用同底延展通勤和周末两种场景"
+      ],
+      "opportunitySummary": "本季的新机会不是做更多街头款，而是把品牌擅长的街头语言和机能通勤场景合并，做出既能通勤也能周末出街的主推款。",
+      "reviewFocus": [
+        "主推款大底比例",
+        "鞋头包覆",
+        "荧光色占比"
+      ],
       "cmfFocus": {
-        "keyColors": ["\u9ed1\u767d\u57fa\u5e95", "\u8367\u5149\u7eff\u70b9\u7f00", "\u6a59\u8272\u529f\u80fd\u8272"],
-        "keyMaterials": ["\u53cd\u7ed2\u725b\u76ae", "\u7f51\u773c\u5e03", "TPU \u652f\u6491\u7247"],
-        "supplierPriorities": ["\u53cd\u7ed2\u725b\u76ae A \u4f9b\u5e94\u5546", "TPU \u914d\u4ef6 B \u4f9b\u5e94\u5546", "\u6a61\u80f6\u5927\u5e95 C \u5de5\u5382"]
+        "keyColors": [
+          "黑白基底",
+          "荧光绿点缀",
+          "橙色功能色"
+        ],
+        "keyMaterials": [
+          "反绒牛皮",
+          "网眼布",
+          "TPU 支撑片"
+        ],
+        "supplierPriorities": [
+          "反绒牛皮 A 供应商",
+          "TPU 配件 B 供应商",
+          "橡胶大底 C 工厂"
+        ]
       },
-      "seriesIds": ["s001", "s002"],
-      "seriesNames": ["Street Wave", "Urban Trail"],
-      "moodboardAssetIds": ["ast001", "ast008"],
+      "seriesIds": [
+        "s001",
+        "s002"
+      ],
+      "seriesNames": [
+        "Street Wave",
+        "Urban Trail"
+      ],
+      "moodboardAssetIds": [
+        "ast001",
+        "ast008"
+      ],
       "source": "manual",
       "sourceId": null,
       "updatedAt": "2024-03-22T00:00:00Z",
-      "updatedBy": "\u8bbe\u8ba1\u4f01\u5212\u7ec4",
+      "updatedBy": "设计企划组",
       "syncStatus": "synced"
     },
     {
       "themeId": "th002",
       "season": "2024SS",
       "waveId": "w2",
-      "waveName": "W2 \u590f\u5b63\u4e3b\u63a8",
+      "waveName": "W2 夏季主推",
       "launchWindow": "2024-05-01 ~ 2024-06-15",
-      "themeName": "\u5546\u52a1\u8212\u9002\u901a\u52e4",
-      "themeStory": "\u4ee5\u73b0\u4ee3\u5546\u52a1\u978b\u578b\u4e3a\u57fa\u5e95\uff0c\u52a0\u5165\u8f7b\u91cf\u3001\u67d4\u8f6f\u548c\u6613\u7a7f\u8131\u7684\u8212\u9002\u4f53\u9a8c\uff0c\u8ba9\u6b63\u5f0f\u611f\u548c\u901a\u52e4\u8212\u9002\u5ea6\u540c\u65f6\u6210\u7acb\u3002",
-      "consumerMood": "\u9762\u5411\u9700\u8981\u5168\u5929\u901a\u52e4\u3001\u5f00\u4f1a\u548c\u8f7b\u793e\u4ea4\u5207\u6362\u7684\u6210\u719f\u6d88\u8d39\u4eba\u7fa4\u3002",
-      "brandLongTermStrength": "\u54c1\u724c\u957f\u671f\u64c5\u957f\u5728\u7ecf\u5178\u978b\u578b\u4e0a\u505a\u8212\u9002\u5347\u7ea7\uff0c\u5305\u62ec\u66f4\u8f6f\u7684\u978b\u5e95\u3001\u66f4\u7a33\u7684\u6977\u578b\u548c\u66f4\u65b9\u4fbf\u7684\u7a7f\u8131\u7ed3\u6784\u3002",
-      "brandCoreStyles": ["\u5546\u52a1\u5fb7\u6bd4", "\u8212\u9002\u4e50\u798f", "\u901a\u52e4\u8f7b\u5546\u52a1"],
-      "historicalAnchors": ["\u7ecf\u5178\u5546\u52a1\u6977\u578b\u957f\u671f\u590d\u8d2d\u7387\u9ad8", "\u8f7b\u91cf\u5546\u52a1\u7cfb\u5217\u5728\u95e8\u5e97\u63a8\u5e7f\u53cd\u9988\u7a33\u5b9a", "Carry-over \u4e50\u798f\u978b\u8f6f\u5e95\u7248\u52a8\u9500\u826f\u597d"],
-      "keywords": ["\u5546\u52a1", "\u8212\u9002", "\u7ecf\u5178", "\u8f7b\u4fbf", "\u4e00\u811a\u8e6c", "\u54c1\u8d28"],
-      "consumerScenes": ["\u5546\u52a1\u901a\u52e4", "\u6b63\u5f0f\u793e\u4ea4", "\u8f7b\u5ea6\u4f11\u95f2"],
-      "colorDirections": ["\u9ed1\u8272", "\u6df1\u68d5", "\u6df1\u84dd", "\u7c73\u767d", "\u9a7c\u8272"],
-      "materialDirections": ["\u5934\u5c42\u725b\u76ae", "\u5c0f\u725b\u76ae", "\u8f6f\u9762\u725b\u76ae", "\u5f39\u529b\u5e03", "EVA \u4e2d\u5e95"],
-      "benchmarkReferences": ["Modern Derby", "Soft Loafer", "Daily Comfort"],
-      "trendSignals": ["\u5546\u52a1\u4f11\u95f2\u8fb9\u754c\u6301\u7eed\u6a21\u7cca", "\u8f7b\u5546\u52a1 + \u8212\u9002\u4f53\u9a8c\u662f\u6210\u719f\u7537\u978b\u589e\u957f\u70b9", "\u4e00\u811a\u8e6c\u548c\u8f6f\u6977\u901a\u52e4\u978b\u6709\u65b0\u673a\u4f1a"],
-      "marketOpportunities": ["\u53ef\u628a\u5546\u52a1\u5fb7\u6bd4\u505a\u6210\u8f7b\u91cf\u8212\u9002\u7248", "\u53ef\u7528\u540c\u6977\u5ef6\u5c55\u4e50\u798f\u548c\u5fb7\u6bd4\u4e24\u79cd\u54c1\u7c7b", "\u53ef\u63d0\u524d\u9501\u5b9a\u8f6f\u76ae\u548c EVA \u4f9b\u5e94\u8d44\u6e90\u505a\u8212\u9002\u6545\u4e8b"],
-      "opportunitySummary": "\u672c\u5b63\u65b0\u673a\u4f1a\u5728\u4e8e\u628a\u54c1\u724c\u64c5\u957f\u7684\u5546\u52a1\u978b\u578b\u57fa\u7840\u548c\u8212\u9002\u901a\u52e4\u8d8b\u52bf\u53e0\u52a0\uff0c\u505a\u51fa\u201c\u80fd\u4e0a\u73ed\u3001\u4e5f\u80fd\u8d70\u4e00\u5929\u201d\u7684\u4e3b\u63a8\u5546\u52a1\u6b3e\u3002",
-      "reviewFocus": ["\u6977\u578b\u8212\u9002\u5ea6", "\u4e00\u811a\u8e6c\u7a33\u5b9a\u6027", "\u6750\u6599\u4ea4\u671f"],
+      "themeName": "商务舒适通勤",
+      "themeStory": "以现代商务鞋型为基底，加入轻量、柔软和易穿脱的舒适体验，让正式感和通勤舒适度同时成立。",
+      "consumerMood": "面向需要全天通勤、开会和轻社交切换的成熟消费群，希望鞋子既稳重得体，又能明显减轻久穿负担。",
+      "brandLongTermStrength": "品牌长期擅长在经典鞋型上做舒适升级，包括更软的鞋底、更稳的楷型和更方便的穿脱结构，这是本季商务线的核心护城河。",
+      "brandCoreStyles": [
+        "商务德比",
+        "舒适乐福",
+        "通勤轻商务"
+      ],
+      "historicalAnchors": [
+        "经典商务楷型长期复购率高",
+        "轻量商务系列在门店推广反馈稳定",
+        "Carry-over 乐福鞋软底版保持良好动销"
+      ],
+      "keywords": [
+        "商务",
+        "舒适",
+        "经典",
+        "轻便",
+        "一脚蹬",
+        "品质"
+      ],
+      "consumerScenes": [
+        "商务通勤",
+        "正式社交",
+        "轻度休闲"
+      ],
+      "colorDirections": [
+        "黑色",
+        "深棕",
+        "深蓝",
+        "米白",
+        "驼色"
+      ],
+      "materialDirections": [
+        "头层牛皮",
+        "小牛皮",
+        "软面牛皮",
+        "弹力布",
+        "EVA 中底"
+      ],
+      "benchmarkReferences": [
+        "现代商务德比",
+        "软底乐福鞋",
+        "日常舒适通勤鞋"
+      ],
+      "trendSignals": [
+        "商务与休闲的边界持续模糊",
+        "轻商务加舒适体验是成熟男鞋新的增长点",
+        "一脚蹬和软楷通勤鞋出现新的搜索机会"
+      ],
+      "marketOpportunities": [
+        "可把商务德比做成轻量舒适版",
+        "可用同楷延展乐福和德比两种品类",
+        "可提前锁定软皮和 EVA 资源强化舒适故事"
+      ],
+      "opportunitySummary": "本季的新机会在于把品牌擅长的商务鞋型基础和舒适通勤趋势叠加，做出能上班、也能走一整天的主推商务款。",
+      "reviewFocus": [
+        "楷型舒适度",
+        "一脚蹬稳定性",
+        "材料交期"
+      ],
       "cmfFocus": {
-        "keyColors": ["\u7ecf\u5178\u9ed1", "\u6df1\u68d5\u5546\u52a1\u8272", "\u4f4e\u9971\u548c\u7c73\u767d"],
-        "keyMaterials": ["\u5934\u5c42\u725b\u76ae", "\u8f6f\u9762\u725b\u76ae", "\u8bb0\u5fc6\u68c9\u978b\u57ab"],
-        "supplierPriorities": ["\u5934\u5c42\u725b\u76ae D \u4f9b\u5e94\u5546", "EVA \u4e2d\u5e95 E \u5de5\u5382", "\u771f\u76ae\u5185\u91cc F \u4f9b\u5e94\u5546"]
+        "keyColors": [
+          "经典黑",
+          "深棕商务色",
+          "低饱和米白"
+        ],
+        "keyMaterials": [
+          "头层牛皮",
+          "软面牛皮",
+          "记忆棉鞋垫"
+        ],
+        "supplierPriorities": [
+          "头层牛皮 D 供应商",
+          "EVA 中底 E 工厂",
+          "真皮内里 F 供应商"
+        ]
       },
-      "seriesIds": ["s003", "s004"],
-      "seriesNames": ["City Classic", "Comfort Flex"],
-      "moodboardAssetIds": ["ast009", "ast011"],
+      "seriesIds": [
+        "s003",
+        "s004"
+      ],
+      "seriesNames": [
+        "City Classic",
+        "Comfort Flex"
+      ],
+      "moodboardAssetIds": [
+        "ast009",
+        "ast011"
+      ],
       "source": "manual",
       "sourceId": null,
       "updatedAt": "2024-03-22T00:00:00Z",
-      "updatedBy": "\u8bbe\u8ba1\u4f01\u5212\u7ec4",
+      "updatedBy": "设计企划组",
       "syncStatus": "synced"
     }
   ]

@@ -4,17 +4,17 @@
       "assetId": "ast001",
       "assetType": "moodboard",
       "seriesId": "s001",
-      "title": "Street Wave ???",
-      "description": "????????? 90 ?????????????",
+      "title": "街头浪潮 情绪板",
+      "description": "街头浪潮的主题氛围、消费场景和轮廓方向参考。",
       "fileUrl": "/assets/moodboards/street-wave-mb-001.jpg",
       "thumbnailUrl": "/assets/moodboards/thumbs/street-wave-mb-001.jpg",
       "tags": [
-        "??",
-        "??",
-        "??",
-        "??"
+        "街头复古",
+        "厚底",
+        "机能层次",
+        "90年代"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "王五",
       "uploadedAt": "2024-02-15T10:30:00Z",
       "featuredInReport": true,
       "source": "manual",
@@ -25,17 +25,17 @@
       "assetId": "ast002",
       "assetType": "material",
       "seriesId": "s002",
-      "title": "Urban Trail ?????",
-      "description": "???????????????????????",
+      "title": "城市机能徒步 材料板",
+      "description": "城市机能徒步的主材、辅料和结构件搭配方向。",
       "fileUrl": "/assets/materials/urban-trail-mat-002.jpg",
       "thumbnailUrl": "/assets/materials/thumbs/urban-trail-mat-002.jpg",
       "tags": [
-        "??",
-        "??",
-        "??",
-        "??"
+        "城市徒步",
+        "主材",
+        "辅料",
+        "结构件"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "张三",
       "uploadedAt": "2024-02-18T14:20:00Z",
       "featuredInReport": false,
       "source": "manual",
@@ -46,16 +46,17 @@
       "assetId": "ast003",
       "assetType": "outsole",
       "seriesId": "s001",
-      "title": "Street Wave ????",
-      "description": "?????????????????????",
+      "title": "街头浪潮 大底 / 楦型板",
+      "description": "街头浪潮的大底轮廓、齿纹和楦型比例参考。",
       "fileUrl": "/assets/outsoles/street-wave-sole-003.jpg",
       "thumbnailUrl": "/assets/outsoles/thumbs/street-wave-sole-003.jpg",
       "tags": [
-        "??",
-        "??",
-        "??"
+        "街头复古",
+        "大底",
+        "楦型",
+        "比例"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "王五",
       "uploadedAt": "2024-02-20T09:15:00Z",
       "featuredInReport": true,
       "source": "manual",
@@ -66,16 +67,17 @@
       "assetId": "ast004",
       "assetType": "color",
       "seriesId": "s003",
-      "title": "City Classic ????",
-      "description": "????????????????",
+      "title": "都市经典商务 配色板",
+      "description": "都市经典商务的主色、辅色和点缀色组合方向。",
       "fileUrl": "/assets/colors/city-classic-color-004.jpg",
       "thumbnailUrl": "/assets/colors/thumbs/city-classic-color-004.jpg",
       "tags": [
-        "??",
-        "??",
-        "??"
+        "商务通勤",
+        "主色",
+        "辅色",
+        "点缀色"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "李四",
       "uploadedAt": "2024-02-22T16:45:00Z",
       "featuredInReport": true,
       "source": "manual",
@@ -86,16 +88,17 @@
       "assetId": "ast005",
       "assetType": "color",
       "seriesId": "s001",
-      "title": "Street Wave ????",
-      "description": "???????????????????????",
+      "title": "街头浪潮 配色板",
+      "description": "街头浪潮的主色、辅色和点缀色组合方向。",
       "fileUrl": "/assets/colors/street-wave-color-005.jpg",
       "thumbnailUrl": "/assets/colors/thumbs/street-wave-color-005.jpg",
       "tags": [
-        "??",
-        "??",
-        "??"
+        "街头复古",
+        "主色",
+        "辅色",
+        "点缀色"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "王五",
       "uploadedAt": "2024-02-23T11:00:00Z",
       "featuredInReport": true,
       "source": "manual",
@@ -106,16 +109,17 @@
       "assetId": "ast006",
       "assetType": "material",
       "seriesId": "s001",
-      "title": "Street Wave ??? + ?????",
-      "description": "?????????????????????",
+      "title": "街头浪潮 材料板",
+      "description": "街头浪潮的主材、辅料和结构件搭配方向。",
       "fileUrl": "/assets/materials/street-wave-mat-006.jpg",
       "thumbnailUrl": "/assets/materials/thumbs/street-wave-mat-006.jpg",
       "tags": [
-        "???",
-        "??",
-        "??"
+        "街头复古",
+        "主材",
+        "辅料",
+        "结构件"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "王五",
       "uploadedAt": "2024-02-17T09:30:00Z",
       "featuredInReport": false,
       "source": "manual",
@@ -126,16 +130,17 @@
       "assetId": "ast007",
       "assetType": "outsole",
       "seriesId": "s002",
-      "title": "Urban Trail ??????",
-      "description": "????????????????",
+      "title": "城市机能徒步 大底 / 楦型板",
+      "description": "城市机能徒步的大底轮廓、齿纹和楦型比例参考。",
       "fileUrl": "/assets/outsoles/urban-trail-sole-007.jpg",
       "thumbnailUrl": "/assets/outsoles/thumbs/urban-trail-sole-007.jpg",
       "tags": [
-        "??",
-        "??",
-        "??"
+        "城市徒步",
+        "大底",
+        "楦型",
+        "比例"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "张三",
       "uploadedAt": "2024-02-21T15:00:00Z",
       "featuredInReport": true,
       "source": "manual",
@@ -146,17 +151,17 @@
       "assetId": "ast008",
       "assetType": "moodboard",
       "seriesId": "s002",
-      "title": "Urban Trail ???????",
-      "description": "??????????????????????",
+      "title": "城市机能徒步 情绪板",
+      "description": "城市机能徒步的主题氛围、消费场景和轮廓方向参考。",
       "fileUrl": "/assets/moodboards/urban-trail-mb-008.jpg",
       "thumbnailUrl": "/assets/moodboards/thumbs/urban-trail-mb-008.jpg",
       "tags": [
-        "??",
-        "??",
-        "??",
-        "??"
+        "城市徒步",
+        "机能",
+        "耐磨",
+        "通勤户外"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "张三",
       "uploadedAt": "2024-02-16T10:00:00Z",
       "featuredInReport": true,
       "source": "manual",
@@ -167,16 +172,17 @@
       "assetId": "ast009",
       "assetType": "moodboard",
       "seriesId": "s003",
-      "title": "City Classic ???????",
-      "description": "?????????????????????",
+      "title": "都市经典商务 情绪板",
+      "description": "都市经典商务的主题氛围、消费场景和轮廓方向参考。",
       "fileUrl": "/assets/moodboards/city-classic-mb-009.jpg",
       "thumbnailUrl": "/assets/moodboards/thumbs/city-classic-mb-009.jpg",
       "tags": [
-        "??",
-        "??",
-        "??"
+        "商务通勤",
+        "经典",
+        "轻正装",
+        "舒适"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "李四",
       "uploadedAt": "2024-02-19T14:00:00Z",
       "featuredInReport": true,
       "source": "manual",
@@ -187,16 +193,17 @@
       "assetId": "ast010",
       "assetType": "outsole",
       "seriesId": "s003",
-      "title": "City Classic ?? + ????",
-      "description": "???????????????????????",
+      "title": "都市经典商务 大底 / 楦型板",
+      "description": "都市经典商务的大底轮廓、齿纹和楦型比例参考。",
       "fileUrl": "/assets/outsoles/city-classic-sole-010.jpg",
       "thumbnailUrl": "/assets/outsoles/thumbs/city-classic-sole-010.jpg",
       "tags": [
-        "??",
-        "????",
-        "??"
+        "商务通勤",
+        "大底",
+        "楦型",
+        "比例"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "李四",
       "uploadedAt": "2024-02-24T11:30:00Z",
       "featuredInReport": false,
       "source": "manual",
@@ -207,16 +214,17 @@
       "assetId": "ast011",
       "assetType": "moodboard",
       "seriesId": "s004",
-      "title": "Comfort Flex ???????",
-      "description": "???????????????????????",
+      "title": "舒适弹行 情绪板",
+      "description": "舒适弹行的主题氛围、消费场景和轮廓方向参考。",
       "fileUrl": "/assets/moodboards/comfort-flex-mb-011.jpg",
       "thumbnailUrl": "/assets/moodboards/thumbs/comfort-flex-mb-011.jpg",
       "tags": [
-        "??",
-        "??",
-        "??"
+        "舒适通勤",
+        "轻量",
+        "弹性",
+        "日常"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "王五",
       "uploadedAt": "2024-02-20T10:00:00Z",
       "featuredInReport": true,
       "source": "manual",
@@ -227,17 +235,17 @@
       "assetId": "ast012",
       "assetType": "material",
       "seriesId": "s004",
-      "title": "Comfort Flex ?? + ??????",
-      "description": "??????????????? EVA ?????",
+      "title": "舒适弹行 材料板",
+      "description": "舒适弹行的主材、辅料和结构件搭配方向。",
       "fileUrl": "/assets/materials/comfort-flex-mat-012.jpg",
       "thumbnailUrl": "/assets/materials/thumbs/comfort-flex-mat-012.jpg",
       "tags": [
-        "??",
-        "???",
-        "???",
-        "EVA"
+        "舒适通勤",
+        "主材",
+        "辅料",
+        "结构件"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "王五",
       "uploadedAt": "2024-02-22T09:00:00Z",
       "featuredInReport": false,
       "source": "manual",
@@ -248,16 +256,17 @@
       "assetId": "ast013",
       "assetType": "outsole",
       "seriesId": "s004",
-      "title": "Comfort Flex ?? EVA ??",
-      "description": "???? EVA ??????????????",
+      "title": "舒适弹行 大底 / 楦型板",
+      "description": "舒适弹行的大底轮廓、齿纹和楦型比例参考。",
       "fileUrl": "/assets/outsoles/comfort-flex-sole-013.jpg",
       "thumbnailUrl": "/assets/outsoles/thumbs/comfort-flex-sole-013.jpg",
       "tags": [
-        "EVA",
-        "??",
-        "???"
+        "舒适通勤",
+        "大底",
+        "楦型",
+        "比例"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "王五",
       "uploadedAt": "2024-02-25T14:00:00Z",
       "featuredInReport": true,
       "source": "manual",
@@ -268,16 +277,17 @@
       "assetId": "ast014",
       "assetType": "color",
       "seriesId": "s004",
-      "title": "Comfort Flex ??????",
-      "description": "???????????????????",
+      "title": "舒适弹行 配色板",
+      "description": "舒适弹行的主色、辅色和点缀色组合方向。",
       "fileUrl": "/assets/colors/comfort-flex-color-014.jpg",
       "thumbnailUrl": "/assets/colors/thumbs/comfort-flex-color-014.jpg",
       "tags": [
-        "??",
-        "???",
-        "??"
+        "舒适通勤",
+        "主色",
+        "辅色",
+        "点缀色"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "王五",
       "uploadedAt": "2024-02-26T10:30:00Z",
       "featuredInReport": false,
       "source": "manual",
@@ -288,16 +298,17 @@
       "assetId": "ast015",
       "assetType": "color",
       "seriesId": "s002",
-      "title": "Urban Trail ??????",
-      "description": "??????????????????",
+      "title": "城市机能徒步 配色板",
+      "description": "城市机能徒步的主色、辅色和点缀色组合方向。",
       "fileUrl": "/assets/colors/urban-trail-color-015.jpg",
       "thumbnailUrl": "/assets/colors/thumbs/urban-trail-color-015.jpg",
       "tags": [
-        "??",
-        "??",
-        "???"
+        "城市徒步",
+        "主色",
+        "辅色",
+        "点缀色"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "张三",
       "uploadedAt": "2024-02-23T16:00:00Z",
       "featuredInReport": true,
       "source": "manual",
@@ -312,28 +323,28 @@
       "comparisonGroupId": "cmp-di001",
       "versionStage": "sketch",
       "versionNo": 1,
-      "title": "Street Wave 01 ????",
-      "description": "????????????????????????????",
+      "title": "街头浪潮 01 概念草图",
+      "description": "休闲鞋版本，用于确认轮廓比例、帮面结构和主题方向。",
       "fileUrl": "/assets/effect-stages/sketch.svg",
       "thumbnailUrl": "/assets/effect-stages/sketch.svg",
       "tags": [
-        "????",
-        "??",
-        "??"
+        "休闲鞋",
+        "概念草图",
+        "主推"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "王五",
       "uploadedAt": "2024-02-09T10:00:00Z",
       "capturedAt": "2024-02-09T10:00:00Z",
       "featuredInReport": false,
       "selectedForReview": false,
       "bomSummary": [
-        "????",
-        "????",
-        "????"
+        "反绒牛皮",
+        "网眼布",
+        "厚底橡胶大底"
       ],
       "cmfSummary": [
-        "????",
-        "?????"
+        "黑白基底",
+        "荧光绿点缀"
       ],
       "estimatedCost": 168,
       "source": "manual",
@@ -348,29 +359,28 @@
       "comparisonGroupId": "cmp-di001",
       "versionStage": "render",
       "versionNo": 2,
-      "title": "Street Wave 01 2D ??",
-      "description": "?????????????????????????????",
+      "title": "街头浪潮 01 渲染图",
+      "description": "休闲鞋版本，用于确认 CMF 组合、配色层次和品牌表达。",
       "fileUrl": "/assets/effect-stages/render.svg",
       "thumbnailUrl": "/assets/effect-stages/render.svg",
       "tags": [
-        "???",
-        "CMF",
-        "??"
+        "休闲鞋",
+        "渲染图",
+        "主推"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "王五",
       "uploadedAt": "2024-02-12T11:30:00Z",
       "capturedAt": "2024-02-12T11:30:00Z",
       "featuredInReport": true,
       "selectedForReview": true,
       "bomSummary": [
-        "????",
-        "????",
-        "TPU ???"
+        "反绒牛皮",
+        "网眼布",
+        "厚底橡胶大底"
       ],
       "cmfSummary": [
-        "????",
-        "?????",
-        "????"
+        "黑白基底",
+        "荧光绿点缀"
       ],
       "estimatedCost": 176,
       "source": "manual",
@@ -385,27 +395,28 @@
       "comparisonGroupId": "cmp-di001",
       "versionStage": "first_sample",
       "versionNo": 3,
-      "title": "Street Wave 01 ????",
-      "description": "?????????????????????????????",
+      "title": "街头浪潮 01 首轮样鞋",
+      "description": "休闲鞋版本，用于复核图物差异、结构修正和首轮报价。",
       "fileUrl": "/assets/effect-stages/first-sample.svg",
       "thumbnailUrl": "/assets/effect-stages/first-sample.svg",
       "tags": [
-        "????",
-        "????"
+        "休闲鞋",
+        "首轮样鞋",
+        "主推"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "王五",
       "uploadedAt": "2024-02-24T15:00:00Z",
       "capturedAt": "2024-02-24T15:00:00Z",
       "featuredInReport": true,
       "selectedForReview": true,
       "bomSummary": [
-        "????",
-        "????",
-        "????"
+        "反绒牛皮",
+        "网眼布",
+        "厚底橡胶大底"
       ],
       "cmfSummary": [
-        "????",
-        "?????"
+        "黑白基底",
+        "荧光绿点缀"
       ],
       "estimatedCost": 182,
       "source": "manual",
@@ -420,27 +431,28 @@
       "comparisonGroupId": "cmp-di001",
       "versionStage": "final_sample",
       "versionNo": 4,
-      "title": "Street Wave 01 ????",
-      "description": "?????????????????????????????",
+      "title": "街头浪潮 01 定样实拍",
+      "description": "休闲鞋版本，用于确认定样效果、成本收敛和上市版本。",
       "fileUrl": "/assets/effect-stages/final-sample.svg",
       "thumbnailUrl": "/assets/effect-stages/final-sample.svg",
       "tags": [
-        "??",
-        "??"
+        "休闲鞋",
+        "定样实拍",
+        "主推"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "王五",
       "uploadedAt": "2024-03-03T10:00:00Z",
       "capturedAt": "2024-03-03T10:00:00Z",
       "featuredInReport": true,
       "selectedForReview": true,
       "bomSummary": [
-        "????",
-        "????",
-        "????"
+        "反绒牛皮",
+        "网眼布",
+        "厚底橡胶大底"
       ],
       "cmfSummary": [
-        "????",
-        "?????"
+        "黑白基底",
+        "荧光绿点缀"
       ],
       "estimatedCost": 176,
       "source": "manual",
@@ -455,28 +467,27 @@
       "comparisonGroupId": "cmp-di002",
       "versionStage": "sketch",
       "versionNo": 1,
-      "title": "Urban Trail 01 ????",
-      "description": "????????????????????????????????",
+      "title": "城市机能徒步 01 概念草图",
+      "description": "户外鞋版本，用于确认轮廓比例、帮面结构和主题方向。",
       "fileUrl": "/assets/effect-stages/sketch.svg",
       "thumbnailUrl": "/assets/effect-stages/sketch.svg",
       "tags": [
-        "????",
-        "??",
-        "??"
+        "户外鞋",
+        "概念草图",
+        "主推"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "张三",
       "uploadedAt": "2024-02-10T09:00:00Z",
       "capturedAt": "2024-02-10T09:00:00Z",
       "featuredInReport": false,
       "selectedForReview": false,
       "bomSummary": [
-        "????",
-        "????",
-        "????"
+        "防水面料",
+        "橡胶大底",
+        "耐磨户外橡胶大底"
       ],
       "cmfSummary": [
-        "????",
-        "?????"
+        "灰黑机能色"
       ],
       "estimatedCost": 238,
       "source": "manual",
@@ -491,28 +502,27 @@
       "comparisonGroupId": "cmp-di002",
       "versionStage": "render",
       "versionNo": 2,
-      "title": "Urban Trail 01 2D ??",
-      "description": "????????????????????????????",
+      "title": "城市机能徒步 01 渲染图",
+      "description": "户外鞋版本，用于确认 CMF 组合、配色层次和品牌表达。",
       "fileUrl": "/assets/effect-stages/render.svg",
       "thumbnailUrl": "/assets/effect-stages/render.svg",
       "tags": [
-        "???",
-        "??"
+        "户外鞋",
+        "渲染图",
+        "主推"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "张三",
       "uploadedAt": "2024-02-14T16:00:00Z",
       "capturedAt": "2024-02-14T16:00:00Z",
       "featuredInReport": true,
       "selectedForReview": false,
       "bomSummary": [
-        "????",
-        "????",
-        "TPU ???"
+        "防水面料",
+        "橡胶大底",
+        "耐磨户外橡胶大底"
       ],
       "cmfSummary": [
-        "????",
-        "?????",
-        "?????"
+        "灰黑机能色"
       ],
       "estimatedCost": 246,
       "source": "manual",
@@ -527,27 +537,27 @@
       "comparisonGroupId": "cmp-di002",
       "versionStage": "first_sample",
       "versionNo": 3,
-      "title": "Urban Trail 01 ????",
-      "description": "????????????????????????????????",
+      "title": "城市机能徒步 01 首轮样鞋",
+      "description": "户外鞋版本，用于复核图物差异、结构修正和首轮报价。",
       "fileUrl": "/assets/effect-stages/first-sample.svg",
       "thumbnailUrl": "/assets/effect-stages/first-sample.svg",
       "tags": [
-        "????",
-        "????"
+        "户外鞋",
+        "首轮样鞋",
+        "主推"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "张三",
       "uploadedAt": "2024-02-26T11:00:00Z",
       "capturedAt": "2024-02-26T11:00:00Z",
       "featuredInReport": true,
       "selectedForReview": true,
       "bomSummary": [
-        "????",
-        "????",
-        "TPU ???"
+        "防水面料",
+        "橡胶大底",
+        "耐磨户外橡胶大底"
       ],
       "cmfSummary": [
-        "????",
-        "?????"
+        "灰黑机能色"
       ],
       "estimatedCost": 255,
       "source": "manual",
@@ -562,27 +572,27 @@
       "comparisonGroupId": "cmp-di002",
       "versionStage": "final_sample",
       "versionNo": 4,
-      "title": "Urban Trail 01 ????",
-      "description": "??????????????????????????",
+      "title": "城市机能徒步 01 定样实拍",
+      "description": "户外鞋版本，用于确认定样效果、成本收敛和上市版本。",
       "fileUrl": "/assets/effect-stages/final-sample.svg",
       "thumbnailUrl": "/assets/effect-stages/final-sample.svg",
       "tags": [
-        "??",
-        "????"
+        "户外鞋",
+        "定样实拍",
+        "主推"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "张三",
       "uploadedAt": "2024-03-06T14:00:00Z",
       "capturedAt": "2024-03-06T14:00:00Z",
       "featuredInReport": true,
       "selectedForReview": true,
       "bomSummary": [
-        "????",
-        "????",
-        "TPU ???"
+        "防水面料",
+        "橡胶大底",
+        "耐磨户外橡胶大底"
       ],
       "cmfSummary": [
-        "????",
-        "?????"
+        "灰黑机能色"
       ],
       "estimatedCost": 248,
       "source": "manual",
@@ -597,26 +607,26 @@
       "comparisonGroupId": "cmp-di004",
       "versionStage": "sketch",
       "versionNo": 1,
-      "title": "City Classic 01 ????",
-      "description": "??????????????????????????",
+      "title": "都市经典商务 01 概念草图",
+      "description": "正装鞋版本，用于确认轮廓比例、帮面结构和主题方向。",
       "fileUrl": "/assets/effect-stages/sketch.svg",
       "thumbnailUrl": "/assets/effect-stages/sketch.svg",
       "tags": [
-        "????",
-        "??"
+        "正装鞋",
+        "概念草图",
+        "核心"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "李四",
       "uploadedAt": "2024-02-16T13:00:00Z",
       "capturedAt": "2024-02-16T13:00:00Z",
       "featuredInReport": false,
       "selectedForReview": false,
       "bomSummary": [
-        "????",
-        "??",
-        "??????"
+        "头层牛皮",
+        "轻量商务大底"
       ],
       "cmfSummary": [
-        "?????"
+        "深棕商务色"
       ],
       "estimatedCost": 276,
       "source": "manual",
@@ -631,27 +641,26 @@
       "comparisonGroupId": "cmp-di004",
       "versionStage": "render",
       "versionNo": 2,
-      "title": "City Classic 01 2D ??",
-      "description": "???????????????????????????",
+      "title": "都市经典商务 01 渲染图",
+      "description": "正装鞋版本，用于确认 CMF 组合、配色层次和品牌表达。",
       "fileUrl": "/assets/effect-stages/render.svg",
       "thumbnailUrl": "/assets/effect-stages/render.svg",
       "tags": [
-        "???",
-        "????"
+        "正装鞋",
+        "渲染图",
+        "核心"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "李四",
       "uploadedAt": "2024-02-19T16:00:00Z",
       "capturedAt": "2024-02-19T16:00:00Z",
       "featuredInReport": false,
       "selectedForReview": false,
       "bomSummary": [
-        "????",
-        "??",
-        "??????"
+        "头层牛皮",
+        "轻量商务大底"
       ],
       "cmfSummary": [
-        "??",
-        "????"
+        "深棕商务色"
       ],
       "estimatedCost": 286,
       "source": "manual",
@@ -666,27 +675,26 @@
       "comparisonGroupId": "cmp-di004",
       "versionStage": "first_sample",
       "versionNo": 3,
-      "title": "City Classic 01 ????",
-      "description": "???????????????????????????",
+      "title": "都市经典商务 01 首轮样鞋",
+      "description": "正装鞋版本，用于复核图物差异、结构修正和首轮报价。",
       "fileUrl": "/assets/effect-stages/first-sample.svg",
       "thumbnailUrl": "/assets/effect-stages/first-sample.svg",
       "tags": [
-        "????",
-        "????"
+        "正装鞋",
+        "首轮样鞋",
+        "核心"
       ],
-      "uploadedBy": "??",
+      "uploadedBy": "李四",
       "uploadedAt": "2024-03-04T10:30:00Z",
       "capturedAt": "2024-03-04T10:30:00Z",
       "featuredInReport": true,
       "selectedForReview": true,
       "bomSummary": [
-        "????",
-        "??",
-        "????"
+        "头层牛皮",
+        "轻量商务大底"
       ],
       "cmfSummary": [
-        "??",
-        "????"
+        "深棕商务色"
       ],
       "estimatedCost": 289,
       "source": "manual",

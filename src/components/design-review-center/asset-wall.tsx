@@ -10,12 +10,23 @@ interface AssetWallProps {
   showFeaturedOnlyByDefault?: boolean;
 }
 
+const SERIES_NAME_MAP: Record<string, string> = {
+  'Street Wave': '\u8857\u5934\u6d6a\u6f6e',
+  'Urban Trail': '\u57ce\u5e02\u673a\u80fd\u5f92\u6b65',
+  'City Classic': '\u90fd\u5e02\u7ecf\u5178\u5546\u52a1',
+  'Comfort Flex': '\u8212\u9002\u5f39\u884c',
+};
+
 const assetTypeTabs = [
   { id: 'moodboard', label: '风格板' },
   { id: 'material', label: '材料板' },
   { id: 'outsole', label: '大底 / 楦型' },
   { id: 'color', label: '配色' },
 ] as const;
+
+function getSeriesDisplayName(label: string) {
+  return SERIES_NAME_MAP[label] ?? label;
+}
 
 export default function AssetWall({ assets, waves, series, showFeaturedOnlyByDefault = false }: AssetWallProps) {
   const [activeTab, setActiveTab] = useState<typeof assetTypeTabs[number]['id']>('moodboard');
@@ -105,7 +116,7 @@ export default function AssetWall({ assets, waves, series, showFeaturedOnlyByDef
               <option value="all">全部系列</option>
               {availableSeries.map((seriesRecord) => (
                 <option key={seriesRecord.seriesId} value={seriesRecord.seriesId}>
-                  {seriesRecord.seriesName}
+                  {getSeriesDisplayName(seriesRecord.seriesName)}
                 </option>
               ))}
             </select>
@@ -171,7 +182,7 @@ export default function AssetWall({ assets, waves, series, showFeaturedOnlyByDef
                 </div>
               </div>
               <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
-                <div>系列：{series.find((seriesRecord) => seriesRecord.seriesId === activeAsset.seriesId)?.seriesName ?? activeAsset.seriesId}</div>
+                <div>系列：{getSeriesDisplayName(series.find((seriesRecord) => seriesRecord.seriesId === activeAsset.seriesId)?.seriesName ?? activeAsset.seriesId)}</div>
                 <div className="mt-2">上传人：{activeAsset.uploadedBy}</div>
                 <div className="mt-2">上传时间：{new Date(activeAsset.uploadedAt).toLocaleDateString('zh-CN')}</div>
                 <div className="mt-2">来源：{activeAsset.source === 'openclaw' ? 'OpenClaw' : '手动录入'}</div>

@@ -8,6 +8,4 @@
   <path d="M260 575H950" stroke="#0f172a" stroke-opacity="0.18" stroke-width="10" stroke-linecap="round"/>
   <path d="M320 520C372 470 443 444 521 444H705C775 444 838 470 886 514" stroke="#0f172a" stroke-opacity="0.4" stroke-width="14" stroke-linecap="round"/>
   <path d="M410 640C478 666 556 678 642 678C739 678 824 662 898 630" stroke="#f97316" stroke-opacity="0.4" stroke-width="12" stroke-linecap="round"/>
-  <text x="80" y="785" font-family="Segoe UI, Arial, sans-serif" font-size="120" font-weight="800" fill="#0f172a">Sketch</text>
-  <text x="84" y="838" font-family="Segoe UI, Arial, sans-serif" font-size="34" fill="#0f172a" fill-opacity="0.6">OpenClaw Design Effect Preview Placeholder</text>
 </svg>

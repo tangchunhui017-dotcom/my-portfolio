@@ -14,22 +14,45 @@
       "phase": "prototype_review",
       "riskLevel": "medium",
       "heroImage": "/assets/series/s001-hero.jpg",
-      "roleMix": { "hero": 1, "core": 2, "filler": 1 },
+      "roleMix": {
+        "hero": 1,
+        "core": 2,
+        "filler": 1
+      },
       "plannedSkuCount": 12,
       "plannedSkuLimit": 14,
       "plannedSkuDepth": 3,
       "toolingStrategy": "new_upper_same_outsole",
       "toolingBudgetLevel": "controlled",
-      "lastReuseType": "复用街头低帮楦型，前掌宽度微调",
-      "outsoleReuseType": "沿用上一季爆款厚底，更新侧墙包边和纹路",
+      "lastReuseType": "复用街头低帮楷型，前掌宽度做轻微优化，保证熟悉脚感不丢失。",
+      "outsoleReuseType": "沿用上一季爆款厚底，更新侧墙包边和纹路细节，控制首波开模预算。",
       "carryOverRatio": 20,
       "sameOutsoleNewUpperRatio": 55,
       "newToolingRatio": 25,
-      "categoryMix": ["休闲鞋", "板鞋"],
-      "silhouetteDirections": ["中帮", "厚底", "圆头"],
-      "upperDirections": ["多片拼接", "加厚鞋舌", "包边鞋口"],
-      "outsoleDirections": ["复古厚底", "前掌弯折槽", "外扩侧墙"],
-      "reviewFocus": ["大底比例", "鞋口包边", "荧光色占比"],
+      "categoryMix": [
+        "休闲鞋",
+        "板鞋"
+      ],
+      "silhouetteDirections": [
+        "中帮",
+        "厚底",
+        "圆头"
+      ],
+      "upperDirections": [
+        "多片拼接",
+        "加厚鞋舌",
+        "包边鞋口"
+      ],
+      "outsoleDirections": [
+        "复古厚底",
+        "前掌弯折槽",
+        "外扩侧墙"
+      ],
+      "reviewFocus": [
+        "大底比例",
+        "鞋口包边",
+        "荧光色占比"
+      ],
       "architectureDecision": "Street Wave 继续作为 W1 主推视觉系列，优先用同底扩上帮的方式拉开主推款和补量款层次，避免在首波段一次性拉高开模预算。",
       "source": "manual",
       "sourceId": null,
@@ -51,22 +74,45 @@
       "phase": "sample_review",
       "riskLevel": "low",
       "heroImage": "/assets/series/s002-hero.jpg",
-      "roleMix": { "hero": 1, "core": 1, "filler": 1 },
+      "roleMix": {
+        "hero": 1,
+        "core": 1,
+        "filler": 1
+      },
       "plannedSkuCount": 8,
       "plannedSkuLimit": 9,
       "plannedSkuDepth": 2,
       "toolingStrategy": "new_tooling",
       "toolingBudgetLevel": "strategic",
-      "lastReuseType": "楦型全新开发，保留上一季通勤脚感数据",
-      "outsoleReuseType": "新开城市户外大底，强调抓地和滚动感",
+      "lastReuseType": "楷型全新开发，但保留上一季通勤脚感数据作为舒适度基线。",
+      "outsoleReuseType": "新开城市户外大底，强化抓地、滚动感和全天候通勤稳定性。",
       "carryOverRatio": 10,
       "sameOutsoleNewUpperRatio": 25,
       "newToolingRatio": 65,
-      "categoryMix": ["户外鞋", "徒步鞋"],
-      "silhouetteDirections": ["低帮", "流线型", "圆头"],
-      "upperDirections": ["防水袜套结构", "分区贴膜", "拉绳鞋带"],
-      "outsoleDirections": ["全地形齿纹", "Vibram 外底", "前翘滚动感"],
-      "reviewFocus": ["鞋头包覆", "机能感与通勤感平衡", "防水工艺"],
+      "categoryMix": [
+        "户外鞋",
+        "徒步鞋"
+      ],
+      "silhouetteDirections": [
+        "低帮",
+        "流线型",
+        "圆头"
+      ],
+      "upperDirections": [
+        "防水袜套结构",
+        "分区贴膜",
+        "拉绳鞋带"
+      ],
+      "outsoleDirections": [
+        "全地形齿纹",
+        "Vibram 外底",
+        "前翘滚动感"
+      ],
+      "reviewFocus": [
+        "鞋头包覆",
+        "机能感与通勤感平衡",
+        "防水工艺"
+      ],
       "architectureDecision": "Urban Trail 保留城市机能定位，但新开模比例较高，必须把主推款数量压住，避免一季内同时拉开太多户外衍生款。",
       "source": "manual",
       "sourceId": null,
@@ -88,23 +134,46 @@
       "phase": "concept",
       "riskLevel": "medium",
       "heroImage": "/assets/series/s003-hero.jpg",
-      "roleMix": { "hero": 0, "core": 2, "filler": 1 },
+      "roleMix": {
+        "hero": 0,
+        "core": 2,
+        "filler": 1
+      },
       "plannedSkuCount": 6,
       "plannedSkuLimit": 7,
       "plannedSkuDepth": 2,
       "toolingStrategy": "carry_over",
       "toolingBudgetLevel": "tight",
-      "lastReuseType": "沿用经典商务楦型，局部提升前掌舒适度",
-      "outsoleReuseType": "延续薄底商务底，加入后跟缓震贴片",
+      "lastReuseType": "沿用经典商务楷型，局部提升前掌舒适度和长时通勤稳定性。",
+      "outsoleReuseType": "延续薄底商务底，后跟加缓震贴片，控制商务线模具投入。",
       "carryOverRatio": 55,
       "sameOutsoleNewUpperRatio": 30,
       "newToolingRatio": 15,
-      "categoryMix": ["正装鞋", "乐福鞋"],
-      "silhouetteDirections": ["尖头", "低帮", "修长"],
-      "upperDirections": ["德比开口", "乐福一脚蹬", "简洁包边"],
-      "outsoleDirections": ["皮底加橡胶贴片", "后跟缓震", "薄底稳定片"],
-      "reviewFocus": ["楦型舒适度", "前掌弯折", "商务感纯度"],
-      "architectureDecision": "City Classic 先把商务楦型和舒适体验打稳，再决定是否扩乐福衍生款；W2 更适合用经典延续和换面策略稳住毛利。",
+      "categoryMix": [
+        "正装鞋",
+        "乐福鞋"
+      ],
+      "silhouetteDirections": [
+        "尖头",
+        "低帮",
+        "修长"
+      ],
+      "upperDirections": [
+        "德比开口",
+        "乐福一脚蹬",
+        "简洁包边"
+      ],
+      "outsoleDirections": [
+        "皮底加橡胶贴片",
+        "后跟缓震",
+        "薄底稳定片"
+      ],
+      "reviewFocus": [
+        "楷型舒适度",
+        "前掌弯折",
+        "商务感纯度"
+      ],
+      "architectureDecision": "City Classic 先把商务楷型和舒适体验打稳，再决定是否扩乐福衍生款；W2 更适合用经典延续和换面策略稳住毛利。",
       "source": "manual",
       "sourceId": null,
       "updatedAt": "2024-03-22T00:00:00Z",
@@ -125,22 +194,45 @@
       "phase": "concept",
       "riskLevel": "high",
       "heroImage": "/assets/series/s004-hero.jpg",
-      "roleMix": { "hero": 0, "core": 1, "filler": 3 },
+      "roleMix": {
+        "hero": 0,
+        "core": 1,
+        "filler": 3
+      },
       "plannedSkuCount": 8,
       "plannedSkuLimit": 8,
       "plannedSkuDepth": 4,
       "toolingStrategy": "new_upper_same_outsole",
       "toolingBudgetLevel": "controlled",
-      "lastReuseType": "延续宽楦舒适楦，验证女码和宽脚兼容性",
-      "outsoleReuseType": "沿用轻量 EVA 底，优化后跟落地稳定片",
+      "lastReuseType": "延续宽楷舒适楷，重点验证女码和宽脚兼容性。",
+      "outsoleReuseType": "沿用轻量 EVA 底，优化后跟落地稳定片和前掌回弹。",
       "carryOverRatio": 25,
       "sameOutsoleNewUpperRatio": 60,
       "newToolingRatio": 15,
-      "categoryMix": ["乐福鞋", "休闲鞋"],
-      "silhouetteDirections": ["低帮", "圆头", "宽楦"],
-      "upperDirections": ["弹力鞋口", "无压后跟", "宽开口结构"],
-      "outsoleDirections": ["轻量 EVA 底", "前掌弯折槽", "柔软中底"],
-      "reviewFocus": ["宽楦适配", "后跟包裹", "材料交期"],
+      "categoryMix": [
+        "乐福鞋",
+        "休闲鞋"
+      ],
+      "silhouetteDirections": [
+        "低帮",
+        "圆头",
+        "宽楷"
+      ],
+      "upperDirections": [
+        "弹力鞋口",
+        "无压后跟",
+        "宽开口结构"
+      ],
+      "outsoleDirections": [
+        "轻量 EVA 底",
+        "前掌弯折槽",
+        "柔软中底"
+      ],
+      "reviewFocus": [
+        "宽楷适配",
+        "后跟包裹",
+        "材料交期"
+      ],
       "architectureDecision": "Comfort Flex 的卖点明确，但当前 SKU 已顶到上限，后续只能在同底换面和配色上做扩展，不能再额外增加全新模具。",
       "source": "manual",
       "sourceId": null,

@@ -58,6 +58,13 @@ const PRIORITY_ORDER: Record<RiskLevel, number> = {
   low: 3,
 };
 
+const SERIES_NAME_MAP: Record<string, string> = {
+  'Street Wave': '街头浪潮',
+  'Urban Trail': '城市机能徒步',
+  'City Classic': '都市经典商务',
+  'Comfort Flex': '舒适弹行',
+};
+
 function startOfDay(value: string | null | undefined) {
   if (!value) return Number.POSITIVE_INFINITY;
   const date = new Date(value);
@@ -115,6 +122,15 @@ function getWaveQuarter(wave: Wave | undefined) {
 
 function isHighRisk(level: RiskLevel | undefined) {
   return level === 'high' || level === 'critical';
+}
+
+function localizeSeriesText(value: string | null | undefined) {
+  if (!value) return '';
+  let localized = value;
+  Object.entries(SERIES_NAME_MAP).forEach(([english, chinese]) => {
+    localized = localized.replaceAll(english, chinese);
+  });
+  return localized;
 }
 
 function getLeadSeries(series: SeriesWithBrief[]) {
@@ -207,7 +223,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
   const referenceDate = data.weeklySnapshot.snapshotDate;
   const seasonYear = extractYear(data.seasonOverview.season) || extractYear(referenceDate) || String(new Date(referenceDate).getFullYear());
   const currentOwner = data.seasonOverview.currentOwner?.trim() ?? '';
-  const actorName = currentOwner || '评审中心';
+  const actorName = currentOwner || '设计评审中心';
   const [activeTab, setActiveTab] = useState<WorkflowTabKey>('overview');
   const [filters, setFilters] = useState<FilterState>({ ...DEFAULT_FILTERS, year: seasonYear });
   const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
@@ -453,27 +469,27 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
       return {
         className: 'border-rose-200 bg-rose-50 text-rose-900',
         title: '存在同步异常',
-        description: '本地动作队列里有异常记录，建议先重试或清理后再继续批量操作。',
+        description: '本地动作队列里存在异常记录，建议先处理异常，再继续批量流转。',
       };
     }
     if (actionCounts.pending_sync > 0) {
       return {
         className: 'border-amber-200 bg-amber-50 text-amber-900',
         title: '存在待同步动作',
-        description: '当前批量动作已进入本地队列，后续可以继续对接 OpenClaw 导出或写回层。',
+        description: '当前批量动作已进入本地队列，可继续推进评审，也可作为后续对接 OpenClaw 的输入。',
       };
     }
     if (actionCounts.synced > 0) {
       return {
         className: 'border-emerald-200 bg-emerald-50 text-emerald-900',
         title: '本地基线已更新',
-        description: '最近一次批量动作已经写入本地基线，可继续推进评审和任务流转。',
+        description: '最近一次批量动作已经写入本地基线，可继续推进评审、任务和后续决策。',
       };
     }
     return {
       className: 'border-slate-200 bg-slate-50 text-slate-800',
       title: '当前无待同步动作',
-      description: '页面当前以本地基线数据为准，如有新的批量动作会先进入 Action Queue。',
+      description: '页面当前以本地基线数据为准，如有新的批量动作会先进入动作队列。',
     };
   }, [actionCounts.error, actionCounts.pending_sync, actionCounts.synced]);
 
@@ -530,7 +546,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
 
   const handleClearSynced = () => {
     setActionIntents((current) => clearSyncedDesignReviewActionIntents(current));
-    setActionMessage('已清理已同步动作。');
+    setActionMessage('已清理已同步动作记录。');
   };
 
   return (
@@ -540,7 +556,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
           <div>
             <h1 className="text-4xl font-semibold tracking-tight text-slate-950">设计企划与评审中心</h1>
             <p className="mt-3 text-base text-slate-500">
-              主题方向、产品架构、开发品类、研发波段、设计效果与评审动作统一在一页里推进。
+              把主题、架构、开发、效果与评审动作放在一页里，按同一条企划链推进。
             </p>
           </div>
           <div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm">
@@ -589,7 +605,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
                   <h2 className="text-3xl font-semibold text-slate-950">本周重点快照</h2>
                   <p className="mt-2 text-sm text-slate-600">把当前筛选范围下需要拍板和跟进的内容集中在这里。</p>
                 </div>
-                <span className="rounded-full bg-white px-4 py-2 text-sm font-medium text-emerald-700 shadow-sm">Unified Workflow</span>
+                <span className="rounded-full bg-white px-4 py-2 text-sm font-medium text-emerald-700 shadow-sm">统一判断链</span>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -626,7 +642,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
           <div className="mt-8 space-y-4">
             <div>
               <h2 className="text-3xl font-semibold text-slate-950">主题方向</h2>
-              <p className="mt-2 text-sm text-slate-500">围绕主题、情绪板、色彩和材料方向讲清设计意图。</p>
+              <p className="mt-2 text-sm text-slate-500">围绕品牌长期风格、市场趋势、情绪板与 CMF 方向讲清设计意图。</p>
             </div>
             <ThemeDirectionPanel themes={filteredThemeDirections} assets={filteredAssets} />
           </div>
@@ -636,7 +652,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
           <div className="mt-8 space-y-4">
             <div>
               <h2 className="text-3xl font-semibold text-slate-950">产品架构</h2>
-              <p className="mt-2 text-sm text-slate-500">围绕系列、角色、场景与价格带确认本季鞋类骨架。</p>
+              <p className="mt-2 text-sm text-slate-500">先看整季总架构，再看系列架构板，确认角色、价格带与共底共楦策略。</p>
             </div>
             <ProductArchitecturePanel architectures={filteredProductArchitectures} breakdowns={filteredCategoryBreakdowns} />
           </div>
@@ -646,7 +662,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
           <div className="mt-8 space-y-4">
             <div>
               <h2 className="text-3xl font-semibold text-slate-950">开发品类分解</h2>
-              <p className="mt-2 text-sm text-slate-500">把系列拆到开发品类和结构重点，便于样式与数量收敛。</p>
+              <p className="mt-2 text-sm text-slate-500">把系列拆到一级品类、二级品类和工艺画像，提前看清开发难点。</p>
             </div>
             <CategoryBreakdownPanel breakdowns={filteredCategoryBreakdowns} />
           </div>
@@ -656,7 +672,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
           <div className="mt-8 space-y-4">
             <div>
               <h2 className="text-3xl font-semibold text-slate-950">产品研发波段表</h2>
-              <p className="mt-2 text-sm text-slate-500">按周次推进阶段、成本、Tech Pack 与开模状态。</p>
+              <p className="mt-2 text-sm text-slate-500">从上市时间倒推材料锁定、工艺包与开模关键路径，收紧开发节奏。</p>
             </div>
             <DevelopmentWaveTable rows={filteredDevelopmentWaveRows} />
           </div>
@@ -666,7 +682,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
           <div className="mt-8 space-y-4">
             <div>
               <h2 className="text-3xl font-semibold text-slate-950">设计效果预览</h2>
-              <p className="mt-2 text-sm text-slate-500">集中查看情绪板、材料板、楦底板、配色板和设计效果图。</p>
+              <p className="mt-2 text-sm text-slate-500">集中查看草图、效果图、样鞋实拍与辅助板，判断图到物的一致性。</p>
             </div>
             <EffectPreviewPanel assets={filteredAssets} waves={filteredWaves} series={filteredSeries} items={filteredItems} />
           </div>
@@ -674,10 +690,48 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
 
         {activeTab === 'reviewActions' ? (
           <div className="mt-8 space-y-6">
-            <div className={'rounded-3xl border p-5 shadow-sm ' + syncBanner.className}>
+            <section className="space-y-4">
+              <div>
+                <h2 className="text-3xl font-semibold text-slate-950">评审与动作</h2>
+                <p className="mt-2 text-sm text-slate-500">把最近 5 条重点单款、当前阻塞和待同步动作放在一起，便于评审会后快速跟进。</p>
+              </div>
+              <div className="grid gap-4 xl:grid-cols-3">
+                <article className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <div className="text-sm font-medium text-slate-500">当前焦点单款</div>
+                  <div className="mt-3 text-xl font-semibold text-slate-950">
+                    {focusItems[0] ? localizeSeriesText(focusItems[0].itemName) : '暂无焦点单款'}
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">
+                    {focusItems[0]
+                      ? `${focusItems[0].skuCode} / ${focusItems[0].designer} / 回评 ${focusItems[0].nextReviewDate ?? '待定'}`
+                      : '当前筛选范围内暂无需要优先跟进的单款。'}
+                  </p>
+                </article>
+                <article className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <div className="text-sm font-medium text-slate-500">当前阻塞</div>
+                  <div className="mt-3 text-xl font-semibold text-slate-950">
+                    {localizeSeriesText(topBlockingRisk?.title ?? topBlockingTask?.title) || '暂无关键阻塞'}
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">{localizeSeriesText(blockerNote)}</p>
+                </article>
+                <article className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <div className="text-sm font-medium text-slate-500">下一步动作</div>
+                  <div className="mt-3 text-xl font-semibold text-slate-950">
+                    {latestPendingIntent ? getDesignReviewActionLabel(latestPendingIntent) : '暂无待同步动作'}
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">
+                    {latestPendingIntent
+                      ? '最近一次批量动作已进入待同步队列，可继续写入本地基线。'
+                      : '当前没有待同步动作，可先在下方完成评审流转或生成待办。'}
+                  </p>
+                </article>
+              </div>
+            </section>
+
+          <div className={'rounded-3xl border p-5 shadow-sm ' + syncBanner.className}>
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <h2 className="text-2xl font-semibold">{syncBanner.title}</h2>
+                  <h3 className="text-2xl font-semibold">{syncBanner.title}</h3>
                   <p className="mt-2 text-sm leading-6 opacity-90">{syncBanner.description}</p>
                   {actionMessage ? <p className="mt-3 text-sm font-medium">{actionMessage}</p> : null}
                 </div>
@@ -688,7 +742,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
                     disabled={actionCounts.pending_sync === 0}
                     className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    模拟同步待同步动作
+                    写入本地基线
                   </button>
                   <button
                     type="button"
@@ -696,7 +750,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
                     disabled={actionCounts.error === 0}
                     className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    重试异常
+                    重试异常动作
                   </button>
                   <button
                     type="button"
@@ -704,7 +758,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
                     disabled={actionCounts.synced === 0}
                     className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    清理已同步
+                    清理已同步记录
                   </button>
                 </div>
               </div>
@@ -762,8 +816,8 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-900">Action Queue</h3>
-                    <p className="mt-1 text-sm text-slate-500">本地动作意图队列，后续可直接接到 OpenClaw 导出或写回层。</p>
+                    <h3 className="text-lg font-semibold text-slate-900">动作队列</h3>
+                    <p className="mt-1 text-sm text-slate-500">本地动作意图队列，用来承接评审结论、批量流转与待办动作。</p>
                   </div>
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                     {actionIntents.length} 条
@@ -773,7 +827,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
                 <div className="mt-5 space-y-3">
                   {recentIntents.length === 0 ? (
                     <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-500">
-                      当前还没有批量动作进入队列。
+                      当前还没有批量动作进入动作队列。
                     </div>
                   ) : (
                     recentIntents.map((intent) => (
