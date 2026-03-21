@@ -306,11 +306,21 @@ export interface ThemeDirectionRecord {
   seriesIds: string[];
   seriesNames: string[];
   moodboardAssetIds: string[];
+  directionBoards: ThemeDirectionBoard[];
   source: 'manual' | 'openclaw';
   sourceId: string | null;
   updatedAt: string;
   updatedBy: string;
   syncStatus: SyncStatus;
+}
+
+export interface ThemeDirectionBoard {
+  boardId: 'silhouette' | 'cmf' | 'craft';
+  title: string;
+  subtitle: string;
+  summary: string;
+  assetIds: string[];
+  focusPoints: string[];
 }
 
 export type ToolingStrategy = 'new_tooling' | 'new_upper_same_outsole' | 'carry_over';
