@@ -2,202 +2,171 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { DesignItem } from '@/lib/design-review-center/types';
-import { PHASE_MAP, REVIEW_STATUS_MAP, RISK_LEVEL_MAP } from '@/config/design-review-center/status-map';
+import { DEVELOPMENT_LEVEL_LABELS } from '@/config/design-review-center/labels';
+import { EXECUTION_STATUS_MAP, REVIEW_CONCLUSION_MAP, RISK_LEVEL_MAP, STAGE_MAP } from '@/config/design-review-center/status-map';
+import { formatDate } from '@/lib/design-review-center/helpers/date';
+import type { StyleTaskRow } from '@/lib/design-review-center/types';
 
 interface DesignItemTableProps {
-  items: DesignItem[];
-  onItemClick?: (itemId: string) => void;
-  selectedItemIds?: string[];
-  onSelectionChange?: (itemIds: string[]) => void;
+  rows: StyleTaskRow[];
 }
 
-type SortKey = 'updatedAt' | 'targetLaunchDate' | 'nextReviewDate';
+type SortKey = 'dueDate' | 'nextReviewDate';
 type SortOrder = 'asc' | 'desc';
 
-const sourceLabel: Record<string, string> = {
-  manual: '手动',
-  openclaw: 'OpenClaw',
-};
-
-const syncLabel: Record<string, string> = {
-  synced: '已同步',
-  pending: '待同步',
-  error: '异常',
-};
-
-function compareDateValue(aValue?: string | null, bValue?: string | null, sortOrder: SortOrder = 'desc') {
-  const aTime = aValue ? new Date(aValue).getTime() : Number.NEGATIVE_INFINITY;
-  const bTime = bValue ? new Date(bValue).getTime() : Number.NEGATIVE_INFINITY;
+function compareDateValue(aValue?: string | null, bValue?: string | null, sortOrder: SortOrder = 'asc') {
+  const aTime = aValue ? new Date(aValue).getTime() : Number.POSITIVE_INFINITY;
+  const bTime = bValue ? new Date(bValue).getTime() : Number.POSITIVE_INFINITY;
   return sortOrder === 'asc' ? aTime - bTime : bTime - aTime;
 }
 
-export default function DesignItemTable({
-  items,
-  onItemClick,
-  selectedItemIds = [],
-  onSelectionChange,
-}: DesignItemTableProps) {
+function SortButton({
+  active,
+  direction,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  direction: SortOrder;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button type="button" onClick={onClick} className="inline-flex items-center gap-1 font-semibold text-slate-500 hover:text-slate-900">
+      {label}
+      {active ? <span>{direction === 'asc' ? '↑' : '↓'}</span> : null}
+    </button>
+  );
+}
+
+export default function DesignItemTable({ rows }: DesignItemTableProps) {
   const router = useRouter();
-  const [sortBy, setSortBy] = useState<SortKey>('updatedAt');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [sortBy, setSortBy] = useState<SortKey>('dueDate');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
 
-  const sortedItems = useMemo(() => {
-    return [...items].sort((a, b) => compareDateValue(a[sortBy], b[sortBy], sortOrder));
-  }, [items, sortBy, sortOrder]);
-
-  const selectionEnabled = Boolean(onSelectionChange);
-  const selectedSet = useMemo(() => new Set(selectedItemIds), [selectedItemIds]);
-  const allSelected = selectionEnabled && sortedItems.length > 0 && sortedItems.every((item) => selectedSet.has(item.itemId));
+  const sortedRows = useMemo(() => {
+    return [...rows].sort((a, b) => compareDateValue(a[sortBy], b[sortBy], sortOrder));
+  }, [rows, sortBy, sortOrder]);
 
   const triggerSort = (key: SortKey) => {
     if (sortBy === key) {
-      setSortOrder((current) => (current === 'desc' ? 'asc' : 'desc'));
+      setSortOrder((current) => (current === 'asc' ? 'desc' : 'asc'));
       return;
     }
 
     setSortBy(key);
-    setSortOrder('desc');
+    setSortOrder('asc');
   };
-
-  const handleItemClick = (itemId: string) => {
-    if (onItemClick) {
-      onItemClick(itemId);
-      return;
-    }
-
-    router.push(`/design-review-center/item/${itemId}`);
-  };
-
-  const toggleItemSelection = (itemId: string) => {
-    if (!onSelectionChange) return;
-
-    if (selectedSet.has(itemId)) {
-      onSelectionChange(selectedItemIds.filter((currentId) => currentId !== itemId));
-      return;
-    }
-
-    onSelectionChange([...selectedItemIds, itemId]);
-  };
-
-  const toggleAllSelection = () => {
-    if (!onSelectionChange) return;
-
-    if (allSelected) {
-      const visibleIds = new Set(sortedItems.map((item) => item.itemId));
-      onSelectionChange(selectedItemIds.filter((currentId) => !visibleIds.has(currentId)));
-      return;
-    }
-
-    const merged = new Set(selectedItemIds);
-    sortedItems.forEach((item) => merged.add(item.itemId));
-    onSelectionChange([...merged]);
-  };
-
-  const columnCount = selectionEnabled ? 14 : 13;
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="overflow-x-auto">
-        <table className="min-w-full">
+        <table className="min-w-[1480px] w-full">
           <thead className="border-b border-slate-200 bg-slate-50">
-            <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
-              {selectionEnabled ? (
-                <th className="p-4">
-                  <input
-                    type="checkbox"
-                    checked={allSelected}
-                    onChange={toggleAllSelection}
-                    aria-label="选择当前表格全部单款"
-                    className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-400"
-                  />
-                </th>
-              ) : null}
-              <th className="p-4">缩略图</th>
+            <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
               <th className="p-4">款号</th>
-              <th className="p-4">名称</th>
-              <th className="p-4">系列</th>
+              <th className="p-4">系列 / 品类</th>
               <th className="p-4">波段</th>
-              <th className="p-4">品类</th>
-              <th className="p-4">阶段</th>
-              <th className="p-4">结论</th>
+              <th className="p-4">开发角色</th>
+              <th className="p-4">开发级别</th>
+              <th className="p-4">当前阶段</th>
+              <th className="p-4">设计 / 样鞋 / 材料</th>
+              <th className="p-4">成本 / 技术</th>
               <th className="p-4">风险</th>
               <th className="p-4">负责人</th>
-              <th className="cursor-pointer p-4" onClick={() => triggerSort('nextReviewDate')}>
-                下次评审 {sortBy === 'nextReviewDate' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
+              <th className="p-4">下步动作</th>
+              <th className="p-4">
+                <SortButton active={sortBy === 'nextReviewDate'} direction={sortOrder} label="下次评审" onClick={() => triggerSort('nextReviewDate')} />
               </th>
-              <th className="p-4">来源</th>
-              <th className="cursor-pointer p-4" onClick={() => triggerSort('updatedAt')}>
-                更新时间 {sortBy === 'updatedAt' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
+              <th className="p-4">
+                <SortButton active={sortBy === 'dueDate'} direction={sortOrder} label="截止时间" onClick={() => triggerSort('dueDate')} />
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {sortedItems.length === 0 ? (
+            {sortedRows.length === 0 ? (
               <tr>
-                <td colSpan={columnCount} className="px-4 py-10 text-center text-sm text-slate-400">
-                  当前筛选条件下没有单款记录。
+                <td colSpan={13} className="px-4 py-10 text-center text-sm text-slate-400">
+                  当前筛选条件下没有单款任务记录。
                 </td>
               </tr>
             ) : (
-              sortedItems.map((item) => {
-                const phaseConfig = PHASE_MAP[item.designStatus] ?? PHASE_MAP.concept;
-                const reviewConfig = REVIEW_STATUS_MAP[item.reviewStatus ?? 'pending'];
-                const riskConfig = RISK_LEVEL_MAP[item.riskLevel ?? 'medium'];
-                const isSelected = selectedSet.has(item.itemId);
+              sortedRows.map((row) => {
+                const stageMeta = STAGE_MAP[row.currentStage];
+                const riskMeta = RISK_LEVEL_MAP[row.riskLevel];
+                const designMeta = EXECUTION_STATUS_MAP[row.designStatus];
+                const sampleMeta = EXECUTION_STATUS_MAP[row.sampleStatus];
+                const materialMeta = EXECUTION_STATUS_MAP[row.materialStatus];
+                const costMeta = EXECUTION_STATUS_MAP[row.costStatus];
+                const technicalMeta = EXECUTION_STATUS_MAP[row.technicalStatus];
+                const latestReviewMeta = row.latestReview ? REVIEW_CONCLUSION_MAP[row.latestReview.conclusion] : null;
 
                 return (
                   <tr
-                    key={item.itemId}
-                    className={`cursor-pointer transition-colors hover:bg-slate-50 ${isSelected ? 'bg-slate-50' : ''}`}
-                    onClick={() => handleItemClick(item.itemId)}
+                    key={row.styleId}
+                    className="cursor-pointer text-sm text-slate-700 transition hover:bg-slate-50"
+                    onClick={() => router.push(`/design-review-center/item/${row.styleId}`)}
                   >
-                    {selectionEnabled ? (
-                      <td className="p-4" onClick={(event) => event.stopPropagation()}>
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => toggleItemSelection(item.itemId)}
-                          aria-label={`选择 ${item.itemName}`}
-                          className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-400"
-                        />
-                      </td>
-                    ) : null}
                     <td className="p-4">
-                      <img src={item.thumbnailUrl} alt={item.itemName} className="h-12 w-12 rounded-lg object-cover" />
-                    </td>
-                    <td className="p-4 text-sm font-medium text-slate-900">{item.skuCode}</td>
-                    <td className="p-4 text-sm text-slate-900">
-                      <div className="font-medium">{item.itemName}</div>
-                      {item.reviewSummary ? <div className="mt-1 text-xs text-slate-500">{item.reviewSummary}</div> : null}
-                    </td>
-                    <td className="p-4 text-sm text-slate-600">{item.seriesName ?? item.seriesId}</td>
-                    <td className="p-4 text-sm text-slate-600">{item.waveId ?? '-'}</td>
-                    <td className="p-4 text-sm text-slate-600">{item.category}</td>
-                    <td className="p-4">
-                      <span className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${phaseConfig.bgColor} ${phaseConfig.textColor}`}>
-                        {phaseConfig.label}
-                      </span>
+                      <div className="font-semibold text-slate-900">{row.skuCode}</div>
+                      <div className="mt-1 text-xs text-slate-500">{row.styleName}</div>
                     </td>
                     <td className="p-4">
-                      <span className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${reviewConfig.bgColor} ${reviewConfig.textColor}`}>
-                        {reviewConfig.label}
-                      </span>
+                      <div className="font-medium text-slate-900">{row.seriesName}</div>
+                      <div className="mt-1 text-xs text-slate-500">{row.categoryName}</div>
+                      {row.architectureSource ? (
+                        <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-600">
+                          <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: row.architectureSource.themeColorHex }} />
+                          <span>架构 {row.architectureSource.styleTarget} 款 / SKU {row.architectureSource.skuTarget}</span>
+                        </div>
+                      ) : null}
+                    </td>
+                    <td className="p-4 text-slate-600">{row.waveId.toUpperCase()}</td>
+                    <td className="p-4 text-slate-600">{row.developmentRole}</td>
+                    <td className="p-4 text-slate-600">
+                      <div>{DEVELOPMENT_LEVEL_LABELS[row.developmentLevel]}</div>
+                      {row.architectureSource ? <div className="mt-1 text-xs text-slate-400">预算占比 {Math.round(row.architectureSource.budgetShare * 100)}%</div> : null}
                     </td>
                     <td className="p-4">
-                      <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${riskConfig.bgColor} ${riskConfig.textColor}`}>
-                        <span>{riskConfig.icon}</span>
-                        <span>{riskConfig.label}</span>
-                      </span>
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${stageMeta.bgColor} ${stageMeta.textColor}`}>{stageMeta.label}</span>
                     </td>
-                    <td className="p-4 text-sm text-slate-600">{item.designer}</td>
+                    <td className="p-4">
+                      <div className="flex flex-wrap gap-2 text-xs">
+                        <span className={`rounded-full px-2.5 py-1 ${designMeta.bgColor} ${designMeta.textColor}`}>设计 {designMeta.label}</span>
+                        <span className={`rounded-full px-2.5 py-1 ${sampleMeta.bgColor} ${sampleMeta.textColor}`}>样鞋 {sampleMeta.label}</span>
+                        <span className={`rounded-full px-2.5 py-1 ${materialMeta.bgColor} ${materialMeta.textColor}`}>材料 {materialMeta.label}</span>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex flex-wrap gap-2 text-xs">
+                        <span className={`rounded-full px-2.5 py-1 ${costMeta.bgColor} ${costMeta.textColor}`}>成本 {costMeta.label}</span>
+                        <span className={`rounded-full px-2.5 py-1 ${technicalMeta.bgColor} ${technicalMeta.textColor}`}>技术 {technicalMeta.label}</span>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex flex-wrap gap-2">
+                        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${riskMeta.bgColor} ${riskMeta.textColor}`}>{riskMeta.label}</span>
+                        {row.blocked ? <span className="rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">阻塞</span> : null}
+                        {latestReviewMeta ? (
+                          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${latestReviewMeta.bgColor} ${latestReviewMeta.textColor}`}>{latestReviewMeta.label}</span>
+                        ) : null}
+                      </div>
+                    </td>
+                    <td className="p-4 text-slate-600">{row.owner}</td>
+                    <td className="p-4">
+                      <div className="font-medium text-slate-900">{row.nextAction}</div>
+                      {row.nextGate ? <div className="mt-1 text-xs text-slate-500">下一 Gate：{row.nextGate.gateName}</div> : null}
+                      {row.architectureSource ? <div className="mt-1 text-xs text-slate-400">架构来源：{row.architectureSource.platformSummary}</div> : null}
+                    </td>
+                    <td className="p-4 text-xs text-slate-500">{formatDate(row.nextReviewDate)}</td>
                     <td className="p-4 text-xs text-slate-500">
-                      {item.nextReviewDate ? new Date(item.nextReviewDate).toLocaleDateString('zh-CN') : '待定'}
+                      <div>{formatDate(row.dueDate)}</div>
+                      {row.overdue ? (
+                        <div className="mt-1 font-semibold text-rose-600">已逾期</div>
+                      ) : row.dueThisWeek ? (
+                        <div className="mt-1 font-semibold text-amber-600">本周推进</div>
+                      ) : null}
                     </td>
-                    <td className="p-4 text-xs text-slate-500">
-                      {sourceLabel[item.source] ?? item.source} / {syncLabel[item.syncStatus] ?? item.syncStatus}
-                    </td>
-                    <td className="p-4 text-xs text-slate-500">{new Date(item.updatedAt).toLocaleDateString('zh-CN')}</td>
                   </tr>
                 );
               })

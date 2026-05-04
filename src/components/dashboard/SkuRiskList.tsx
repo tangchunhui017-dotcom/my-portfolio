@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import type { DashboardFilters } from '@/hooks/useDashboardFilter';
+import { resolveDashboardLifecycleLabel } from '@/config/dashboardLifecycle';
 import { calcRiskPriority, getActionSuggestion, getEstimatedImpact } from '@/config/thresholds';
 
 // 显式类型定义
@@ -84,10 +86,11 @@ const STATUS_STYLE: Record<StatusType, string> = {
 
 interface SkuRiskListProps {
     filteredRecords: FactSalesRecord[];
+    filters: DashboardFilters;
     filterSummary?: string;
 }
 
-export default function SkuRiskList({ filteredRecords, filterSummary = '全部数据' }: SkuRiskListProps) {
+export default function SkuRiskList({ filteredRecords, filters, filterSummary = '全部数据' }: SkuRiskListProps) {
     const [sortKey, setSortKey] = useState<SortKey>('avgSellThrough');
     const [sortAsc, setSortAsc] = useState(true);
     const [filterRisk, setFilterRisk] = useState<string>('全部');
@@ -140,7 +143,7 @@ export default function SkuRiskList({ filteredRecords, filterSummary = '全部�
                 sku_id: sku.sku_id,
                 sku_name: sku.sku_name,
                 category_id: sku.category_id,
-                lifecycle: sku.lifecycle,
+                lifecycle: resolveDashboardLifecycleLabel(filters, sku),
                 msrp: sku.msrp,
                 season: sku.season,
                 totalUnits,
@@ -157,7 +160,7 @@ export default function SkuRiskList({ filteredRecords, filterSummary = '全部�
                 estimatedImpact,
             };
         }).filter(Boolean) as SkuRiskRow[];
-    }, [filteredRecords]);
+    }, [filteredRecords, filters]);
 
     const filtered = useMemo(() => {
         const rows = filterRisk === '全部' ? skuRows : skuRows.filter(r => r.risks.includes(filterRisk));
@@ -188,7 +191,7 @@ export default function SkuRiskList({ filteredRecords, filterSummary = '全部�
             ``,
         ].join('\n');
 
-        const headers = ['款号', '商品名', '品类', '生命周期', '吊牌价', '季节', '进货量', '销量', '净销售额', '售罄率', '折扣深度', '毛利率', '剩余库存', 'WOS(周)', '风险标签', '优先级', '建议动作', '预估收益', '状态'];
+        const headers = ['款号', '商品名', '品类', '库龄层级', '吊牌价', '季节', '进货量', '销量', '净销售额', '售罄率', '折扣深度', '毛利率', '剩余库存', 'WOS(周)', '风险标签', '优先级', '建议动作', '预估收益', '状态'];
 
         const rows = filtered.map(r => [
             r.sku_id, r.sku_name, r.category_id, r.lifecycle, r.msrp, r.season,

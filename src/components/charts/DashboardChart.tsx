@@ -5,8 +5,9 @@ import * as echarts from 'echarts';
 import { THRESHOLDS } from '@/config/thresholds';
 import { FOOTWEAR_CATEGORY_CORE_ORDER } from '@/config/categoryMapping';
 import { PRICE_BANDS, PRICE_BAND_LABELS } from '@/config/priceBand';
+import { DASHBOARD_LIFECYCLE_OPTIONS, type DashboardLifecycleLabel } from '@/config/dashboardLifecycle';
 
-type SellThroughCaliber = 'cohort' | 'active' | 'stage';
+export type SellThroughCaliber = 'cohort' | 'active' | 'stage';
 
 interface DashboardChartProps {
     title: string;
@@ -37,7 +38,9 @@ interface DashboardChartProps {
         };
     } | null;
     heatmapMetric?: 'sku' | 'sales' | 'st';
-    onSkuClick?: (sku: { name: string; price: number; sellThrough: number; units: number; lifecycle: '新品' | '常青' | '清仓' }) => void;
+    onSkuClick?: (sku: { name: string; price: number; sellThrough: number; units: number; lifecycle: DashboardLifecycleLabel }) => void;
+    sellThroughCaliber?: SellThroughCaliber;
+    onSellThroughCaliberChange?: (caliber: SellThroughCaliber) => void;
 }
 
 const PRICE_BAND_KEYS = PRICE_BANDS.map((band) => band.id);
@@ -49,9 +52,14 @@ const PRICE_BAND_LABEL_LIST = PRICE_BANDS.map((band) => band.label);
 
 const CHART_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
 
-export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku', onSkuClick, compareMode = 'category' }: DashboardChartProps) {
+export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku', onSkuClick, compareMode = 'category', sellThroughCaliber, onSellThroughCaliberChange }: DashboardChartProps) {
     const chartRef = useRef<HTMLDivElement>(null);
-    const [sellThroughCaliber, setSellThroughCaliber] = useState<SellThroughCaliber>('cohort');
+    const [internalSellThroughCaliber, setInternalSellThroughCaliber] = useState<SellThroughCaliber>('active');
+    const currentSellThroughCaliber = sellThroughCaliber ?? internalSellThroughCaliber;
+    const handleSellThroughCaliberChange = (next: SellThroughCaliber) => {
+        if (onSellThroughCaliberChange) onSellThroughCaliberChange(next);
+        else setInternalSellThroughCaliber(next);
+    };
 
     useEffect(() => {
         if (!chartRef.current) return;
@@ -127,94 +135,138 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
             }
 
             case 'line': {
-                // 售罄率曲线（三种口径：同期群 / 在售 / 分阶段）
-                const calibers = [
-                    { key: 'cohort', label: '同期群', data: kpis.cohortData },
-                    { key: 'active', label: '在售', data: kpis.activeData },
-                    { key: 'stage', label: '分阶段', data: kpis.stageData },
+                const calibers: Array<{
+                    key: SellThroughCaliber;
+                    label: string;
+                    axisMode: 'relative' | 'calendar';
+                    data?: Record<number, { st: number; skuCount: number }>;
+                }> = [
+                    { key: 'cohort', label: '同期群', axisMode: 'relative', data: kpis.cohortData },
+                    { key: 'active', label: '自然波段', axisMode: 'calendar', data: kpis.activeData },
+                    { key: 'stage', label: '新品群', axisMode: 'calendar', data: kpis.stageData },
                 ];
 
-                const currentCaliber = calibers.find(c => c.key === sellThroughCaliber) || calibers[0];
+                const currentCaliber = calibers.find((item) => item.key === currentSellThroughCaliber) || calibers[1];
                 const data = currentCaliber.data || {};
+                const sourceWeeks = Object.keys(data).map(Number).sort((a, b) => a - b);
+                const isCalendarView = currentCaliber.axisMode === 'calendar';
+                const weeks = isCalendarView ? Array.from({ length: 12 }, (_, index) => index + 1) : sourceWeeks;
+                const stData = weeks.map((week) => {
+                    const point = data[week];
+                    return point ? Number((point.st * 100).toFixed(1)) : null;
+                });
+                const weekLabels = weeks.map((week) => `W${week}`);
+                const targetPct = Number((THRESHOLDS.sellThrough.target * 100).toFixed(1));
 
-                const weeks = Object.keys(data).map(Number).sort((a, b) => a - b);
-                const stData = weeks.map(w => Math.round(data[w].st * 100));
-                const weekLabels = weeks.map(w => `W${w}`);
-
-                // 分段目标线：W1-W8 新品期目标75%，W9-W12 折扣期目标92%
-                // 用 markArea 标注两个阶段背景，markLine 画分段目标
-                const newProductTarget = 75;  // W1-W8
-                const markdownTarget = 92;    // W9-W12
-                const w8Idx = weeks.findIndex(w => w >= 8);
-                const w9Idx = weeks.findIndex(w => w >= 9);
-                const w12Idx = weeks.findIndex(w => w >= 12);
+                const quarterBands = [
+                    { start: 1, end: 3, label: 'Q1 / 春' },
+                    { start: 4, end: 6, label: 'Q2 / 夏' },
+                    { start: 7, end: 9, label: 'Q3 / 秋' },
+                    { start: 10, end: 12, label: 'Q4 / 冬' },
+                ];
+                const phaseMeta: Record<number, { short: string; label: string; quarter: string }> = {
+                    1: { short: '新', label: '新品期', quarter: 'Q1 / 春' },
+                    2: { short: '在', label: '在售期', quarter: 'Q1 / 春' },
+                    3: { short: '折', label: '折扣期', quarter: 'Q1 / 春' },
+                    4: { short: '新', label: '新品期', quarter: 'Q2 / 夏' },
+                    5: { short: '在', label: '在售期', quarter: 'Q2 / 夏' },
+                    6: { short: '折', label: '折扣期', quarter: 'Q2 / 夏' },
+                    7: { short: '新', label: '新品期', quarter: 'Q3 / 秋' },
+                    8: { short: '在', label: '在售期', quarter: 'Q3 / 秋' },
+                    9: { short: '折', label: '折扣期', quarter: 'Q3 / 秋' },
+                    10: { short: '新', label: '新品期', quarter: 'Q4 / 冬' },
+                    11: { short: '在', label: '在售期', quarter: 'Q4 / 冬' },
+                    12: { short: '折', label: '折扣期', quarter: 'Q4 / 冬' },
+                };
 
                 option = {
                     title: {
                         text: title,
-                        subtext: `口径: ${currentCaliber.label} · W1-W8新品期目标${newProductTarget}% · W9-W12折扣期目标${markdownTarget}%`,
+                        subtext: isCalendarView
+                            ? `口径: ${currentCaliber.label} · 自然波段 W1-W12（Q1春 / Q2夏 / Q3秋 / Q4冬；每季含 新品 / 在售 / 折扣）`
+                            : `口径: ${currentCaliber.label} · 上市后相对波段（W1-W12）`,
                         left: 'center',
                         textStyle: { fontSize: 13, fontWeight: 'bold', color: '#1e293b' },
-                        subtextStyle: { fontSize: 10, color: '#64748b' }
+                        subtextStyle: { fontSize: 10, color: '#64748b' },
                     },
                     tooltip: {
-                        trigger: 'axis', formatter: (params: any) => {
-                            const p = Array.isArray(params) ? params : [params];
-                            const weekIdx = p[0]?.dataIndex;
-                            const wk = weeks[weekIdx];
-                            const skuCount = weekIdx !== undefined ? data[wk]?.skuCount : 0;
-                            const phase = wk <= 8 ? `新品期（目标${newProductTarget}%）` : wk <= 12 ? `折扣期（目标${markdownTarget}%）` : '清仓期';
-                            return `<div style="font-weight:bold;margin-bottom:4px">W${wk} · ${phase}</div>` +
-                                p.filter((item: any) => item.seriesType !== 'effectScatter').map((item: any) => `${item.seriesName}: ${item.value}%`).join('<br/>') +
-                                (skuCount ? `<br/>SKU数: <b>${skuCount}</b>` : '');
-                        }
+                        trigger: 'axis',
+                        formatter: (params: any) => {
+                            const points = Array.isArray(params) ? params : [params];
+                            const dataIndex = points[0]?.dataIndex ?? 0;
+                            const wave = weeks[dataIndex];
+                            const skuCount = wave !== undefined ? data[wave]?.skuCount : 0;
+                            const meta = phaseMeta[wave] || null;
+                            const titleText = isCalendarView
+                                ? `W${wave} · ${meta?.quarter || ''} · ${meta?.label || ''}`
+                                : `上市后 W${wave}`;
+                            return [
+                                `<div style="font-weight:bold;margin-bottom:4px">${titleText}</div>`,
+                                ...points.filter((item: any) => item.seriesType !== 'effectScatter').map((item: any) => `${item.seriesName}: ${item.value ?? '--'}%`),
+                                skuCount ? `SKU数: <b>${skuCount}</b>` : '',
+                            ].filter(Boolean).join('<br/>');
+                        },
                     },
                     legend: { bottom: 0, data: ['累计售罄率'] },
-                    xAxis: { type: 'category', data: weekLabels, name: '周龄（Weeks Since Launch）' },
+                    xAxis: {
+                        type: 'category',
+                        data: weekLabels,
+                        name: isCalendarView ? '自然波段 / 月份' : '上市后波段',
+                        axisLabel: isCalendarView
+                            ? {
+                                interval: 0,
+                                formatter: (_value: string, index: number) => {
+                                    const wave = weeks[index];
+                                    const meta = phaseMeta[wave];
+                                    return meta ? `{wave|W${wave}}\n{phase|${meta.short}}` : `{wave|W${wave}}`;
+                                },
+                                rich: {
+                                    wave: { fontSize: 11, color: '#475569', lineHeight: 18 },
+                                    phase: { fontSize: 10, color: '#94a3b8', lineHeight: 14 },
+                                },
+                            }
+                            : { fontSize: 11, color: '#475569' },
+                    },
                     yAxis: { type: 'value', name: '售罄率 %', max: 100 },
                     series: [
                         {
-                            name: '累计售罄率', type: 'line', data: stData, smooth: true,
+                            name: '累计售罄率',
+                            type: 'line',
+                            data: stData,
+                            smooth: true,
+                            connectNulls: false,
                             z: 3,
                             itemStyle: { color: '#10b981' },
-                            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(16,185,129,0.20)' }, { offset: 1, color: 'rgba(16,185,129,0.02)' }]) },
+                            areaStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: 'rgba(16,185,129,0.20)' },
+                                    { offset: 1, color: 'rgba(16,185,129,0.02)' },
+                                ]),
+                            },
                             markLine: {
                                 silent: true,
                                 symbol: 'none',
-                                data: ([
-                                    // W1-W8 新品期目标（蓝色虚线）
-                                    ...(w8Idx >= 0 ? [[
-                                        { coord: [0, newProductTarget], name: 'W1-W8目标', lineStyle: { color: '#3b82f6', type: 'dashed', width: 1.5 }, label: { formatter: `新品期目标 ${newProductTarget}%`, color: '#3b82f6', fontSize: 10 } },
-                                        { coord: [Math.min(w8Idx, weekLabels.length - 1), newProductTarget] },
-                                    ]] : []),
-                                    // W9-W12 折扣期目标（橙色虚线）
-                                    ...(w9Idx >= 0 ? [[
-                                        { coord: [w9Idx, markdownTarget], name: 'W9-W12目标', lineStyle: { color: '#f59e0b', type: 'dashed', width: 1.5 }, label: { formatter: `折扣期目标 ${markdownTarget}%`, color: '#f59e0b', fontSize: 10 } },
-                                        { coord: [Math.min(w12Idx >= 0 ? w12Idx : weekLabels.length - 1, weekLabels.length - 1), markdownTarget] },
-                                    ]] : []),
-                                ]) as any,
+                                lineStyle: { color: '#94a3b8', type: 'dashed', width: 1.5 },
+                                data: [{ yAxis: targetPct, name: '总览目标', label: { formatter: `总览目标 ${targetPct}%`, color: '#64748b', fontSize: 10 } }],
                             },
-                            markArea: {
-                                silent: true,
-                                data: ([
-                                    [{ xAxis: weekLabels[0], itemStyle: { color: 'rgba(59,130,246,0.04)' }, label: { show: true, position: 'insideTopLeft', formatter: '新品期', color: '#3b82f6', fontSize: 10 } },
-                                    { xAxis: w8Idx >= 0 ? weekLabels[Math.min(w8Idx, weekLabels.length - 1)] : weekLabels[weekLabels.length - 1] }],
-                                    ...(w9Idx >= 0 ? [[
-                                        { xAxis: weekLabels[w9Idx], itemStyle: { color: 'rgba(245,158,11,0.04)' }, label: { show: true, position: 'insideTopLeft', formatter: '折扣期', color: '#f59e0b', fontSize: 10 } },
-                                        { xAxis: w12Idx >= 0 ? weekLabels[Math.min(w12Idx, weekLabels.length - 1)] : weekLabels[weekLabels.length - 1] },
-                                    ]] : []),
-                                    ...(w12Idx >= 0 && w12Idx < weekLabels.length - 1 ? [[
-                                        { xAxis: weekLabels[w12Idx + 1] ?? weekLabels[weekLabels.length - 1], itemStyle: { color: 'rgba(239,68,68,0.04)' }, label: { show: true, position: 'insideTopLeft', formatter: '清仓期', color: '#ef4444', fontSize: 10 } },
-                                        { xAxis: weekLabels[weekLabels.length - 1] },
-                                    ]] : []),
-                                ]) as any,
-                            },
+                            markArea: isCalendarView
+                                ? {
+                                    silent: true,
+                                    data: quarterBands.map((band) => ([
+                                        {
+                                            xAxis: `W${band.start}`,
+                                            itemStyle: { color: 'rgba(148,163,184,0.05)' },
+                                            label: { show: true, position: 'insideTopLeft', formatter: band.label, color: '#64748b', fontSize: 10 },
+                                        },
+                                        { xAxis: `W${band.end}` },
+                                    ])) as any,
+                                }
+                                : undefined,
                         },
                     ],
                 };
                 break;
             }
-
             case 'bar-compare': {
                 // 品类 / 渠道计划 vs 实际 分组柱状图
                 const isCategory = compareMode === 'category';
@@ -358,7 +410,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                     s.lifecycle,
                 ]);
 
-                const LIFECYCLE_COLORS: Record<string, string> = { '新品': '#3b82f6', '常青': '#10b981', '清仓': '#ef4444' };
+                const LIFECYCLE_COLORS: Record<DashboardLifecycleLabel, string> = { '新品': '#3b82f6', '次新品': '#f59e0b', '老品': '#10b981' };
 
                 // 动态计算坐标轴范围
                 const prices = rawScatter.map(s => s.price);
@@ -381,13 +433,13 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                                 `价格: ¥${d[0]}<br/>` +
                                 `售罄率: <span style="color:${stColor};font-weight:bold">${d[1]}%</span><br/>` +
                                 `销量: ${d[2].toLocaleString()} 双<br/>` +
-                                `生命周期: ${d[4]}`;
+                                `库龄层级: ${d[4]}`;
                         },
                     },
-                    legend: { bottom: 0, data: ['新品', '常青', '清仓'] },
+                    legend: { bottom: 0, data: DASHBOARD_LIFECYCLE_OPTIONS },
                     xAxis: { name: '价格 (元)', min: xMin, max: xMax, splitLine: { lineStyle: { type: 'dashed' } } },
                     yAxis: { name: '售罄率 %', min: 40, max: 100, splitLine: { lineStyle: { type: 'dashed' } } },
-                    series: ['新品', '常青', '清仓'].map((lifecycle, idx) => ({
+                    series: DASHBOARD_LIFECYCLE_OPTIONS.map((lifecycle, idx) => ({
                         name: lifecycle, type: 'scatter',
                         symbolSize: (d: number[]) => Math.sqrt(d[2]) * 0.8 + 6,
                         data: scatterData.filter(d => d[4] === lifecycle),
@@ -515,7 +567,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                         sellThrough: d[1],
                         units: d[2],
                         name: d[3],
-                        lifecycle: d[4] as '新品' | '常青' | '清仓',
+                        lifecycle: d[4] as DashboardLifecycleLabel,
                     });
                 }
             });
@@ -524,7 +576,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
         const handleResize = () => chart.resize();
         window.addEventListener('resize', handleResize);
         return () => { window.removeEventListener('resize', handleResize); chart.dispose(); };
-    }, [title, type, kpis, heatmapMetric, onSkuClick, sellThroughCaliber]);
+    }, [title, type, kpis, heatmapMetric, onSkuClick, compareMode, currentSellThroughCaliber]);
 
     // 热力图行列合计 + 结构空缺清单
     const heatmapTotals = (() => {
@@ -665,13 +717,13 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                 <div className="flex justify-center gap-2 mt-2 pb-2">
                     {[
                         { key: 'cohort' as const, label: '同期群' },
-                        { key: 'active' as const, label: '在售' },
-                        { key: 'stage' as const, label: '分阶段' },
+                        { key: 'active' as const, label: '自然波段' },
+                        { key: 'stage' as const, label: '新品群' },
                     ].map(({ key, label }) => (
                         <button
                             key={key}
-                            onClick={() => setSellThroughCaliber(key)}
-                            className={`px-3 py-1 text-xs rounded-md transition-colors ${sellThroughCaliber === key
+                            onClick={() => handleSellThroughCaliberChange(key)}
+                            className={`px-3 py-1 text-xs rounded-md transition-colors ${currentSellThroughCaliber === key
                                 ? 'bg-blue-500 text-white'
                                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                                 }`}
@@ -684,3 +736,6 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
         </div>
     );
 }
+
+
+

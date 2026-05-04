@@ -1,0 +1,124 @@
+{
+  "actionItems": [
+    {
+      "actionId": "ac-001",
+      "reviewId": "rv-001",
+      "styleId": "st001",
+      "actionType": "????",
+      "actionDescription": "??????????????????????",
+      "status": "in_progress",
+      "owner": "??",
+      "dueDate": "2024-03-28",
+      "completedAt": null,
+      "reapproved": false
+    },
+    {
+      "actionId": "ac-002",
+      "reviewId": "rv-001",
+      "styleId": "st001",
+      "actionType": "??????",
+      "actionDescription": "?????????????????",
+      "status": "pending",
+      "owner": "??",
+      "dueDate": "2024-03-30",
+      "completedAt": null,
+      "reapproved": false
+    },
+    {
+      "actionId": "ac-003",
+      "reviewId": "rv-002",
+      "styleId": "st002",
+      "actionType": "????",
+      "actionDescription": "???????????????????",
+      "status": "in_progress",
+      "owner": "??",
+      "dueDate": "2024-03-31",
+      "completedAt": null,
+      "reapproved": false
+    },
+    {
+      "actionId": "ac-004",
+      "reviewId": "rv-003",
+      "styleId": "st004",
+      "actionType": "????",
+      "actionDescription": "????????????????????",
+      "status": "pending",
+      "owner": "??",
+      "dueDate": "2024-03-27",
+      "completedAt": null,
+      "reapproved": false
+    },
+    {
+      "actionId": "ac-005",
+      "reviewId": "rv-004",
+      "styleId": "st005",
+      "actionType": "????",
+      "actionDescription": "????????????????",
+      "status": "in_progress",
+      "owner": "??",
+      "dueDate": "2024-03-31",
+      "completedAt": null,
+      "reapproved": false
+    },
+    {
+      "actionId": "ac-006",
+      "reviewId": "rv-005",
+      "styleId": "st007",
+      "actionType": "????",
+      "actionDescription": "??????????????????????",
+      "status": "pending",
+      "owner": "??",
+      "dueDate": "2024-04-10",
+      "completedAt": null,
+      "reapproved": false
+    },
+    {
+      "actionId": "ac-007",
+      "reviewId": "rv-006",
+      "styleId": "st009",
+      "actionType": "??????",
+      "actionDescription": "?? EVA ???????????????",
+      "status": "in_progress",
+      "owner": "??",
+      "dueDate": "2024-03-24",
+      "completedAt": null,
+      "reapproved": false
+    },
+    {
+      "actionId": "ac-008",
+      "reviewId": "rv-006",
+      "styleId": "st009",
+      "actionType": "??????",
+      "actionDescription": "?????????????????????",
+      "status": "pending",
+      "owner": "??",
+      "dueDate": "2024-03-25",
+      "completedAt": null,
+      "reapproved": false
+    },
+    {
+      "actionId": "ac-009",
+      "reviewId": "rv-007",
+      "styleId": "st011",
+      "actionType": "????",
+      "actionDescription": "? W1 ????????????????",
+      "status": "closed",
+      "owner": "??",
+      "dueDate": "2024-03-15",
+      "completedAt": "2024-03-15T18:00:00+08:00",
+      "reapproved": true
+    },
+    {
+      "actionId": "ac-010",
+      "reviewId": "rv-008",
+      "styleId": "st012",
+      "actionType": "??????",
+      "actionDescription": "????????????????",
+      "status": "reviewed",
+      "owner": "??",
+      "dueDate": "2024-04-28",
+      "completedAt": "2024-03-22T09:30:00+08:00",
+      "reapproved": true
+    }
+  ]
+}

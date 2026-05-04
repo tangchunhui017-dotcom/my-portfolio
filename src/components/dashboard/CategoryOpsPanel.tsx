@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useCallback, useMemo, useState } from 'react';
 import type { EChartsOption } from 'echarts';
@@ -892,10 +892,10 @@ export default function CategoryOpsPanel({
 
     const scatterOption = useMemo<EChartsOption>(() => {
         const lifecycleColorMap: Record<string, string> = {
-            新品: '#10B981',
-            常青: '#2563EB',
-            清仓: '#F59E0B',
-            其他: '#64748B',
+            '\u65b0\u54c1': '#10B981', // Emerald
+            '\u6b21\u65b0\u54c1': '#F59E0B', // Amber
+            '\u8001\u54c1': '#3B82F6', // Blue
+            '\u5176\u5b83': '#94A3B8', // Slate
         };
         const visibleLifecycles = Array.from(new Set(scatterPoints.map((item) => item.primaryLifecycleLabel)));
         const maxSkuCount = Math.max(1, ...scatterPoints.map((item) => item.skuCount));
@@ -931,18 +931,32 @@ export default function CategoryOpsPanel({
             symbolSize: (value: unknown, params: unknown) => {
                 const point = params as { data?: { skuCount?: number } };
                 const skuCount = Number(point.data?.skuCount || 0);
-                return 14 + Math.sqrt(safeDiv(skuCount, maxSkuCount)) * 26;
+                return 18 + Math.sqrt(safeDiv(skuCount, maxSkuCount)) * 36;
             },
             itemStyle: {
-                color: lifecycleColorMap[lifecycleLabel] || '#64748B',
-                opacity: 0.84,
-                borderColor: '#ffffff',
-                borderWidth: 1,
+                color: {
+                    type: 'radial' as const,
+                    x: 0.3, y: 0.3, r: 1,
+                    colorStops: [
+                        { offset: 0, color: '#ffffff' }, 
+                        { offset: 0.4, color: lifecycleColorMap[lifecycleLabel] || '#64748B' },
+                        { offset: 1, color: lifecycleColorMap[lifecycleLabel] || '#64748B' }
+                    ]
+                },
+                opacity: 0.9,
+                borderColor: 'rgba(255, 255, 255, 0.6)',
+                borderWidth: 1.5,
+                shadowBlur: 16,
+                shadowColor: lifecycleColorMap[lifecycleLabel] ? `${lifecycleColorMap[lifecycleLabel]}AA` : 'rgba(100,116,139,0.5)',
+                shadowOffsetY: 4,
             },
             emphasis: {
                 itemStyle: {
-                    shadowBlur: 14,
-                    shadowColor: 'rgba(15, 23, 42, 0.2)',
+                    opacity: 1,
+                    shadowBlur: 24,
+                    shadowColor: lifecycleColorMap[lifecycleLabel] || '#64748B',
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
                 },
             },
         }));
@@ -964,25 +978,19 @@ export default function CategoryOpsPanel({
             },
             tooltip: {
                 trigger: 'item',
-                borderColor: '#E5E7EB',
-                textStyle: { color: '#111827', fontSize: 12 },
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                borderColor: 'rgba(51, 65, 85, 0.5)',
+                textStyle: { color: '#F8FAFC', fontSize: 12 },
+                padding: [12, 16],
                 formatter: (params: unknown) => {
-                    const row = (params as { data?: Record<string, unknown> }).data || {};
+                    const row = (params as { data?: Record<string, unknown>; color?: string }).data || {};
                     return [
-                        `<div style="font-weight:600;margin-bottom:4px;">${row.category || '-'}</div>`,
-                        `产品线：${row.productLine || '-'}`,
-                        `生命周期：${row.lifecycleLabel || '-'}`,
-                        `贡献占比：${Number(row.value ? (row.value as number[])[0] : 0).toFixed(1)}%`,
-                        `${compareMode === 'none' ? '售罄动量' : compareMeta.deltaLabel}：${Number(row.value ? (row.value as number[])[1] : 0).toFixed(1)}%`,
-                        `象限：${row.quadrant || '--'}`,
-                        `SKU数：${Math.round(Number(row.skuCount || 0)).toLocaleString('zh-CN')}个`,
-                        `销售额：${formatAmount(Number(row.netSales || 0))}`,
-                        `售罄率：${formatPct(Number(row.sellThrough || 0))}`,
-                        `毛利率：${formatPct(Number(row.gmRate || 0))}`,
-                        `执行率：${formatPct(Number(row.fillRate || 0))}`,
-                        `补单率：${formatPct(Number(row.reorderRate || 0))}`,
-                        `核心价带：${row.priceBandMix || '--'}`,
-                    ].join('<br/>');
+                        `<div style="font-weight:700;margin-bottom:8px;font-size:14px;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:4px">${row.category || '-'} <span style="font-size:11px;font-weight:500;color:#94A3B8;margin-left:6px">${row.productLine || '-'}</span></div>`,
+                        `<div style="display:flex;gap:16px;margin-bottom:4px"><span>贡献占比: <b style="color:#fff">${Number(row.value ? (row.value as number[])[0] : 0).toFixed(1)}%</b></span><span>动量增幅: <b style="color:${Number(row.value ? (row.value as number[])[1] : 0) >= 0 ? '#10B981' : '#F43F5E'}">${Number(row.value ? (row.value as number[])[1] : 0).toFixed(1)}%</b></span></div>`,
+                        `<div style="margin-bottom:4px">库龄层级：<span style="color:#fff;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;font-size:11px">${row.lifecycleLabel || '-'}</span></div>`,
+                        `<div style="margin-bottom:4px">象限：<span style="color:#fff;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;font-size:11px">${row.quadrant || '--'}</span></div>`,
+                        `<div style="margin-top:6px;padding-top:6px;border-top:1px dashed rgba(255,255,255,0.1)">SKU数：<span>${Math.round(Number(row.skuCount || 0)).toLocaleString('zh-CN')} 款</span><br/>销售额：<span style="color:#38BDF8">${formatAmount(Number(row.netSales || 0))}</span><br/>售罄率：<span>${formatPct(Number(row.sellThrough || 0))}</span><br/>毛利率：<span style="color:${Number(row.gmRate || 0) > 0.5 ? '#10B981' : '#F43F5E'}">${formatPct(Number(row.gmRate || 0))}</span></div>`
+                    ].join('');
                 },
             },
             xAxis: {
@@ -1012,11 +1020,11 @@ export default function CategoryOpsPanel({
             series,
             markLine: {
                 symbol: ['none', 'none'],
-                lineStyle: { color: '#94A3B8', type: 'dashed' },
                 label: { show: false },
                 data: [
-                    { xAxis: scatterReference.contributionShareAvg * 100 },
-                    { yAxis: scatterReference.momentumAvg * 100 },
+                    { xAxis: scatterReference.contributionShareAvg * 100, lineStyle: { color: '#0EA5E9', type: 'dashed', width: 1.5, opacity: 0.6 } },
+                    { yAxis: scatterReference.momentumAvg * 100, lineStyle: { color: '#0EA5E9', type: 'dashed', width: 1.5, opacity: 0.6 } },
+                    { yAxis: 0, lineStyle: { color: '#F43F5E', type: 'solid', width: 1, opacity: 0.4 } }
                 ],
             },
         };
@@ -1887,7 +1895,7 @@ export default function CategoryOpsPanel({
                                         { value: 'all' as const, label: '全部样本' },
                                         { value: 'category' as const, label: '按品类' },
                                         { value: 'price_band' as const, label: '按价格带' },
-                                        { value: 'lifecycle' as const, label: '按生命周期' },
+                                        { value: 'lifecycle' as const, label: '按库龄层级' },
                                     ].map((option) => (
                                         <button
                                             key={option.value}

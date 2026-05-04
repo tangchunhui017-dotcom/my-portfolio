@@ -1,24 +1,7 @@
-import { promises as fs } from 'fs';
+﻿import { promises as fs } from 'fs';
 import path from 'path';
-import type {
-  Asset,
-  CategoryBreakdownRecord,
-  DesignItem,
-  DesignItemReviewSummary,
-  DevelopmentWaveRecord,
-  ProductArchitectureRecord,
-  Risk,
-  SeasonOverview,
-  Series,
-  SeriesBrief,
-  SeriesDevelopmentPlanRow,
-  SyncConfig,
-  Task,
-  ThemeDirectionRecord,
-  Timeline,
-  Wave,
-  WeeklySnapshot,
-} from './types';
+import type { ActionItem, CategoryPlan, DesignAsset, GateNode, OTBStructure, Project, ReviewRecord, Series, StyleDevelopment, Wave } from './types';
+import { normalizeRiskLevel } from './helpers/status';
 
 const DATA_DIR = path.join(process.cwd(), 'data', 'footwear-planning');
 
@@ -29,12 +12,50 @@ async function readJsonFile<T>(filename: string): Promise<T> {
   return JSON.parse(normalizedContent) as T;
 }
 
-export async function loadSeasonOverview(): Promise<SeasonOverview> {
-  return readJsonFile<SeasonOverview>('season-overview.json');
+export async function loadProjects(): Promise<Project[]> {
+  const data = await readJsonFile<{ projects: Project[] }>('projects.json');
+  return data.projects;
 }
 
-export async function loadTimeline(): Promise<Timeline> {
-  return readJsonFile<Timeline>('timeline.json');
+export async function loadSeries(): Promise<Series[]> {
+  const data = await readJsonFile<{ series: Series[] }>('series.json');
+  return data.series.map((record) => ({
+    ...record,
+    riskLevel: normalizeRiskLevel(record.riskLevel),
+  }));
+}
+
+export async function loadCategoryPlans(): Promise<CategoryPlan[]> {
+  const data = await readJsonFile<{ categoryPlans: CategoryPlan[] }>('category-plans.json');
+  return data.categoryPlans;
+}
+
+export async function loadStyleDevelopments(): Promise<StyleDevelopment[]> {
+  const data = await readJsonFile<{ styles: StyleDevelopment[] }>('style-developments.json');
+  return data.styles.map((record) => ({
+    ...record,
+    riskLevel: normalizeRiskLevel(record.riskLevel),
+  }));
+}
+
+export async function loadGateNodes(): Promise<GateNode[]> {
+  const data = await readJsonFile<{ gateNodes: GateNode[] }>('gate-nodes.json');
+  return data.gateNodes;
+}
+
+export async function loadDesignAssets(): Promise<DesignAsset[]> {
+  const data = await readJsonFile<{ assets: DesignAsset[] }>('design-assets.json');
+  return data.assets;
+}
+
+export async function loadReviewRecords(): Promise<ReviewRecord[]> {
+  const data = await readJsonFile<{ reviewRecords: ReviewRecord[] }>('review-records.json');
+  return data.reviewRecords;
+}
+
+export async function loadActionItems(): Promise<ActionItem[]> {
+  const data = await readJsonFile<{ actionItems: ActionItem[] }>('action-items.json');
+  return data.actionItems;
 }
 
 export async function loadWaves(): Promise<Wave[]> {
@@ -42,70 +63,7 @@ export async function loadWaves(): Promise<Wave[]> {
   return data.waves;
 }
 
-export async function loadSeries(): Promise<Series[]> {
-  const data = await readJsonFile<{ series: Series[] }>('series.json');
-  return data.series;
-}
-
-export async function loadSeriesBriefs(): Promise<SeriesBrief[]> {
-  const data = await readJsonFile<{ briefs: SeriesBrief[] }>('series-briefs.json');
-  return data.briefs;
-}
-
-export async function loadAssets(): Promise<Asset[]> {
-  const data = await readJsonFile<{ assets: Asset[] }>('assets.json');
-  return data.assets;
-}
-
-export async function loadDesignItems(): Promise<DesignItem[]> {
-  const data = await readJsonFile<{ designItems: DesignItem[] }>('design-items.json');
-  return data.designItems;
-}
-
-export async function loadDesignItemReviews(): Promise<DesignItemReviewSummary[]> {
-  const data = await readJsonFile<{ reviews: DesignItemReviewSummary[] }>('design-item-reviews.json');
-  return data.reviews;
-}
-
-export async function loadRisks(): Promise<Risk[]> {
-  const data = await readJsonFile<{ risks: Risk[] }>('risks.json');
-  return data.risks;
-}
-
-export async function loadTasks(): Promise<Task[]> {
-  const data = await readJsonFile<{ tasks: Task[] }>('tasks.json');
-  return data.tasks;
-}
-
-export async function loadSeriesDevelopmentPlans(): Promise<SeriesDevelopmentPlanRow[]> {
-  const data = await readJsonFile<{ plans: SeriesDevelopmentPlanRow[] }>('series-development-plans.json');
-  return data.plans;
-}
-
-export async function loadThemeDirections(): Promise<ThemeDirectionRecord[]> {
-  const data = await readJsonFile<{ themes: ThemeDirectionRecord[] }>('theme-directions.json');
-  return data.themes;
-}
-
-export async function loadProductArchitectures(): Promise<ProductArchitectureRecord[]> {
-  const data = await readJsonFile<{ architectures: ProductArchitectureRecord[] }>('product-architectures.json');
-  return data.architectures;
-}
-
-export async function loadCategoryBreakdowns(): Promise<CategoryBreakdownRecord[]> {
-  const data = await readJsonFile<{ breakdowns: CategoryBreakdownRecord[] }>('category-breakdowns.json');
-  return data.breakdowns;
-}
-
-export async function loadDevelopmentWaveRows(): Promise<DevelopmentWaveRecord[]> {
-  const data = await readJsonFile<{ rows: DevelopmentWaveRecord[] }>('development-wave-table.json');
-  return data.rows;
-}
-
-export async function loadWeeklySnapshot(): Promise<WeeklySnapshot> {
-  return readJsonFile<WeeklySnapshot>('weekly-snapshot.json');
-}
-
-export async function loadSyncConfig(): Promise<SyncConfig> {
-  return readJsonFile<SyncConfig>('sync-config.json');
+export async function loadOTBStructures(): Promise<OTBStructure[]> {
+  const data = await readJsonFile<{ otbStructures: OTBStructure[] }>('otb-structures.json');
+  return data.otbStructures;
 }

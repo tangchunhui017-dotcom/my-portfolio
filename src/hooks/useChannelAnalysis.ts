@@ -2,9 +2,12 @@ import { useMemo } from 'react';
 import rawSalesData from '../../data/dashboard/fact_sales.json';
 import rawChannelData from '../../data/dashboard/dim_channel.json';
 import rawSkuData from '../../data/dashboard/dim_sku.json';
-import { DashboardFilters } from '@/hooks/useDashboardFilter';
-import { matchCategoryL1, matchCategoryL2 } from '@/config/categoryMapping';
+import rawPlanData from '../../data/dashboard/dim_plan.json';
+import { DashboardFilters, matchesDashboardSkuCategoryFilters } from '@/hooks/useDashboardFilter';
 import { matchesPriceBandFilter } from '@/config/priceBand';
+import { resolveDashboardMomBaseline } from '@/config/dashboardCompare';
+import { deriveDashboardAnnualPlanTotal, deriveDashboardMonthlyPlanBreakdown, deriveScopedAnnualPlanTotal } from '@/config/dashboardPlan';
+import { getDashboardMonthByWave, matchesDashboardSeasonFilter } from '@/config/dashboardTime';
 
 interface DimChannel {
     channel_id: string;
@@ -43,6 +46,25 @@ interface FactSalesRecord {
     gross_margin_rate: number;
     cumulative_sell_through: number;
     on_hand_unit: number;
+}
+
+interface DimPlanChannelRecord {
+    channel_type: string;
+    plan_sales_amt?: number;
+}
+
+interface DimPlanMonthlyRecord {
+    month?: number;
+    plan_sales_amt?: number;
+}
+
+interface DimPlan {
+    season_year?: number;
+    channel_plan?: DimPlanChannelRecord[];
+    overall_plan?: {
+        plan_total_sales?: number;
+    };
+    monthly_plan?: DimPlanMonthlyRecord[];
 }
 
 interface AggregatedStats {
@@ -217,14 +239,14 @@ const AUDIENCE_TO_AGE_GROUP: Record<string, string[]> = {
     '35岁以上': ['36-45', '46+'],
 };
 
-const TARGET_GROWTH_RATE = 0.08;
+const PLAN_FALLBACK_GROWTH_RATE = 0.08;
 const SALES_BUCKETS = ['超高', '高', '中', '低'];
 const CITY_TIER_ORDER = ['全国', '一线', '新一线', '二线', '三线', '四线'];
-const SEASON_ORDER = ['Q1', 'Q2', 'Q3', 'Q4'] as const;
 
 const salesRecords = rawSalesData as FactSalesRecord[];
 const channels = rawChannelData as DimChannel[];
 const skus = rawSkuData as DimSku[];
+const dimPlan = rawPlanData as DimPlan;
 const ONLINE_REGION_SET = new Set(
     channels.filter((channel) => channel.is_online).map((channel) => channel.region),
 );
@@ -282,15 +304,14 @@ function shouldIncludeRecord(
         return false;
     }
 
-    if (filters.season !== 'all' && sale.season !== filters.season) return false;
+    if (!matchesDashboardSeasonFilter(filters.season, sale.wave, sale.season)) return false;
     if (filters.wave !== 'all' && sale.wave !== filters.wave) return false;
 
     if (scope.system === 'online' && !channel.is_online) return false;
     if (scope.system === 'offline' && channel.is_online) return false;
     if (scope.system === 'online' && scope.platform !== 'all' && channel.region !== scope.platform) return false;
 
-    if (!matchCategoryL1(filters.category_id, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
-    if (!matchCategoryL2(filters.sub_category, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
+    if (!matchesDashboardSkuCategoryFilters(filters, sku)) return false;
     if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
     if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
 
@@ -354,16 +375,7 @@ function getLatestYear(records: FactSalesRecord[]) {
 }
 
 function getMomBaseline(filters: DashboardFilters, currentYear: number) {
-    const currentSeasonIdx = filters.season !== 'all'
-        ? SEASON_ORDER.indexOf(filters.season as typeof SEASON_ORDER[number])
-        : -1;
-    if (currentSeasonIdx === -1) {
-        return { year: currentYear - 1, season: 'all' as const };
-    }
-    if (currentSeasonIdx === 0) {
-        return { year: currentYear - 1, season: 'Q4' as const };
-    }
-    return { year: currentYear, season: SEASON_ORDER[currentSeasonIdx - 1] };
+    return resolveDashboardMomBaseline(filters, currentYear, 'channel');
 }
 
 function toStoreMetrics(store: StoreAccumulator): StoreMetrics {
@@ -410,12 +422,20 @@ export function useChannelAnalysis(
         const latestYear = getLatestYear(salesRecords);
         const currentYear = filters.season_year === 'all' ? latestYear : Number(filters.season_year);
         const baselineYear = currentYear - 1;
+        const annualScopeFilters: DashboardFilters = { ...filters, season: 'all', wave: 'all' };
+        const currentScopeMonthlyActuals = Array.from({ length: 12 }, () => 0);
+        const previousScopeMonthlyActuals = Array.from({ length: 12 }, () => 0);
+        let overallAnnualActualTotal = 0;
         const momBaseline = getMomBaseline(filters, currentYear);
-        const momFilters: DashboardFilters = {
-            ...filters,
-            season: momBaseline.season,
-        };
+        const momFilters: DashboardFilters = momBaseline
+            ? {
+                ...filters,
+                season: momBaseline.season,
+                wave: momBaseline.wave,
+            }
+            : filters;
         const regionCurrentMap: Record<string, RegionYearStats> = {};
+        const regionAnnualMap: Record<string, RegionYearStats> = {};
         const regionBaselineMap: Record<string, RegionYearStats> = {};
         const regionMomMap: Record<string, RegionYearStats> = {};
 
@@ -497,9 +517,25 @@ export function useChannelAnalysis(
                 }
             }
 
+            if (Number(sale.season_year) === currentYear) {
+                overallAnnualActualTotal += sale.net_sales_amt || 0;
+            }
+
             if (shouldIncludeRecord(sale, sku, channel, filters, currentYear, scope)) {
                 const regionKey = channel.region || '未知大区';
                 accumulateYear(regionCurrentMap, regionKey, sale);
+            }
+
+            if (shouldIncludeRecord(sale, sku, channel, annualScopeFilters, currentYear, scope)) {
+                const regionKey = channel.region || '未知大区';
+                accumulateYear(regionAnnualMap, regionKey, sale);
+                const month = getDashboardMonthByWave(sale.wave);
+                if (month) currentScopeMonthlyActuals[month - 1] += sale.net_sales_amt || 0;
+            }
+
+            if (shouldIncludeRecord(sale, sku, channel, annualScopeFilters, baselineYear, scope)) {
+                const month = getDashboardMonthByWave(sale.wave);
+                if (month) previousScopeMonthlyActuals[month - 1] += sale.net_sales_amt || 0;
             }
 
             if (shouldIncludeRecord(sale, sku, channel, filters, baselineYear, scope)) {
@@ -507,7 +543,7 @@ export function useChannelAnalysis(
                 accumulateYear(regionBaselineMap, regionKey, sale);
             }
 
-            if (shouldIncludeRecord(sale, sku, channel, momFilters, momBaseline.year, scope)) {
+            if (momBaseline && shouldIncludeRecord(sale, sku, channel, momFilters, momBaseline.year, scope)) {
                 const regionKey = channel.region || '未知大区';
                 accumulateYear(regionMomMap, regionKey, sale);
             }
@@ -527,17 +563,48 @@ export function useChannelAnalysis(
 
         const regionSplitStats = Object.values(regionSplitMap).sort((a, b) => b.netSales - a.netSales);
 
+        const currentScopeActualTotal = Object.values(regionCurrentMap).reduce((sum, item) => sum + item.netSales, 0);
+        const annualScopeActualTotal = Object.values(regionAnnualMap).reduce((sum, item) => sum + item.netSales, 0);
         const allRegionKeys = new Set<string>([
             ...Object.keys(regionCurrentMap),
+            ...Object.keys(regionAnnualMap),
             ...Object.keys(regionBaselineMap),
             ...Object.keys(regionMomMap),
         ]);
+        const hasSharedPlan = dimPlan.season_year === currentYear;
+        const monthlyPlanSource = Array.from({ length: 12 }, (_, index) => {
+            const row = dimPlan.monthly_plan?.find((item) => Number(item.month) === index + 1);
+            return Number(row?.plan_sales_amt || 0);
+        });
+        const overallPlanTotal = hasSharedPlan
+            ? deriveDashboardAnnualPlanTotal(monthlyPlanSource, Number(dimPlan.overall_plan?.plan_total_sales || 0))
+            : 0;
+        const fallbackAnnualPlanTotal = annualScopeActualTotal * (1 + PLAN_FALLBACK_GROWTH_RATE);
+        const scopedAnnualPlanTotal = hasSharedPlan
+            ? deriveScopedAnnualPlanTotal(overallPlanTotal, annualScopeActualTotal, overallAnnualActualTotal)
+            : fallbackAnnualPlanTotal;
+        const planBreakdown = deriveDashboardMonthlyPlanBreakdown({
+            annualPlanTotal: scopedAnnualPlanTotal,
+            monthlyPlanSource,
+            currentYearMonthlyActuals: currentScopeMonthlyActuals,
+            previousYearMonthlyActuals: previousScopeMonthlyActuals,
+            season: filters.season,
+            wave: filters.wave,
+        });
+        const scopedPlanTotal = planBreakdown.periodPlanTotal;
         const regionPerformance: RegionPerformanceItem[] = Array.from(allRegionKeys)
             .map((region) => {
                 const net_sales = regionCurrentMap[region]?.netSales || 0;
                 const yoy_sales = regionBaselineMap[region]?.netSales || 0;
                 const mom_sales = regionMomMap[region]?.netSales || 0;
-                const target_sales = yoy_sales * (1 + TARGET_GROWTH_RATE);
+                const shareBaseTotal = currentScopeActualTotal > 0 ? currentScopeActualTotal : annualScopeActualTotal;
+                const shareBaseSales = currentScopeActualTotal > 0
+                    ? net_sales
+                    : (regionAnnualMap[region]?.netSales || 0);
+                const share = shareBaseTotal > 0
+                    ? shareBaseSales / shareBaseTotal
+                    : allRegionKeys.size > 0 ? 1 / allRegionKeys.size : 0;
+                const target_sales = scopedPlanTotal > 0 ? scopedPlanTotal * share : 0;
                 const achv_rate = target_sales > 0 ? net_sales / target_sales : 0;
                 const yoy_rate = yoy_sales > 0 ? (net_sales - yoy_sales) / yoy_sales : 0;
                 const mom_rate = mom_sales > 0 ? (net_sales - mom_sales) / mom_sales : 0;

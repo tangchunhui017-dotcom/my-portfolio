@@ -1,8 +1,9 @@
-'use client';
+﻿'use client';
 
 import { useMemo, useState } from 'react';
 import { PHASE_MAP } from '@/config/design-review-center/status-map';
-import type { DesignPhase, RiskLevel } from '@/lib/design-review-center/types';
+import type { RiskLevel } from '@/config/design-review-center/enums';
+import type { DesignPhase } from '@/lib/design-review-center/types';
 import type { DesignReviewTaskDraft } from '@/lib/openclaw/tasks';
 
 interface OwnerOption {
@@ -32,44 +33,44 @@ const PHASE_OPTIONS: DesignPhase[] = [
   'completed',
 ];
 
-const PRIORITY_OPTIONS: RiskLevel[] = ['medium', 'high', 'critical', 'low'];
+const PRIORITY_OPTIONS: RiskLevel[] = ['blocking', 'high', 'medium', 'low'];
 
 const PRIORITY_LABELS: Record<RiskLevel, string> = {
-  low: '\u4f4e',
-  medium: '\u4e2d',
-  high: '\u9ad8',
-  critical: '\u4e25\u91cd',
+  blocking: '阻塞',
+  high: '高',
+  medium: '中',
+  low: '低',
 };
 
 const TASK_TYPE_OPTIONS = [
-  { value: 'design', label: '\u8bbe\u8ba1\u4fee\u6539' },
-  { value: 'sample', label: '\u6837\u978b\u8bc4\u5ba1' },
-  { value: 'sourcing', label: '\u4f9b\u5e94\u94fe\u8ddf\u8fdb' },
-  { value: 'testing', label: '\u6d4b\u8bd5\u9a8c\u8bc1' },
-  { value: 'marketing', label: '\u4e0a\u5e02\u51c6\u5907' },
+  { value: 'design', label: '设计修改' },
+  { value: 'sample', label: '样鞋评审' },
+  { value: 'sourcing', label: '供应链跟进' },
+  { value: 'testing', label: '测试验证' },
+  { value: 'marketing', label: '上市准备' },
 ] as const;
 
 const TEXT = {
-  title: '\u6279\u91cf\u6d41\u8f6c',
-  subtitle: '\u5df2\u9009 {count} \u6b3e\uff0c\u53ef\u96c6\u4e2d\u6539\u9636\u6bb5\u3001\u6539\u8d1f\u8d23\u4eba\u3001\u8bbe\u56de\u8bc4\u65f6\u95f4\u6216\u6279\u91cf\u751f\u6210\u5f85\u529e\u3002',
-  clearSelection: '\u6e05\u7a7a\u9009\u62e9',
-  applyPhase: '\u6279\u91cf\u6539\u9636\u6bb5',
-  applyPhaseButton: '\u5e94\u7528\u9636\u6bb5',
-  assignOwner: '\u6279\u91cf\u6539\u8d1f\u8d23\u4eba',
-  assignOwnerButton: '\u5e94\u7528\u8d1f\u8d23\u4eba',
-  pickOwner: '\u8bf7\u9009\u62e9\u8d1f\u8d23\u4eba',
-  nextReviewDate: '\u6279\u91cf\u8bbe\u56de\u8bc4\u65f6\u95f4',
-  nextReviewDateButton: '\u5e94\u7528\u56de\u8bc4\u65f6\u95f4',
-  taskTitle: '\u6279\u91cf\u751f\u6210\u5f85\u529e\u6807\u9898',
-  taskTitlePlaceholder: '\u4f8b\u5982\uff1a\u8865\u7b2c\u4e8c\u8f6e\u914d\u8272\u5e76\u590d\u6838\u978b\u5934\u5305\u8986',
-  dueDate: '\u5230\u671f\u65f6\u95f4',
-  owner: '\u8d1f\u8d23\u4eba',
-  keepOwner: '\u6cbf\u7528\u5355\u6b3e\u8d1f\u8d23\u4eba',
-  priority: '\u4f18\u5148\u7ea7',
-  createTask: '\u751f\u6210\u5f85\u529e',
-  taskType: '\u4efb\u52a1\u7c7b\u578b',
-  taskDescription: '\u4efb\u52a1\u8bf4\u660e',
-  taskDescriptionPlaceholder: '\u4f8b\u5982\uff1a\u8bc4\u5ba1\u4f1a\u540e\u8865\u9f50\u7b2c\u4e8c\u8f6e\u914d\u8272\u65b9\u6848\uff0c\u5e76\u590d\u6838\u5927\u5e95\u5305\u8fb9\u4e0e\u978b\u5934\u6bd4\u4f8b\u3002',
+  title: '批量流转',
+  subtitle: '已选 {count} 款，可集中改阶段、改负责人、设回评时间或批量生成待办。',
+  clearSelection: '清空选择',
+  applyPhase: '批量改阶段',
+  applyPhaseButton: '应用阶段',
+  assignOwner: '批量改负责人',
+  assignOwnerButton: '应用负责人',
+  pickOwner: '请选择负责人',
+  nextReviewDate: '批量设回评时间',
+  nextReviewDateButton: '应用回评时间',
+  taskTitle: '批量生成待办标题',
+  taskTitlePlaceholder: '例如：补第二轮配色并复核鞋头包覆',
+  dueDate: '到期时间',
+  owner: '负责人',
+  keepOwner: '沿用单款负责人',
+  priority: '优先级',
+  createTask: '生成待办',
+  taskType: '任务类型',
+  taskDescription: '任务说明',
+  taskDescriptionPlaceholder: '例如：评审会后补齐第二轮配色方案，并复核大底包边与鞋头比例。',
 } as const;
 
 export default function BulkActionBar({
@@ -104,18 +105,26 @@ export default function BulkActionBar({
             <h3 className="text-sm font-semibold text-slate-900">{TEXT.title}</h3>
             <p className="mt-1 text-sm text-slate-600">{subtitle}</p>
           </div>
-          <button type="button" onClick={onClearSelection} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
+          <button
+            type="button"
+            onClick={onClearSelection}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+          >
             {TEXT.clearSelection}
           </button>
         </div>
 
         <div className="grid gap-4 xl:grid-cols-3">
           <div className="rounded-2xl border border-slate-200 bg-white p-4">
-            <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">\u9636\u6bb5\u6d41\u8f6c</div>
+            <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">阶段流转</div>
             <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
               <label className="text-sm text-slate-600">
                 {TEXT.applyPhase}
-                <select value={phase} onChange={(event) => setPhase(event.target.value as DesignPhase)} className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500">
+                <select
+                  value={phase}
+                  onChange={(event) => setPhase(event.target.value as DesignPhase)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500"
+                >
                   {PHASE_OPTIONS.map((phaseOption) => (
                     <option key={phaseOption} value={phaseOption}>
                       {PHASE_MAP[phaseOption]?.label ?? phaseOption}
@@ -123,18 +132,26 @@ export default function BulkActionBar({
                   ))}
                 </select>
               </label>
-              <button type="button" onClick={() => onApplyPhase(phase)} className="self-end rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">
+              <button
+                type="button"
+                onClick={() => onApplyPhase(phase)}
+                className="self-end rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+              >
                 {TEXT.applyPhaseButton}
               </button>
             </div>
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-white p-4">
-            <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">\u8d23\u4efb\u4eba\u4e0e\u56de\u8bc4</div>
+            <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">责任人与回评</div>
             <div className="grid gap-3">
               <label className="text-sm text-slate-600">
                 {TEXT.assignOwner}
-                <select value={owner} onChange={(event) => setOwner(event.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500">
+                <select
+                  value={owner}
+                  onChange={(event) => setOwner(event.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500"
+                >
                   <option value="">{TEXT.pickOwner}</option>
                   {ownerOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -143,34 +160,63 @@ export default function BulkActionBar({
                   ))}
                 </select>
               </label>
-              <button type="button" onClick={() => owner && onAssignOwner(owner)} disabled={!owner} className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50">
+              <button
+                type="button"
+                onClick={() => owner && onAssignOwner(owner)}
+                disabled={!owner}
+                className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+              >
                 {TEXT.assignOwnerButton}
               </button>
               <label className="text-sm text-slate-600">
                 {TEXT.nextReviewDate}
-                <input type="date" value={nextReviewDate} onChange={(event) => setNextReviewDate(event.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500" />
+                <input
+                  type="date"
+                  value={nextReviewDate}
+                  onChange={(event) => setNextReviewDate(event.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500"
+                />
               </label>
-              <button type="button" onClick={() => nextReviewDate && onApplyNextReviewDate(nextReviewDate)} disabled={!nextReviewDate} className="rounded-lg border border-sky-300 bg-white px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-50">
+              <button
+                type="button"
+                onClick={() => nextReviewDate && onApplyNextReviewDate(nextReviewDate)}
+                disabled={!nextReviewDate}
+                className="rounded-lg border border-sky-300 bg-white px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
                 {TEXT.nextReviewDateButton}
               </button>
             </div>
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-white p-4">
-            <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">\u751f\u6210\u5f85\u529e</div>
+            <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">生成待办</div>
             <div className="grid gap-3">
               <label className="text-sm text-slate-600">
                 {TEXT.taskTitle}
-                <input value={taskDraft.title} onChange={(event) => setTaskDraft((current) => ({ ...current, title: event.target.value }))} placeholder={TEXT.taskTitlePlaceholder} className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500" />
+                <input
+                  value={taskDraft.title}
+                  onChange={(event) => setTaskDraft((current) => ({ ...current, title: event.target.value }))}
+                  placeholder={TEXT.taskTitlePlaceholder}
+                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500"
+                />
               </label>
               <div className="grid gap-3 sm:grid-cols-3">
                 <label className="text-sm text-slate-600">
                   {TEXT.dueDate}
-                  <input type="date" value={taskDraft.dueDate} onChange={(event) => setTaskDraft((current) => ({ ...current, dueDate: event.target.value }))} className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500" />
+                  <input
+                    type="date"
+                    value={taskDraft.dueDate}
+                    onChange={(event) => setTaskDraft((current) => ({ ...current, dueDate: event.target.value }))}
+                    className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500"
+                  />
                 </label>
                 <label className="text-sm text-slate-600">
                   {TEXT.owner}
-                  <select value={taskDraft.assignee} onChange={(event) => setTaskDraft((current) => ({ ...current, assignee: event.target.value }))} className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500">
+                  <select
+                    value={taskDraft.assignee}
+                    onChange={(event) => setTaskDraft((current) => ({ ...current, assignee: event.target.value }))}
+                    className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500"
+                  >
                     <option value="">{TEXT.keepOwner}</option>
                     {ownerOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -181,7 +227,11 @@ export default function BulkActionBar({
                 </label>
                 <label className="text-sm text-slate-600">
                   {TEXT.priority}
-                  <select value={taskDraft.priority} onChange={(event) => setTaskDraft((current) => ({ ...current, priority: event.target.value as RiskLevel }))} className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500">
+                  <select
+                    value={taskDraft.priority}
+                    onChange={(event) => setTaskDraft((current) => ({ ...current, priority: event.target.value as RiskLevel }))}
+                    className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500"
+                  >
                     {PRIORITY_OPTIONS.map((priority) => (
                       <option key={priority} value={priority}>
                         {PRIORITY_LABELS[priority]}
@@ -193,7 +243,11 @@ export default function BulkActionBar({
               <div className="grid gap-3 lg:grid-cols-[1fr_1fr]">
                 <label className="text-sm text-slate-600">
                   {TEXT.taskType}
-                  <select value={taskDraft.taskType} onChange={(event) => setTaskDraft((current) => ({ ...current, taskType: event.target.value }))} className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500">
+                  <select
+                    value={taskDraft.taskType}
+                    onChange={(event) => setTaskDraft((current) => ({ ...current, taskType: event.target.value }))}
+                    className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500"
+                  >
                     {TASK_TYPE_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
@@ -203,10 +257,21 @@ export default function BulkActionBar({
                 </label>
                 <label className="text-sm text-slate-600">
                   {TEXT.taskDescription}
-                  <textarea rows={2} value={taskDraft.description} onChange={(event) => setTaskDraft((current) => ({ ...current, description: event.target.value }))} placeholder={TEXT.taskDescriptionPlaceholder} className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500" />
+                  <textarea
+                    rows={2}
+                    value={taskDraft.description}
+                    onChange={(event) => setTaskDraft((current) => ({ ...current, description: event.target.value }))}
+                    placeholder={TEXT.taskDescriptionPlaceholder}
+                    className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-500"
+                  />
                 </label>
               </div>
-              <button type="button" onClick={() => canCreateTask && onCreateTasks(taskDraft)} disabled={!canCreateTask} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50">
+              <button
+                type="button"
+                onClick={() => canCreateTask && onCreateTasks(taskDraft)}
+                disabled={!canCreateTask}
+                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+              >
                 {TEXT.createTask}
               </button>
             </div>
@@ -216,3 +281,4 @@ export default function BulkActionBar({
     </div>
   );
 }
+

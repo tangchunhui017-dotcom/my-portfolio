@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useMemo, useState } from 'react';
 import type { EChartsOption } from 'echarts';
@@ -753,7 +753,7 @@ export default function ProductBasicPanel({
             .filter((item) => baseColorSet.has(item.color_family))
             .reduce((sum, item) => sum + item.net_sales, 0);
         const baseShare = safeDiv(baseSales, totals.net_sales);
-        return `基础色盘贡献 ${formatPct(baseShare)}，当前色盘结构${baseShare >= 0.7 ? '稳健' : '偏离主盘'}。鞋类黑/白/灰属于场景可穿性与搭配兼容性底盘色，应稳定覆盖通勤与常青款。`;
+        return `基础色盘贡献 ${formatPct(baseShare)}，当前色盘结构${baseShare >= 0.7 ? '稳健' : '偏离主盘'}。鞋类黑/白/灰属于场景可穿性与搭配兼容性底盘色，应稳定覆盖通勤与老品基盘款。`;
     }, [colorRanking, totals.net_sales]);
 
     const colorAction = useMemo(() => {
@@ -791,7 +791,7 @@ export default function ProductBasicPanel({
     }> = [
         {
             key: 'highEffHighSt',
-            title: '高效率 × 高售罄（常青主色）',
+            title: '高效率 × 高售罄（老品基盘主色）',
             action: '加深度：核心楦型/核心场景全覆盖，首配优先。',
         },
         {

@@ -1,863 +1,235 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import EffectPreviewPanel from '@/components/design-review-center/effect-preview-panel';
-import BulkActionBar from '@/components/design-review-center/bulk-action-bar';
+import { useMemo, useRef, useState } from 'react';
 import CategoryBreakdownPanel from '@/components/design-review-center/category-breakdown-panel';
 import DevelopmentWaveTable from '@/components/design-review-center/development-wave-table';
-import DesignItemTable from '@/components/design-review-center/design-item-table';
-import FilterBar, {
-  DEFAULT_FILTERS,
-  type FilterOption,
-  type FilterState,
-} from '@/components/design-review-center/filter-bar';
+import EffectPreviewPanel from '@/components/design-review-center/effect-preview-panel';
+import FilterBar, { type FilterState } from '@/components/design-review-center/filter-bar';
+import PlatformTopology from '@/components/design-review-center/PlatformTopology';
+import PriceGapAnalysis from '@/components/design-review-center/PriceGapAnalysis';
 import ProductArchitecturePanel from '@/components/design-review-center/product-architecture-panel';
+import ProductPyramid from '@/components/design-review-center/ProductPyramid';
 import RiskPanel from '@/components/design-review-center/risk-panel';
+import SeasonHealthCard from '@/components/design-review-center/SeasonHealthCard';
 import SeasonOverviewCards from '@/components/design-review-center/season-overview-cards';
-import SeasonTimeline from '@/components/design-review-center/season-timeline';
 import TaskPanel from '@/components/design-review-center/task-panel';
 import ThemeDirectionPanel from '@/components/design-review-center/theme-direction-panel';
 import WorkflowTabs from '@/components/design-review-center/workflow-tabs';
 import { WORKFLOW_TABS, type WorkflowTabKey } from '@/config/design-review-center/workflow-tabs';
-import {
-  applyDesignReviewActionIntents,
-  commitDesignReviewActionIntents,
-  createDesignReviewCommittedState,
-  getDesignReviewActionMessage,
-  loadDesignReviewCommittedState,
-  saveDesignReviewCommittedState,
-  type DesignReviewCommittedState,
-} from '@/lib/design-review-center/action-intents';
 import type { DesignReviewCenterData } from '@/lib/design-review-center/assembler';
-import type { DesignItem, Risk, RiskLevel, SeriesWithBrief, Task, Wave } from '@/lib/design-review-center/types';
-import {
-  clearSyncedDesignReviewActionIntents,
-  createDesignReviewNextReviewIntent,
-  createDesignReviewOwnerAssignmentIntent,
-  createDesignReviewPhaseTransitionIntent,
-  createDesignReviewTaskGenerationIntent,
-  getDesignReviewActionCounts,
-  getDesignReviewActionLabel,
-  getDesignReviewActionStatusLabel,
-  loadDesignReviewActionIntents,
-  markDesignReviewActionIntentsSynced,
-  queueDesignReviewActionIntent,
-  retryFailedDesignReviewActionIntents,
-  saveDesignReviewActionIntents,
-  type DesignReviewActionIntent,
-} from '@/lib/openclaw/tasks';
+import { formatDate } from '@/lib/design-review-center/helpers/date';
+import { ExportButton } from '@/lib/design-review-center/ExportEngine';
+import { createDesignVersionChains } from '@/lib/design-review-center/selectors/assets';
+import { DEFAULT_DESIGN_REVIEW_FILTERS, filterDesignReviewCenterData } from '@/lib/design-review-center/selectors/filters';
+import { createGateWaveGroups } from '@/lib/design-review-center/selectors/gates';
+import { createReviewActionRows, createReviewDecisionRows, summarizeReviewDecisionCenter } from '@/lib/design-review-center/selectors/reviews';
 
 interface DesignReviewCenterClientProps {
   data: DesignReviewCenterData;
 }
 
-const PRIORITY_ORDER: Record<RiskLevel, number> = {
-  critical: 0,
-  high: 1,
-  medium: 2,
-  low: 3,
-};
-
-const SERIES_NAME_MAP: Record<string, string> = {
-  'Street Wave': '街头浪潮',
-  'Urban Trail': '城市机能徒步',
-  'City Classic': '都市经典商务',
-  'Comfort Flex': '舒适弹行',
-};
-
-function startOfDay(value: string | null | undefined) {
-  if (!value) return Number.POSITIVE_INFINITY;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return Number.POSITIVE_INFINITY;
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-}
-
-function isPastDue(value: string | null | undefined, referenceDate: string) {
-  return startOfDay(value) < startOfDay(referenceDate);
-}
-
-function isSameWeek(value: string | null | undefined, referenceDate: string) {
-  if (!value) return false;
-  const target = startOfDay(value);
-  if (!Number.isFinite(target)) return false;
-  const baselineDate = new Date(referenceDate);
-  const day = baselineDate.getDay() === 0 ? 7 : baselineDate.getDay();
-  const weekStart = new Date(baselineDate);
-  weekStart.setDate(baselineDate.getDate() - day + 1);
-  const start = new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate()).getTime();
-  return target >= start && target < start + 7 * 24 * 60 * 60 * 1000;
-}
-
-function uniqueOptions(values: Array<string | null | undefined>) {
-  return [...new Set(values.map((value) => value?.trim()).filter(Boolean))] as string[];
-}
-
-function extractYear(value: string) {
-  const matched = value.match(/20\d{2}/);
-  return matched?.[0] ?? '';
-}
-
-function getQuarterFromDate(value: string) {
-  const matched = value.match(/(20\d{2})-(\d{2})-\d{2}/);
-  if (!matched) return '';
-  return 'Q' + Math.ceil(Number(matched[2]) / 3);
-}
-
-function normalizeWaveId(value: string) {
-  return value.trim().toLowerCase();
-}
-
-function getWaveYear(wave: Wave | undefined, fallbackYear: string) {
-  if (!wave) return fallbackYear;
-  const matched = wave.launchWindow.match(/20\d{2}/);
-  return matched?.[0] ?? fallbackYear;
-}
-
-function getWaveQuarter(wave: Wave | undefined) {
-  if (!wave) return '';
-  const matched = wave.launchWindow.match(/20\d{2}-(\d{2})-\d{2}/);
-  if (!matched) return '';
-  return 'Q' + Math.ceil(Number(matched[1]) / 3);
-}
-
-function isHighRisk(level: RiskLevel | undefined) {
-  return level === 'high' || level === 'critical';
-}
-
-function localizeSeriesText(value: string | null | undefined) {
-  if (!value) return '';
-  let localized = value;
-  Object.entries(SERIES_NAME_MAP).forEach(([english, chinese]) => {
-    localized = localized.replaceAll(english, chinese);
-  });
-  return localized;
-}
-
-function getLeadSeries(series: SeriesWithBrief[]) {
-  return [...series].sort((left, right) => {
-    const progressCompare = right.progress - left.progress;
-    if (progressCompare !== 0) return progressCompare;
-    return (right.brief?.plannedSkuCount ?? 0) - (left.brief?.plannedSkuCount ?? 0);
-  })[0] ?? null;
-}
-
-function getDominantWave(series: SeriesWithBrief[], waves: Wave[], fallbackWaveId: string) {
-  const counts = series.reduce<Record<string, number>>((accumulator, item) => {
-    accumulator[item.waveId] = (accumulator[item.waveId] ?? 0) + 1;
-    return accumulator;
-  }, {});
-
-  const dominantWaveId = Object.entries(counts).sort((left, right) => right[1] - left[1])[0]?.[0] ?? normalizeWaveId(fallbackWaveId);
-  return waves.find((wave) => normalizeWaveId(wave.waveId) === normalizeWaveId(dominantWaveId)) ?? waves[0] ?? null;
-}
-
-function sortRisks(risks: Risk[]) {
-  return [...risks].sort((left, right) => {
-    const priorityCompare = PRIORITY_ORDER[left.priority] - PRIORITY_ORDER[right.priority];
-    if (priorityCompare !== 0) return priorityCompare;
-    return startOfDay(left.dueDate) - startOfDay(right.dueDate);
-  });
-}
-
-function sortTasks(tasks: Task[]) {
-  return [...tasks]
-    .filter((task) => task.status !== 'completed')
-    .sort((left, right) => startOfDay(left.dueDate) - startOfDay(right.dueDate));
-}
-
-function matchesOwner(series: SeriesWithBrief, owner: string) {
-  if (!owner) return true;
-  const ownerPool = uniqueOptions([
-    series.owner,
-    ...series.designItems.map((item) => item.designer),
-    ...series.tasks.map((task) => task.assignee),
-    ...series.risks.map((risk) => risk.owner),
-  ]);
-  return ownerPool.includes(owner);
-}
-
-function matchesPhase(series: SeriesWithBrief, phase: string) {
-  if (!phase) return true;
-  return (
-    series.milestoneStatus === phase ||
-    series.designItems.some((item) => item.designStatus === phase) ||
-    series.developmentPlan.some((row) => row.phase === phase)
-  );
-}
-
-function matchesQuickFilters(series: SeriesWithBrief, filters: FilterState, referenceDate: string) {
-  if (filters.showHighRiskOnly) {
-    const hasHighRisk =
-      isHighRisk(series.riskLevel) ||
-      series.designItems.some((item) => isHighRisk(item.riskLevel)) ||
-      series.risks.some((risk) => isHighRisk(risk.priority));
-    if (!hasHighRisk) return false;
-  }
-
-  if (filters.showOverdueOnly) {
-    const hasOverdue =
-      isPastDue(series.dueDate, referenceDate) ||
-      series.designItems.some((item) => isPastDue(item.nextReviewDate ?? item.targetLaunchDate, referenceDate)) ||
-      series.tasks.some((task) => task.status !== 'completed' && isPastDue(task.dueDate, referenceDate)) ||
-      series.risks.some((risk) => risk.status !== 'resolved' && isPastDue(risk.dueDate, referenceDate));
-    if (!hasOverdue) return false;
-  }
-
-  if (filters.showThisWeekOnly) {
-    const hasThisWeek =
-      series.designItems.some((item) => isSameWeek(item.nextReviewDate, referenceDate)) ||
-      series.tasks.some((task) => task.status !== 'completed' && isSameWeek(task.dueDate, referenceDate));
-    if (!hasThisWeek) return false;
-  }
-
-  return true;
-}
-
-function getQueueStatusClassName(status: DesignReviewActionIntent['status']) {
-  if (status === 'pending_sync') return 'bg-amber-100 text-amber-800';
-  if (status === 'synced') return 'bg-emerald-100 text-emerald-800';
-  return 'bg-rose-100 text-rose-800';
-}
-
 export default function DesignReviewCenterClient({ data }: DesignReviewCenterClientProps) {
-  const referenceDate = data.weeklySnapshot.snapshotDate;
-  const seasonYear = extractYear(data.seasonOverview.season) || extractYear(referenceDate) || String(new Date(referenceDate).getFullYear());
-  const currentOwner = data.seasonOverview.currentOwner?.trim() ?? '';
-  const actorName = currentOwner || '设计评审中心';
+  const defaultYear = data.projects[0]?.year ?? data.derived.filterOptions.years[0]?.value ?? '';
   const [activeTab, setActiveTab] = useState<WorkflowTabKey>('overview');
-  const [filters, setFilters] = useState<FilterState>({ ...DEFAULT_FILTERS, year: seasonYear });
-  const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
-  const [actionMessage, setActionMessage] = useState('');
-  const [actionIntents, setActionIntents] = useState<DesignReviewActionIntent[]>([]);
+  const [filters, setFilters] = useState<FilterState>({ ...DEFAULT_DESIGN_REVIEW_FILTERS, year: defaultYear });
+  const [pyramidLayer, setPyramidLayer] = useState<string | null>(null);
+  const architectureRef = useRef<HTMLDivElement>(null);
 
-  const baseItems = useMemo(() => data.series.flatMap((series) => series.designItems), [data.series]);
-  const baseTasks = useMemo(() => data.series.flatMap((series) => series.tasks), [data.series]);
-  const baseCommittedState = useMemo(() => createDesignReviewCommittedState(baseItems, baseTasks), [baseItems, baseTasks]);
-  const [committedState, setCommittedState] = useState<DesignReviewCommittedState>(baseCommittedState);
+  const filtered = useMemo(() => filterDesignReviewCenterData(data, filters), [data, filters]);
+  const taskRows = filtered.styles.map((aggregate) => aggregate.taskRow);
+  const themeStrategies = filtered.series.map((aggregate) => aggregate.themeStrategy);
+  const mustDecide = filtered.overview.mustDecide.slice(0, 4);
+  const blockers = filtered.overview.blockers.slice(0, 4);
+  const gateGroups = useMemo(() => createGateWaveGroups(filtered.styles), [filtered.styles]);
+  const versionChains = useMemo(() => createDesignVersionChains(filtered.styles), [filtered.styles]);
+  const reviewRows = useMemo(() => createReviewDecisionRows(filtered.styles, data.referenceDate), [data.referenceDate, filtered.styles]);
+  const actionRows = useMemo(() => createReviewActionRows(filtered.styles, data.referenceDate), [data.referenceDate, filtered.styles]);
+  const reviewSummary = useMemo(() => summarizeReviewDecisionCenter(reviewRows, actionRows), [actionRows, reviewRows]);
 
-  useEffect(() => {
-    const storedIntents = loadDesignReviewActionIntents();
-    const storedCommittedState = loadDesignReviewCommittedState();
-    setActionIntents(storedIntents);
-    setCommittedState(storedCommittedState ?? baseCommittedState);
-  }, [baseCommittedState]);
-
-  useEffect(() => {
-    saveDesignReviewActionIntents(actionIntents);
-  }, [actionIntents]);
-
-  useEffect(() => {
-    saveDesignReviewCommittedState(committedState);
-  }, [committedState]);
-
-  const projectedState = useMemo(() => {
-    const pendingOrErrorIntents = actionIntents.filter((intent) => intent.status !== 'synced');
-    return applyDesignReviewActionIntents({
-      baseItems: committedState.designItems,
-      baseTasks: committedState.tasks,
-      intents: pendingOrErrorIntents,
-    });
-  }, [actionIntents, committedState.designItems, committedState.tasks]);
-
-  const projectedSeries = useMemo(
-    () =>
-      data.series.map((series) => ({
-        ...series,
-        designItems: projectedState.designItems.filter((item) => item.seriesId === series.seriesId),
-        tasks: projectedState.tasks.filter((task) => task.seriesId === series.seriesId),
-      })),
-    [data.series, projectedState.designItems, projectedState.tasks],
-  );
-
-  const waveById = useMemo(() => new Map(data.waves.map((wave) => [normalizeWaveId(wave.waveId), wave])), [data.waves]);
-
-  const yearOptions = useMemo<FilterOption[]>(() => {
-    const years = uniqueOptions([seasonYear, ...data.waves.map((wave) => getWaveYear(wave, seasonYear))]).sort();
-    return years.map((year) => ({ value: year, label: year + '年' }));
-  }, [data.waves, seasonYear]);
-
-  const quarterOptions = useMemo<FilterOption[]>(() => {
-    const values = data.waves
-      .filter((wave) => !filters.year || getWaveYear(wave, seasonYear) === filters.year)
-      .map((wave) => getWaveQuarter(wave))
-      .filter(Boolean);
-    return uniqueOptions(values)
-      .sort()
-      .map((quarter) => ({ value: quarter, label: quarter }));
-  }, [data.waves, filters.year, seasonYear]);
-
-  const scopedSeries = useMemo(() => {
-    return projectedSeries.filter((series) => {
-      const wave = waveById.get(normalizeWaveId(series.waveId));
-      const waveYear = getWaveYear(wave, seasonYear);
-      const waveQuarter = getWaveQuarter(wave);
-
-      if (filters.year && waveYear !== filters.year) return false;
-      if (filters.quarter && waveQuarter !== filters.quarter) return false;
-      if (filters.wave && series.waveId !== filters.wave) return false;
-      return true;
-    });
-  }, [filters.quarter, filters.wave, filters.year, projectedSeries, seasonYear, waveById]);
-
-  const waveOptions = useMemo<FilterOption[]>(() => {
-    const visibleWaveIds = new Set(scopedSeries.map((series) => series.waveId));
-    return data.waves.filter((wave) => visibleWaveIds.has(wave.waveId)).map((wave) => ({ value: wave.waveId, label: wave.waveName }));
-  }, [data.waves, scopedSeries]);
-
-  const seriesOptions = useMemo<FilterOption[]>(() => {
-    return scopedSeries.map((series) => ({ value: series.seriesId, label: series.seriesName }));
-  }, [scopedSeries]);
-
-  const ownerOptions = useMemo<FilterOption[]>(() => {
-    const ownerSource = scopedSeries.filter((series) => !filters.series || series.seriesId === filters.series);
-    return uniqueOptions([
-      ...ownerSource.map((series) => series.owner),
-      ...ownerSource.flatMap((series) => series.designItems.map((item) => item.designer)),
-      ...ownerSource.flatMap((series) => series.tasks.map((task) => task.assignee)),
-      ...ownerSource.flatMap((series) => series.risks.map((risk) => risk.owner)),
-    ]).map((owner) => ({ value: owner, label: owner }));
-  }, [filters.series, scopedSeries]);
-
-  const filteredSeries = useMemo(() => {
-    return scopedSeries.filter((series) => {
-      const ownerToMatch = filters.showMine ? currentOwner : filters.owner;
-      if (filters.series && series.seriesId !== filters.series) return false;
-      if (!matchesOwner(series, ownerToMatch)) return false;
-      if (!matchesPhase(series, filters.phase)) return false;
-      return matchesQuickFilters(series, filters, referenceDate);
-    });
-  }, [currentOwner, filters, referenceDate, scopedSeries]);
-
-  const filteredSeriesIds = useMemo(() => new Set(filteredSeries.map((series) => series.seriesId)), [filteredSeries]);
-  const filteredWaveIds = useMemo(() => new Set(filteredSeries.map((series) => series.waveId)), [filteredSeries]);
-  const filteredWaves = useMemo(() => data.waves.filter((wave) => filteredWaveIds.has(wave.waveId)), [data.waves, filteredWaveIds]);
-  const filteredAssets = useMemo(() => filteredSeries.flatMap((series) => series.assets), [filteredSeries]);
-  const filteredItems = useMemo(() => filteredSeries.flatMap((series) => series.designItems), [filteredSeries]);
-  const filteredTasks = useMemo(() => filteredSeries.flatMap((series) => series.tasks), [filteredSeries]);
-  const filteredRisks = useMemo(() => filteredSeries.flatMap((series) => series.risks), [filteredSeries]);
-  const filteredThemeDirections = useMemo(
-    () => data.themeDirections.filter((record) => record.seriesIds.some((seriesId) => filteredSeriesIds.has(seriesId)) || filteredWaveIds.has(record.waveId)),
-    [data.themeDirections, filteredSeriesIds, filteredWaveIds],
-  );
-  const filteredProductArchitectures = useMemo(
-    () => data.productArchitectures.filter((record) => filteredSeriesIds.has(record.seriesId)),
-    [data.productArchitectures, filteredSeriesIds],
-  );
-  const filteredCategoryBreakdowns = useMemo(
-    () => data.categoryBreakdowns.filter((record) => filteredSeriesIds.has(record.seriesId)),
-    [data.categoryBreakdowns, filteredSeriesIds],
-  );
-  const filteredDevelopmentWaveRows = useMemo(
-    () => data.developmentWaveRows.filter((record) => filteredSeriesIds.has(record.seriesId)),
-    [data.developmentWaveRows, filteredSeriesIds],
-  );
-
-  const filteredTimeline = useMemo(() => {
-    const milestones = data.timeline.milestones.filter((milestone) => {
-      const milestoneYear = extractYear(milestone.plannedDate);
-      const milestoneQuarter = getQuarterFromDate(milestone.plannedDate);
-      if (filters.year && milestoneYear !== filters.year) return false;
-      if (filters.quarter && milestoneQuarter !== filters.quarter) return false;
-      if (filters.showOverdueOnly && !isPastDue(milestone.plannedDate, referenceDate)) return false;
-      if (filters.showThisWeekOnly && !isSameWeek(milestone.plannedDate, referenceDate)) return false;
-      return true;
-    });
-
-    return { milestones };
-  }, [data.timeline.milestones, filters.quarter, filters.showOverdueOnly, filters.showThisWeekOnly, filters.year, referenceDate]);
-
-  useEffect(() => {
-    const visibleIds = new Set(filteredItems.map((item) => item.itemId));
-    setSelectedItemIds((current) => current.filter((itemId) => visibleIds.has(itemId)));
-  }, [filteredItems]);
-
-  const focusItems = useMemo(
-    () =>
-      [...filteredItems]
-        .filter((item) => isHighRisk(item.riskLevel) || isPastDue(item.nextReviewDate ?? item.targetLaunchDate, referenceDate))
-        .sort((left, right) => {
-          const riskCompare = PRIORITY_ORDER[left.riskLevel ?? 'low'] - PRIORITY_ORDER[right.riskLevel ?? 'low'];
-          if (riskCompare !== 0) return riskCompare;
-          return startOfDay(left.nextReviewDate ?? left.targetLaunchDate) - startOfDay(right.nextReviewDate ?? right.targetLaunchDate);
-        }),
-    [filteredItems, referenceDate],
-  );
-
-  const focusRisks = useMemo(() => sortRisks(filteredRisks), [filteredRisks]);
-  const focusTasks = useMemo(() => sortTasks(filteredTasks), [filteredTasks]);
-  const dominantWave = useMemo(() => getDominantWave(filteredSeries, data.waves, data.seasonOverview.currentWave), [data.seasonOverview.currentWave, data.waves, filteredSeries]);
-  const leadSeries = useMemo(() => getLeadSeries(filteredSeries), [filteredSeries]);
-  const topBlockingRisk = focusRisks[0] ?? null;
-  const topBlockingTask = focusTasks.find((task) => isPastDue(task.dueDate, referenceDate)) ?? focusTasks[0] ?? null;
-  const delayedMilestone = filteredTimeline.milestones.find((milestone) => milestone.status === 'delayed' || milestone.status === 'at_risk') ?? null;
-
-  const keyDecision = useMemo(() => {
-    if (leadSeries) {
-      return `${leadSeries.seriesName} 仍是当前主推系列，建议优先锁定 ${data.seasonOverview.milestoneCountdown.nextMilestone} 前的关键评审与主推 SKU。`;
-    }
-    return `当前暂无明确主推系列，建议先在 ${data.seasonOverview.milestoneCountdown.nextMilestone} 前收敛主题、系列和主推 SKU。`;
-  }, [data.seasonOverview.milestoneCountdown.nextMilestone, leadSeries]);
-
-  const blockerNote = useMemo(() => {
-    if (topBlockingRisk) {
-      return `${topBlockingRisk.title}，责任人 ${topBlockingRisk.owner}，请在 ${topBlockingRisk.dueDate} 前完成风险处理。`;
-    }
-    if (topBlockingTask) {
-      return `${topBlockingTask.title}，责任人 ${topBlockingTask.assignee}，请在 ${topBlockingTask.dueDate} 前完成。`;
-    }
-    if (delayedMilestone) {
-      return `${delayedMilestone.title} 已偏离计划，责任人 ${delayedMilestone.owner}，计划时间 ${delayedMilestone.plannedDate}。`;
-    }
-    return '当前没有高优先级阻塞项，可继续按计划推进主题、系列和样鞋评审。';
-  }, [delayedMilestone, topBlockingRisk, topBlockingTask]);
-
-  const overviewHighlights = [
-    {
-      label: '当前主题',
-      value: dominantWave?.theme ?? '待确定',
-      note: dominantWave ? `${dominantWave.waveName} / 上市窗口 ${dominantWave.launchWindow}` : '请先补充当前波段与主题定义。',
-    },
-    {
-      label: '主推系列',
-      value: leadSeries?.seriesName ?? '待确定',
-      note: leadSeries ? `当前进度 ${leadSeries.progress}% / 价格带 ${leadSeries.priceBand}` : '请先确定当前主推系列。',
-    },
-    {
-      label: '关键决策',
-      value: data.seasonOverview.milestoneCountdown.nextMilestone,
-      note: keyDecision,
-    },
-    {
-      label: '当前阻塞点',
-      value: topBlockingRisk?.title ?? topBlockingTask?.title ?? delayedMilestone?.title ?? '暂无重大阻塞',
-      note: blockerNote,
-    },
+  const designTrackCards = [
+    { title: '设计轨摘要', body: filtered.overview.designTrackSummary },
+    { title: '成本轨摘要', body: filtered.overview.costTrackSummary },
+    { title: '开发轨摘要', body: filtered.overview.developmentTrackSummary },
   ];
-
-  const decisionCards = [
-    {
-      title: '本周主题判断',
-      body: leadSeries
-        ? `${leadSeries.seriesName} 仍然承接当前主题表达，建议优先确认主推配色、关键材料和主推 SKU 的评审节奏。`
-        : '当前缺少明确的主推系列，建议先收敛主题表达与主推方向。',
-    },
-    {
-      title: '本周推进重点',
-      body: blockerNote,
-    },
-    {
-      title: '本周流程建议',
-      body: '先用年度、季度和波段收敛筛选范围，再进入主题、产品架构和研发波段表逐层判断，避免在全量数据里来回切换。',
-    },
-  ];
-
-  const overviewCounts = [
-    { label: '在管系列', value: String(filteredSeries.length), note: '当前筛选范围内的系列数' },
-    { label: '重点关注单款', value: String(focusItems.length), note: '高风险或已逾期单款' },
-    { label: '高风险事项', value: String(focusRisks.filter((risk) => isHighRisk(risk.priority)).length), note: '仅统计高风险与严重风险' },
-    { label: '本周任务', value: String(focusTasks.filter((task) => isPastDue(task.dueDate, referenceDate) || isSameWeek(task.dueDate, referenceDate)).length), note: '本周到期或已逾期的任务' },
-  ];
-
-  const actionCounts = useMemo(() => getDesignReviewActionCounts(actionIntents), [actionIntents]);
-  const latestIntent = actionIntents[actionIntents.length - 1] ?? null;
-  const latestPendingIntent = [...actionIntents].reverse().find((intent) => intent.status === 'pending_sync') ?? null;
-  const latestBatchId = committedState.export_batch_id;
-  const recentIntents = useMemo(() => [...actionIntents].slice(-5).reverse(), [actionIntents]);
-
-  const syncBanner = useMemo(() => {
-    if (actionCounts.error > 0) {
-      return {
-        className: 'border-rose-200 bg-rose-50 text-rose-900',
-        title: '存在同步异常',
-        description: '本地动作队列里存在异常记录，建议先处理异常，再继续批量流转。',
-      };
-    }
-    if (actionCounts.pending_sync > 0) {
-      return {
-        className: 'border-amber-200 bg-amber-50 text-amber-900',
-        title: '存在待同步动作',
-        description: '当前批量动作已进入本地队列，可继续推进评审，也可作为后续对接 OpenClaw 的输入。',
-      };
-    }
-    if (actionCounts.synced > 0) {
-      return {
-        className: 'border-emerald-200 bg-emerald-50 text-emerald-900',
-        title: '本地基线已更新',
-        description: '最近一次批量动作已经写入本地基线，可继续推进评审、任务和后续决策。',
-      };
-    }
-    return {
-      className: 'border-slate-200 bg-slate-50 text-slate-800',
-      title: '当前无待同步动作',
-      description: '页面当前以本地基线数据为准，如有新的批量动作会先进入动作队列。',
-    };
-  }, [actionCounts.error, actionCounts.pending_sync, actionCounts.synced]);
-
-  const enqueueIntent = (intent: DesignReviewActionIntent) => {
-    setActionIntents((current) => queueDesignReviewActionIntent(current, intent));
-    setActionMessage(getDesignReviewActionMessage(intent));
-    setSelectedItemIds([]);
-  };
-
-  const handleApplyPhase = (phase: DesignItem['designStatus']) => {
-    if (selectedItemIds.length === 0) return;
-    enqueueIntent(createDesignReviewPhaseTransitionIntent(selectedItemIds, phase, actorName));
-  };
-
-  const handleAssignOwner = (owner: string) => {
-    if (selectedItemIds.length === 0 || !owner) return;
-    enqueueIntent(createDesignReviewOwnerAssignmentIntent(selectedItemIds, owner, actorName));
-  };
-
-  const handleApplyNextReviewDate = (date: string) => {
-    if (selectedItemIds.length === 0 || !date) return;
-    enqueueIntent(createDesignReviewNextReviewIntent(selectedItemIds, date, actorName));
-  };
-
-  const handleCreateTasks = (draft: Parameters<typeof createDesignReviewTaskGenerationIntent>[1]) => {
-    if (selectedItemIds.length === 0) return;
-    enqueueIntent(createDesignReviewTaskGenerationIntent(selectedItemIds, draft, actorName));
-  };
-
-  const handleSyncPending = () => {
-    const pendingIntents = actionIntents.filter((intent) => intent.status === 'pending_sync');
-    if (pendingIntents.length === 0) return;
-
-    const syncedAt = new Date().toISOString();
-    const exportBatchId = `local-batch-${Date.now()}`;
-    const nextCommittedState = commitDesignReviewActionIntents(committedState, pendingIntents, exportBatchId, syncedAt);
-
-    setCommittedState(nextCommittedState);
-    setActionIntents((current) =>
-      markDesignReviewActionIntentsSynced(
-        current,
-        pendingIntents.map((intent) => intent.id),
-        exportBatchId,
-        syncedAt,
-      ),
-    );
-    setActionMessage(`已将 ${pendingIntents.length} 条动作写入本地基线，批次 ${exportBatchId}。`);
-  };
-
-  const handleRetryErrors = () => {
-    setActionIntents((current) => retryFailedDesignReviewActionIntents(current));
-    setActionMessage('已将异常动作重新放回待同步队列。');
-  };
-
-  const handleClearSynced = () => {
-    setActionIntents((current) => clearSyncedDesignReviewActionIntents(current));
-    setActionMessage('已清理已同步动作记录。');
-  };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-[1600px] px-6 py-10">
-        <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#fbfcfe_0%,#f5f7fb_55%,#f3f6fb_100%)]">
+      <FilterBar
+        brands={filtered.filterOptions.brands}
+        years={filtered.filterOptions.years}
+        quarters={filtered.filterOptions.quarters}
+        waves={filtered.filterOptions.waves}
+        categoryL1s={filtered.filterOptions.categoryL1s}
+        categoryL2s={filtered.filterOptions.categoryL2s}
+        series={filtered.filterOptions.series}
+        owners={filtered.filterOptions.owners}
+        filters={filters}
+        onFilterChange={setFilters}
+        defaultYear={defaultYear}
+        hideTrigger={true}
+      />
+
+      <div className="mx-auto max-w-[1600px] px-6 pb-8 pt-4">
+        <header className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-semibold tracking-tight text-slate-950">设计企划与评审中心</h1>
-            <p className="mt-3 text-base text-slate-500">
-              把主题、架构、开发、效果与评审动作放在一页里，按同一条企划链推进。
-            </p>
+            <h1 className="text-3xl font-bold text-slate-900">设计企划</h1>
+            <p className="mt-1 text-sm text-slate-500">围绕系列策略、产品架构、Gate、版本和评审闭环统一查看设计开发进度 · 数据时间 {data.referenceDate}</p>
           </div>
-          <div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm">
-            数据时间 {referenceDate}
+
+          <div className="ml-4 flex flex-shrink-0 items-center gap-1">
+            <button
+              type="button"
+              onClick={() => {
+                const filterBarBridge = window as Window & { __openDesignReviewFilterBar?: () => void };
+                if (filterBarBridge.__openDesignReviewFilterBar) {
+                  filterBarBridge.__openDesignReviewFilterBar();
+                  return;
+                }
+                window.dispatchEvent(new CustomEvent('open-design-review-filter-bar'));
+              }}
+              title="展开筛选器"
+              className="flex h-8 w-[42px] items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800"
+            >
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M4 5H16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                <path d="M6.5 10H13.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                <path d="M8.5 15H11.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+            </button>
           </div>
         </header>
 
-        <div className="space-y-6 rounded-[32px] bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)] ring-1 ring-slate-200/70">
-          <FilterBar
-            years={yearOptions}
-            quarters={quarterOptions}
-            waves={waveOptions}
-            series={seriesOptions}
-            owners={ownerOptions}
-            filters={filters}
-            onFilterChange={setFilters}
-            currentOwnerLabel={currentOwner}
-            defaultYear={seasonYear}
-          />
-          <WorkflowTabs tabs={WORKFLOW_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
+        <WorkflowTabs tabs={WORKFLOW_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
         {activeTab === 'overview' ? (
           <div className="mt-8 space-y-8">
-            <section className="grid gap-4 xl:grid-cols-4">
-              {overviewHighlights.map((card) => (
-                <article key={card.label} className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                  <div className="text-sm font-medium text-slate-500">{card.label}</div>
-                  <div className="mt-3 text-2xl font-semibold text-slate-950">{card.value}</div>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">{card.note}</p>
-                </article>
-              ))}
-            </section>
+            <SeasonHealthCard overview={filtered.overview} />
+            <SeasonOverviewCards overview={filtered.overview} />
 
-            <section className="space-y-4">
-              <div>
-                <h2 className="text-3xl font-semibold text-slate-950">季节总览</h2>
-                <p className="mt-2 text-sm text-slate-500">先确认当前季节、节奏、风险与资产健康度。</p>
-              </div>
-              <SeasonOverviewCards overview={data.seasonOverview} />
-            </section>
-
-            <section className="space-y-4 rounded-3xl border border-emerald-200 bg-emerald-50/50 p-6">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-3xl font-semibold text-slate-950">本周重点快照</h2>
-                  <p className="mt-2 text-sm text-slate-600">把当前筛选范围下需要拍板和跟进的内容集中在这里。</p>
+            <section className="grid gap-6 xl:grid-cols-[1fr_1fr_1fr]">
+              <article className="rounded-[28px] border border-slate-200/80 bg-white p-6 shadow-[0_12px_28px_rgba(15,23,42,0.05)]">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">本周必须拍板</div>
+                <div className="mt-4 space-y-4">
+                  {mustDecide.length === 0 ? (
+                    <div className="rounded-2xl border border-slate-200/80 bg-slate-50 px-4 py-6 text-sm text-slate-500">当前筛选范围内暂无本周必须拍板事项。</div>
+                  ) : (
+                    mustDecide.map((item) => (
+                      <div key={item.styleId} className="rounded-[24px] border border-slate-200/75 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfe_100%)] p-4">
+                        <div className="font-medium text-slate-900">{item.title}</div>
+                        <div className="mt-2 text-sm leading-6 text-slate-600">{item.reason}</div>
+                        <div className="mt-3 text-xs text-slate-500">负责人 {item.owner} / 截止 {formatDate(item.dueDate)}</div>
+                      </div>
+                    ))
+                  )}
                 </div>
-                <span className="rounded-full bg-white px-4 py-2 text-sm font-medium text-emerald-700 shadow-sm">统一判断链</span>
-              </div>
+              </article>
 
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                {overviewCounts.map((item) => (
-                  <article key={item.label} className="rounded-3xl border border-white bg-white p-5 shadow-sm">
-                    <div className="text-sm text-slate-500">{item.label}</div>
-                    <div className="mt-3 text-4xl font-semibold text-slate-950">{item.value}</div>
-                    <div className="mt-3 text-sm text-slate-500">{item.note}</div>
-                  </article>
-                ))}
-              </div>
+              <article className="rounded-[28px] border border-slate-200/80 bg-white p-6 shadow-[0_12px_28px_rgba(15,23,42,0.05)]">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">当前阻塞点</div>
+                <div className="mt-4 space-y-4">
+                  {blockers.length === 0 ? (
+                    <div className="rounded-2xl border border-slate-200/80 bg-slate-50 px-4 py-6 text-sm text-slate-500">当前筛选范围内暂无硬阻塞，开发节奏可按计划推进。</div>
+                  ) : (
+                    blockers.map((item) => (
+                      <div key={item.styleId} className="rounded-[24px] border border-rose-200 bg-[linear-gradient(180deg,#fff8f9_0%,#fff5f7_100%)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+                        <div className="font-medium text-slate-900">{item.title}</div>
+                        <div className="mt-2 text-sm leading-6 text-slate-600">{item.reason}</div>
+                        <div className="mt-3 text-xs text-slate-500">责任人 {item.owner} / 截止 {formatDate(item.dueDate)}</div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </article>
 
-              <div className="grid gap-4 xl:grid-cols-3">
-                {decisionCards.map((card) => (
-                  <article key={card.title} className="rounded-3xl border border-white bg-white p-5 shadow-sm">
-                    <div className="text-sm font-semibold text-slate-900">{card.title}</div>
-                    <p className="mt-3 text-sm leading-6 text-slate-600">{card.body}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
-
-            <section className="space-y-4">
-              <div>
-                <h2 className="text-3xl font-semibold text-slate-950">季节时间轴</h2>
-                <p className="mt-2 text-sm text-slate-500">按设计、成本和开发三轨看关键节点。</p>
-              </div>
-              <SeasonTimeline timeline={filteredTimeline} />
+              <article className="rounded-[28px] border border-slate-200/80 bg-white p-6 shadow-[0_12px_28px_rgba(15,23,42,0.05)]">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">三轨摘要</div>
+                <div className="mt-4 space-y-4">
+                  {designTrackCards.map((card) => (
+                    <div key={card.title} className="rounded-[22px] border border-slate-200/70 bg-slate-50/80 p-4">
+                      <div className="font-medium text-slate-900">{card.title}</div>
+                      <div className="mt-2 text-sm leading-6 text-slate-600">{card.body}</div>
+                    </div>
+                  ))}
+                </div>
+              </article>
             </section>
           </div>
         ) : null}
 
-        {activeTab === 'themeDirection' ? (
-          <div className="mt-8 space-y-4">
-            <div>
-              <h2 className="text-3xl font-semibold text-slate-950">主题方向</h2>
-              <p className="mt-2 text-sm text-slate-500">围绕品牌长期风格、市场趋势、情绪板与 CMF 方向讲清设计意图。</p>
-            </div>
-            <ThemeDirectionPanel themes={filteredThemeDirections} assets={filteredAssets} />
+        {activeTab === 'themeStrategy' ? (
+          <div className="mt-8">
+            <ThemeDirectionPanel strategies={themeStrategies} />
           </div>
         ) : null}
 
         {activeTab === 'productArchitecture' ? (
-          <div className="mt-8 space-y-4">
-            <div>
-              <h2 className="text-3xl font-semibold text-slate-950">产品架构</h2>
-              <p className="mt-2 text-sm text-slate-500">先看整季总架构，再看系列架构板，确认角色、价格带与共底共楦策略。</p>
-            </div>
-            <ProductArchitecturePanel architectures={filteredProductArchitectures} breakdowns={filteredCategoryBreakdowns} />
-          </div>
-        ) : null}
-
-        {activeTab === 'categoryBreakdown' ? (
-          <div className="mt-8 space-y-4">
-            <div>
-              <h2 className="text-3xl font-semibold text-slate-950">开发品类分解</h2>
-              <p className="mt-2 text-sm text-slate-500">把系列拆到一级品类、二级品类和工艺画像，提前看清开发难点。</p>
-            </div>
-            <CategoryBreakdownPanel breakdowns={filteredCategoryBreakdowns} />
-          </div>
-        ) : null}
-
-        {activeTab === 'developmentWaveTable' ? (
-          <div className="mt-8 space-y-4">
-            <div>
-              <h2 className="text-3xl font-semibold text-slate-950">产品研发波段表</h2>
-              <p className="mt-2 text-sm text-slate-500">从上市时间倒推材料锁定、工艺包与开模关键路径，收紧开发节奏。</p>
-            </div>
-            <DevelopmentWaveTable rows={filteredDevelopmentWaveRows} />
-          </div>
-        ) : null}
-
-        {activeTab === 'effectPreview' ? (
-          <div className="mt-8 space-y-4">
-            <div>
-              <h2 className="text-3xl font-semibold text-slate-950">设计效果预览</h2>
-              <p className="mt-2 text-sm text-slate-500">集中查看草图、效果图、样鞋实拍与辅助板，判断图到物的一致性。</p>
-            </div>
-            <EffectPreviewPanel assets={filteredAssets} waves={filteredWaves} series={filteredSeries} items={filteredItems} />
-          </div>
-        ) : null}
-
-        {activeTab === 'reviewActions' ? (
-          <div className="mt-8 space-y-6">
-            <section className="space-y-4">
+          <div ref={architectureRef} className="mt-8 space-y-6">
+            <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <h2 className="text-3xl font-semibold text-slate-950">评审与动作</h2>
-                <p className="mt-2 text-sm text-slate-500">把最近 5 条重点单款、当前阻塞和待同步动作放在一起，便于评审会后快速跟进。</p>
+                <h2 className="text-3xl font-semibold text-slate-950">产品架构</h2>
+                <p className="mt-2 text-sm text-slate-500">用 OTB 转译结果驱动鞋类品类、风格角色、底楦结构、开发属性与平台策略，再向开发任务池下发约束。</p>
               </div>
-              <div className="grid gap-4 xl:grid-cols-3">
-                <article className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                  <div className="text-sm font-medium text-slate-500">当前焦点单款</div>
-                  <div className="mt-3 text-xl font-semibold text-slate-950">
-                    {focusItems[0] ? localizeSeriesText(focusItems[0].itemName) : '暂无焦点单款'}
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">
-                    {focusItems[0]
-                      ? `${focusItems[0].skuCode} / ${focusItems[0].designer} / 回评 ${focusItems[0].nextReviewDate ?? '待定'}`
-                      : '当前筛选范围内暂无需要优先跟进的单款。'}
-                  </p>
-                </article>
-                <article className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                  <div className="text-sm font-medium text-slate-500">当前阻塞</div>
-                  <div className="mt-3 text-xl font-semibold text-slate-950">
-                    {localizeSeriesText(topBlockingRisk?.title ?? topBlockingTask?.title) || '暂无关键阻塞'}
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">{localizeSeriesText(blockerNote)}</p>
-                </article>
-                <article className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                  <div className="text-sm font-medium text-slate-500">下一步动作</div>
-                  <div className="mt-3 text-xl font-semibold text-slate-950">
-                    {latestPendingIntent ? getDesignReviewActionLabel(latestPendingIntent) : '暂无待同步动作'}
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">
-                    {latestPendingIntent
-                      ? '最近一次批量动作已进入待同步队列，可继续写入本地基线。'
-                      : '当前没有待同步动作，可先在下方完成评审流转或生成待办。'}
-                  </p>
-                </article>
-              </div>
-            </section>
-
-          <div className={'rounded-3xl border p-5 shadow-sm ' + syncBanner.className}>
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <h3 className="text-2xl font-semibold">{syncBanner.title}</h3>
-                  <p className="mt-2 text-sm leading-6 opacity-90">{syncBanner.description}</p>
-                  {actionMessage ? <p className="mt-3 text-sm font-medium">{actionMessage}</p> : null}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={handleSyncPending}
-                    disabled={actionCounts.pending_sync === 0}
-                    className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    写入本地基线
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleRetryErrors}
-                    disabled={actionCounts.error === 0}
-                    className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    重试异常动作
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleClearSynced}
-                    disabled={actionCounts.synced === 0}
-                    className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    清理已同步记录
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <div className="rounded-2xl bg-white/70 p-4">
-                  <div className="text-xs font-medium uppercase tracking-wide opacity-70">待同步</div>
-                  <div className="mt-2 text-2xl font-semibold">{actionCounts.pending_sync}</div>
-                  <div className="mt-2 text-xs opacity-70">最新待同步 {latestPendingIntent ? getDesignReviewActionLabel(latestPendingIntent) : '暂无'}</div>
-                </div>
-                <div className="rounded-2xl bg-white/70 p-4">
-                  <div className="text-xs font-medium uppercase tracking-wide opacity-70">已同步</div>
-                  <div className="mt-2 text-2xl font-semibold">{actionCounts.synced}</div>
-                  <div className="mt-2 text-xs opacity-70">最近批次 {latestBatchId ?? '暂无'}</div>
-                </div>
-                <div className="rounded-2xl bg-white/70 p-4">
-                  <div className="text-xs font-medium uppercase tracking-wide opacity-70">异常</div>
-                  <div className="mt-2 text-2xl font-semibold">{actionCounts.error}</div>
-                  <div className="mt-2 text-xs opacity-70">优先处理异常后再推进批量流转</div>
-                </div>
-                <div className="rounded-2xl bg-white/70 p-4">
-                  <div className="text-xs font-medium uppercase tracking-wide opacity-70">最近动作</div>
-                  <div className="mt-2 text-base font-semibold">{latestIntent ? getDesignReviewActionLabel(latestIntent) : '暂无'}</div>
-                  <div className="mt-2 text-xs opacity-70">{latestIntent?.created_at ? new Date(latestIntent.created_at).toLocaleString('zh-CN') : '暂无'}</div>
-                </div>
-              </div>
-            </div>
-
-            {selectedItemIds.length > 0 ? (
-              <BulkActionBar
-                selectedCount={selectedItemIds.length}
-                ownerOptions={ownerOptions}
-                onApplyPhase={handleApplyPhase}
-                onAssignOwner={handleAssignOwner}
-                onApplyNextReviewDate={handleApplyNextReviewDate}
-                onCreateTasks={handleCreateTasks}
-                onClearSelection={() => setSelectedItemIds([])}
+              <ExportButton
+                targetRef={architectureRef}
+                config={{ filenamePrefix: '产品架构企划书', headerText: `${filtered.architecture.profileLabel} · 产品架构企划书` }}
               />
-            ) : null}
+            </div>
+            <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+              <ProductPyramid architecture={filtered.architecture} activeLayer={pyramidLayer} onLayerClick={setPyramidLayer} />
+              <PriceGapAnalysis architecture={filtered.architecture} />
+            </div>
+            <PlatformTopology architecture={filtered.architecture} />
+            <ProductArchitecturePanel architecture={filtered.architecture} pyramidFilter={pyramidLayer} />
+          </div>
+        ) : null}
 
-            <section className="space-y-4">
-              <div>
-                <h2 className="text-3xl font-semibold text-slate-950">单款评审表</h2>
-                <p className="mt-2 text-sm text-slate-500">保留批量流转和评审结论，形成开发闭环。</p>
-              </div>
-              <DesignItemTable items={filteredItems} selectedItemIds={selectedItemIds} onSelectionChange={setSelectedItemIds} />
+        {activeTab === 'developmentTaskPool' ? (
+          <div className="mt-8 space-y-4">
+            <div>
+              <h2 className="text-3xl font-semibold text-slate-950">开发任务池</h2>
+              <p className="mt-2 text-sm text-slate-500">围绕单款推进中心跟踪设计、样鞋、材料、成本、技术与动作闭环，适合周会直接使用。</p>
+            </div>
+            <CategoryBreakdownPanel rows={taskRows} />
+          </div>
+        ) : null}
+
+        {activeTab === 'developmentGateTable' ? (
+          <div className="mt-8 space-y-4">
+            <div>
+              <h2 className="text-3xl font-semibold text-slate-950">波段与研发 Gate 表</h2>
+              <p className="mt-2 text-sm text-slate-500">按标准 Gate 管理企划、设计、开发、成本和上市承接节点，统一跟踪计划、实际、风险和责任人。</p>
+            </div>
+            <DevelopmentWaveTable groups={gateGroups} />
+          </div>
+        ) : null}
+
+        {activeTab === 'designVersionPreview' ? (
+          <div className="mt-8 space-y-4">
+            <div>
+              <h2 className="text-3xl font-semibold text-slate-950">设计版本预览</h2>
+              <p className="mt-2 text-sm text-slate-500">用单款版本链把材料、配色、底台、楦型、成本和评审结论放到同一视图里判断。</p>
+            </div>
+            <EffectPreviewPanel chains={versionChains} />
+          </div>
+        ) : null}
+
+        {activeTab === 'reviewDecisionCenter' ? (
+          <div className="mt-8 space-y-6">
+            <div>
+              <h2 className="text-3xl font-semibold text-slate-950">评审决议中心</h2>
+              <p className="mt-2 text-sm text-slate-500">以 ReviewRecord + ActionItem 作为闭环出口，统一推进未关闭动作、本周待复审和阻塞项。</p>
+            </div>
+
+            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="text-sm text-slate-500">未关闭评审</div><div className="mt-3 text-3xl font-semibold text-slate-950">{reviewSummary.openReviewCount}</div></article>
+              <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="text-sm text-slate-500">未关闭动作</div><div className="mt-3 text-3xl font-semibold text-slate-950">{reviewSummary.openActionCount}</div></article>
+              <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="text-sm text-slate-500">本周待复审</div><div className="mt-3 text-3xl font-semibold text-amber-600">{reviewSummary.dueThisWeekReviewCount + reviewSummary.dueThisWeekActionCount}</div></article>
+              <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="text-sm text-slate-500">阻塞 / 逾期</div><div className="mt-3 text-3xl font-semibold text-rose-600">{reviewSummary.blockedCount + reviewSummary.overdueActionCount}</div></article>
             </section>
 
-            <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-              <div className="space-y-6">
-                <RiskPanel risks={focusRisks} />
-                <TaskPanel tasks={focusTasks} referenceDate={referenceDate} />
-              </div>
-
-              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900">动作队列</h3>
-                    <p className="mt-1 text-sm text-slate-500">本地动作意图队列，用来承接评审结论、批量流转与待办动作。</p>
-                  </div>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-                    {actionIntents.length} 条
-                  </span>
-                </div>
-
-                <div className="mt-5 space-y-3">
-                  {recentIntents.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-500">
-                      当前还没有批量动作进入动作队列。
-                    </div>
-                  ) : (
-                    recentIntents.map((intent) => (
-                      <article key={intent.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <div className="text-sm font-semibold text-slate-900">{getDesignReviewActionLabel(intent)}</div>
-                            <div className="mt-1 text-xs text-slate-500">
-                              影响 {intent.item_ids.length} 款 / 发起人 {intent.created_by}
-                            </div>
-                          </div>
-                          <span className={'rounded-full px-3 py-1 text-xs font-semibold ' + getQueueStatusClassName(intent.status)}>
-                            {getDesignReviewActionStatusLabel(intent.status)}
-                          </span>
-                        </div>
-
-                        <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500">
-                          <span>创建时间 {new Date(intent.created_at).toLocaleString('zh-CN')}</span>
-                          {intent.export_batch_id ? <span>批次 {intent.export_batch_id}</span> : null}
-                          {intent.last_synced_at ? <span>同步于 {new Date(intent.last_synced_at).toLocaleString('zh-CN')}</span> : null}
-                        </div>
-
-                        {intent.last_error ? (
-                          <div className="mt-3 rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">错误：{intent.last_error}</div>
-                        ) : null}
-                      </article>
-                    ))
-                  )}
-                </div>
-              </div>
+            <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+              <RiskPanel reviews={reviewRows} />
+              <TaskPanel actions={actionRows} />
             </section>
           </div>
         ) : null}
@@ -865,4 +237,3 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
     </div>
   );
 }
-

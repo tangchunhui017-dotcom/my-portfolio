@@ -1,5 +1,7 @@
 'use client';
 
+import type { DashboardLifecycleLabel } from '@/config/dashboardLifecycle';
+
 type SkuWosItem = {
     skuId: string;
     name: string;
@@ -7,7 +9,7 @@ type SkuWosItem = {
     wos: number;
     onHandUnits: number;
     sellThrough: number;
-    lifecycle: string;
+    lifecycle: DashboardLifecycleLabel | '-';
     msrp: number;
 };
 

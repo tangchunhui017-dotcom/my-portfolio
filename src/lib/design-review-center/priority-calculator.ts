@@ -1,4 +1,4 @@
-import type { Risk, Task, DesignItem } from './types';
+﻿import type { DesignItem, Risk, Task } from './types';
 
 export interface PriorityScore {
   itemId: string;
@@ -7,27 +7,20 @@ export interface PriorityScore {
 }
 
 const PRIORITY_WEIGHTS = {
-  riskLevel: { critical: 40, high: 30, medium: 15, low: 5 },
-  overdueDays: 2, // 每逾期一天加 2 分
-  blockingIssue: 15,
+  riskLevel: { blocking: 40, high: 30, medium: 15, low: 5 },
+  overdueDays: 2,
   heroRole: 10,
 };
 
-export function calculateItemPriority(
-  item: DesignItem,
-  risks: Risk[],
-  tasks: Task[],
-): PriorityScore {
+export function calculateItemPriority(item: DesignItem, risks: Risk[], tasks: Task[]): PriorityScore {
   let score = 0;
   const factors: string[] = [];
 
-  // 产品角色权重
   if (item.productRole === 'hero') {
     score += PRIORITY_WEIGHTS.heroRole;
     factors.push('Hero 款');
   }
 
-  // 逾期天数
   const dueDate = new Date(item.targetLaunchDate);
   const today = new Date();
   if (dueDate < today) {
@@ -36,8 +29,7 @@ export function calculateItemPriority(
     factors.push(`逾期 ${overdueDays} 天`);
   }
 
-  // 关联风险
-  const itemRisks = risks.filter((r) => r.seriesId === item.seriesId);
+  const itemRisks = risks.filter((risk) => risk.seriesId === item.seriesId);
   for (const risk of itemRisks) {
     const riskScore = PRIORITY_WEIGHTS.riskLevel[risk.priority] ?? 0;
     if (riskScore > 0) {
@@ -46,15 +38,14 @@ export function calculateItemPriority(
     }
   }
 
+  const openTaskCount = tasks.filter((task) => task.seriesId === item.seriesId && task.status !== 'completed').length;
+  if (openTaskCount > 0) {
+    factors.push(`未完成动作 ${openTaskCount} 条`);
+  }
+
   return { itemId: item.itemId, score, factors };
 }
 
-export function rankByPriority(
-  items: DesignItem[],
-  risks: Risk[],
-  tasks: Task[],
-): PriorityScore[] {
-  return items
-    .map((item) => calculateItemPriority(item, risks, tasks))
-    .sort((a, b) => b.score - a.score);
+export function rankByPriority(items: DesignItem[], risks: Risk[], tasks: Task[]): PriorityScore[] {
+  return items.map((item) => calculateItemPriority(item, risks, tasks)).sort((a, b) => b.score - a.score);
 }

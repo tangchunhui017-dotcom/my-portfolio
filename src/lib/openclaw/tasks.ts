@@ -1,4 +1,5 @@
-import type { DesignPhase, RiskLevel } from '@/lib/design-review-center/types';
+﻿import type { RiskLevel } from '@/config/design-review-center/enums';
+import type { DesignPhase } from '@/lib/design-review-center/types';
 
 export interface OpenClawTask {
   id: string;

@@ -18,7 +18,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "户外鞋",
-    "category_l2": "越野鞋"
+    "category_l2": "越野鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S002",
@@ -39,7 +49,17 @@
     "color": "沙/大地",
     "target_audience": "35岁以上",
     "category_l1": "户外鞋",
-    "category_l2": "越野鞋"
+    "category_l2": "越野鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S003",
@@ -60,7 +80,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "凉拖鞋",
-    "category_l2": "前空鞋"
+    "category_l2": "前空鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S004",
@@ -81,7 +111,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S005",
@@ -102,7 +142,17 @@
     "color": "拼色/跳色",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S006",
@@ -123,7 +173,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S007",
@@ -144,7 +204,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S008",
@@ -165,7 +235,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "靴类",
-    "category_l2": "长筒靴"
+    "category_l2": "长筒靴",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S009",
@@ -186,7 +266,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S010",
@@ -207,7 +297,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S011",
@@ -228,7 +328,17 @@
     "color": "沙/大地",
     "target_audience": "35岁以上",
     "category_l1": "户外鞋",
-    "category_l2": "徒步登山"
+    "category_l2": "徒步登山",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S012",
@@ -249,7 +359,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S013",
@@ -270,7 +390,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "户外鞋",
-    "category_l2": "徒步登山"
+    "category_l2": "徒步登山",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S014",
@@ -291,7 +421,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "牛津鞋"
+    "category_l2": "牛津鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S015",
@@ -312,7 +452,17 @@
     "color": "白",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S016",
@@ -333,7 +483,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S017",
@@ -354,7 +514,17 @@
     "color": "黑",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S018",
@@ -375,7 +545,17 @@
     "color": "白",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S019",
@@ -396,7 +576,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S020",
@@ -417,7 +607,17 @@
     "color": "白",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S021",
@@ -438,7 +638,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S022",
@@ -459,7 +669,17 @@
     "color": "白",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S023",
@@ -480,7 +700,17 @@
     "color": "灰",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S024",
@@ -501,7 +731,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S025",
@@ -522,7 +762,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S026",
@@ -543,7 +793,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "徒步登山"
+    "category_l2": "徒步登山",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S027",
@@ -564,7 +824,17 @@
     "color": "白",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S028",
@@ -585,7 +855,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S029",
@@ -606,7 +886,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S030",
@@ -627,7 +917,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S031",
@@ -648,7 +948,17 @@
     "color": "拼色/跳色",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S032",
@@ -669,7 +979,17 @@
     "color": "拼色/跳色",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S033",
@@ -690,7 +1010,17 @@
     "color": "沙/大地",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "靴类",
-    "category_l2": "长筒靴"
+    "category_l2": "长筒靴",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S034",
@@ -711,7 +1041,17 @@
     "color": "沙/大地",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "时尚/通勤",
-    "category_l2": "芭蕾舞鞋"
+    "category_l2": "芭蕾舞鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S035",
@@ -732,7 +1072,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "凉拖鞋",
-    "category_l2": "前空鞋"
+    "category_l2": "前空鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S036",
@@ -753,7 +1103,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S037",
@@ -774,7 +1134,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S038",
@@ -795,7 +1165,17 @@
     "color": "白",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "靴类",
-    "category_l2": "长筒靴"
+    "category_l2": "长筒靴",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S039",
@@ -816,7 +1196,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "德比鞋"
+    "category_l2": "德比鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S040",
@@ -837,7 +1227,17 @@
     "color": "灰",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "牛津鞋"
+    "category_l2": "牛津鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S041",
@@ -858,7 +1258,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S042",
@@ -879,7 +1289,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S043",
@@ -900,7 +1320,17 @@
     "color": "拼色/跳色",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S044",
@@ -921,7 +1351,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S045",
@@ -942,7 +1382,17 @@
     "color": "白",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S046",
@@ -963,7 +1413,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S047",
@@ -984,7 +1444,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S048",
@@ -1005,7 +1475,17 @@
     "color": "灰",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "溯溪鞋"
+    "category_l2": "溯溪鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S049",
@@ -1026,7 +1506,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "户外鞋",
-    "category_l2": "徒步登山"
+    "category_l2": "徒步登山",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S050",
@@ -1047,7 +1537,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S051",
@@ -1068,7 +1568,17 @@
     "color": "拼色/跳色",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S052",
@@ -1089,7 +1599,17 @@
     "color": "黑",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S053",
@@ -1110,7 +1630,17 @@
     "color": "拼色/跳色",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S054",
@@ -1131,7 +1661,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S055",
@@ -1152,7 +1692,17 @@
     "color": "灰",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "正装/通勤",
-    "category_l2": "德比鞋"
+    "category_l2": "德比鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S056",
@@ -1173,7 +1723,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S057",
@@ -1194,7 +1754,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S058",
@@ -1215,7 +1785,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S059",
@@ -1236,7 +1816,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "凉拖鞋",
-    "category_l2": "前空鞋"
+    "category_l2": "前空鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S060",
@@ -1257,7 +1847,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S061",
@@ -1278,7 +1878,17 @@
     "color": "白",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S062",
@@ -1299,7 +1909,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S063",
@@ -1320,7 +1940,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S064",
@@ -1341,7 +1971,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "正装/通勤",
-    "category_l2": "牛津鞋"
+    "category_l2": "牛津鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S065",
@@ -1362,7 +2002,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S066",
@@ -1383,7 +2033,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S067",
@@ -1404,7 +2064,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "正装/通勤",
-    "category_l2": "豆豆鞋"
+    "category_l2": "豆豆鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S068",
@@ -1425,7 +2095,17 @@
     "color": "拼色/跳色",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S069",
@@ -1446,7 +2126,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "越野鞋"
+    "category_l2": "越野鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S070",
@@ -1467,7 +2157,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S071",
@@ -1488,7 +2188,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "溯溪鞋"
+    "category_l2": "溯溪鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S072",
@@ -1509,7 +2219,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "时尚/通勤",
-    "category_l2": "浅口单鞋"
+    "category_l2": "浅口单鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S073",
@@ -1530,7 +2250,17 @@
     "color": "沙/大地",
     "target_audience": "35岁以上",
     "category_l1": "户外鞋",
-    "category_l2": "越野鞋"
+    "category_l2": "越野鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S074",
@@ -1551,7 +2281,17 @@
     "color": "拼色/跳色",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S075",
@@ -1572,7 +2312,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "凉拖鞋",
-    "category_l2": "前空鞋"
+    "category_l2": "前空鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S076",
@@ -1593,7 +2343,17 @@
     "color": "灰",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S077",
@@ -1614,7 +2374,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S078",
@@ -1635,7 +2405,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "溯溪鞋"
+    "category_l2": "溯溪鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S079",
@@ -1656,7 +2436,17 @@
     "color": "拼色/跳色",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S080",
@@ -1677,7 +2467,17 @@
     "color": "白",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S081",
@@ -1698,7 +2498,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "溯溪鞋"
+    "category_l2": "溯溪鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S082",
@@ -1719,7 +2529,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "越野鞋"
+    "category_l2": "越野鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S083",
@@ -1740,7 +2560,17 @@
     "color": "白",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "靴类",
-    "category_l2": "长筒靴"
+    "category_l2": "长筒靴",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S084",
@@ -1761,7 +2591,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S085",
@@ -1782,7 +2622,17 @@
     "color": "沙/大地",
     "target_audience": "35岁以上",
     "category_l1": "正装/通勤",
-    "category_l2": "德比鞋"
+    "category_l2": "德比鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S086",
@@ -1803,7 +2653,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S087",
@@ -1824,7 +2684,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S088",
@@ -1845,7 +2715,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S089",
@@ -1866,7 +2746,17 @@
     "color": "银/金属",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S090",
@@ -1887,7 +2777,17 @@
     "color": "白",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S091",
@@ -1908,7 +2808,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S092",
@@ -1929,7 +2839,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S093",
@@ -1950,7 +2870,17 @@
     "color": "灰",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "靴类",
-    "category_l2": "长筒靴"
+    "category_l2": "长筒靴",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S094",
@@ -1971,7 +2901,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S095",
@@ -1992,7 +2932,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S096",
@@ -2013,7 +2963,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S097",
@@ -2034,7 +2994,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S098",
@@ -2055,7 +3025,17 @@
     "color": "白",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S099",
@@ -2076,7 +3056,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "牛津鞋"
+    "category_l2": "牛津鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S100",
@@ -2097,7 +3087,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "豆豆鞋"
+    "category_l2": "豆豆鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S101",
@@ -2118,7 +3118,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "徒步登山"
+    "category_l2": "徒步登山",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S102",
@@ -2139,7 +3149,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S103",
@@ -2160,7 +3180,17 @@
     "color": "黑",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S104",
@@ -2181,7 +3211,17 @@
     "color": "黑",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S105",
@@ -2202,7 +3242,17 @@
     "color": "沙/大地",
     "target_audience": "35岁以上",
     "category_l1": "正装/通勤",
-    "category_l2": "豆豆鞋"
+    "category_l2": "豆豆鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S106",
@@ -2223,7 +3273,17 @@
     "color": "拼色/跳色",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S107",
@@ -2244,7 +3304,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S108",
@@ -2265,7 +3335,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "徒步登山"
+    "category_l2": "徒步登山",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S109",
@@ -2286,7 +3366,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S110",
@@ -2307,7 +3397,17 @@
     "color": "白",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S111",
@@ -2328,7 +3428,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S112",
@@ -2349,7 +3459,17 @@
     "color": "白",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S113",
@@ -2370,7 +3490,17 @@
     "color": "白",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S114",
@@ -2391,7 +3521,17 @@
     "color": "银/金属",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S115",
@@ -2412,7 +3552,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "溯溪鞋"
+    "category_l2": "溯溪鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S116",
@@ -2433,7 +3583,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S117",
@@ -2454,7 +3614,17 @@
     "color": "银/金属",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S118",
@@ -2475,7 +3645,17 @@
     "color": "拼色/跳色",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S119",
@@ -2496,7 +3676,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "正装/通勤",
-    "category_l2": "牛津鞋"
+    "category_l2": "牛津鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S120",
@@ -2517,7 +3707,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "正装/通勤",
-    "category_l2": "德比鞋"
+    "category_l2": "德比鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S121",
@@ -2538,7 +3738,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "户外鞋",
-    "category_l2": "徒步登山"
+    "category_l2": "徒步登山",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S122",
@@ -2559,7 +3769,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S123",
@@ -2580,7 +3800,17 @@
     "color": "沙/大地",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "正装/通勤",
-    "category_l2": "牛津鞋"
+    "category_l2": "牛津鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S124",
@@ -2601,7 +3831,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S125",
@@ -2622,7 +3862,17 @@
     "color": "银/金属",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S126",
@@ -2643,7 +3893,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S127",
@@ -2664,7 +3924,17 @@
     "color": "灰",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S128",
@@ -2685,7 +3955,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S129",
@@ -2706,7 +3986,17 @@
     "color": "白",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S130",
@@ -2727,7 +4017,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S131",
@@ -2748,7 +4048,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "越野鞋"
+    "category_l2": "越野鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S132",
@@ -2769,7 +4079,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S133",
@@ -2790,7 +4110,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "溯溪鞋"
+    "category_l2": "溯溪鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S134",
@@ -2811,7 +4141,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S135",
@@ -2832,7 +4172,17 @@
     "color": "黑",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S136",
@@ -2853,7 +4203,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S137",
@@ -2874,7 +4234,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S138",
@@ -2895,7 +4265,17 @@
     "color": "银/金属",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S139",
@@ -2916,7 +4296,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S140",
@@ -2937,7 +4327,17 @@
     "color": "银/金属",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S141",
@@ -2958,7 +4358,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S142",
@@ -2979,7 +4389,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S143",
@@ -3000,7 +4420,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "牛津鞋"
+    "category_l2": "牛津鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S144",
@@ -3021,7 +4451,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S145",
@@ -3042,7 +4482,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S146",
@@ -3063,7 +4513,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S147",
@@ -3084,7 +4544,17 @@
     "color": "黑",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S148",
@@ -3105,7 +4575,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S149",
@@ -3126,7 +4606,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S150",
@@ -3147,7 +4637,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S151",
@@ -3168,7 +4668,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S152",
@@ -3189,7 +4699,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S153",
@@ -3210,7 +4730,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S154",
@@ -3231,7 +4761,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S155",
@@ -3252,7 +4792,17 @@
     "color": "拼色/跳色",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S156",
@@ -3273,7 +4823,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "户外鞋",
-    "category_l2": "越野鞋"
+    "category_l2": "越野鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S157",
@@ -3294,7 +4854,17 @@
     "color": "沙/大地",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "时尚/通勤",
-    "category_l2": "芭蕾舞鞋"
+    "category_l2": "芭蕾舞鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S158",
@@ -3315,7 +4885,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "正装/通勤",
-    "category_l2": "德比鞋"
+    "category_l2": "德比鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S159",
@@ -3336,7 +4916,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S160",
@@ -3357,7 +4947,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "时尚/通勤",
-    "category_l2": "浅口单鞋"
+    "category_l2": "浅口单鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S161",
@@ -3378,7 +4978,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "时尚/通勤",
-    "category_l2": "芭蕾舞鞋"
+    "category_l2": "芭蕾舞鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S162",
@@ -3399,7 +5009,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S163",
@@ -3420,7 +5040,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S164",
@@ -3441,7 +5071,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "正装/通勤",
-    "category_l2": "牛津鞋"
+    "category_l2": "牛津鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S165",
@@ -3462,7 +5102,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "溯溪鞋"
+    "category_l2": "溯溪鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S166",
@@ -3483,7 +5133,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S167",
@@ -3504,7 +5164,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S168",
@@ -3525,7 +5195,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S169",
@@ -3546,7 +5226,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S170",
@@ -3567,7 +5257,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S171",
@@ -3588,7 +5288,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S172",
@@ -3609,7 +5319,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S173",
@@ -3630,7 +5350,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S174",
@@ -3651,7 +5381,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S175",
@@ -3672,7 +5412,17 @@
     "color": "拼色/跳色",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S176",
@@ -3693,7 +5443,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S177",
@@ -3714,7 +5474,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S178",
@@ -3735,7 +5505,17 @@
     "color": "银/金属",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S179",
@@ -3756,7 +5536,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S180",
@@ -3777,7 +5567,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "豆豆鞋"
+    "category_l2": "豆豆鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S181",
@@ -3798,7 +5598,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "正装/通勤",
-    "category_l2": "德比鞋"
+    "category_l2": "德比鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S182",
@@ -3819,7 +5629,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "户外鞋",
-    "category_l2": "越野鞋"
+    "category_l2": "越野鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S183",
@@ -3840,7 +5660,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S184",
@@ -3861,7 +5691,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S185",
@@ -3882,7 +5722,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S186",
@@ -3903,7 +5753,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S187",
@@ -3924,7 +5784,17 @@
     "color": "银/金属",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S188",
@@ -3945,7 +5815,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "徒步登山"
+    "category_l2": "徒步登山",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S189",
@@ -3966,7 +5846,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S190",
@@ -3987,7 +5877,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S191",
@@ -4008,7 +5908,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S192",
@@ -4029,7 +5939,17 @@
     "color": "黑",
     "target_audience": "35岁以上",
     "category_l1": "户外鞋",
-    "category_l2": "溯溪鞋"
+    "category_l2": "溯溪鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S193",
@@ -4050,7 +5970,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S194",
@@ -4071,7 +6001,17 @@
     "color": "拼色/跳色",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S195",
@@ -4092,7 +6032,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "靴类",
-    "category_l2": "长筒靴"
+    "category_l2": "长筒靴",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S196",
@@ -4113,7 +6063,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S197",
@@ -4134,7 +6094,17 @@
     "color": "灰",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S198",
@@ -4155,7 +6125,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S199",
@@ -4176,7 +6156,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S200",
@@ -4197,7 +6187,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "靴类",
-    "category_l2": "长筒靴"
+    "category_l2": "长筒靴",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S201",
@@ -4218,7 +6218,17 @@
     "color": "黑",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S202",
@@ -4239,7 +6249,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "户外鞋",
-    "category_l2": "溯溪鞋"
+    "category_l2": "溯溪鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S203",
@@ -4260,7 +6280,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S204",
@@ -4281,7 +6311,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "正装/通勤",
-    "category_l2": "德比鞋"
+    "category_l2": "德比鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S205",
@@ -4302,7 +6342,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "时尚/通勤",
-    "category_l2": "浅口单鞋"
+    "category_l2": "浅口单鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S206",
@@ -4323,7 +6373,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S207",
@@ -4344,7 +6404,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "徒步登山"
+    "category_l2": "徒步登山",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S208",
@@ -4365,7 +6435,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S209",
@@ -4386,7 +6466,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S210",
@@ -4407,7 +6497,17 @@
     "color": "沙/大地",
     "target_audience": "35岁以上",
     "category_l1": "正装/通勤",
-    "category_l2": "牛津鞋"
+    "category_l2": "牛津鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S211",
@@ -4428,7 +6528,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "正装/通勤",
-    "category_l2": "德比鞋"
+    "category_l2": "德比鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S212",
@@ -4449,7 +6559,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "户外鞋",
-    "category_l2": "溯溪鞋"
+    "category_l2": "溯溪鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S213",
@@ -4470,7 +6590,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S214",
@@ -4491,7 +6621,17 @@
     "color": "拼色/跳色",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S215",
@@ -4512,7 +6652,17 @@
     "color": "拼色/跳色",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S216",
@@ -4533,7 +6683,17 @@
     "color": "灰",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S217",
@@ -4554,7 +6714,17 @@
     "color": "黑",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S218",
@@ -4575,7 +6745,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S219",
@@ -4596,7 +6776,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S220",
@@ -4617,7 +6807,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S221",
@@ -4638,7 +6838,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S222",
@@ -4659,7 +6869,17 @@
     "color": "银/金属",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S223",
@@ -4680,7 +6900,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S224",
@@ -4701,7 +6931,17 @@
     "color": "灰",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S225",
@@ -4722,7 +6962,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S226",
@@ -4743,7 +6993,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "越野鞋"
+    "category_l2": "越野鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S227",
@@ -4764,7 +7024,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S228",
@@ -4785,7 +7055,17 @@
     "color": "银/金属",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S229",
@@ -4806,7 +7086,17 @@
     "color": "黑",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S230",
@@ -4827,7 +7117,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S231",
@@ -4848,7 +7148,17 @@
     "color": "白",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "靴类",
-    "category_l2": "长筒靴"
+    "category_l2": "长筒靴",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S232",
@@ -4869,7 +7179,17 @@
     "color": "白",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S233",
@@ -4890,7 +7210,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S234",
@@ -4911,7 +7241,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "溯溪鞋"
+    "category_l2": "溯溪鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S235",
@@ -4932,7 +7272,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "越野鞋"
+    "category_l2": "越野鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S236",
@@ -4953,7 +7303,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S237",
@@ -4974,7 +7334,17 @@
     "color": "拼色/跳色",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S238",
@@ -4995,7 +7365,17 @@
     "color": "沙/大地",
     "target_audience": "35岁以上",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S239",
@@ -5016,7 +7396,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "时尚/通勤",
-    "category_l2": "浅口单鞋"
+    "category_l2": "浅口单鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S240",
@@ -5037,7 +7427,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S241",
@@ -5058,7 +7458,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S242",
@@ -5079,7 +7489,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S243",
@@ -5100,7 +7520,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S244",
@@ -5121,7 +7551,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S245",
@@ -5142,7 +7582,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S246",
@@ -5163,7 +7613,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S247",
@@ -5184,7 +7644,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "时尚/通勤",
-    "category_l2": "浅口单鞋"
+    "category_l2": "浅口单鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S248",
@@ -5205,7 +7675,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S249",
@@ -5226,7 +7706,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "牛津鞋"
+    "category_l2": "牛津鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S250",
@@ -5247,7 +7737,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S251",
@@ -5268,7 +7768,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S252",
@@ -5289,7 +7799,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S253",
@@ -5310,7 +7830,17 @@
     "color": "白",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S254",
@@ -5331,7 +7861,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "靴类",
-    "category_l2": "长筒靴"
+    "category_l2": "长筒靴",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S255",
@@ -5352,7 +7892,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S256",
@@ -5373,7 +7923,17 @@
     "color": "拼色/跳色",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S257",
@@ -5394,7 +7954,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S258",
@@ -5415,7 +7985,17 @@
     "color": "白",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S259",
@@ -5436,7 +8016,17 @@
     "color": "银/金属",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S260",
@@ -5457,7 +8047,17 @@
     "color": "拼色/跳色",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S261",
@@ -5478,7 +8078,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "户外鞋",
-    "category_l2": "溯溪鞋"
+    "category_l2": "溯溪鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S262",
@@ -5499,7 +8109,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "时尚/通勤",
-    "category_l2": "芭蕾舞鞋"
+    "category_l2": "芭蕾舞鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S263",
@@ -5520,7 +8140,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S264",
@@ -5541,7 +8171,17 @@
     "color": "白",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S265",
@@ -5562,7 +8202,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "正装/通勤",
-    "category_l2": "豆豆鞋"
+    "category_l2": "豆豆鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S266",
@@ -5583,7 +8233,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "户外鞋",
-    "category_l2": "溯溪鞋"
+    "category_l2": "溯溪鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S267",
@@ -5604,7 +8264,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "户外鞋",
-    "category_l2": "越野鞋"
+    "category_l2": "越野鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S268",
@@ -5625,7 +8295,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S269",
@@ -5646,7 +8326,17 @@
     "color": "黑",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "越野鞋"
+    "category_l2": "越野鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S270",
@@ -5667,7 +8357,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "徒步登山"
+    "category_l2": "徒步登山",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S271",
@@ -5688,7 +8388,17 @@
     "color": "沙/大地",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "户外鞋",
-    "category_l2": "溯溪鞋"
+    "category_l2": "溯溪鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S272",
@@ -5709,7 +8419,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S273",
@@ -5730,7 +8450,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "户外鞋",
-    "category_l2": "徒步登山"
+    "category_l2": "徒步登山",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S274",
@@ -5751,7 +8481,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S275",
@@ -5772,7 +8512,17 @@
     "color": "银/金属",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S276",
@@ -5793,7 +8543,17 @@
     "color": "沙/大地",
     "target_audience": "35岁以上",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S277",
@@ -5814,7 +8574,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S278",
@@ -5835,7 +8605,17 @@
     "color": "银/金属",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S279",
@@ -5856,7 +8636,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S280",
@@ -5877,7 +8667,17 @@
     "color": "拼色/跳色",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S281",
@@ -5898,7 +8698,17 @@
     "color": "银/金属",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S282",
@@ -5919,7 +8729,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S283",
@@ -5940,7 +8760,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S284",
@@ -5961,7 +8791,17 @@
     "color": "灰",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S285",
@@ -5982,7 +8822,17 @@
     "color": "白",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "时尚/通勤",
-    "category_l2": "芭蕾舞鞋"
+    "category_l2": "芭蕾舞鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S286",
@@ -6003,7 +8853,17 @@
     "color": "白",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S287",
@@ -6024,7 +8884,17 @@
     "color": "白",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S288",
@@ -6045,7 +8915,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S289",
@@ -6066,7 +8946,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "户外鞋",
-    "category_l2": "越野鞋"
+    "category_l2": "越野鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "iconic",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S290",
@@ -6087,7 +8977,17 @@
     "color": "灰",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "时尚/通勤",
-    "category_l2": "浅口单鞋"
+    "category_l2": "浅口单鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S291",
@@ -6108,7 +9008,17 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "乐福鞋"
+    "category_l2": "乐福鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S292",
@@ -6129,7 +9039,17 @@
     "color": "灰",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S293",
@@ -6150,7 +9070,17 @@
     "color": "黑",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S294",
@@ -6171,7 +9101,17 @@
     "color": "白",
     "target_audience": "29-35岁 资深中产",
     "category_l1": "休闲/街头",
-    "category_l2": "阿甘鞋"
+    "category_l2": "阿甘鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S295",
@@ -6192,7 +9132,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S296",
@@ -6213,7 +9163,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "户外鞋",
-    "category_l2": "潮流机能"
+    "category_l2": "潮流机能",
+    "dev_season_year": "2024",
+    "dev_season": "Q2",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S297",
@@ -6234,7 +9194,17 @@
     "color": "白",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q4",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": "aged_tail",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S298",
@@ -6255,7 +9225,17 @@
     "color": "黑",
     "target_audience": "35岁以上",
     "category_l1": "休闲/街头",
-    "category_l2": "德训鞋"
+    "category_l2": "德训鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q3",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   },
   {
     "sku_id": "S299",
@@ -6276,7 +9256,17 @@
     "color": "黑",
     "target_audience": "18-23岁 GenZ",
     "category_l1": "休闲/街头",
-    "category_l2": "板鞋"
+    "category_l2": "板鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "seasonal",
+    "is_carryover": false,
+    "carryover_type": null,
+    "carryover_status": null,
+    "monitor_mode": "sell_through",
+    "non_main_reason": null,
+    "carryover_protection_end": null,
+    "carryover_entry_source": "rule_inferred"
   },
   {
     "sku_id": "S300",
@@ -6297,6 +9287,16 @@
     "color": "沙/大地",
     "target_audience": "24-28岁 职场新人",
     "category_l1": "正装/通勤",
-    "category_l2": "豆豆鞋"
+    "category_l2": "豆豆鞋",
+    "dev_season_year": "2024",
+    "dev_season": "Q1",
+    "product_track": "evergreen",
+    "is_carryover": true,
+    "carryover_type": "seasonal",
+    "carryover_status": "active",
+    "monitor_mode": "stock_water_level",
+    "non_main_reason": "carryover_active",
+    "carryover_protection_end": null,
+    "carryover_entry_source": "seeded_from_mock_lifecycle"
   }
 ]

@@ -1,0 +1,386 @@
+{
+  "assets": [
+    {
+      "assetId": "da-001",
+      "styleId": "st001",
+      "versionNumber": 1,
+      "assetType": "concept_sketch",
+      "imageUrl": "/assets/effect-stages/sketch.svg",
+      "materialPlan": [
+        "????",
+        "???"
+      ],
+      "colorPlan": [
+        "???",
+        "??"
+      ],
+      "outsole": "?? cupsole",
+      "last": "?????",
+      "uploadedAt": "2024-03-08T10:00:00+08:00",
+      "isLatest": false,
+      "summary": "???????????????????",
+      "deltaNote": "????????????"
+    },
+    {
+      "assetId": "da-002",
+      "styleId": "st001",
+      "versionNumber": 2,
+      "assetType": "effect_render",
+      "imageUrl": "/assets/effect-stages/render.svg",
+      "materialPlan": [
+        "????",
+        "?????",
+        "TPU ???"
+      ],
+      "colorPlan": [
+        "???",
+        "??",
+        "???"
+      ],
+      "outsole": "?? cupsole",
+      "last": "?????",
+      "uploadedAt": "2024-03-20T15:00:00+08:00",
+      "isLatest": true,
+      "summary": "??????????????????",
+      "deltaNote": "??????????????????"
+    },
+    {
+      "assetId": "da-003",
+      "styleId": "st001",
+      "versionNumber": 2,
+      "assetType": "material_board",
+      "imageUrl": "/assets/effect-stages/render.svg",
+      "materialPlan": [
+        "????",
+        "?????",
+        "TPU ???"
+      ],
+      "colorPlan": [
+        "???",
+        "??"
+      ],
+      "outsole": "?? cupsole",
+      "last": "?????",
+      "uploadedAt": "2024-03-21T10:00:00+08:00",
+      "isLatest": true,
+      "summary": "????????????????????",
+      "deltaNote": null
+    },
+    {
+      "assetId": "da-004",
+      "styleId": "st002",
+      "versionNumber": 1,
+      "assetType": "effect_render",
+      "imageUrl": "/assets/effect-stages/render.svg",
+      "materialPlan": [
+        "????",
+        "???"
+      ],
+      "colorPlan": [
+        "??",
+        "??",
+        "??"
+      ],
+      "outsole": "?? cupsole",
+      "last": "?????",
+      "uploadedAt": "2024-03-18T17:30:00+08:00",
+      "isLatest": true,
+      "summary": "??????????????????",
+      "deltaNote": "???????????????"
+    },
+    {
+      "assetId": "da-005",
+      "styleId": "st002",
+      "versionNumber": 1,
+      "assetType": "color_board",
+      "imageUrl": "/assets/effect-stages/render.svg",
+      "materialPlan": [
+        "????",
+        "???"
+      ],
+      "colorPlan": [
+        "??",
+        "??",
+        "??"
+      ],
+      "outsole": "?? cupsole",
+      "last": "?????",
+      "uploadedAt": "2024-03-19T09:00:00+08:00",
+      "isLatest": true,
+      "summary": "????????????",
+      "deltaNote": null
+    },
+    {
+      "assetId": "da-006",
+      "styleId": "st003",
+      "versionNumber": 1,
+      "assetType": "concept_sketch",
+      "imageUrl": "/assets/effect-stages/sketch.svg",
+      "materialPlan": [
+        "??",
+        "????"
+      ],
+      "colorPlan": [
+        "???",
+        "???",
+        "??"
+      ],
+      "outsole": "????????",
+      "last": "?????",
+      "uploadedAt": "2024-03-19T15:00:00+08:00",
+      "isLatest": true,
+      "summary": "???????????????????",
+      "deltaNote": null
+    },
+    {
+      "assetId": "da-007",
+      "styleId": "st004",
+      "versionNumber": 1,
+      "assetType": "first_sample_photo",
+      "imageUrl": "/assets/effect-stages/first-sample.svg",
+      "materialPlan": [
+        "???????",
+        "????"
+      ],
+      "colorPlan": [
+        "??",
+        "??"
+      ],
+      "outsole": "?????",
+      "last": "????",
+      "uploadedAt": "2024-03-22T09:00:00+08:00",
+      "isLatest": true,
+      "summary": "???????????????????",
+      "deltaNote": "?? render ??????????"
+    },
+    {
+      "assetId": "da-008",
+      "styleId": "st004",
+      "versionNumber": 1,
+      "assetType": "outsole_board",
+      "imageUrl": "/assets/effect-stages/first-sample.svg",
+      "materialPlan": [
+        "????"
+      ],
+      "colorPlan": [
+        "??"
+      ],
+      "outsole": "?????",
+      "last": "????",
+      "uploadedAt": "2024-03-20T13:20:00+08:00",
+      "isLatest": true,
+      "summary": "?????????????????",
+      "deltaNote": null
+    },
+    {
+      "assetId": "da-009",
+      "styleId": "st005",
+      "versionNumber": 1,
+      "assetType": "effect_render",
+      "imageUrl": "/assets/effect-stages/render.svg",
+      "materialPlan": [
+        "???????",
+        "????"
+      ],
+      "colorPlan": [
+        "???",
+        "??"
+      ],
+      "outsole": "?????",
+      "last": "????",
+      "uploadedAt": "2024-03-20T16:10:00+08:00",
+      "isLatest": true,
+      "summary": "??????????????????",
+      "deltaNote": null
+    },
+    {
+      "assetId": "da-010",
+      "styleId": "st006",
+      "versionNumber": 1,
+      "assetType": "concept_sketch",
+      "imageUrl": "/assets/effect-stages/sketch.svg",
+      "materialPlan": [
+        "??",
+        "??"
+      ],
+      "colorPlan": [
+        "??",
+        "??",
+        "??"
+      ],
+      "outsole": "???????",
+      "last": "????",
+      "uploadedAt": "2024-03-18T18:30:00+08:00",
+      "isLatest": true,
+      "summary": "??????????",
+      "deltaNote": null
+    },
+    {
+      "assetId": "da-011",
+      "styleId": "st007",
+      "versionNumber": 1,
+      "assetType": "concept_sketch",
+      "imageUrl": "/assets/effect-stages/sketch.svg",
+      "materialPlan": [
+        "????",
+        "?????"
+      ],
+      "colorPlan": [
+        "?????",
+        "???"
+      ],
+      "outsole": "?????",
+      "last": "????",
+      "uploadedAt": "2024-03-18T11:10:00+08:00",
+      "isLatest": true,
+      "summary": "?????????????????",
+      "deltaNote": null
+    },
+    {
+      "assetId": "da-012",
+      "styleId": "st007",
+      "versionNumber": 1,
+      "assetType": "last_board",
+      "imageUrl": "/assets/effect-stages/sketch.svg",
+      "materialPlan": [
+        "????"
+      ],
+      "colorPlan": [
+        "?????"
+      ],
+      "outsole": "?????",
+      "last": "????",
+      "uploadedAt": "2024-03-19T10:20:00+08:00",
+      "isLatest": true,
+      "summary": "????????????????",
+      "deltaNote": null
+    },
+    {
+      "assetId": "da-013",
+      "styleId": "st008",
+      "versionNumber": 1,
+      "assetType": "concept_sketch",
+      "imageUrl": "/assets/effect-stages/sketch.svg",
+      "materialPlan": [
+        "????",
+        "????"
+      ],
+      "colorPlan": [
+        "???",
+        "??"
+      ],
+      "outsole": "?????",
+      "last": "?????",
+      "uploadedAt": "2024-03-15T10:00:00+08:00",
+      "isLatest": true,
+      "summary": "?????????????????",
+      "deltaNote": null
+    },
+    {
+      "assetId": "da-014",
+      "styleId": "st009",
+      "versionNumber": 1,
+      "assetType": "effect_render",
+      "imageUrl": "/assets/effect-stages/render.svg",
+      "materialPlan": [
+        "????",
+        "???",
+        "EVA ??"
+      ],
+      "colorPlan": [
+        "???",
+        "??"
+      ],
+      "outsole": "?? EVA ?",
+      "last": "????",
+      "uploadedAt": "2024-03-21T14:00:00+08:00",
+      "isLatest": true,
+      "summary": "????????????????",
+      "deltaNote": "?????????????"
+    },
+    {
+      "assetId": "da-015",
+      "styleId": "st009",
+      "versionNumber": 1,
+      "assetType": "material_board",
+      "imageUrl": "/assets/effect-stages/render.svg",
+      "materialPlan": [
+        "????",
+        "???",
+        "EVA ??"
+      ],
+      "colorPlan": [
+        "???",
+        "??"
+      ],
+      "outsole": "?? EVA ?",
+      "last": "????",
+      "uploadedAt": "2024-03-22T08:30:00+08:00",
+      "isLatest": true,
+      "summary": "????????????????",
+      "deltaNote": null
+    },
+    {
+      "assetId": "da-016",
+      "styleId": "st010",
+      "versionNumber": 1,
+      "assetType": "concept_sketch",
+      "imageUrl": "/assets/effect-stages/sketch.svg",
+      "materialPlan": [
+        "??",
+        "???"
+      ],
+      "colorPlan": [
+        "??",
+        "??"
+      ],
+      "outsole": "?????",
+      "last": "?????",
+      "uploadedAt": "2024-03-16T13:20:00+08:00",
+      "isLatest": true,
+      "summary": "???????????????",
+      "deltaNote": null
+    },
+    {
+      "assetId": "da-017",
+      "styleId": "st012",
+      "versionNumber": 2,
+      "assetType": "final_sample_photo",
+      "imageUrl": "/assets/effect-stages/final-sample.svg",
+      "materialPlan": [
+        "????",
+        "?????"
+      ],
+      "colorPlan": [
+        "??",
+        "??"
+      ],
+      "outsole": "?????",
+      "last": "?????",
+      "uploadedAt": "2024-03-20T09:00:00+08:00",
+      "isLatest": true,
+      "summary": "????????????????",
+      "deltaNote": "?????????????????"
+    },
+    {
+      "assetId": "da-018",
+      "styleId": "st012",
+      "versionNumber": 2,
+      "assetType": "color_board",
+      "imageUrl": "/assets/effect-stages/final-sample.svg",
+      "materialPlan": [
+        "????"
+      ],
+      "colorPlan": [
+        "??",
+        "??"
+      ],
+      "outsole": "?????",
+      "last": "?????",
+      "uploadedAt": "2024-03-20T09:10:00+08:00",
+      "isLatest": true,
+      "summary": "????????????????",
+      "deltaNote": null
+    }
+  ]
+}

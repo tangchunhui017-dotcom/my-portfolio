@@ -1,92 +1,117 @@
-'use client';
+﻿'use client';
 
-import type { Risk } from '@/lib/design-review-center/types';
+import Link from 'next/link';
+import { useMemo, useState } from 'react';
+import { REVIEW_TYPE_LABELS } from '@/config/design-review-center/labels';
+import { ACTION_STATUS_MAP, REVIEW_CONCLUSION_MAP } from '@/config/design-review-center/status-map';
+import { formatDate } from '@/lib/design-review-center/helpers/date';
+import type { ReviewDecisionRow } from '@/lib/design-review-center/selectors/reviews';
 
 interface RiskPanelProps {
-  risks: Risk[];
+  reviews: ReviewDecisionRow[];
 }
 
-const riskTypeLabels: Record<string, string> = {
-  supply_chain: '供应链',
-  market: '市场',
-  cost: '成本',
-  design: '设计',
-};
+type ReviewFilter = 'all' | 'open' | 'dueThisWeek' | 'blocked';
 
-const priorityColors: Record<string, { bg: string; text: string; border: string }> = {
-  critical: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-300' },
-  high: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-300' },
-  medium: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-300' },
-  low: { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-300' },
-};
+function filterLabel(filter: ReviewFilter) {
+  if (filter === 'open') return '未关闭评审';
+  if (filter === 'dueThisWeek') return '本周待复审';
+  if (filter === 'blocked') return '阻塞项';
+  return '全部评审';
+}
 
-const priorityLabels: Record<string, string> = {
-  critical: '严重',
-  high: '高',
-  medium: '中',
-  low: '低',
-};
+export default function RiskPanel({ reviews }: RiskPanelProps) {
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>('open');
 
-const statusLabels: Record<string, string> = {
-  open: '待处理',
-  monitoring: '监控中',
-  in_progress: '处理中',
-  resolved: '已解决',
-};
-
-export default function RiskPanel({ risks }: RiskPanelProps) {
-  const sortedRisks = [...risks].sort((a, b) => {
-    const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-    return priorityOrder[a.priority] - priorityOrder[b.priority];
-  });
+  const filteredReviews = useMemo(() => {
+    if (reviewFilter === 'open') return reviews.filter((review) => !review.closed);
+    if (reviewFilter === 'dueThisWeek') return reviews.filter((review) => review.dueThisWeek);
+    if (reviewFilter === 'blocked') return reviews.filter((review) => review.blocked);
+    return reviews;
+  }, [reviewFilter, reviews]);
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="mb-4 flex items-center justify-between">
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">风险预警</h3>
-          <p className="mt-1 text-sm text-slate-500">先看高风险阻塞，再看影响、概率和缓解动作是否明确。</p>
+          <h3 className="text-xl font-semibold text-slate-900">评审决议</h3>
+          <p className="mt-2 text-sm leading-6 text-slate-500">以 ReviewRecord 为主线，看结论、问题、修改要求、影响范围和动作状态。</p>
         </div>
-        <span className="text-sm text-slate-600">{risks.length} 项</span>
+        <div className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600">{filteredReviews.length} 条</div>
       </div>
-      <div className="space-y-3">
-        {sortedRisks.length === 0 ? (
-          <div className="py-8 text-center text-sm text-slate-400">暂无风险</div>
+
+      <div className="mt-5 flex flex-wrap gap-2">
+        {(['all', 'open', 'dueThisWeek', 'blocked'] as ReviewFilter[]).map((filter) => (
+          <button
+            key={filter}
+            type="button"
+            onClick={() => setReviewFilter(filter)}
+            className={[
+              'rounded-full border px-4 py-2 text-sm font-semibold transition',
+              reviewFilter === filter ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900',
+            ].join(' ')}
+          >
+            {filterLabel(filter)}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-5 space-y-4">
+        {filteredReviews.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-10 text-center text-sm text-slate-500">
+            当前筛选条件下暂无评审决议记录。
+          </div>
         ) : (
-          sortedRisks.map((risk) => {
-            const colors = priorityColors[risk.priority];
+          filteredReviews.map((review) => {
+            const conclusionMeta = REVIEW_CONCLUSION_MAP[review.conclusion];
             return (
-              <div key={risk.riskId} className={'rounded-lg border ' + colors.border + ' ' + colors.bg + ' p-4 transition-all hover:shadow-md'}>
-                <div className="mb-2 flex items-start justify-between gap-3">
-                  <div className="flex-1">
-                    <div className="font-semibold text-slate-900">{risk.title}</div>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <span className="rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-medium text-slate-600">
-                        {riskTypeLabels[risk.riskType] ?? risk.riskType}
-                      </span>
-                      <span className="rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-medium text-slate-600">
-                        {statusLabels[risk.status] ?? risk.status}
-                      </span>
+              <article key={review.reviewId} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <Link href={`/design-review-center/item/${review.styleId}`} className="text-base font-semibold text-slate-900 hover:text-slate-700">
+                      {review.styleName}
+                    </Link>
+                    <div className="mt-1 text-xs text-slate-500">{review.skuCode} / {review.seriesName} / {review.categoryName} / {review.waveId.toUpperCase()}</div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs font-semibold">
+                    <span className={`rounded-full px-3 py-1 ${conclusionMeta.bgColor} ${conclusionMeta.textColor}`}>{conclusionMeta.label}</span>
+                    <span className="rounded-full bg-white px-3 py-1 text-slate-600">{REVIEW_TYPE_LABELS[review.reviewType]}</span>
+                    {review.blocked ? <span className="rounded-full bg-rose-100 px-3 py-1 text-rose-700">阻塞</span> : null}
+                    {review.closed ? <span className="rounded-full bg-slate-200 px-3 py-1 text-slate-700">已关闭</span> : null}
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-4 text-sm text-slate-600 md:grid-cols-2">
+                  <div>
+                    <div className="text-xs text-slate-400">问题描述</div>
+                    <div className="mt-1 leading-6 text-slate-900">{review.issueDescription}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-400">修改要求</div>
+                    <div className="mt-1 leading-6 text-slate-900">{review.changeRequest}</div>
+                  </div>
+                </div>
+
+                <div className="mt-4 rounded-2xl bg-white p-4 text-sm text-slate-600">
+                  <div className="grid gap-3 md:grid-cols-3">
+                    <div><div className="text-xs text-slate-400">评审日期</div><div className="mt-1 font-medium text-slate-900">{formatDate(review.reviewDate)}</div></div>
+                    <div><div className="text-xs text-slate-400">截止日期</div><div className="mt-1 font-medium text-slate-900">{formatDate(review.dueDate)}</div></div>
+                    <div><div className="text-xs text-slate-400">下次评审</div><div className="mt-1 font-medium text-slate-900">{formatDate(review.nextReviewDate)}</div></div>
+                    <div><div className="text-xs text-slate-400">责任人</div><div className="mt-1 font-medium text-slate-900">{review.owner}</div></div>
+                    <div><div className="text-xs text-slate-400">影响范围</div><div className="mt-1 font-medium text-slate-900">{review.impactScope}</div></div>
+                    <div>
+                      <div className="text-xs text-slate-400">动作状态</div>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {review.actionStatuses.length ? review.actionStatuses.map((status, index) => (
+                          <span key={`${review.reviewId}-${status}-${index}`} className={`rounded-full px-2.5 py-1 text-xs font-semibold ${ACTION_STATUS_MAP[status].bgColor} ${ACTION_STATUS_MAP[status].textColor}`}>
+                            {ACTION_STATUS_MAP[status].label}
+                          </span>
+                        )) : <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">无动作</span>}
+                      </div>
                     </div>
                   </div>
-                  <span className={'rounded-full px-2 py-1 text-xs font-semibold ' + colors.text}>
-                    {priorityLabels[risk.priority] ?? risk.priority}
-                  </span>
                 </div>
-                <div className="space-y-3 text-sm text-slate-700">
-                  <div>{risk.description}</div>
-                  <div className="rounded-xl bg-white/70 px-3 py-2 text-xs leading-6 text-slate-600">
-                    <div>影响：{risk.impact}</div>
-                    <div>概率：{risk.likelihood}</div>
-                    <div>缓解动作：{risk.mitigation}</div>
-                  </div>
-                </div>
-                <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-500">
-                  <span>责任人 {risk.owner}</span>
-                  <span>识别于 {new Date(risk.identifiedAt).toLocaleDateString('zh-CN')}</span>
-                  <span>到期 {new Date(risk.dueDate).toLocaleDateString('zh-CN')}</span>
-                </div>
-              </div>
+              </article>
             );
           })
         )}

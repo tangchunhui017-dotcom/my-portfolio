@@ -48,6 +48,22 @@ read_excel.js
 read_excel_temp.js
 read_region_excel.js
 read_store_excel.js
+
+# codex / AI 临时脚本
+.codex_tmp_*.js
+.reflog.txt
+tmp_annual_control_polish.cjs
+tmp_fix_spring_carry.py
+tmp_rebuild_annual_control.py
+tmp_annual_control_timeline/
+tmp/
+
+# 备份文件
+*.bak
+*.backup
+
+# 分析草稿
+.analysis/
 region_excel_preview_utf8.txt
 store_excel_preview_utf8.txt
 *.bat

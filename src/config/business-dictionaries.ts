@@ -1,4 +1,4 @@
-﻿export interface BusinessDictionaryItem {
+export interface BusinessDictionaryItem {
     id: string;
     label: string;
     english: string;
@@ -179,9 +179,9 @@ export const PUBLISH_LEVELS: BusinessDictionaryItem[] = [
     },
     {
         id: 'dashboard',
-        label: '看板',
-        english: 'Dashboard',
-        description: '可在决策驾驶舱中展示，已脱敏但保留业务细节。',
+        label: '企划中控',
+        english: 'Control',
+        description: '可在企划中控中展示，已脱敏但保留业务细节。',
     },
     {
         id: 'portfolio',

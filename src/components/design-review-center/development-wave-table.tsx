@@ -1,225 +1,166 @@
-import { PHASE_MAP, RISK_LEVEL_MAP } from '@/config/design-review-center/status-map';
-import type { CriticalPathLevel, DevelopmentWaveRecord } from '@/lib/design-review-center/types';
+﻿'use client';
+
+import Link from 'next/link';
+import { useMemo, useState } from 'react';
+import { GATE_GROUP_LABELS, GATE_TYPE_LABELS } from '@/config/design-review-center/labels';
+import { RISK_LEVEL_MAP, STAGE_MAP } from '@/config/design-review-center/status-map';
+import { formatDate } from '@/lib/design-review-center/helpers/date';
+import type { GateGroup } from '@/lib/design-review-center/types';
+import type { GateWaveGroup } from '@/lib/design-review-center/selectors/gates';
 
 interface DevelopmentWaveTableProps {
-  rows: DevelopmentWaveRecord[];
+  groups: GateWaveGroup[];
 }
 
-const DELIVERY_STATUS_META = {
-  not_started: { label: '未启动', className: 'bg-slate-100 text-slate-700' },
-  in_progress: { label: '进行中', className: 'bg-blue-100 text-blue-700' },
-  completed: { label: '已完成', className: 'bg-emerald-100 text-emerald-700' },
-  blocked: { label: '已阻塞', className: 'bg-rose-100 text-rose-700' },
-} as const;
+type GateFilter = 'all' | GateGroup;
 
-const CRITICAL_PATH_META: Record<CriticalPathLevel, { label: string; className: string }> = {
-  normal: { label: '正常路径', className: 'bg-slate-100 text-slate-700' },
-  watch: { label: '重点关注', className: 'bg-amber-100 text-amber-700' },
-  critical: { label: '关键路径', className: 'bg-rose-100 text-rose-700' },
-};
-
-function formatDate(value: string | null) {
-  if (!value) return '待确认';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return `${date.getMonth() + 1}/${date.getDate()}`;
+function getGateStatusMeta(completed: boolean, delayed: boolean, blocked: boolean) {
+  if (blocked) return { label: '阻塞', className: 'bg-rose-100 text-rose-700' };
+  if (delayed) return { label: '延期', className: 'bg-amber-100 text-amber-700' };
+  if (completed) return { label: '已完成', className: 'bg-emerald-100 text-emerald-700' };
+  return { label: '进行中', className: 'bg-sky-100 text-sky-700' };
 }
 
-function sortRows(rows: DevelopmentWaveRecord[]) {
-  return [...rows].sort((left, right) => {
-    const dropCompare = left.dropDate.localeCompare(right.dropDate);
-    if (dropCompare !== 0) return dropCompare;
-    return left.weekLabel.localeCompare(right.weekLabel);
-  });
+function filterLabel(filter: GateFilter) {
+  return filter === 'all' ? '全部 Gate' : GATE_GROUP_LABELS[filter];
 }
 
-function getCostMeta(row: DevelopmentWaveRecord) {
-  if (row.finalLockedCost) return { label: `已锁价 ¥${row.finalLockedCost}`, className: 'bg-emerald-100 text-emerald-700' };
-  if (row.sampleQuotedCost) return { label: `已核价 ¥${row.sampleQuotedCost}`, className: 'bg-amber-100 text-amber-700' };
-  if (row.targetCostEstimate) return { label: `目标价 ¥${row.targetCostEstimate}`, className: 'bg-sky-100 text-sky-700' };
-  return { label: '待补充', className: 'bg-slate-100 text-slate-700' };
-}
+export default function DevelopmentWaveTable({ groups }: DevelopmentWaveTableProps) {
+  const [gateFilter, setGateFilter] = useState<GateFilter>('all');
 
-export default function DevelopmentWaveTable({ rows }: DevelopmentWaveTableProps) {
-  const sortedRows = sortRows(rows);
+  const visibleGroups = useMemo(() => {
+    return groups
+      .map((group) => ({
+        ...group,
+        rows: gateFilter === 'all' ? group.rows : group.rows.filter((row) => row.gateGroup === gateFilter),
+      }))
+      .filter((group) => group.rows.length > 0);
+  }, [gateFilter, groups]);
 
-  if (!sortedRows.length) {
+  const allRows = visibleGroups.flatMap((group) => group.rows);
+
+  if (!groups.length) {
     return (
       <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center text-sm text-slate-500">
-        当前筛选条件下暂无产品研发波段表内容。
+        当前筛选条件下暂无 Gate 节点。
       </div>
     );
   }
 
-  const groupedRows = sortedRows.reduce<Record<string, DevelopmentWaveRecord[]>>((accumulator, row) => {
-    if (!accumulator[row.waveId]) accumulator[row.waveId] = [];
-    accumulator[row.waveId].push(row);
-    return accumulator;
-  }, {});
-
   return (
     <div className="space-y-6">
-      {Object.entries(groupedRows).map(([waveId, waveRows]) => {
-        const earliestDrop = [...waveRows].sort((left, right) => left.dropDate.localeCompare(right.dropDate))[0] ?? null;
-        const nearestMaterialLock = [...waveRows]
-          .filter((row) => row.materialLockDate)
-          .sort((left, right) => (left.materialLockDate ?? '').localeCompare(right.materialLockDate ?? ''))[0] ?? null;
-        const nearestToolingFreeze = [...waveRows]
-          .filter((row) => row.toolingFreezeDate)
-          .sort((left, right) => (left.toolingFreezeDate ?? '').localeCompare(right.toolingFreezeDate ?? ''))[0] ?? null;
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Gate Control</div>
+            <h3 className="mt-3 text-2xl font-semibold text-slate-950">按波段和 Gate 分类统一管理研发推进</h3>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+              从企划前置、设计节点、技术开发、成本采购到上市承接，把单款推进节奏收敛到同一张 Gate 管理表里。
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-4">
+            <div className="rounded-2xl bg-slate-50 px-4 py-3"><div className="text-xs text-slate-400">Gate 总数</div><div className="mt-2 text-2xl font-semibold text-slate-950">{allRows.length}</div></div>
+            <div className="rounded-2xl bg-slate-50 px-4 py-3"><div className="text-xs text-slate-400">已完成</div><div className="mt-2 text-2xl font-semibold text-emerald-600">{allRows.filter((row) => row.completed).length}</div></div>
+            <div className="rounded-2xl bg-slate-50 px-4 py-3"><div className="text-xs text-slate-400">延期</div><div className="mt-2 text-2xl font-semibold text-amber-600">{allRows.filter((row) => row.delayed).length}</div></div>
+            <div className="rounded-2xl bg-slate-50 px-4 py-3"><div className="text-xs text-slate-400">阻塞</div><div className="mt-2 text-2xl font-semibold text-rose-600">{allRows.filter((row) => row.blocked).length}</div></div>
+          </div>
+        </div>
 
-        const longLeadCount = waveRows.filter((row) => row.longLeadMaterial.length > 0).length;
-        const criticalCount = waveRows.filter((row) => row.criticalPathLevel === 'critical').length;
-        const blockedCount = waveRows.filter((row) => row.techPackStatus === 'blocked' || row.toolingStatus === 'blocked').length;
+        <div className="mt-6 flex flex-wrap gap-2">
+          {(['all', 'planning', 'design', 'development', 'cost', 'launch'] as GateFilter[]).map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              onClick={() => setGateFilter(filter)}
+              className={[
+                'rounded-full border px-4 py-2 text-sm font-semibold transition',
+                gateFilter === filter ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900',
+              ].join(' ')}
+            >
+              {filterLabel(filter)}
+            </button>
+          ))}
+        </div>
+      </section>
 
-        return (
-          <section key={waveId} className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-            <div className="border-b border-slate-200 bg-slate-50 px-6 py-5">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">{waveRows[0]?.waveName ?? waveId.toUpperCase()}</div>
-                  <h3 className="mt-2 text-xl font-semibold text-slate-950">按上市倒推的研发节奏表</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    从 Drop Date 往前倒推材料锁定、Tech Pack、试模和锁模节点，先看关键路径，再看具体款式。
-                  </p>
-                </div>
-                <div className="grid grid-cols-3 gap-4 text-right text-sm">
-                  <div>
-                    <div className="text-xs text-slate-400">长交期行数</div>
-                    <div className="mt-1 text-lg font-semibold text-slate-950">{longLeadCount}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-400">关键路径</div>
-                    <div className="mt-1 text-lg font-semibold text-rose-600">{criticalCount}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-400">阻塞项</div>
-                    <div className="mt-1 text-lg font-semibold text-rose-600">{blockedCount}</div>
-                  </div>
-                </div>
+      {visibleGroups.map((group) => (
+        <section key={group.waveId} className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <div className="border-b border-slate-200 bg-slate-50 px-6 py-5">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">{group.waveId.toUpperCase()}</div>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">{group.waveName}</h3>
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
+                <span className="rounded-full bg-white px-3 py-1">Gate {group.rows.length}</span>
+                <span className="rounded-full bg-white px-3 py-1">延期 {group.rows.filter((row) => row.delayed).length}</span>
+                <span className="rounded-full bg-white px-3 py-1">阻塞 {group.rows.filter((row) => row.blocked).length}</span>
               </div>
             </div>
+          </div>
 
-            <div className="grid gap-4 border-b border-slate-200 bg-white px-6 py-5 xl:grid-cols-3">
-              <article className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">最早上市时间</div>
-                <div className="mt-3 text-lg font-semibold text-slate-950">{earliestDrop ? formatDate(earliestDrop.dropDate) : '待确认'}</div>
-                <div className="mt-2 text-sm text-slate-600">所有前置节点都应从这里倒推。</div>
-              </article>
-              <article className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-                <div className="text-xs font-semibold uppercase tracking-wide text-amber-700">材料下单死线</div>
-                <div className="mt-3 text-lg font-semibold text-slate-950">{nearestMaterialLock ? formatDate(nearestMaterialLock.materialLockDate) : '待确认'}</div>
-                <div className="mt-2 text-sm text-slate-600">
-                  {nearestMaterialLock ? `${nearestMaterialLock.skuCode} / ${nearestMaterialLock.longLeadMaterial.join('、')}` : '当前没有长交期材料锁定节点。'}
-                </div>
-              </article>
-              <article className="rounded-2xl border border-rose-200 bg-rose-50 p-4">
-                <div className="text-xs font-semibold uppercase tracking-wide text-rose-700">模具关键节点</div>
-                <div className="mt-3 text-lg font-semibold text-slate-950">{nearestToolingFreeze ? formatDate(nearestToolingFreeze.toolingFreezeDate) : '待确认'}</div>
-                <div className="mt-2 text-sm text-slate-600">
-                  {nearestToolingFreeze ? `${nearestToolingFreeze.skuCode} / 锁模前必须完成试模验证` : '当前没有锁模节点。'}
-                </div>
-              </article>
-            </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-[1360px] w-full text-sm">
+              <thead className="text-left text-xs font-semibold uppercase tracking-wide text-slate-400">
+                <tr>
+                  <th className="border-b border-slate-200 px-4 py-3">节点名称</th>
+                  <th className="border-b border-slate-200 px-4 py-3">Gate 类型</th>
+                  <th className="border-b border-slate-200 px-4 py-3">单款</th>
+                  <th className="border-b border-slate-200 px-4 py-3">系列 / 品类</th>
+                  <th className="border-b border-slate-200 px-4 py-3">计划 / 实际</th>
+                  <th className="border-b border-slate-200 px-4 py-3">状态</th>
+                  <th className="border-b border-slate-200 px-4 py-3">责任人</th>
+                  <th className="border-b border-slate-200 px-4 py-3">影响波段</th>
+                  <th className="border-b border-slate-200 px-4 py-3">备注</th>
+                </tr>
+              </thead>
+              <tbody>
+                {group.rows.map((row) => {
+                  const gateStatus = getGateStatusMeta(row.completed, row.delayed, row.blocked);
+                  const stageMeta = STAGE_MAP[row.currentStage];
+                  const riskMeta = RISK_LEVEL_MAP[row.riskLevel];
 
-            <div className="overflow-x-auto">
-              <table className="min-w-[1720px] w-full border-separate border-spacing-0 text-sm">
-                <thead>
-                  <tr className="bg-white text-left text-xs font-semibold uppercase tracking-wide text-slate-400">
-                    <th className="border-b border-slate-200 px-4 py-3">波段 / 周次</th>
-                    <th className="border-b border-slate-200 px-4 py-3">Drop Date</th>
-                    <th className="border-b border-slate-200 px-4 py-3">系列 / 款号</th>
-                    <th className="border-b border-slate-200 px-4 py-3">结构方向</th>
-                    <th className="border-b border-slate-200 px-4 py-3">长交期材料</th>
-                    <th className="border-b border-slate-200 px-4 py-3">材料锁定</th>
-                    <th className="border-b border-slate-200 px-4 py-3">Tech Pack 截止</th>
-                    <th className="border-b border-slate-200 px-4 py-3">开模路径</th>
-                    <th className="border-b border-slate-200 px-4 py-3">当前阶段</th>
-                    <th className="border-b border-slate-200 px-4 py-3">成本状态</th>
-                    <th className="border-b border-slate-200 px-4 py-3">负责人</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {waveRows.map((row) => {
-                    const phaseMeta = PHASE_MAP[row.phase] ?? PHASE_MAP.concept;
-                    const costMeta = getCostMeta(row);
-                    const techPackMeta = DELIVERY_STATUS_META[row.techPackStatus];
-                    const toolingMeta = DELIVERY_STATUS_META[row.toolingStatus];
-                    const riskMeta = RISK_LEVEL_MAP[row.riskLevel] ?? RISK_LEVEL_MAP.medium;
-                    const criticalMeta = CRITICAL_PATH_META[row.criticalPathLevel];
-
-                    return (
-                      <tr key={row.rowId} className="align-top text-slate-700">
-                        <td className="border-t border-slate-100 px-4 py-4">
-                          <div className="font-medium text-slate-900">{row.weekLabel}</div>
-                          <div className="mt-1 text-xs text-slate-500">{row.waveName}</div>
-                        </td>
-                        <td className="border-t border-slate-100 px-4 py-4">
-                          <div className="font-medium text-slate-900">{formatDate(row.dropDate)}</div>
-                          <div className={`mt-2 inline-flex rounded-full px-2.5 py-1 text-[11px] font-medium ${criticalMeta.className}`}>{criticalMeta.label}</div>
-                        </td>
-                        <td className="border-t border-slate-100 px-4 py-4">
-                          <div className="font-semibold text-slate-900">{row.seriesName}</div>
-                          <div className="mt-1 text-xs text-slate-500">{row.skuCode} / {row.itemName}</div>
-                          <div className="mt-2 text-xs text-slate-500">{row.category} / {row.productRole}</div>
-                        </td>
-                        <td className="border-t border-slate-100 px-4 py-4">
-                          <div className="font-medium text-slate-900">{row.silhouette}</div>
-                          <div className="mt-2 text-xs text-slate-500">帮面：{row.upperConstruction}</div>
-                          <div className="mt-1 text-xs text-slate-500">大底：{row.outsoleDirection}</div>
-                        </td>
-                        <td className="border-t border-slate-100 px-4 py-4">
-                          {row.longLeadMaterial.length > 0 ? (
-                            <div className="space-y-2">
-                              <div className="flex flex-wrap gap-2">
-                                {row.longLeadMaterial.map((material) => (
-                                  <span key={material} className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">{material}</span>
-                                ))}
-                              </div>
-                              <div className="text-xs text-slate-500">{row.materialFocus}</div>
-                            </div>
-                          ) : (
-                            <div>
-                              <div className="text-sm text-slate-400">无长交期材料</div>
-                              <div className="mt-1 text-xs text-slate-500">{row.materialFocus}</div>
-                            </div>
-                          )}
-                        </td>
-                        <td className="border-t border-slate-100 px-4 py-4">
-                          <div className="font-medium text-slate-900">{formatDate(row.materialLockDate)}</div>
-                          <div className={`mt-2 inline-flex rounded-full px-2.5 py-1 text-[11px] font-medium ${riskMeta.bgColor} ${riskMeta.textColor}`}>{riskMeta.label}</div>
-                        </td>
-                        <td className="border-t border-slate-100 px-4 py-4">
-                          <div className="font-medium text-slate-900">{formatDate(row.techPackDueDate)}</div>
-                          <div className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${techPackMeta.className}`}>{techPackMeta.label}</div>
-                        </td>
-                        <td className="border-t border-slate-100 px-4 py-4">
-                          <div className="text-xs text-slate-500">开模 {formatDate(row.toolingStartDate)}</div>
-                          <div className="mt-1 text-xs text-slate-500">试模 {formatDate(row.toolingTrialDate)}</div>
-                          <div className="mt-1 text-xs text-slate-500">锁模 {formatDate(row.toolingFreezeDate)}</div>
-                          <div className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toolingMeta.className}`}>{toolingMeta.label}</div>
-                          {row.toolingNotes ? <div className="mt-2 text-xs text-slate-500">{row.toolingNotes}</div> : null}
-                        </td>
-                        <td className="border-t border-slate-100 px-4 py-4">
-                          <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${phaseMeta.bgColor} ${phaseMeta.textColor}`}>{phaseMeta.label}</span>
-                          <div className="mt-2 text-xs text-slate-500">评审重点：{row.reviewFocus}</div>
-                        </td>
-                        <td className="border-t border-slate-100 px-4 py-4">
-                          <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${costMeta.className}`}>{costMeta.label}</span>
-                        </td>
-                        <td className="border-t border-slate-100 px-4 py-4">
-                          <div className="font-medium text-slate-900">{row.owner}</div>
-                          <div className="mt-1 text-xs text-slate-500">下次评审：{formatDate(row.nextReviewDate)}</div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        );
-      })}
+                  return (
+                    <tr key={row.gateId} className="align-top text-slate-700">
+                      <td className="border-b border-slate-100 px-4 py-4">
+                        <div className="font-semibold text-slate-900">{row.gateName}</div>
+                        <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold">
+                          <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">{GATE_GROUP_LABELS[row.gateGroup]}</span>
+                          <span className={`rounded-full px-3 py-1 ${gateStatus.className}`}>{gateStatus.label}</span>
+                        </div>
+                      </td>
+                      <td className="border-b border-slate-100 px-4 py-4">{GATE_TYPE_LABELS[row.gateType]}</td>
+                      <td className="border-b border-slate-100 px-4 py-4">
+                        <Link href={`/design-review-center/item/${row.styleId}`} className="font-medium text-slate-900 hover:text-slate-700">
+                          {row.skuCode}
+                        </Link>
+                        <div className="mt-1 text-xs text-slate-500">{row.styleName}</div>
+                      </td>
+                      <td className="border-b border-slate-100 px-4 py-4">
+                        <div className="font-medium text-slate-900">{row.seriesName}</div>
+                        <div className="mt-1 text-xs text-slate-500">{row.categoryName}</div>
+                      </td>
+                      <td className="border-b border-slate-100 px-4 py-4">
+                        <div className="text-slate-900">计划 {formatDate(row.plannedDate)}</div>
+                        <div className="mt-1 text-xs text-slate-500">实际 {formatDate(row.actualDate)}</div>
+                      </td>
+                      <td className="border-b border-slate-100 px-4 py-4">
+                        <div className="flex flex-wrap gap-2">
+                          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${stageMeta.bgColor} ${stageMeta.textColor}`}>{stageMeta.label}</span>
+                          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${riskMeta.bgColor} ${riskMeta.textColor}`}>{riskMeta.label}</span>
+                        </div>
+                      </td>
+                      <td className="border-b border-slate-100 px-4 py-4">{row.owner}</td>
+                      <td className="border-b border-slate-100 px-4 py-4">{row.impactWave}</td>
+                      <td className="border-b border-slate-100 px-4 py-4 text-sm leading-6 text-slate-600">{row.note}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ))}
     </div>
   );
 }

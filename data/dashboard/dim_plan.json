@@ -1,122 +1,172 @@
 {
   "season_year": 2024,
-  "generated_at": "2024-01-01",
-  "note": "OTB计划数据（Mock）- 用于计划vs实际对比图",
+  "generated_at": "2026-03-26",
+  "note": "共享计划口径（Mock），月度计划为主数据源，季度与年度由月度自动汇总；销售差额控制在约 ±20% 范围内，后续可直接替换为真实销售预算。",
   "category_plan": [
     {
       "category_id": "休闲/街头",
-      "plan_sales_amt": 7410612,
-      "plan_units": 11624,
-      "plan_sell_through": 0.8153,
-      "plan_margin_rate": 0.439,
-      "plan_sku_count": 169
+      "plan_sales_amt": 41100196,
+      "plan_units": 122836,
+      "plan_sell_through": 0.731,
+      "plan_margin_rate": 0.462,
+      "plan_sku_count": 171
     },
     {
       "category_id": "时尚/通勤",
-      "plan_sales_amt": 457959,
-      "plan_units": 718,
-      "plan_sell_through": 0.8153,
-      "plan_margin_rate": 0.439,
-      "plan_sku_count": 10
+      "plan_sales_amt": 5130600,
+      "plan_units": 10291,
+      "plan_sell_through": 0.764,
+      "plan_margin_rate": 0.472,
+      "plan_sku_count": 12
     },
     {
       "category_id": "正装/通勤",
-      "plan_sales_amt": 1790204,
-      "plan_units": 2808,
-      "plan_sell_through": 0.8153,
-      "plan_margin_rate": 0.439,
-      "plan_sku_count": 41
+      "plan_sales_amt": 14101888,
+      "plan_units": 38686,
+      "plan_sell_through": 0.748,
+      "plan_margin_rate": 0.458,
+      "plan_sku_count": 42
     },
     {
       "category_id": "靴类",
-      "plan_sales_amt": 374694,
-      "plan_units": 588,
-      "plan_sell_through": 0.8153,
-      "plan_margin_rate": 0.439,
+      "plan_sales_amt": 2567942,
+      "plan_units": 8337,
+      "plan_sell_through": 0.698,
+      "plan_margin_rate": 0.448,
       "plan_sku_count": 9
     },
     {
       "category_id": "凉拖鞋",
-      "plan_sales_amt": 166531,
-      "plan_units": 261,
-      "plan_sell_through": 0.8153,
-      "plan_margin_rate": 0.439,
+      "plan_sales_amt": 1721697,
+      "plan_units": 6774,
+      "plan_sell_through": 0.789,
+      "plan_margin_rate": 0.429,
       "plan_sku_count": 4
     },
     {
       "category_id": "户外鞋",
-      "plan_sales_amt": 1600000,
-      "plan_units": 2000,
-      "plan_sell_through": 0.76,
-      "plan_margin_rate": 0.41,
-      "plan_sku_count": 38
+      "plan_sales_amt": 25877677,
+      "plan_units": 69398,
+      "plan_sell_through": 0.758,
+      "plan_margin_rate": 0.459,
+      "plan_sku_count": 58
     }
   ],
   "channel_plan": [
     {
       "channel_type": "电商",
-      "plan_sales_amt": 4800000,
-      "plan_sell_through": 0.88,
-      "plan_margin_rate": 0.4,
-      "plan_sales_share": 0.38
+      "plan_sales_amt": 28368346,
+      "plan_sell_through": 0.768,
+      "plan_margin_rate": 0.452,
+      "plan_sales_share": 0.3135
     },
     {
       "channel_type": "直营",
-      "plan_sales_amt": 3600000,
-      "plan_sell_through": 0.82,
-      "plan_margin_rate": 0.5,
-      "plan_sales_share": 0.29
+      "plan_sales_amt": 21769673,
+      "plan_sell_through": 0.728,
+      "plan_margin_rate": 0.472,
+      "plan_sales_share": 0.2405
     },
     {
       "channel_type": "加盟",
-      "plan_sales_amt": 2400000,
-      "plan_sell_through": 0.75,
-      "plan_margin_rate": 0.35,
-      "plan_sales_share": 0.19
+      "plan_sales_amt": 29013320,
+      "plan_sell_through": 0.736,
+      "plan_margin_rate": 0.462,
+      "plan_sales_share": 0.3206
     },
     {
       "channel_type": "KA",
-      "plan_sales_amt": 1800000,
-      "plan_sell_through": 0.78,
-      "plan_margin_rate": 0.38,
-      "plan_sales_share": 0.14
+      "plan_sales_amt": 11348661,
+      "plan_sell_through": 0.742,
+      "plan_margin_rate": 0.466,
+      "plan_sales_share": 0.1254
     }
   ],
   "overall_plan": {
-    "plan_total_sales": 12600000,
-    "plan_total_units": 18000,
-    "plan_avg_sell_through": 0.82,
-    "plan_avg_margin_rate": 0.44,
-    "plan_avg_discount_depth": 0.12,
-    "plan_active_skus": 240,
-    "plan_ending_inventory_units": 3200,
-    "plan_ending_inventory_amt": 1440000,
-    "plan_wos": 5.2
+    "plan_total_sales": 90500000,
+    "plan_total_units": 256322,
+    "plan_avg_sell_through": 0.742,
+    "plan_avg_margin_rate": 0.459,
+    "plan_avg_discount_depth": 0.128,
+    "plan_active_skus": 296,
+    "plan_ending_inventory_units": 85440,
+    "plan_ending_inventory_amt": 22106880,
+    "plan_wos": 4
   },
   "price_band_plan": [
     {
       "price_band": "199-399",
-      "plan_sales_amt": 4410000,
-      "plan_sku_count": 110,
-      "plan_sell_through": 0.86
+      "plan_sales_amt": 22879073,
+      "plan_sku_count": 72,
+      "plan_sell_through": 0.781
     },
     {
       "price_band": "399-599",
-      "plan_sales_amt": 5040000,
-      "plan_sku_count": 101,
-      "plan_sell_through": 0.8
+      "plan_sales_amt": 38801313,
+      "plan_sku_count": 131,
+      "plan_sell_through": 0.742
     },
     {
       "price_band": "599-799",
-      "plan_sales_amt": 3150000,
-      "plan_sku_count": 48,
-      "plan_sell_through": 0.75
+      "plan_sales_amt": 13210056,
+      "plan_sku_count": 78,
+      "plan_sell_through": 0.701
     },
     {
       "price_band": "800+",
-      "plan_sales_amt": 1260000,
-      "plan_sku_count": 18,
-      "plan_sell_through": 0.72
+      "plan_sales_amt": 15609558,
+      "plan_sku_count": 15,
+      "plan_sell_through": 0.768
+    }
+  ],
+  "monthly_plan": [
+    {
+      "month": 1,
+      "plan_sales_amt": 8195424
+    },
+    {
+      "month": 2,
+      "plan_sales_amt": 10202553
+    },
+    {
+      "month": 3,
+      "plan_sales_amt": 12146008
+    },
+    {
+      "month": 4,
+      "plan_sales_amt": 12073107
+    },
+    {
+      "month": 5,
+      "plan_sales_amt": 11962279
+    },
+    {
+      "month": 6,
+      "plan_sales_amt": 8905171
+    },
+    {
+      "month": 7,
+      "plan_sales_amt": 7833423
+    },
+    {
+      "month": 8,
+      "plan_sales_amt": 5833979
+    },
+    {
+      "month": 9,
+      "plan_sales_amt": 4819697
+    },
+    {
+      "month": 10,
+      "plan_sales_amt": 3811185
+    },
+    {
+      "month": 11,
+      "plan_sales_amt": 2839506
+    },
+    {
+      "month": 12,
+      "plan_sales_amt": 1877668
     }
   ]
 }

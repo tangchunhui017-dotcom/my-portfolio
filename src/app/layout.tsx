@@ -1,23 +1,17 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import Navigation from "@/components/Navigation";
-import OpenClawEntryButton from "@/components/business/OpenClawEntryButton";
+﻿import type { Metadata } from 'next';
+import type { CSSProperties } from 'react';
+import Navigation from '@/components/Navigation';
+import OpenClawEntryButton from '@/components/business/OpenClawEntryButton';
+import './globals.css';
 
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const offlineFontVars = {
+  '--font-geist-sans': '"Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif',
+  '--font-geist-mono': '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace',
+} as CSSProperties;
 
 export const metadata: Metadata = {
-  title: "OpenClaw Studio | Footwear Planning & Design Platform",
-  description: "鞋履产品企划与设计平台 - 从趋势洞察到商品企划，从设计开发到上市复盘",
+  title: 'ID Claw Studio | 商品规划&设计',
+  description: '鞋类产品企划与设计开发平台，从趋势洞察到商品企划，从设计开发到上市复盘。',
 };
 
 export default function RootLayout({
@@ -26,11 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        suppressHydrationWarning
-      >
+    <html lang="zh-CN" suppressHydrationWarning>
+      <body className="antialiased" style={offlineFontVars} suppressHydrationWarning>
         <Navigation />
         {children}
         <OpenClawEntryButton />

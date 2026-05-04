@@ -1,386 +1,328 @@
-import { PHASE_MAP, RISK_LEVEL_MAP } from '@/config/design-review-center/status-map';
-import type {
-  CategoryBreakdownRecord,
-  ProductArchitectureRecord,
-  ToolingBudgetLevel,
-  ToolingStrategy,
-} from '@/lib/design-review-center/types';
+import type { ArchitectureRoleKey, ProductArchitectureView } from '@/lib/design-review-center/types';
 
 interface ProductArchitecturePanelProps {
-  architectures: ProductArchitectureRecord[];
-  breakdowns: CategoryBreakdownRecord[];
+  architecture: ProductArchitectureView;
+  pyramidFilter?: string | null;
 }
 
-const TOOLING_STRATEGY_META: Record<ToolingStrategy, { label: string; className: string }> = {
-  new_tooling: { label: '全新开模', className: 'bg-rose-100 text-rose-700' },
-  new_upper_same_outsole: { label: '换面不换底', className: 'bg-amber-100 text-amber-700' },
-  carry_over: { label: '经典延续', className: 'bg-emerald-100 text-emerald-700' },
+const PYRAMID_ROLE_MAP: Record<string, ArchitectureRoleKey[]> = {
+  hero: ['lead', 'image'],
+  core: ['traffic', 'functional'],
+  filler: ['basic'],
 };
 
-const BUDGET_LEVEL_META: Record<ToolingBudgetLevel, { label: string; className: string }> = {
-  tight: { label: '预算收紧', className: 'bg-slate-100 text-slate-700' },
-  controlled: { label: '预算可控', className: 'bg-sky-100 text-sky-700' },
-  strategic: { label: '战略投入', className: 'bg-fuchsia-100 text-fuchsia-700' },
-};
+const DISPLAY_THEME_COLORS = ['#2563EB', '#F97316', '#7C3AED', '#16A34A', '#E11D48', '#0F766E', '#CA8A04', '#0891B2'] as const;
 
 function percent(value: number) {
-  return `${Math.round(value)}%`;
+  return `${Math.round(value * 100)}%`;
 }
 
-function unique(values: string[]) {
-  return [...new Set(values.filter(Boolean))];
+function emphasisClass(emphasis: ProductArchitectureView['platformInsights'][number]['emphasis']) {
+  if (emphasis === 'warning') return 'border-amber-200 bg-amber-50';
+  if (emphasis === 'accent') return 'border-cyan-200 bg-cyan-50';
+  return 'border-slate-200 bg-white';
 }
 
-function sum(items: number[]) {
-  return items.reduce((total, current) => total + current, 0);
+function sum(values: number[]) {
+  return values.reduce((total, current) => total + current, 0);
 }
 
-function weightedRatio(records: ProductArchitectureRecord[], selector: (record: ProductArchitectureRecord) => number) {
-  const totalSku = sum(records.map((record) => record.plannedSkuCount));
-  if (totalSku === 0) return 0;
-  return records.reduce((total, record) => total + record.plannedSkuCount * selector(record), 0) / totalSku;
-}
-
-function SectionEyebrow({ label }: { label: string }) {
-  return <div className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">{label}</div>;
-}
-
-function ChipGroup({ items }: { items: string[] }) {
-  if (!items.length) return <div className="text-sm text-slate-400">待补充</div>;
-
-  return (
-    <div className="flex flex-wrap gap-2">
-      {items.map((item) => (
-        <span key={item} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700">
-          {item}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-function RatioBar({
-  carryOver,
-  sameOutsoleNewUpper,
-  newTooling,
-}: {
-  carryOver: number;
-  sameOutsoleNewUpper: number;
-  newTooling: number;
-}) {
-  return (
-    <div>
-      <div className="flex h-3 overflow-hidden rounded-full bg-slate-100">
-        <div className="bg-emerald-500" style={{ width: `${carryOver}%` }} />
-        <div className="bg-amber-400" style={{ width: `${sameOutsoleNewUpper}%` }} />
-        <div className="bg-rose-500" style={{ width: `${newTooling}%` }} />
-      </div>
-      <div className="mt-3 grid gap-2 text-xs text-slate-500 sm:grid-cols-3">
-        <div>经典延续 {percent(carryOver)}</div>
-        <div>换面不换底 {percent(sameOutsoleNewUpper)}</div>
-        <div>全新开模 {percent(newTooling)}</div>
-      </div>
-    </div>
-  );
-}
-
-export default function ProductArchitecturePanel({ architectures, breakdowns }: ProductArchitecturePanelProps) {
-  if (!architectures.length) {
+export default function ProductArchitecturePanel({ architecture, pyramidFilter }: ProductArchitecturePanelProps) {
+  if (!architecture.inputs.length || !architecture.matrix.columns.length) {
     return (
       <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center text-sm text-slate-500">
-        当前筛选条件下暂无产品架构内容。
+        当前筛选条件下暂无 OTB 转译后的产品架构内容。
       </div>
     );
   }
 
-  const totalSku = sum(architectures.map((record) => record.plannedSkuCount));
-  const totalSkuLimit = sum(architectures.map((record) => record.plannedSkuLimit));
-  const avgSkuDepth = Math.round(sum(architectures.map((record) => record.plannedSkuDepth)) / architectures.length);
-  const reuseRatio = 100 - weightedRatio(architectures, (record) => record.newToolingRatio);
-  const carryOverRatio = weightedRatio(architectures, (record) => record.carryOverRatio);
-  const sameOutsoleRatio = weightedRatio(architectures, (record) => record.sameOutsoleNewUpperRatio);
-  const newToolingRatio = weightedRatio(architectures, (record) => record.newToolingRatio);
+  const summaryCards = [
+    { label: '品类数', value: String(architecture.summary.categoryCount), sub: '当前筛选范围内的一级品类数' },
+    { label: '款数目标', value: String(architecture.summary.styleTarget), sub: 'OTB 转译后的 SPU 目标' },
+    { label: 'SKU 目标', value: String(architecture.summary.skuTarget), sub: '按价格带与深度校准后的 SKU 宽度' },
+    { label: '主推款占比', value: percent(architecture.summary.leadStyleRate), sub: `主推款 ${architecture.summary.leadStyleCount} 款` },
+    { label: '新开模占比', value: percent(architecture.summary.newToolingRate), sub: `新开模 ${architecture.summary.newToolingCount} 款` },
+    { label: '共底率', value: percent(architecture.summary.sharedOutsoleRate), sub: '优先让底台策略成为开发约束' },
+    { label: '共楦率', value: percent(architecture.summary.sharedLastRate), sub: '先稳定脚感、再做面层差异化' },
+    { label: '平台复用率', value: percent(architecture.summary.platformReuseRate), sub: '成熟平台尽量跨系列承接' },
+  ];
 
-  const categorySummary = unique(breakdowns.map((record) => record.category))
-    .map((category) => {
-      const categoryRows = breakdowns.filter((record) => record.category === category);
-      const relatedSeriesIds = unique(categoryRows.map((record) => record.seriesId));
-      const relatedArchitectures = architectures.filter((record) => relatedSeriesIds.includes(record.seriesId));
-
-      const toolingMix = categoryRows.reduce(
-        (summary, row) => {
-          const architecture = relatedArchitectures.find((record) => record.seriesId === row.seriesId);
-          if (!architecture) return summary;
-          summary.total += row.plannedSkuCount;
-          if (architecture.toolingStrategy === 'carry_over') summary.carryOver += row.plannedSkuCount;
-          if (architecture.toolingStrategy === 'new_upper_same_outsole') summary.sameOutsole += row.plannedSkuCount;
-          if (architecture.toolingStrategy === 'new_tooling') summary.newTooling += row.plannedSkuCount;
-          return summary;
+  const themeLegend = Array.from(
+    new Map(
+      architecture.inputs.map((input) => [
+        input.seriesId,
+        {
+          seriesId: input.seriesId,
+          seriesName: input.seriesName,
         },
-        { total: 0, carryOver: 0, sameOutsole: 0, newTooling: 0 },
-      );
+      ]),
+    ).values(),
+  ).map((theme, index) => ({
+    ...theme,
+    themeColorHex: DISPLAY_THEME_COLORS[index % DISPLAY_THEME_COLORS.length],
+  }));
 
-      return {
-        category,
-        plannedSkuCount: sum(categoryRows.map((record) => record.plannedSkuCount)),
-        seriesNames: unique(categoryRows.map((record) => record.seriesName)),
-        priceBands: unique(relatedArchitectures.map((record) => record.priceBand)),
-        scenes: unique(relatedArchitectures.map((record) => record.consumerScene)),
-        silhouettes: unique(relatedArchitectures.flatMap((record) => record.silhouetteDirections)).slice(0, 3),
-        outsoles: unique(relatedArchitectures.flatMap((record) => record.outsoleDirections)).slice(0, 3),
-        toolingText: `延续 ${toolingMix.carryOver} / 同底 ${toolingMix.sameOutsole} / 新模 ${toolingMix.newTooling}`,
-      };
-    })
-    .sort((left, right) => right.plannedSkuCount - left.plannedSkuCount);
+  const themeColorMap = new Map(themeLegend.map((theme) => [theme.seriesId, theme.themeColorHex]));
+
+  function getDisplayThemeColor(seriesId: string) {
+    return themeColorMap.get(seriesId) ?? '#2563EB';
+  }
+
+  function renderThemeQuantitySeries(categoryName: string, mode: 'style' | 'sku') {
+    const matchedInputs = architecture.inputs.filter((input) => input.categoryName === categoryName);
+
+    return matchedInputs.map((input) => {
+      const count = mode === 'style' ? input.styleTarget : input.skuTarget;
+      return (
+        <div key={`${mode}-${categoryName}-${input.seriesId}`} className="space-y-1 text-[11px] text-slate-500">
+          <div className="flex flex-wrap items-center gap-2">
+            <span>
+              {input.seriesName} {count}
+            </span>
+            <div className="flex flex-wrap gap-1">
+              {Array.from({ length: count }, (_, index) => (
+                <span
+                  key={`${mode}-${categoryName}-${input.seriesId}-${index}`}
+                  className="h-2.5 w-2.5 rounded-sm"
+                  style={{ backgroundColor: getDisplayThemeColor(input.seriesId) }}
+                  title={`${input.seriesName} · ${mode === 'style' ? '款数' : 'SKU'} ${count}`}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="pl-0.5 text-[11px] text-slate-400">
+            {mode === 'style' ? `预算占比 ${Math.round(input.budgetShare * 100)}%` : `价格带 ${input.priceBand}`}
+          </div>
+        </div>
+      );
+    });
+  }
+
+  function renderQuantityCard(categoryName: string, mode: 'style' | 'sku') {
+    const matchedInputs = architecture.inputs.filter((input) => input.categoryName === categoryName);
+    const total = sum(matchedInputs.map((input) => (mode === 'style' ? input.styleTarget : input.skuTarget)));
+    const label = mode === 'style' ? '款数目标' : 'SKU 目标';
+
+    return (
+      <article className="rounded-[20px] border border-slate-200/75 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-3 shadow-[0_8px_18px_rgba(15,23,42,0.03)]">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="font-medium text-slate-900">{label}</div>
+            <div className="mt-2 space-y-1.5">{renderThemeQuantitySeries(categoryName, mode)}</div>
+          </div>
+          <div className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm">{total}</div>
+        </div>
+      </article>
+    );
+  }
+  function renderStructureAllocations(item: ProductArchitectureView['matrix']['rows'][number]['cells'][number]['items'][number]) {
+    return item.allocations
+      .sort((left, right) => right.count - left.count)
+      .map((allocation) => (
+        <div key={`${item.key}-${allocation.seriesId}`} className="space-y-1 text-[11px] text-slate-500">
+          <div className="flex flex-wrap items-center gap-2">
+            <span>
+              {allocation.seriesName} {allocation.count}
+            </span>
+            <div className="flex flex-wrap gap-1">
+              {Array.from({ length: allocation.count }, (_, index) => (
+                <span
+                  key={`${item.key}-${allocation.seriesId}-${index}`}
+                  className="h-2.5 w-2.5 rounded-sm"
+                  style={{ backgroundColor: getDisplayThemeColor(allocation.seriesId) }}
+                  title={`${allocation.seriesName} ${allocation.count}`}
+                />
+              ))}
+            </div>
+          </div>
+          {allocation.helperText ? <div className="pl-0.5 text-[11px] text-slate-400">{allocation.helperText}</div> : null}
+        </div>
+      ));
+  }
+
+  function renderStructureCard(item: ProductArchitectureView['matrix']['rows'][number]['cells'][number]['items'][number]) {
+    return (
+      <article key={item.key} className="rounded-[20px] border border-slate-200/75 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-3 shadow-[0_8px_18px_rgba(15,23,42,0.03)]">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="font-medium text-slate-900">{item.label}</div>
+            <div className="mt-2 space-y-1.5">{renderStructureAllocations(item)}</div>
+          </div>
+          <div className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm shrink-0">{item.count}</div>
+        </div>
+      </article>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
-          <div className="space-y-4">
-            <SectionEyebrow label="Architecture Summary" />
-            <h3 className="text-2xl font-semibold text-slate-950">先定整季骨架，再看系列落点</h3>
-            <p className="text-sm leading-7 text-slate-600">
-              产品架构阶段先回答三件事：哪些品类是主推，哪些系列可以共底共楦，哪些款型必须为主题投入新模具。
-              先把整季结构收住，再谈单款扩展。
-            </p>
-
-            <div className="rounded-2xl bg-slate-50 p-4">
-              <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">整季架构判断</div>
-              <div className="mt-4 space-y-3 text-sm leading-6 text-slate-700">
-                <div>模具复用率 <span className="font-semibold text-slate-950">{percent(reuseRatio)}</span></div>
-                <div>全新开模占比 <span className="font-semibold text-slate-950">{percent(newToolingRatio)}</span></div>
-                <div>SKU 上限使用率 <span className="font-semibold text-slate-950">{totalSkuLimit ? percent((totalSku / totalSkuLimit) * 100) : '0%'}</span></div>
-                <div>平均单款深度 <span className="font-semibold text-slate-950">{avgSkuDepth}</span></div>
-              </div>
-            </div>
+      <section className="rounded-[30px] border border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfe_100%)] p-6 shadow-[0_16px_36px_rgba(15,23,42,0.06)]">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">OTB Translation</div>
+            <h3 className="mt-3 text-2xl font-semibold text-slate-950">把经营预算语言转成鞋类产品架构与开发语言</h3>
+            <p className="mt-3 max-w-4xl text-sm leading-7 text-slate-600">{architecture.sourceSummary}</p>
           </div>
-
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <article className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <div className="text-sm text-slate-500">在管系列</div>
-              <div className="mt-3 text-3xl font-semibold text-slate-950">{architectures.length}</div>
-              <div className="mt-2 text-xs text-slate-500">进入本轮架构判断的系列数量</div>
-            </article>
-            <article className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <div className="text-sm text-slate-500">规划 SKU</div>
-              <div className="mt-3 text-3xl font-semibold text-slate-950">{totalSku}</div>
-              <div className="mt-2 text-xs text-slate-500">SKU 上限 {totalSkuLimit}</div>
-            </article>
-            <article className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <div className="text-sm text-slate-500">模具复用率</div>
-              <div className="mt-3 text-3xl font-semibold text-slate-950">{percent(reuseRatio)}</div>
-              <div className="mt-2 text-xs text-slate-500">经典延续 + 换面不换底</div>
-            </article>
-            <article className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <div className="text-sm text-slate-500">覆盖品类</div>
-              <div className="mt-3 text-3xl font-semibold text-slate-950">{categorySummary.length}</div>
-              <div className="mt-2 text-xs text-slate-500">整季重点品类布局</div>
-            </article>
+          <div className="space-y-2 rounded-[24px] border border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#f6f9fd_100%)] px-4 py-3 text-sm text-slate-600 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
+            <div>
+              <div className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">结构模板</div>
+              <div className="mt-1 font-medium text-slate-900">{architecture.profileLabel}</div>
+            </div>
+            <div>当前矩阵按一级品类展开，横向支持后续由真实 OTB 内容动态变化。</div>
           </div>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">开模策略总览</div>
-              <div className="mt-2 text-sm text-slate-600">先看延续、同底换面和全新开模比例，再决定本季研发预算压在哪些系列上。</div>
-            </div>
-            <div className="flex flex-wrap gap-2 text-xs">
-              <span className="rounded-full bg-emerald-100 px-3 py-1 font-medium text-emerald-700">经典延续 {percent(carryOverRatio)}</span>
-              <span className="rounded-full bg-amber-100 px-3 py-1 font-medium text-amber-700">换面不换底 {percent(sameOutsoleRatio)}</span>
-              <span className="rounded-full bg-rose-100 px-3 py-1 font-medium text-rose-700">全新开模 {percent(newToolingRatio)}</span>
-            </div>
-          </div>
-          <div className="mt-4">
-            <RatioBar carryOver={carryOverRatio} sameOutsoleNewUpper={sameOutsoleRatio} newTooling={newToolingRatio} />
-          </div>
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {summaryCards.map((card) => (
+            <article key={card.label} className="rounded-[22px] border border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-4 shadow-[0_10px_22px_rgba(15,23,42,0.04)]">
+              <div className="text-sm text-slate-500">{card.label}</div>
+              <div className="mt-3 text-3xl font-semibold text-slate-950">{card.value}</div>
+              <div className="mt-2 text-xs leading-5 text-slate-500">{card.sub}</div>
+            </article>
+          ))}
         </div>
       </section>
 
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <SectionEyebrow label="Master Architecture Board" />
-            <h3 className="mt-3 text-2xl font-semibold text-slate-950">整季产品架构总表</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600">先看整季品类、场景、价格带和开模策略，再进入各系列的局部架构判断。</p>
+      <section className="overflow-hidden rounded-[30px] border border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfe_100%)] shadow-[0_16px_36px_rgba(15,23,42,0.06)]">
+        <div className="border-b border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#f6f9fd_100%)] px-6 py-5">
+          <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Footwear Architecture Matrix</div>
+          <h3 className="mt-3 text-2xl font-semibold text-slate-950">鞋类产品架构矩阵</h3>
+          <p className="mt-2 text-sm leading-6 text-slate-600">横向按鞋类一级品类展开，纵向按数量、风格角色、结构类型、底型/跟型、楦型/鞋头、开发属性和平台策略表达。</p>
+          <div className="mt-4 rounded-[24px] border border-slate-200/80 bg-white px-4 py-3 shadow-[0_8px_20px_rgba(15,23,42,0.04)]">
+            <div className="text-xs font-medium text-slate-500">色块说明：这里使用高对比显示色来代表不同主题 / 系列，数量行中的色块个数直接对应该主题在该品类中的款数或 SKU 分配。</div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {themeLegend.map((theme) => (
+                <div key={theme.seriesId} className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">
+                  <span className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: theme.themeColorHex }} />
+                  <span>{theme.seriesName}</span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600">{categorySummary.length} 个重点品类</div>
         </div>
 
-        <div className="mt-6 overflow-x-auto">
-          <table className="min-w-[1120px] w-full border-separate border-spacing-0 overflow-hidden rounded-3xl border border-slate-200 text-sm">
-            <thead>
-              <tr className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <th className="border-b border-slate-200 px-5 py-4">架构维度</th>
-                {categorySummary.map((summary) => (
-                  <th key={summary.category} className="border-b border-slate-200 px-5 py-4">{summary.category}</th>
+        <div className="overflow-x-auto drc-matrix-scroll">
+          <table className="min-w-[1240px] w-full border-collapse">
+            <thead className="bg-white sticky top-0 z-20 shadow-[0_1px_0_rgba(0,0,0,0.06)]">
+              <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-400">
+                <th className="w-[220px] drc-column-sticky border-b border-slate-200/80 px-5 py-4 z-30">结构维度</th>
+                {architecture.matrix.columns.map((column) => (
+                  <th key={column.categoryName} className="min-w-[220px] border-b border-l border-slate-200/80 px-5 py-4 align-top">
+                    <div className="text-sm font-semibold text-slate-900">{column.categoryName}</div>
+                    <div className="mt-2 text-[11px] leading-5 text-slate-500">{column.waves.join(' / ')} · {column.priceBands.join(' / ')}</div>
+                    <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-medium text-slate-500">
+                      <span className="rounded-full bg-slate-100 px-2.5 py-1">款数 {column.styleTarget}</span>
+                      <span className="rounded-full bg-slate-100 px-2.5 py-1">SKU {column.skuTarget}</span>
+                    </div>
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {[
-                { label: '规划款数', render: (summary: (typeof categorySummary)[number]) => `${summary.plannedSkuCount} 款` },
-                { label: '覆盖系列', render: (summary: (typeof categorySummary)[number]) => summary.seriesNames.join(' / ') },
-                { label: '价格带', render: (summary: (typeof categorySummary)[number]) => summary.priceBands.join(' / ') },
-                { label: '主要场景', render: (summary: (typeof categorySummary)[number]) => summary.scenes.join(' / ') },
-                { label: '楦型 / 鞋头 / 体量', render: (summary: (typeof categorySummary)[number]) => summary.silhouettes.join(' / ') },
-                { label: '底型 / 底台方向', render: (summary: (typeof categorySummary)[number]) => summary.outsoles.join(' / ') },
-                { label: '开模策略', render: (summary: (typeof categorySummary)[number]) => summary.toolingText },
-              ].map((row) => (
-                <tr key={row.label} className="align-top text-slate-700">
-                  <td className="border-t border-slate-200 bg-slate-50 px-5 py-4 font-semibold text-slate-700">{row.label}</td>
-                  {categorySummary.map((summary) => (
-                    <td key={`${row.label}-${summary.category}`} className="border-t border-slate-200 px-5 py-4">{row.render(summary)}</td>
-                  ))}
-                </tr>
-              ))}
+              {architecture.matrix.rows.map((row) => {
+                // 定义跨列共享插槽以实现绝对的像素级对齐
+                const GLOBAL_LABEL_ORDER = [
+                  '基本款', '主推款', '形象款', '引流款', '功能款',
+                  '新底', '继承底', '共底', '新楦', '继承楦', '共楦'
+                ];
+                
+                const slotLabelsSet = new Set<string>();
+                row.cells.forEach(cell => cell.items.forEach(item => slotLabelsSet.add(item.label)));
+                
+                const slotLabels = Array.from(slotLabelsSet).sort((a, b) => {
+                  const indexA = GLOBAL_LABEL_ORDER.indexOf(a);
+                  const indexB = GLOBAL_LABEL_ORDER.indexOf(b);
+                  if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                  if (indexA !== -1) return -1;
+                  if (indexB !== -1) return 1;
+                  return 0;
+                });
+
+                return (
+                  <tr key={row.key} className="align-top">
+                    <td className="drc-column-sticky border-b border-slate-200/80 bg-slate-50/95 backdrop-blur-sm px-5 py-5 align-middle z-10 shadow-[1px_0_0_rgba(0,0,0,0.04)]">
+                      <div className="font-semibold text-slate-900">{row.label}</div>
+                      <div className="mt-2 text-xs leading-5 text-slate-500">{row.helperText}</div>
+                    </td>
+                    {row.cells.map((cell) => (
+                      <td key={`${row.key}-${cell.categoryName}`} className="align-middle border-b border-l border-slate-200/80 px-4 py-4">
+                        {row.key === 'quantity' ? (
+                          <div className="space-y-3">
+                            {renderQuantityCard(cell.categoryName, 'style')}
+                            {renderQuantityCard(cell.categoryName, 'sku')}
+                            <div className="text-[11px] text-slate-400">{cell.summary}</div>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-1 auto-rows-[104px] gap-3">
+                            {slotLabels.length === 0 ? (
+                              <div className="rounded-2xl bg-slate-50 px-4 py-6 text-center text-sm text-slate-400 flex items-center justify-center">暂无数据</div>
+                            ) : (
+                              slotLabels.map(label => {
+                                const item = cell.items.find(i => i.label === label);
+                                // 金字塔联动：高亮/淡化 styleRole 行
+                                const isRoleRow = row.key === 'styleRole';
+                                const matchedRoles = pyramidFilter ? (PYRAMID_ROLE_MAP[pyramidFilter] ?? []) : [];
+                                const isMatch = item && isRoleRow && matchedRoles.some((r) => item.label.toLowerCase().includes(r));
+                                const isDimmed = item && isRoleRow && pyramidFilter && !isMatch;
+
+                                return (
+                                  <div key={label} className="h-full w-full">
+                                    {item ? (
+                                      <div
+                                        className="h-full w-full transition-all duration-300"
+                                        style={{ opacity: isDimmed ? 0.3 : 1, transform: isDimmed ? 'scale(0.98)' : 'scale(1)' }}
+                                      >
+                                        {renderStructureCard(item)}
+                                      </div>
+                                    ) : (
+                                      <div className="h-full w-full" />
+                                    )}
+                                  </div>
+                                );
+                              })
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       </section>
 
-      <div className="space-y-5">
-        {architectures.map((record) => {
-          const phaseMeta = PHASE_MAP[record.phase] ?? PHASE_MAP.concept;
-          const riskMeta = RISK_LEVEL_MAP[record.riskLevel] ?? RISK_LEVEL_MAP.medium;
-          const toolingMeta = TOOLING_STRATEGY_META[record.toolingStrategy];
-          const budgetMeta = BUDGET_LEVEL_META[record.toolingBudgetLevel];
-          const totalRoles = record.roleMix.hero + record.roleMix.core + record.roleMix.filler;
-          const skuUsage = record.plannedSkuLimit ? (record.plannedSkuCount / record.plannedSkuLimit) * 100 : 0;
+      <section className="rounded-[30px] border border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfe_100%)] p-6 shadow-[0_16px_36px_rgba(15,23,42,0.06)]">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Platform Strategy</div>
+            <h3 className="mt-3 text-2xl font-semibold text-slate-950">架构说明 / 平台策略区</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">这一段不展示经营金额，而是把共底、共楦、新开模和平台复用翻译成开发执行可承接的结构化说明。</p>
+          </div>
+        </div>
 
-          return (
-            <article key={record.architectureId} className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-              <div className="grid gap-0 xl:grid-cols-[250px_1fr]">
-                <div className="relative min-h-[260px] bg-slate-200">
-                  <img src={record.heroImage} alt={record.seriesName} className="h-full w-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/20 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                    <div className="text-xs font-semibold uppercase tracking-[0.22em] text-white/70">{record.waveId.toUpperCase()}</div>
-                    <div className="mt-1 text-2xl font-semibold">{record.seriesName}</div>
-                    <div className="mt-2 text-sm text-white/80">{record.designTheme} / {record.priceBand}</div>
-                  </div>
-                </div>
-
-                <div className="space-y-6 p-6">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">目标人群与场景</div>
-                      <div className="mt-2 text-lg font-semibold text-slate-950">{record.targetConsumer}</div>
-                      <div className="mt-2 text-sm text-slate-500">{record.consumerScene}</div>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${phaseMeta.bgColor} ${phaseMeta.textColor}`}>{phaseMeta.label}</span>
-                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${riskMeta.bgColor} ${riskMeta.textColor}`}>{riskMeta.label}</span>
-                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${toolingMeta.className}`}>{toolingMeta.label}</span>
-                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${budgetMeta.className}`}>{budgetMeta.label}</span>
-                    </div>
-                  </div>
-
-                  <section className="rounded-2xl bg-slate-50 p-5">
-                    <SectionEyebrow label="Architecture Decision" />
-                    <p className="mt-3 text-sm leading-7 text-slate-700">{record.architectureDecision}</p>
-                  </section>
-
-                  <div className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
-                    <section className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                      <div>
-                        <SectionEyebrow label="Tooling Strategy" />
-                        <div className="mt-3 text-lg font-semibold text-slate-950">共底 / 共楦与模具策略</div>
-                      </div>
-                      <div className="space-y-3 text-sm leading-6 text-slate-700">
-                        <div><span className="font-semibold text-slate-950">楦型策略：</span>{record.lastReuseType}</div>
-                        <div><span className="font-semibold text-slate-950">大底策略：</span>{record.outsoleReuseType}</div>
-                      </div>
-                      <div className="rounded-2xl bg-white p-4">
-                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">新老款比例</div>
-                        <div className="mt-4">
-                          <RatioBar carryOver={record.carryOverRatio} sameOutsoleNewUpper={record.sameOutsoleNewUpperRatio} newTooling={record.newToolingRatio} />
-                        </div>
-                      </div>
-                    </section>
-
-                    <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5">
-                      <div>
-                        <SectionEyebrow label="SKU Control" />
-                        <div className="mt-3 text-lg font-semibold text-slate-950">SKU 宽度与深度控制</div>
-                      </div>
-                      <div className="grid gap-4 md:grid-cols-3">
-                        <div className="rounded-2xl bg-slate-50 p-4">
-                          <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">规划款数</div>
-                          <div className="mt-2 text-2xl font-semibold text-slate-950">{record.plannedSkuCount}</div>
-                        </div>
-                        <div className="rounded-2xl bg-slate-50 p-4">
-                          <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">SKU 上限</div>
-                          <div className="mt-2 text-2xl font-semibold text-slate-950">{record.plannedSkuLimit}</div>
-                        </div>
-                        <div className="rounded-2xl bg-slate-50 p-4">
-                          <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">单款深度</div>
-                          <div className="mt-2 text-2xl font-semibold text-slate-950">{record.plannedSkuDepth}</div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex items-center justify-between text-xs text-slate-500">
-                          <span>上限使用率</span>
-                          <span>{percent(skuUsage)}</span>
-                        </div>
-                        <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
-                          <div className={`h-full rounded-full ${skuUsage >= 100 ? 'bg-rose-500' : skuUsage >= 85 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${Math.min(skuUsage, 100)}%` }} />
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-
-                  <div className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
-                    <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                      <SectionEyebrow label="Role Mix" />
-                      <div className="mt-3 grid gap-3 md:grid-cols-3">
-                        <div className="rounded-2xl bg-white p-4">
-                          <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">Hero</div>
-                          <div className="mt-2 text-2xl font-semibold text-slate-950">{record.roleMix.hero}</div>
-                          <div className="mt-1 text-xs text-slate-500">{totalRoles ? percent((record.roleMix.hero / totalRoles) * 100) : '0%'}</div>
-                        </div>
-                        <div className="rounded-2xl bg-white p-4">
-                          <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">Core</div>
-                          <div className="mt-2 text-2xl font-semibold text-slate-950">{record.roleMix.core}</div>
-                          <div className="mt-1 text-xs text-slate-500">{totalRoles ? percent((record.roleMix.core / totalRoles) * 100) : '0%'}</div>
-                        </div>
-                        <div className="rounded-2xl bg-white p-4">
-                          <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">Filler</div>
-                          <div className="mt-2 text-2xl font-semibold text-slate-950">{record.roleMix.filler}</div>
-                          <div className="mt-1 text-xs text-slate-500">{totalRoles ? percent((record.roleMix.filler / totalRoles) * 100) : '0%'}</div>
-                        </div>
-                      </div>
-                    </section>
-
-                    <section className="rounded-2xl border border-slate-200 bg-white p-5">
-                      <SectionEyebrow label="Shape & Bottom" />
-                      <div className="mt-4 grid gap-4 md:grid-cols-2">
-                        <div>
-                          <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">轮廓方向</div>
-                          <ChipGroup items={record.silhouetteDirections} />
-                        </div>
-                        <div>
-                          <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">大底方向</div>
-                          <ChipGroup items={record.outsoleDirections} />
-                        </div>
-                        <div>
-                          <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">帮面方向</div>
-                          <ChipGroup items={record.upperDirections} />
-                        </div>
-                        <div>
-                          <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">开发品类</div>
-                          <ChipGroup items={record.categoryMix} />
-                        </div>
-                      </div>
-                    </section>
-                  </div>
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {architecture.platformInsights.map((insight) => (
+            <article key={insight.insightId} className={`rounded-2xl border p-4 shadow-sm ${emphasisClass(insight.emphasis)}`}>
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-sm font-medium text-slate-500">{insight.title}</div>
+                <div className="flex items-center gap-1.5">
+                  {insight.seriesIds.slice(0, 4).map((seriesId, index) => (
+                    <span key={`${insight.insightId}-${seriesId}-${index}`} className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: getDisplayThemeColor(seriesId) }} />
+                  ))}
                 </div>
               </div>
+              <div className="mt-3 text-3xl font-semibold text-slate-950">{insight.value}</div>
+              <div className="mt-3 text-sm leading-6 text-slate-600">{insight.summary}</div>
             </article>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
+
+
+
+

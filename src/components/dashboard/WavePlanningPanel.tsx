@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 import type { EChartsOption } from 'echarts';
@@ -77,14 +77,14 @@ function formatSignedPct(value: number) {
 function getCompareModeLabel(compareMode: CompareMode) {
     if (compareMode === 'plan') return 'vs计划';
     if (compareMode === 'yoy') return '同比去年';
-    if (compareMode === 'mom') return '环比上季';
+    if (compareMode === 'mom') return '环比上波段';
     return '无对比';
 }
 
 function getCompareDeltaLabel(compareMode: CompareMode) {
     if (compareMode === 'plan') return '较计划';
     if (compareMode === 'yoy') return '较去年同期';
-    if (compareMode === 'mom') return '较上季';
+    if (compareMode === 'mom') return '较上波段';
     return '偏离';
 }
 
@@ -207,11 +207,11 @@ export default function WavePlanningPanel({
             baselineLabel = '计划销额';
             baselineValue = activeWave.plan_sales;
         } else if (compareMode === 'mom') {
-            baselineLabel = '上季销额';
+            baselineLabel = '上波段销额';
             const currentIndex = waveSummaries.findIndex((wave) => wave.id === activeWave.id);
             baselineValue = currentIndex > 0 ? waveSummaries[currentIndex - 1]?.actual_sales ?? null : null;
             if (baselineValue === null) {
-                note = '当前波段缺上季基线，环比差值显示为 —。';
+                note = '当前波段缺上波段基线，环比差值显示为 —。';
             }
         } else if (compareMode === 'yoy') {
             baselineLabel = '去年同波段销额';
@@ -454,11 +454,16 @@ export default function WavePlanningPanel({
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                        <div className="text-xs uppercase tracking-wide text-slate-400">4.6 Wave Strategy</div>
-                        <h2 className="text-lg font-bold text-slate-900">波段策略与款式需求企划</h2>
-                        <p className="mt-1 text-xs text-slate-500">
+                        <h2 className="text-xl font-semibold tracking-wide text-slate-900 flex items-center gap-3">
+                            <div className="w-1.5 h-6 bg-gradient-to-b from-rose-400 to-amber-500 rounded-full" />
+                            波段策略与款式需求企划
+                            <span className="text-[10px] font-mono tracking-wider text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100 uppercase">
+                                WAVE STRATEGY
+                            </span>
+                        </h2>
+                        <p className="mt-2 text-xs text-slate-500 flex items-center gap-2">
                             {dataScopeHint}
-                            <span className="ml-2 inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                            <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[10px] text-slate-600">
                                 {sectionScopeHint}
                             </span>
                         </p>
@@ -591,11 +596,16 @@ export default function WavePlanningPanel({
                 <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
-                            <div className="text-xs uppercase tracking-wide text-slate-400">3.1 OTB / Buy Plan</div>
-                            <h3 className="text-lg font-bold text-slate-900">OTB 预算推算（Open-To-Buy）</h3>
-                            <p className="mt-1 text-xs text-slate-500">
+                            <h2 className="text-xl font-semibold tracking-wide text-slate-900 flex items-center gap-3">
+                                <div className="w-1.5 h-6 bg-gradient-to-b from-sky-400 to-blue-500 rounded-full" />
+                                OTB 预算推算（Open-To-Buy）
+                                <span className="text-[10px] font-mono tracking-wider text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-100 uppercase">
+                                    OTB BUDGET
+                                </span>
+                            </h2>
+                            <p className="mt-2 text-xs text-slate-500 flex items-center gap-2">
                                 预算口径与库存覆盖联动，输出 Tier 切分与波段预算分配。
-                                <span className="ml-2 inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                                <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[10px] text-slate-600">
                                     {sectionScopeHint}
                                 </span>
                             </p>

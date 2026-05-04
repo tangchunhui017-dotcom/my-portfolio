@@ -2,59 +2,213 @@
 
 /* ====================================================
    设计令牌 (Design Tokens)
-   Dashboard 5.0 — Light Mode · Pink Brand System
-   与网站主色保持一致 (Nav Logo: bg-pink-300)
+   Footwear Planning System — Light Business Surface
    ==================================================== */
 
 :root {
-  --background: #f8f9fb;
-  --foreground: #1a1d1f;
+  --background: #f5f7fb;
+  --foreground: #111827;
 
-  /* 品牌主色：Pink（与 Logo 一致） */
-  --brand-50: #fdf2f8;
-  --brand-100: #fce7f3;
-  --brand-200: #fbcfe8;
-  --brand-300: #f9a8d4;
-  /* Logo 色 */
-  --brand-400: #f472b6;
-  --brand-500: #ec4899;
-  /* 主交互色 */
-  --brand-600: #db2777;
-  --brand-700: #be185d;
+  /* 主强调色：克制的珊瑚玫红，仅用于当前态与强调按钮 */
+  --brand-50: #fff2f5;
+  --brand-100: #ffe4eb;
+  --brand-200: #ffc9d7;
+  --brand-300: #ff9fb8;
+  --brand-400: #fb6f97;
+  --brand-500: #f24e7b;
+  --brand-600: #de2d63;
+  --brand-700: #bd1f50;
 
-  /* 功能色：状态系统（保持与网站一致）*/
+  /* 中性色系统 */
+  --slate-25: #fcfdff;
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-150: #e9eff6;
+  --slate-200: #dbe4ef;
+  --slate-300: #c7d2e1;
+  --slate-500: #64748b;
+  --slate-700: #334155;
+  --slate-900: #0f172a;
+
+  /* 功能色：状态系统 */
   --color-success: #059669;
-  /* emerald-600 */
   --color-success-bg: #ecfdf5;
-  /* emerald-50  */
   --color-warning: #d97706;
-  /* amber-600   */
   --color-warning-bg: #fffbeb;
-  /* amber-50    */
   --color-danger: #dc2626;
-  /* red-600     */
   --color-danger-bg: #fef2f2;
-  /* red-50      */
 
   /* 界面层次 */
-  --surface-page: #f8f9fb;
+  --surface-page: linear-gradient(180deg, #f6f8fc 0%, #f3f6fb 100%);
   --surface-card: #ffffff;
-  --surface-muted: #f1f5f9;
-  /* slate-100 */
-  --border-soft: #e2e8f0;
-  /* slate-200 */
+  --surface-card-elevated: rgba(255, 255, 255, 0.92);
+  --surface-muted: #f3f6fb;
+  --surface-muted-strong: #eef3f9;
+  --border-soft: rgba(148, 163, 184, 0.22);
+  --border-strong: rgba(148, 163, 184, 0.36);
 
-  /* 文字层次（与 Navigation 一致）*/
+  /* 文字层次 */
   --text-primary: #0f172a;
-  /* slate-900 */
   --text-secondary: #475569;
-  /* slate-600 */
   --text-muted: #94a3b8;
-  /* slate-400 */
 
   /* 阴影 */
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, .06), 0 4px 16px rgba(0, 0, 0, .04);
-  --shadow-hover: 0 4px 12px rgba(236, 72, 153, .15), 0 8px 24px rgba(0, 0, 0, .06);
+  --shadow-card: 0 12px 32px rgba(15, 23, 42, 0.05), 0 2px 8px rgba(15, 23, 42, 0.04);
+  --shadow-soft: 0 8px 20px rgba(15, 23, 42, 0.04);
+  --shadow-hover: 0 16px 40px rgba(15, 23, 42, 0.08), 0 6px 18px rgba(15, 23, 42, 0.06);
+  --ring-brand: 0 0 0 3px rgba(242, 78, 123, 0.12);
+
+  /* ────────────────────────────────────────────
+     设计中心 · 工业美学色系 (Industrial Palette)
+     ──────────────────────────────────────────── */
+  --drc-platform-gray: #F2F2F2;
+  --drc-platform-gray-strong: #E5E5E5;
+  --drc-tooling-blue: #2B5797;
+  --drc-tooling-blue-light: #4A7DC4;
+  --drc-tooling-blue-bg: #EDF3FC;
+  --drc-leather-brown: #8B6F4E;
+  --drc-leather-brown-light: #C4A882;
+  --drc-leather-brown-bg: #FAF5EF;
+  --drc-hero-red: #E11D48;
+  --drc-core-blue: #2563EB;
+  --drc-filler-slate: #64748B;
+
+  /* 健康度仪表盘色 */
+  --drc-health-good: #10B981;
+  --drc-health-warn: #F59E0B;
+  --drc-health-danger: #EF4444;
+
+  /* 架构面板专用阴影 */
+  --drc-shadow-panel: 0 16px 36px rgba(15, 23, 42, 0.06);
+  --drc-shadow-card: 0 8px 18px rgba(15, 23, 42, 0.03);
+}
+
+/* ────────────────────────────────────────────
+   设计中心 · 微动效 (Micro-animations)
+   ──────────────────────────────────────────── */
+
+@keyframes drc-gauge-sweep {
+  from { stroke-dashoffset: 300; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes drc-fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes drc-pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.drc-animate-in {
+  animation: drc-fade-in-up 0.5s cubic-bezier(0.33, 1, 0.68, 1) both;
+}
+
+.drc-animate-in-delay-1 { animation-delay: 0.08s; }
+.drc-animate-in-delay-2 { animation-delay: 0.16s; }
+.drc-animate-in-delay-3 { animation-delay: 0.24s; }
+
+.drc-pulse-alert {
+  animation: drc-pulse-soft 2s ease-in-out infinite;
+}
+
+/* 底台拓扑卡片悬停 */
+.drc-topo-card {
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+.drc-topo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--drc-shadow-panel);
+}
+
+/* ────────────────────────────────────────────
+   毛玻璃面板 (Glassmorphism)
+   ──────────────────────────────────────────── */
+.drc-glass-panel {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* ────────────────────────────────────────────
+   矩阵角色脉冲高亮 (Pyramid Link Pulse)
+   ──────────────────────────────────────────── */
+@keyframes drc-pulse-highlight {
+  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.35); }
+  50% { box-shadow: 0 0 0 6px rgba(37, 99, 235, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+}
+
+.drc-role-highlight {
+  animation: drc-pulse-highlight 1.2s ease-out;
+  outline: 2px solid rgba(37, 99, 235, 0.25);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+/* ────────────────────────────────────────────
+   矩阵首列冻结 (Sticky First Column)
+   ──────────────────────────────────────────── */
+.drc-matrix-scroll {
+  overflow-x: auto;
+  position: relative;
+}
+
+.drc-matrix-scroll th:first-child,
+.drc-matrix-scroll td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  background: inherit;
+  box-shadow: 4px 0 8px -2px rgba(15, 23, 42, 0.06);
+}
+
+.drc-matrix-scroll thead th:first-child {
+  z-index: 15;
+}
+
+/* ────────────────────────────────────────────
+   仿真滑动条 (Simulation Slider)
+   ──────────────────────────────────────────── */
+.drc-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--drc-health-good), var(--drc-health-warn), var(--drc-health-danger));
+  outline: none;
+  transition: opacity 0.2s;
+}
+
+.drc-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--drc-tooling-blue);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.drc-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.drc-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--drc-tooling-blue);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
 }
 
 @theme inline {
@@ -64,7 +218,6 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* 基础重置 */
 body {
   background: var(--surface-page);
   color: var(--text-primary);
@@ -72,11 +225,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ====================================================
-   看板通用组件样式 (Dashboard Utilities)
-   ==================================================== */
+::selection {
+  background: rgba(242, 78, 123, 0.16);
+  color: var(--text-primary);
+}
 
-/* 滚动条美化 */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -89,4 +242,39 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--border-soft);
   border-radius: 999px;
+}
+
+.annual-control-scroll {
+  scrollbar-gutter: stable both-edges;
+}
+
+.annual-control-scroll::-webkit-scrollbar {
+  height: 12px;
+}
+
+.annual-control-scroll::-webkit-scrollbar-track {
+  background: rgba(219, 228, 239, 0.72);
+  border-radius: 999px;
+}
+
+.annual-control-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, rgba(242, 78, 123, 0.42), rgba(100, 116, 139, 0.42));
+  border-radius: 999px;
+  border: 2px solid rgba(248, 250, 252, 0.9);
+}
+
+.annual-control-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, rgba(242, 78, 123, 0.58), rgba(100, 116, 139, 0.58));
+}
+
+.annual-control-scroll-top::-webkit-scrollbar {
+  height: 10px;
+}
+
+.annual-control-scroll-top::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.92);
+}
+
+.annual-control-scroll-top::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, rgba(244, 114, 182, 0.34), rgba(148, 163, 184, 0.34));
 }

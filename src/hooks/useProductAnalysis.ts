@@ -4,10 +4,11 @@ import { useMemo } from 'react';
 import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
 import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
 import factSalesRaw from '@/../data/dashboard/fact_sales.json';
-import { DashboardFilters } from '@/hooks/useDashboardFilter';
-import { matchCategoryL1, matchCategoryL2, resolveFootwearCategory } from '@/config/categoryMapping';
+import { DashboardFilters, matchesDashboardSkuCategoryFilters } from '@/hooks/useDashboardFilter';
+import { resolveFootwearCategory } from '@/config/categoryMapping';
 import { matchesAudienceFilter } from '@/config/audienceMapping';
 import { getPriceBandSortRank, matchesPriceBandFilter, normalizePriceBandKey } from '@/config/priceBand';
+import { matchesDashboardSeasonFilter } from '@/config/dashboardTime';
 
 interface DimSku {
     sku_id: string;
@@ -130,10 +131,9 @@ function shouldIncludeRecord(
     filters: DashboardFilters
 ) {
     if (filters.season_year !== 'all' && String(sale.season_year) !== String(filters.season_year)) return false;
-    if (filters.season !== 'all' && sale.season !== filters.season) return false;
+    if (!matchesDashboardSeasonFilter(filters.season, sale.wave, sale.season)) return false;
     if (filters.wave !== 'all' && sale.wave !== filters.wave) return false;
-    if (!matchCategoryL1(filters.category_id, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
-    if (!matchCategoryL2(filters.sub_category, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
+    if (!matchesDashboardSkuCategoryFilters(filters, sku)) return false;
     if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
     if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
     if (filters.region !== 'all' && channel.region !== filters.region) return false;

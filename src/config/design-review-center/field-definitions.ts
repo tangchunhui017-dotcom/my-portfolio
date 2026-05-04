@@ -1,4 +1,4 @@
-import type { DesignItem, FieldDefinition, SeriesDevelopmentPlanRow } from '@/lib/design-review-center/types';
+﻿import type { DesignItem, FieldDefinition, SeriesDevelopmentPlanRow } from '@/lib/design-review-center/types';
 
 const DEFAULT_FIELDS: FieldDefinition[] = [
   { key: 'pricePoint', label: '目标吊牌价', group: 'commercial', placeholder: '待补充' },
@@ -19,7 +19,7 @@ const CATEGORY_FIELDS: Record<string, FieldDefinition[]> = {
     { key: 'toolingNotes', label: '功能开模备注', group: 'development', placeholder: '待补充' },
   ],
   dress: [
-    { key: 'developmentPlan.silhouette', label: '楦型修长度', group: 'design', placeholder: '待补充' },
+    { key: 'developmentPlan.silhouette', label: '楦型修长比例', group: 'design', placeholder: '待补充' },
     { key: 'techPackStatus', label: '工艺包确认', group: 'development', placeholder: '待补充' },
   ],
   loafer: [
@@ -29,8 +29,8 @@ const CATEGORY_FIELDS: Record<string, FieldDefinition[]> = {
 };
 
 function resolveCategoryKey(category: string) {
-  if (category.includes('户外') || category.includes('徒步')) return 'outdoor';
-  if (category.includes('正装')) return 'dress';
+  if (category.includes('徒步') || category.includes('机能') || category.includes('户外')) return 'outdoor';
+  if (category.includes('德比') || category.includes('商务') || category.includes('正装')) return 'dress';
   if (category.includes('乐福')) return 'loafer';
   return 'default';
 }
@@ -41,7 +41,7 @@ export function resolveItemFieldDefinitions(item: DesignItem) {
   const uniqueFields = new Map<string, FieldDefinition>();
 
   mergedFields.forEach((field) => {
-    uniqueFields.set(field.group + ':' + field.key, field);
+    uniqueFields.set(`${field.group}:${field.key}`, field);
   });
 
   return [...uniqueFields.values()];
@@ -58,7 +58,7 @@ function formatStatus(value?: string) {
 
 function formatCurrency(value?: number | null) {
   if (value == null || !Number.isFinite(value)) return null;
-  return `¥${value}`;
+  return `¥ ${value}`;
 }
 
 export function resolveFieldValue(

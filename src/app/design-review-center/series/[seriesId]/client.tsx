@@ -1,11 +1,11 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { useState } from 'react';
-import type { SeriesWithBrief, Timeline, Wave } from '@/lib/design-review-center/types';
-import { PHASE_MAP, REVIEW_STATUS_MAP, RISK_LEVEL_MAP } from '@/config/design-review-center/status-map';
 import DataSourceBadge from '@/components/design-review-center/data-source-badge';
 import SeriesDevelopmentSchedule from '@/components/design-review-center/series-development-schedule';
+import { PHASE_MAP, REVIEW_STATUS_MAP, RISK_LEVEL_MAP } from '@/config/design-review-center/status-map';
+import type { SeriesWithBrief, Timeline, Wave } from '@/lib/design-review-center/types';
 
 interface SeriesDetailClientProps {
   series: SeriesWithBrief;
@@ -14,11 +14,18 @@ interface SeriesDetailClientProps {
 }
 
 const reportModeCards = [
-  { key: 'progress', label: 'Series Progress', tone: 'text-blue-600' },
-  { key: 'review', label: 'Items To Watch', tone: 'text-amber-600' },
-  { key: 'risk', label: 'High Risk Issues', tone: 'text-rose-600' },
-  { key: 'asset', label: 'Report Assets', tone: 'text-indigo-600' },
+  { key: 'progress', label: '系列推进度', tone: 'text-blue-600' },
+  { key: 'review', label: '需重点关注单款', tone: 'text-amber-600' },
+  { key: 'risk', label: '高风险问题', tone: 'text-rose-600' },
+  { key: 'asset', label: '汇报资产', tone: 'text-indigo-600' },
 ] as const;
+
+function formatDate(value: string | null | undefined) {
+  if (!value) return '待定';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString('zh-CN');
+}
 
 export default function SeriesDetailClient({ series, waves, timeline }: SeriesDetailClientProps) {
   const [mode, setMode] = useState<'work' | 'report'>('work');
@@ -30,10 +37,10 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
   const featuredAssets = series.assets.filter((asset) => asset.featuredInReport);
   const reportAssets = featuredAssets.length > 0 ? featuredAssets : series.assets.slice(0, 4);
   const attentionItems = series.designItems.filter(
-    (item) => item.riskLevel === 'high' || item.reviewStatus === 'review' || item.reviewStatus === 'fail',
+    (item) => item.riskLevel === 'high' || item.riskLevel === 'blocking' || item.reviewStatus === 'review' || item.reviewStatus === 'fail',
   );
   const openTasks = series.tasks.filter((task) => task.status !== 'completed');
-  const urgentRisks = series.risks.filter((risk) => risk.priority === 'high' || risk.priority === 'critical');
+  const urgentRisks = series.risks.filter((risk) => risk.priority === 'high' || risk.priority === 'blocking');
   const reportCards = {
     progress: {
       value: `${series.progress}%`,
@@ -41,15 +48,15 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
     },
     review: {
       value: String(attentionItems.length),
-      note: attentionItems.length > 0 ? `Start with ${attentionItems[0]?.itemName}` : 'No flagged item right now',
+      note: attentionItems.length > 0 ? `优先看 ${attentionItems[0]?.itemName}` : '当前没有需额外关注的单款',
     },
     risk: {
       value: String(urgentRisks.length),
-      note: urgentRisks.length > 0 ? urgentRisks[0]?.title ?? '-' : 'No high risk issue right now',
+      note: urgentRisks.length > 0 ? urgentRisks[0]?.title ?? '-' : '当前没有高风险问题',
     },
     asset: {
       value: String(reportAssets.length),
-      note: featuredAssets.length > 0 ? 'Using report-picked assets' : 'Using default highlighted assets',
+      note: featuredAssets.length > 0 ? '优先展示汇报精选资产' : '当前使用默认重点资产',
     },
   };
 
@@ -58,7 +65,7 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
       <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <nav className="mb-6 text-sm text-slate-500">
           <Link href="/design-review-center" className="hover:text-slate-700">
-            Design Planning & Review Center
+            鞋类产品企划与设计开发协同中心
           </Link>
           <span className="mx-2">/</span>
           <span className="text-slate-900">{series.seriesName}</span>
@@ -100,7 +107,7 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
                       mode === 'work' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-white'
                     }`}
                   >
-                    Work View
+                    工作视图
                   </button>
                   <button
                     type="button"
@@ -109,60 +116,60 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
                       mode === 'report' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-white'
                     }`}
                   >
-                    Report View
+                    汇报视图
                   </button>
                 </div>
               </div>
 
               <div className="mt-6 grid grid-cols-2 gap-4 text-sm text-slate-600">
                 <div>
-                  <div className="text-xs text-slate-400">Wave</div>
+                  <div className="text-xs text-slate-400">所属波段</div>
                   <div className="mt-1 font-medium text-slate-900">{wave?.waveName ?? series.waveId}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-400">Target Consumer</div>
+                  <div className="text-xs text-slate-400">目标人群</div>
                   <div className="mt-1 font-medium text-slate-900">{series.targetConsumer}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-400">Occasion</div>
+                  <div className="text-xs text-slate-400">使用场景</div>
                   <div className="mt-1 font-medium text-slate-900">{series.occasion}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-400">Owner</div>
+                  <div className="text-xs text-slate-400">负责人</div>
                   <div className="mt-1 font-medium text-slate-900">{series.owner}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-400">Target Categories</div>
+                  <div className="text-xs text-slate-400">目标品类</div>
                   <div className="mt-1 font-medium text-slate-900">{series.targetCategories.join(' / ')}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-400">Due Date</div>
-                  <div className="mt-1 font-medium text-slate-900">{series.dueDate}</div>
+                  <div className="text-xs text-slate-400">阶段截止</div>
+                  <div className="mt-1 font-medium text-slate-900">{formatDate(series.dueDate)}</div>
                 </div>
               </div>
 
               <div className="mt-6 grid grid-cols-4 gap-3 rounded-2xl bg-slate-50 p-4 text-center">
                 <div>
                   <div className="text-xl font-semibold text-slate-900">{series.designItems.length}</div>
-                  <div className="text-xs text-slate-500">Items</div>
+                  <div className="text-xs text-slate-500">单款</div>
                 </div>
                 <div>
                   <div className="text-xl font-semibold text-indigo-600">{series.assets.length}</div>
-                  <div className="text-xs text-slate-500">Assets</div>
+                  <div className="text-xs text-slate-500">资产</div>
                 </div>
                 <div>
                   <div className="text-xl font-semibold text-rose-600">{series.risks.length}</div>
-                  <div className="text-xs text-slate-500">Risks</div>
+                  <div className="text-xs text-slate-500">风险</div>
                 </div>
                 <div>
                   <div className="text-xl font-semibold text-amber-600">{series.tasks.length}</div>
-                  <div className="text-xs text-slate-500">Tasks</div>
+                  <div className="text-xs text-slate-500">动作</div>
                 </div>
               </div>
 
               <div className="mt-6">
                 <div className="mb-1 flex items-center justify-between text-xs text-slate-500">
-                  <span>Series Progress</span>
+                  <span>系列推进度</span>
                   <span>{series.progress}%</span>
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-slate-200">
@@ -174,7 +181,7 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
         </section>
 
         <div className="mt-8 space-y-8">
-          {mode === 'report' && (
+          {mode === 'report' ? (
             <>
               <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 {reportModeCards.map((card) => (
@@ -192,47 +199,47 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
                 <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h2 className="text-xl font-semibold text-slate-800">Report Summary</h2>
-                      <p className="mt-1 text-sm text-slate-500">
-                        Keep only the series expression, review priorities, and decision items for weekly review.
-                      </p>
+                      <h2 className="text-xl font-semibold text-slate-800">汇报摘要</h2>
+                      <p className="mt-1 text-sm text-slate-500">保留系列表达、评审重点和关键决策信息，适合周会或阶段汇报直接使用。</p>
                     </div>
-                    <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">Report Ready</span>
+                    <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">汇报就绪</span>
                   </div>
                   <div className="mt-6 grid gap-4 md:grid-cols-2">
                     <div className="rounded-2xl bg-slate-50 p-4">
-                      <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Series Expression</div>
+                      <div className="text-xs font-medium uppercase tracking-wide text-slate-400">系列表达</div>
                       <div className="mt-3 text-sm leading-6 text-slate-700">{series.brief?.designConcept ?? series.designTheme}</div>
                     </div>
                     <div className="rounded-2xl bg-slate-50 p-4">
-                      <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Current Review Focus</div>
+                      <div className="text-xs font-medium uppercase tracking-wide text-slate-400">当前评审重点</div>
                       <div className="mt-3 flex flex-wrap gap-2">
                         {(series.brief?.reviewFocus ?? []).slice(0, 4).map((focus) => (
-                          <span key={focus} className="rounded-full bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">{focus}</span>
+                          <span key={focus} className="rounded-full bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">
+                            {focus}
+                          </span>
                         ))}
                       </div>
                     </div>
                     <div className="rounded-2xl bg-slate-50 p-4">
-                      <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Last / Upper / Outsole</div>
+                      <div className="text-xs font-medium uppercase tracking-wide text-slate-400">楦型 / 帮面 / 大底方向</div>
                       <div className="mt-3 space-y-2 text-sm text-slate-700">
-                        <div>{series.brief?.silhouetteDirections.slice(0, 2).join(' / ') ?? 'TBD'}</div>
-                        <div>{series.brief?.upperConstructionKeywords.slice(0, 2).join(' / ') ?? 'TBD'}</div>
-                        <div>{series.brief?.outsoleDirections.slice(0, 2).join(' / ') ?? 'TBD'}</div>
+                        <div>{series.brief?.silhouetteDirections.slice(0, 2).join(' / ') ?? '待补充'}</div>
+                        <div>{series.brief?.upperConstructionKeywords.slice(0, 2).join(' / ') ?? '待补充'}</div>
+                        <div>{series.brief?.outsoleDirections.slice(0, 2).join(' / ') ?? '待补充'}</div>
                       </div>
                     </div>
                     <div className="rounded-2xl bg-slate-50 p-4">
-                      <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Material / Color Direction</div>
-                      <div className="mt-3 text-sm text-slate-700">{series.brief?.materialPackage.primary.join(' / ') ?? 'TBD'}</div>
-                      <div className="mt-2 text-xs text-slate-500">Base colors: {series.brief?.colorPackage.base.join(' / ') ?? 'TBD'}</div>
+                      <div className="text-xs font-medium uppercase tracking-wide text-slate-400">材料 / 配色方向</div>
+                      <div className="mt-3 text-sm text-slate-700">{series.brief?.materialPackage.primary.join(' / ') ?? '待补充'}</div>
+                      <div className="mt-2 text-xs text-slate-500">主色：{series.brief?.colorPackage.base.join(' / ') ?? '待补充'}</div>
                     </div>
                   </div>
                 </article>
 
                 <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold text-slate-800">Priority Risks & Tasks</h2>
+                  <h2 className="text-xl font-semibold text-slate-800">重点风险与动作</h2>
                   <div className="mt-4 space-y-4">
                     <div>
-                      <div className="text-xs font-medium uppercase tracking-wide text-slate-400">High Risk Issues</div>
+                      <div className="text-xs font-medium uppercase tracking-wide text-slate-400">高风险问题</div>
                       <div className="mt-3 space-y-3">
                         {urgentRisks.length > 0 ? (
                           urgentRisks.slice(0, 3).map((risk) => (
@@ -247,23 +254,23 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
                             </div>
                           ))
                         ) : (
-                          <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">No high risk issue at the moment.</div>
+                          <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">当前没有高风险问题。</div>
                         )}
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Open Tasks</div>
+                      <div className="text-xs font-medium uppercase tracking-wide text-slate-400">未关闭动作</div>
                       <div className="mt-3 space-y-3">
                         {openTasks.length > 0 ? (
                           openTasks.slice(0, 3).map((task) => (
                             <div key={task.taskId} className="rounded-2xl bg-amber-50 p-4">
                               <div className="font-medium text-slate-900">{task.title}</div>
                               <div className="mt-2 text-sm leading-6 text-slate-600">{task.description}</div>
-                              <div className="mt-2 text-xs text-slate-500">Owner {task.assignee} · Due {task.dueDate}</div>
+                              <div className="mt-2 text-xs text-slate-500">负责人 {task.assignee} / 截止 {formatDate(task.dueDate)}</div>
                             </div>
                           ))
                         ) : (
-                          <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">No active task at the moment.</div>
+                          <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">当前没有未关闭动作。</div>
                         )}
                       </div>
                     </div>
@@ -273,14 +280,14 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
 
               <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
                 <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold text-slate-800">Key Milestones</h2>
+                  <h2 className="text-xl font-semibold text-slate-800">关键里程碑</h2>
                   <div className="mt-4 space-y-3">
                     {highlightedMilestones.map((milestone) => (
                       <div key={milestone.milestoneId} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                         <div className="flex items-start justify-between gap-3">
                           <div>
                             <div className="font-medium text-slate-900">{milestone.title}</div>
-                            <div className="mt-1 text-xs text-slate-500">Planned {milestone.plannedDate} · Owner {milestone.owner}</div>
+                            <div className="mt-1 text-xs text-slate-500">计划 {formatDate(milestone.plannedDate)} / 负责人 {milestone.owner}</div>
                           </div>
                           <span className={`rounded-full px-2 py-1 text-xs font-medium ${RISK_LEVEL_MAP[milestone.riskLevel].bgColor} ${RISK_LEVEL_MAP[milestone.riskLevel].textColor}`}>
                             {RISK_LEVEL_MAP[milestone.riskLevel].label}
@@ -293,8 +300,8 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
 
                 <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                   <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-xl font-semibold text-slate-800">Report Assets</h2>
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">{reportAssets.length} images</span>
+                    <h2 className="text-xl font-semibold text-slate-800">汇报资产</h2>
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">{reportAssets.length} 张</span>
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-4">
                     {reportAssets.map((asset) => (
@@ -305,7 +312,7 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
                         <div className="p-3">
                           <div className="flex items-center justify-between gap-2">
                             <div className="text-sm font-medium text-slate-900">{asset.title}</div>
-                            {asset.featuredInReport && <span className="rounded-full bg-indigo-100 px-2 py-1 text-[11px] font-semibold text-indigo-700">Featured</span>}
+                            {asset.featuredInReport ? <span className="rounded-full bg-indigo-100 px-2 py-1 text-[11px] font-semibold text-indigo-700">汇报精选</span> : null}
                           </div>
                           <div className="mt-1 text-xs leading-5 text-slate-500">{asset.description}</div>
                         </div>
@@ -317,8 +324,8 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
 
               <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-xl font-semibold text-slate-800">Items To Watch</h2>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">{attentionItems.length} items</span>
+                  <h2 className="text-xl font-semibold text-slate-800">需重点关注单款</h2>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">{attentionItems.length} 款</span>
                 </div>
                 <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                   {attentionItems.length > 0 ? (
@@ -334,7 +341,7 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
                           <div className="flex items-start justify-between gap-3">
                             <div>
                               <div className="text-base font-semibold text-slate-900">{item.itemName}</div>
-                              <div className="mt-1 text-xs text-slate-500">{item.skuCode} · {item.category}</div>
+                              <div className="mt-1 text-xs text-slate-500">{item.skuCode} / {item.category}</div>
                             </div>
                             <span className={`rounded-full px-2 py-1 text-[11px] font-medium ${itemRisk.bgColor} ${itemRisk.textColor}`}>
                               {itemRisk.label}
@@ -351,41 +358,43 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
                       );
                     })
                   ) : (
-                    <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">No extra attention item right now.</div>
+                    <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">当前没有需额外关注的单款。</div>
                   )}
                 </div>
               </section>
             </>
-          )}
-
-          {mode === 'work' && (
+          ) : (
             <>
-              {series.brief && (
+              {series.brief ? (
                 <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <h2 className="mb-4 text-xl font-semibold text-slate-800">Series Expression</h2>
+                  <h2 className="mb-4 text-xl font-semibold text-slate-800">系列策略表达</h2>
                   <div className="grid gap-6 lg:grid-cols-2">
                     <div className="space-y-4">
                       <div>
-                        <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Design Concept</div>
+                        <div className="text-xs font-medium uppercase tracking-wide text-slate-400">设计概念</div>
                         <div className="mt-2 text-sm leading-6 text-slate-700">{series.brief.designConcept}</div>
                       </div>
                       <div>
-                        <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Consumer Scene</div>
+                        <div className="text-xs font-medium uppercase tracking-wide text-slate-400">使用场景</div>
                         <div className="mt-2 text-sm leading-6 text-slate-700">{series.brief.consumerScene}</div>
                       </div>
                       <div>
-                        <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Style Keywords</div>
+                        <div className="text-xs font-medium uppercase tracking-wide text-slate-400">系列关键词</div>
                         <div className="mt-2 flex flex-wrap gap-2">
                           {series.brief.styleKeywords.map((keyword) => (
-                            <span key={keyword} className="rounded-full bg-blue-100 px-3 py-1 text-xs text-blue-700">{keyword}</span>
+                            <span key={keyword} className="rounded-full bg-blue-100 px-3 py-1 text-xs text-blue-700">
+                              {keyword}
+                            </span>
                           ))}
                         </div>
                       </div>
                       <div>
-                        <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Benchmark References</div>
+                        <div className="text-xs font-medium uppercase tracking-wide text-slate-400">对标参考</div>
                         <div className="mt-2 flex flex-wrap gap-2">
                           {series.brief.benchmarkReferences.map((reference) => (
-                            <span key={reference} className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">{reference}</span>
+                            <span key={reference} className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">
+                              {reference}
+                            </span>
                           ))}
                         </div>
                       </div>
@@ -393,67 +402,75 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
 
                     <div className="space-y-4">
                       <div>
-                        <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Last Direction</div>
+                        <div className="text-xs font-medium uppercase tracking-wide text-slate-400">楦型方向</div>
                         <div className="mt-2 flex flex-wrap gap-2">
                           {series.brief.silhouetteDirections.map((direction) => (
-                            <span key={direction} className="rounded-full bg-indigo-100 px-3 py-1 text-xs text-indigo-700">{direction}</span>
+                            <span key={direction} className="rounded-full bg-indigo-100 px-3 py-1 text-xs text-indigo-700">
+                              {direction}
+                            </span>
                           ))}
                         </div>
                       </div>
                       <div>
-                        <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Upper Construction</div>
+                        <div className="text-xs font-medium uppercase tracking-wide text-slate-400">帮面结构</div>
                         <div className="mt-2 flex flex-wrap gap-2">
                           {series.brief.upperConstructionKeywords.map((keyword) => (
-                            <span key={keyword} className="rounded-full bg-emerald-100 px-3 py-1 text-xs text-emerald-700">{keyword}</span>
+                            <span key={keyword} className="rounded-full bg-emerald-100 px-3 py-1 text-xs text-emerald-700">
+                              {keyword}
+                            </span>
                           ))}
                         </div>
                       </div>
                       <div>
-                        <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Outsole Direction</div>
+                        <div className="text-xs font-medium uppercase tracking-wide text-slate-400">大底方向</div>
                         <div className="mt-2 flex flex-wrap gap-2">
                           {series.brief.outsoleDirections.map((direction) => (
-                            <span key={direction} className="rounded-full bg-amber-100 px-3 py-1 text-xs text-amber-700">{direction}</span>
+                            <span key={direction} className="rounded-full bg-amber-100 px-3 py-1 text-xs text-amber-700">
+                              {direction}
+                            </span>
                           ))}
                         </div>
                       </div>
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="rounded-2xl bg-slate-50 p-4">
-                          <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Primary / Accent Materials</div>
+                          <div className="text-xs font-medium uppercase tracking-wide text-slate-400">主材料 / 强调材料</div>
                           <div className="mt-2 text-sm leading-6 text-slate-700">{series.brief.materialPackage.primary.join(' / ')}</div>
-                          <div className="mt-2 text-xs text-slate-500">Accent: {series.brief.materialPackage.accent.join(' / ')}</div>
+                          <div className="mt-2 text-xs text-slate-500">强调：{series.brief.materialPackage.accent.join(' / ')}</div>
                         </div>
                         <div className="rounded-2xl bg-slate-50 p-4">
-                          <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Base / Accent Colors</div>
+                          <div className="text-xs font-medium uppercase tracking-wide text-slate-400">主色 / 强调色</div>
                           <div className="mt-2 text-sm leading-6 text-slate-700">{series.brief.colorPackage.base.join(' / ')}</div>
-                          <div className="mt-2 text-xs text-slate-500">Accent: {series.brief.colorPackage.accent.join(' / ')}</div>
+                          <div className="mt-2 text-xs text-slate-500">强调：{series.brief.colorPackage.accent.join(' / ')}</div>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-6 rounded-2xl bg-slate-50 p-4">
-                    <div className="text-xs font-medium uppercase tracking-wide text-slate-400">Current Review Focus</div>
+                    <div className="text-xs font-medium uppercase tracking-wide text-slate-400">当前评审焦点</div>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {series.brief.reviewFocus.map((focus) => (
-                        <span key={focus} className="rounded-full bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">{focus}</span>
+                        <span key={focus} className="rounded-full bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">
+                          {focus}
+                        </span>
                       ))}
                     </div>
                   </div>
                 </section>
-              )}
+              ) : null}
 
-              {series.developmentPlan.length > 0 && <SeriesDevelopmentSchedule plans={series.developmentPlan} assets={series.assets} />}
+              {series.developmentPlan.length > 0 ? <SeriesDevelopmentSchedule plans={series.developmentPlan} assets={series.assets} /> : null}
 
               <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
                 <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <h2 className="mb-4 text-xl font-semibold text-slate-800">Key Milestones</h2>
+                  <h2 className="mb-4 text-xl font-semibold text-slate-800">关键里程碑</h2>
                   <div className="space-y-3">
                     {highlightedMilestones.map((milestone) => (
                       <div key={milestone.milestoneId} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                         <div className="flex items-start justify-between gap-3">
                           <div>
                             <div className="font-medium text-slate-900">{milestone.title}</div>
-                            <div className="mt-1 text-xs text-slate-500">Planned {milestone.plannedDate} · Owner {milestone.owner}</div>
+                            <div className="mt-1 text-xs text-slate-500">计划 {formatDate(milestone.plannedDate)} / 负责人 {milestone.owner}</div>
                           </div>
                           <span className={`rounded-full px-2 py-1 text-xs font-medium ${RISK_LEVEL_MAP[milestone.riskLevel].bgColor} ${RISK_LEVEL_MAP[milestone.riskLevel].textColor}`}>
                             {RISK_LEVEL_MAP[milestone.riskLevel].label}
@@ -465,7 +482,7 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
                 </div>
 
                 <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <h2 className="mb-4 text-xl font-semibold text-slate-800">Related Assets</h2>
+                  <h2 className="mb-4 text-xl font-semibold text-slate-800">相关资产</h2>
                   <div className="grid grid-cols-2 gap-4">
                     {series.assets.map((asset) => (
                       <div key={asset.assetId} className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
@@ -475,7 +492,7 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
                         <div className="p-3">
                           <div className="flex items-center justify-between gap-2">
                             <div className="text-sm font-medium text-slate-900">{asset.title}</div>
-                            {asset.featuredInReport && <span className="rounded-full bg-indigo-100 px-2 py-1 text-[11px] font-semibold text-indigo-700">Featured</span>}
+                            {asset.featuredInReport ? <span className="rounded-full bg-indigo-100 px-2 py-1 text-[11px] font-semibold text-indigo-700">汇报精选</span> : null}
                           </div>
                           <div className="mt-1 text-xs leading-5 text-slate-500">{asset.description}</div>
                         </div>
@@ -485,23 +502,27 @@ export default function SeriesDetailClient({ series, waves, timeline }: SeriesDe
                 </div>
               </section>
 
-              {series.designItems.length > 0 && (
+              {series.designItems.length > 0 ? (
                 <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <h2 className="mb-4 text-xl font-semibold text-slate-800">Related Items</h2>
+                  <h2 className="mb-4 text-xl font-semibold text-slate-800">相关单款</h2>
                   <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                     {series.designItems.map((item) => (
-                      <Link key={item.itemId} href={`/design-review-center/item/${item.itemId}`} className="group rounded-lg border border-slate-200 bg-slate-50 p-3 transition-all hover:shadow-md">
+                      <Link
+                        key={item.itemId}
+                        href={`/design-review-center/item/${item.itemId}`}
+                        className="group rounded-lg border border-slate-200 bg-slate-50 p-3 transition-all hover:shadow-md"
+                      >
                         <div className="mb-2 aspect-square overflow-hidden rounded-lg bg-slate-100">
                           <img src={item.thumbnailUrl} alt={item.itemName} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
                         </div>
                         <div className="text-sm font-medium text-slate-900">{item.itemName}</div>
-                        <div className="text-xs text-slate-500">{item.skuCode} · {item.category}</div>
+                        <div className="text-xs text-slate-500">{item.skuCode} / {item.category}</div>
                         <div className="mt-1 text-xs text-slate-500">{item.designer}</div>
                       </Link>
                     ))}
                   </div>
                 </section>
-              )}
+              ) : null}
             </>
           )}
         </div>

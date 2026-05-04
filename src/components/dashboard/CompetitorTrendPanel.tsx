@@ -1,4 +1,4 @@
-﻿
+
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -58,14 +58,14 @@ function safeDiv(numerator: number, denominator: number) {
 function getCompareModeLabel(compareMode: CompareMode) {
     if (compareMode === 'plan') return 'vs计划';
     if (compareMode === 'yoy') return '同比去年';
-    if (compareMode === 'mom') return '环比上季';
+    if (compareMode === 'mom') return '环比前周期';
     return '无对比';
 }
 
 function getCompareDeltaLabel(compareMode: CompareMode) {
     if (compareMode === 'plan') return '较计划';
     if (compareMode === 'yoy') return '同比';
-    if (compareMode === 'mom') return '较上季';
+    if (compareMode === 'mom') return '较前周期';
     return '对比';
 }
 
@@ -79,7 +79,7 @@ function getSkuDeltaMetricKey(compareMode: CompareMode): 'sku_yoy' | 'sku_plan_g
 function getSkuDeltaMetricName(compareMode: CompareMode) {
     if (compareMode === 'yoy') return 'SKU同比';
     if (compareMode === 'plan') return 'SKU较计划';
-    if (compareMode === 'mom') return 'SKU较上季';
+    if (compareMode === 'mom') return 'SKU较前周期';
     return '';
 }
 
@@ -168,7 +168,7 @@ export default function CompetitorTrendPanel({
     const competitorCompareHint = useMemo(() => {
         if (compareMode === 'yoy') return '同比口径下展示 SKU 同比线。';
         if (compareMode === 'plan') return '计划口径下展示 SKU 较计划线。';
-        if (compareMode === 'mom') return '环比口径下展示 SKU 较上季线。';
+        if (compareMode === 'mom') return '环比口径下展示 SKU 较前周期线。';
         return '无对比口径下仅展示当前结构。';
     }, [compareMode]);
 
@@ -577,9 +577,14 @@ export default function CompetitorTrendPanel({
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
                     <div>
-                        <div className="text-xs uppercase tracking-wide text-slate-400">4.8 Competitor Mix</div>
-                        <h2 className="text-lg font-bold text-slate-900">竞品防御沙盘（价格带 × SKU火力 × 热度）</h2>
-                        <div className="mt-1 text-xs text-slate-500">
+                        <h2 className="text-xl font-semibold tracking-wide text-slate-900 flex items-center gap-3">
+                            <div className="w-1.5 h-6 bg-gradient-to-b from-blue-500 to-cyan-400 rounded-full" />
+                            竞品防御沙盘（价格带 × SKU火力 × 热度）
+                            <span className="text-[10px] font-mono tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 uppercase">
+                                COMPETITOR MIX
+                            </span>
+                        </h2>
+                        <div className="mt-2 text-xs text-slate-500">
                             口径：竞品品牌 / 二级品类 / 价格带 / SKU数量 / 热度指数（Demo）
                         </div>
                     </div>
@@ -640,7 +645,7 @@ export default function CompetitorTrendPanel({
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                         <div className="flex items-center text-xs text-slate-500">
                             本品牌SKU总量
-                            <InfoTip text="本品牌SKU总量=本品牌各品类SKU数量汇总；支持较计划（sku_plan_gap）/较上季（sku_mom）/同比（sku_yoy）三种口径。" />
+                            <InfoTip text="本品牌SKU总量=本品牌各品类SKU数量汇总；支持较计划（sku_plan_gap）/较前周期（sku_mom）/同比（sku_yoy）三种口径。" />
                         </div>
                         <div className="mt-1 text-base font-semibold text-slate-900">{fmtInt(ourSummary?.sku_total || 0)}</div>
                         <div className="text-xs text-slate-500 mt-1">

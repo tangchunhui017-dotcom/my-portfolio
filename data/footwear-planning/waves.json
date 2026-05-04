@@ -4,19 +4,19 @@
       "waveId": "w1",
       "waveName": "W1 春季首发",
       "launchWindow": "2024-03-01 ~ 2024-03-31",
-      "theme": "街头机能复古",
+      "theme": "街头机能复古 / 城市机能徒步",
       "status": "in_progress",
-      "plannedSkuCount": 20,
-      "actualSkuCount": 7
+      "plannedSkuCount": 16,
+      "actualSkuCount": 10
     },
     {
       "waveId": "w2",
       "waveName": "W2 夏季主推",
       "launchWindow": "2024-05-01 ~ 2024-06-15",
-      "theme": "商务舒适通勤",
+      "theme": "商务舒适通勤 / 舒适弹行",
       "status": "planning",
-      "plannedSkuCount": 14,
-      "actualSkuCount": 6
+      "plannedSkuCount": 12,
+      "actualSkuCount": 4
     }
   ]
 }

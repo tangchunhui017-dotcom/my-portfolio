@@ -1,115 +1,115 @@
 {
   "meta": {
-    "version": "v1.2",
+    "version": "v1.3",
     "owner": "planning-standards",
-    "note": "鞋类季节与波段口径。项目筛选仍用 Q1~Q4 + W01~W12，此表用于业务语义映射。"
+    "note": "决策驾驶舱当前按自然季度与自然月口径展示。W01~W12 对应 1~12 月，Q1~Q4 仅做自然季度收口。"
   },
   "seasons": [
     {
-      "season_id": "spring",
-      "season_label": "春季",
-      "month_range": [2, 4],
+      "season_id": "q1",
+      "season_label": "Q1",
+      "month_range": [1, 3],
       "cross_year": false,
       "dashboard_season_hint": "Q1",
       "waves": [
         {
-          "code": "S1",
-          "label": "春1波",
+          "code": "M01",
+          "label": "1月",
+          "month_range": [1, 1],
+          "dashboard_wave_hints": ["W01"]
+        },
+        {
+          "code": "M02",
+          "label": "2月",
           "month_range": [2, 2],
-          "dashboard_wave_hints": ["W01", "W02", "W03", "W04"]
+          "dashboard_wave_hints": ["W02"]
         },
         {
-          "code": "S2",
-          "label": "春2波",
+          "code": "M03",
+          "label": "3月",
           "month_range": [3, 3],
-          "dashboard_wave_hints": ["W05", "W06", "W07", "W08"]
-        },
-        {
-          "code": "S3",
-          "label": "春3波",
-          "month_range": [4, 4],
-          "dashboard_wave_hints": ["W09", "W10", "W11", "W12"]
+          "dashboard_wave_hints": ["W03"]
         }
       ]
     },
     {
-      "season_id": "summer",
-      "season_label": "夏季",
-      "month_range": [5, 8],
+      "season_id": "q2",
+      "season_label": "Q2",
+      "month_range": [4, 6],
       "cross_year": false,
       "dashboard_season_hint": "Q2",
       "waves": [
         {
-          "code": "U1",
-          "label": "夏1波",
+          "code": "M04",
+          "label": "4月",
+          "month_range": [4, 4],
+          "dashboard_wave_hints": ["W04"]
+        },
+        {
+          "code": "M05",
+          "label": "5月",
           "month_range": [5, 5],
-          "dashboard_wave_hints": ["W01", "W02", "W03", "W04"]
+          "dashboard_wave_hints": ["W05"]
         },
         {
-          "code": "U2",
-          "label": "夏2波",
-          "month_range": [6, 7],
-          "dashboard_wave_hints": ["W05", "W06", "W07", "W08"]
-        },
-        {
-          "code": "U3",
-          "label": "夏3波",
-          "month_range": [8, 8],
-          "dashboard_wave_hints": ["W09", "W10", "W11", "W12"]
+          "code": "M06",
+          "label": "6月",
+          "month_range": [6, 6],
+          "dashboard_wave_hints": ["W06"]
         }
       ]
     },
     {
-      "season_id": "autumn",
-      "season_label": "秋季",
-      "month_range": [9, 10],
+      "season_id": "q3",
+      "season_label": "Q3",
+      "month_range": [7, 9],
       "cross_year": false,
       "dashboard_season_hint": "Q3",
       "waves": [
         {
-          "code": "A1",
-          "label": "秋1波",
+          "code": "M07",
+          "label": "7月",
+          "month_range": [7, 7],
+          "dashboard_wave_hints": ["W07"]
+        },
+        {
+          "code": "M08",
+          "label": "8月",
+          "month_range": [8, 8],
+          "dashboard_wave_hints": ["W08"]
+        },
+        {
+          "code": "M09",
+          "label": "9月",
           "month_range": [9, 9],
-          "dashboard_wave_hints": ["W01", "W02", "W03", "W04"]
-        },
-        {
-          "code": "A2",
-          "label": "秋2波",
-          "month_range": [9, 10],
-          "dashboard_wave_hints": ["W05", "W06", "W07", "W08"]
-        },
-        {
-          "code": "A3",
-          "label": "秋3波",
-          "month_range": [10, 10],
-          "dashboard_wave_hints": ["W09", "W10", "W11", "W12"]
+          "dashboard_wave_hints": ["W09"]
         }
       ]
     },
     {
-      "season_id": "winter",
-      "season_label": "冬季",
-      "month_range": [11, 1],
-      "cross_year": true,
+      "season_id": "q4",
+      "season_label": "Q4",
+      "month_range": [10, 12],
+      "cross_year": false,
       "dashboard_season_hint": "Q4",
       "waves": [
         {
-          "code": "W1",
-          "label": "冬1波",
+          "code": "M10",
+          "label": "10月",
+          "month_range": [10, 10],
+          "dashboard_wave_hints": ["W10"]
+        },
+        {
+          "code": "M11",
+          "label": "11月",
           "month_range": [11, 11],
-          "dashboard_wave_hints": ["W01", "W02", "W03", "W04"]
+          "dashboard_wave_hints": ["W11"]
         },
         {
-          "code": "W2",
-          "label": "冬2波",
+          "code": "M12",
+          "label": "12月",
           "month_range": [12, 12],
-          "dashboard_wave_hints": ["W05", "W06", "W07", "W08"]
-        },
-        {
-          "code": "W3",
-          "label": "冬3波",
-          "month_range": [1, 1],
-          "dashboard_wave_hints": ["W09", "W10", "W11", "W12"]
+          "dashboard_wave_hints": ["W12"]
         }
       ]
     }

@@ -1,14 +1,16 @@
-﻿'use client';
+'use client';
 
 import { useMemo } from 'react';
 import factSalesRaw from '@/../data/dashboard/fact_sales.json';
 import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
 import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
 import dimPlanRaw from '@/../data/dashboard/dim_plan.json';
+import factOpsRaw from '@/../data/dashboard/fact_ops.json';
 import sizeRuleMatrixRaw from '@/../data/taxonomy/size_rule_matrix.json';
 import sizeCurvesRaw from '@/../data/taxonomy/size_curves.json';
+import { matchesDashboardSkuCategoryFilters } from '@/hooks/useDashboardFilter';
 import type { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
-import { matchCategoryL1, matchCategoryL2, resolveFootwearCategory } from '@/config/categoryMapping';
+import { resolveFootwearCategory } from '@/config/categoryMapping';
 import {
     formatPriceBandLabel,
     getPriceBandSortRank,
@@ -19,6 +21,10 @@ import {
     resolvePriceBandByMsrp,
 } from '@/config/priceBand';
 import { matchesAudienceFilter } from '@/config/audienceMapping';
+import { resolveDashboardLifecycleLabel } from '@/config/dashboardLifecycle';
+import { buildDashboardOpsRecordKey, type DashboardOpsFactRecord } from '@/config/dashboardOps';
+import { getDashboardCompareMeta, resolveDashboardMomBaseline } from '@/config/dashboardCompare';
+import { matchesDashboardSeasonFilter } from '@/config/dashboardTime';
 
 interface FactSalesRecord {
     sku_id: string;
@@ -41,6 +47,8 @@ interface DimSkuRecord {
     category_id: string;
     category_name?: string;
     category_l2?: string;
+    season_year?: string | number;
+    season?: string;
     price_band?: string;
     msrp: number;
     lifecycle?: string;
@@ -121,6 +129,9 @@ interface AggregateBucket {
     discountWeighted: number;
     discountWeight: number;
     onHandUnits: number;
+    demandPairs: number;
+    shipPairs: number;
+    reorderPairs: number;
     skuSet: Set<string>;
     storeSet: Set<string>;
     lifecycleSkuSet: Record<LifecycleKey, Set<string>>;
@@ -435,20 +446,22 @@ const factSales = factSalesRaw as FactSalesRecord[];
 const dimSku = dimSkuRaw as DimSkuRecord[];
 const dimChannel = dimChannelRaw as DimChannelRecord[];
 const dimPlan = dimPlanRaw as DimPlanRecord;
+const factOps = factOpsRaw as DashboardOpsFactRecord[];
+const factOpsMap = new Map<string, DashboardOpsFactRecord>(
+    factOps.map((row) => [row.record_key || buildDashboardOpsRecordKey(row), row]),
+);
 const sizeRuleMatrix = sizeRuleMatrixRaw as SizeRuleMatrixData;
 const sizeCurves = sizeCurvesRaw as SizeCurvesData;
 
 export type CategoryOpsHeatXAxis = 'element' | 'category' | 'price_band';
 
-type LifecycleKey = 'new' | 'core' | 'clearance' | 'other';
+type LifecycleKey = '\u65b0\u54c1' | '\u6b21\u65b0\u54c1' | '\u8001\u54c1';
 
 const LIFECYCLE_LABEL: Record<LifecycleKey, string> = {
-    new: '新品',
-    core: '常青',
-    clearance: '清仓',
-    other: '其他',
+    '\u65b0\u54c1': '\u65b0\u54c1',
+    '\u6b21\u65b0\u54c1': '\u6b21\u65b0\u54c1',
+    '\u8001\u54c1': '\u8001\u54c1',
 };
-
 const WOMEN_HINTS = ['women', 'woman', 'female', 'lady', 'ladies', 'girl', '女'];
 const MEN_HINTS = ['men', 'man', 'male', 'boy', '男'];
 const UNISEX_HINTS = ['unisex', 'neutral', '中性'];
@@ -681,32 +694,47 @@ function deriveSizeHealthMetrics(
     };
 }
 
-function normalizeLifecycle(rawLifecycle?: string): LifecycleKey {
-    const normalized = String(rawLifecycle || '').toLowerCase();
-    if (!normalized) return 'other';
-    if (normalized.includes('新') || normalized.includes('new')) return 'new';
-    if (normalized.includes('常青') || normalized.includes('core') || normalized.includes('carry')) return 'core';
-    if (normalized.includes('清仓') || normalized.includes('clear') || normalized.includes('outlet')) return 'clearance';
-    return 'other';
+function resolveLifecycleScopeFilters(
+    filters: DashboardFilters,
+    forcedYear: number | null,
+    forcedSeason: string | null = null,
+    forcedWave: string | null = null,
+) {
+    return {
+        season_year: forcedYear === null ? filters.season_year : forcedYear,
+        season: forcedSeason ?? filters.season,
+        wave: forcedWave ?? filters.wave,
+    };
+}
+
+function normalizeLifecycle(
+    filters: DashboardFilters,
+    sku: Pick<DimSkuRecord, 'season_year' | 'season' | 'lifecycle'>,
+    forcedYear: number | null = null,
+    forcedSeason: string | null = null,
+    forcedWave: string | null = null,
+): LifecycleKey {
+    return resolveDashboardLifecycleLabel(
+        resolveLifecycleScopeFilters(filters, forcedYear, forcedSeason, forcedWave),
+        sku,
+    ) as LifecycleKey;
 }
 
 function getLifecycleLabel(key: LifecycleKey) {
-    return LIFECYCLE_LABEL[key] || LIFECYCLE_LABEL.other;
+    return LIFECYCLE_LABEL[key];
 }
 
 function getEffectiveInventoryFactor(lifecycle: LifecycleKey) {
-    if (lifecycle === 'new') return 0.95;
-    if (lifecycle === 'core') return 0.85;
-    if (lifecycle === 'clearance') return 0.65;
-    return 0.8;
+    if (lifecycle === '\u65b0\u54c1') return 0.95;
+    if (lifecycle === '\u8001\u54c1') return 0.85;
+    return 0.72;
 }
 
 function createLifecycleSkuSet(): Record<LifecycleKey, Set<string>> {
     return {
-        new: new Set<string>(),
-        core: new Set<string>(),
-        clearance: new Set<string>(),
-        other: new Set<string>(),
+        '\u65b0\u54c1': new Set<string>(),
+        '\u6b21\u65b0\u54c1': new Set<string>(),
+        '\u8001\u54c1': new Set<string>(),
     };
 }
 
@@ -716,35 +744,12 @@ function resolvePrimaryLifecycle(lifecycleSkuSet: Record<LifecycleKey, Set<strin
         count: lifecycleSkuSet[key].size,
     }));
     entries.sort((a, b) => b.count - a.count);
-    return entries[0]?.count > 0 ? entries[0].key : 'other';
+    return entries[0]?.count > 0 ? entries[0].key : '\u6b21\u65b0\u54c1';
 }
-
-function getCompareModeLabel(compareMode: CompareMode) {
-    if (compareMode === 'plan') return 'vs计划';
-    if (compareMode === 'yoy') return '同比去年';
-    if (compareMode === 'mom') return '环比上季';
-    return '无对比';
-}
-
-function getCompareDeltaLabel(compareMode: CompareMode) {
-    if (compareMode === 'plan') return '较计划';
-    if (compareMode === 'yoy') return '较去年同期';
-    if (compareMode === 'mom') return '较上季';
-    return '较基线';
-}
-
 function resolveMomBaseline(filters: DashboardFilters) {
-    if (filters.season === 'all') return null;
-    const matched = String(filters.season).toUpperCase().match(/^Q([1-4])$/);
-    if (!matched) return null;
-    const selectedYear = Number(filters.season_year);
+    const selectedYear = filters.season_year === 'all' ? 2024 : Number(filters.season_year);
     if (!Number.isFinite(selectedYear)) return null;
-
-    const quarter = Number(matched[1]);
-    if (quarter === 1) {
-        return { year: selectedYear - 1, season: 'Q4' };
-    }
-    return { year: selectedYear, season: `Q${quarter - 1}` };
+    return resolveDashboardMomBaseline(filters, selectedYear, 'category');
 }
 
 function getBucketSellThrough(bucket: AggregateBucket, sellThroughMode: SellThroughMode) {
@@ -810,6 +815,7 @@ function shouldIncludeRecord(
     filters: DashboardFilters,
     forcedYear: number | null,
     forcedSeason: string | null = null,
+    forcedWave: string | null = null,
 ) {
     if (forcedYear !== null) {
         if (Number(sale.season_year) !== forcedYear) return false;
@@ -818,12 +824,13 @@ function shouldIncludeRecord(
     }
 
     const seasonFilter = forcedSeason ?? filters.season;
-    if (seasonFilter !== 'all' && sale.season !== seasonFilter) return false;
-    if (filters.wave !== 'all' && sale.wave !== filters.wave) return false;
-    if (!matchCategoryL1(filters.category_id, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
-    if (!matchCategoryL2(filters.sub_category, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
+    const waveFilter = forcedWave ?? filters.wave;
+    if (!matchesDashboardSeasonFilter(seasonFilter, sale.wave, sale.season)) return false;
+    if (waveFilter !== 'all' && sale.wave !== waveFilter) return false;
+    if (!matchesDashboardSkuCategoryFilters(filters, sku)) return false;
     if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
-    if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
+    const lifecycle = normalizeLifecycle(filters, sku, forcedYear, forcedSeason, forcedWave);
+    if (filters.lifecycle !== 'all' && lifecycle !== filters.lifecycle) return false;
     if (filters.region !== 'all' && channel.region !== filters.region) return false;
     if (filters.city_tier !== 'all' && channel.city_tier !== filters.city_tier) return false;
     if (filters.store_format !== 'all' && channel.store_format !== filters.store_format) return false;
@@ -859,6 +866,9 @@ function createBucket(
         discountWeighted: 0,
         discountWeight: 0,
         onHandUnits: 0,
+        demandPairs: 0,
+        shipPairs: 0,
+        reorderPairs: 0,
         skuSet: new Set<string>(),
         storeSet: new Set<string>(),
         lifecycleSkuSet: createLifecycleSkuSet(),
@@ -871,8 +881,9 @@ function aggregateSales(
     channelMap: Map<string, DimChannelRecord>,
     forcedYear: number | null,
     forcedSeason: string | null = null,
+    forcedWave: string | null = null,
     categoryLevel: CategoryLevel = 'l1',
-): AggregationResult {
+) {
     const categoryMap = new Map<string, AggregateBucket>();
     const cellMap = new Map<string, AggregateBucket>();
     const scopedSkuSet = new Set<string>();
@@ -893,7 +904,7 @@ function aggregateSales(
         const sku = skuMap.get(sale.sku_id);
         const channel = channelMap.get(sale.channel_id);
         if (!sku || !channel) return;
-        if (!shouldIncludeRecord(sale, sku, channel, filters, forcedYear, forcedSeason)) return;
+        if (!shouldIncludeRecord(sale, sku, channel, filters, forcedYear, forcedSeason, forcedWave)) return;
 
         const categoryMeta = resolveFootwearCategory(
             sku.category_name,
@@ -936,11 +947,23 @@ function aggregateSales(
         const sales = Math.max(0, sale.net_sales_amt || 0);
         const stWeight = Math.max(units, 1);
         const gmWeight = Math.max(sales, 1);
-        const lifecycle = normalizeLifecycle(sku.lifecycle);
+        const lifecycle = normalizeLifecycle(filters, sku, forcedYear, forcedSeason, forcedWave);
         const onHandUnits = Math.max(0, sale.on_hand_unit || 0);
         const effectiveInventoryFactor = getEffectiveInventoryFactor(lifecycle);
         const effectiveSellThrough = safeDiv(units, units + onHandUnits * effectiveInventoryFactor);
         const cumulativeSellThrough = sale.cumulative_sell_through || 0;
+        const inventoryPressure = safeDiv(onHandUnits, onHandUnits + units);
+        const sellThroughProxy = clamp(cumulativeSellThrough || 0.72, 0.55, 0.9);
+        const opsRecord = factOpsMap.get(buildDashboardOpsRecordKey(sale));
+        const demandPairs = Math.max(0, Number(opsRecord?.demand_pairs) || safeDiv(units, Math.max(sellThroughProxy, 0.05)));
+        const fillRate = demandPairs > 0
+            ? (Number(opsRecord?.fill_rate) || deriveFillRate(sellThroughProxy, 0, inventoryPressure))
+            : 0;
+        const shipPairs = Math.max(0, Number(opsRecord?.ship_pairs) || demandPairs * fillRate);
+        const reorderRate = demandPairs > 0
+            ? (Number(opsRecord?.reorder_rate) || deriveReorderRate(fillRate, 0, inventoryPressure))
+            : 0;
+        const reorderPairs = Math.max(0, Number(opsRecord?.reorder_pairs) || demandPairs * reorderRate);
 
         categoryBucket.netSales += sales;
         categoryBucket.pairsSold += units;
@@ -951,6 +974,9 @@ function aggregateSales(
         categoryBucket.gmWeight += gmWeight;
         categoryBucket.discountWeighted += (sale.discount_rate || 0) * gmWeight;
         categoryBucket.discountWeight += gmWeight;
+        categoryBucket.demandPairs += demandPairs;
+        categoryBucket.shipPairs += shipPairs;
+        categoryBucket.reorderPairs += reorderPairs;
         categoryBucket.skuSet.add(sale.sku_id);
         categoryBucket.storeSet.add(sale.channel_id);
         categoryBucket.lifecycleSkuSet[lifecycle].add(sale.sku_id);
@@ -964,6 +990,9 @@ function aggregateSales(
         cellBucket.gmWeight += gmWeight;
         cellBucket.discountWeighted += (sale.discount_rate || 0) * gmWeight;
         cellBucket.discountWeight += gmWeight;
+        cellBucket.demandPairs += demandPairs;
+        cellBucket.shipPairs += shipPairs;
+        cellBucket.reorderPairs += reorderPairs;
         cellBucket.skuSet.add(sale.sku_id);
         cellBucket.storeSet.add(sale.channel_id);
         cellBucket.lifecycleSkuSet[lifecycle].add(sale.sku_id);
@@ -1014,6 +1043,7 @@ function aggregateSellThroughTrend(
     channelMap: Map<string, DimChannelRecord>,
     forcedYear: number | null,
     forcedSeason: string | null = null,
+    forcedWave: string | null = null,
 ) {
     const trendMap = new Map<string, SellThroughTrendBucket>();
 
@@ -1021,9 +1051,9 @@ function aggregateSellThroughTrend(
         const sku = skuMap.get(sale.sku_id);
         const channel = channelMap.get(sale.channel_id);
         if (!sku || !channel) return;
-        if (!shouldIncludeRecord(sale, sku, channel, filters, forcedYear, forcedSeason)) return;
+        if (!shouldIncludeRecord(sale, sku, channel, filters, forcedYear, forcedSeason, forcedWave)) return;
 
-        const lifecycle = normalizeLifecycle(sku.lifecycle);
+        const lifecycle = normalizeLifecycle(filters, sku, forcedYear, forcedSeason, forcedWave);
         const units = Math.max(0, sale.unit_sold || 0);
         const weight = Math.max(units, 1);
         const onHandUnits = Math.max(0, sale.on_hand_unit || 0);
@@ -1073,11 +1103,72 @@ function deriveReorderRate(fillRate: number, demandYoY: number, inventoryPressur
     return clamp(rawValue, 0.015, 0.35);
 }
 
+interface OperationalInferenceTotals {
+    demandPairs: number;
+    shipPairs: number;
+    avgFillRate: number;
+    avgReorderRate: number;
+}
+
+function inferOperationalTotals(
+    filters: DashboardFilters,
+    skuMap: Map<string, DimSkuRecord>,
+    channelMap: Map<string, DimChannelRecord>,
+    opsMap: Map<string, DashboardOpsFactRecord>,
+    forcedYear: number | null,
+    forcedSeason: string | null = null,
+    forcedWave: string | null = null,
+): OperationalInferenceTotals {
+    let demandPairs = 0;
+    let shipPairs = 0;
+    let fillWeighted = 0;
+    let reorderWeighted = 0;
+    let weight = 0;
+
+    factSales.forEach((sale) => {
+        const sku = skuMap.get(sale.sku_id);
+        const channel = channelMap.get(sale.channel_id);
+        if (!sku || !channel) return;
+        if (!shouldIncludeRecord(sale, sku, channel, filters, forcedYear, forcedSeason, forcedWave)) return;
+
+        const units = Math.max(0, sale.unit_sold || 0);
+        const onHandUnits = Math.max(0, sale.on_hand_unit || 0);
+        const opsRecord = opsMap.get(buildDashboardOpsRecordKey(sale));
+        const sellThroughProxy = clamp(sale.cumulative_sell_through || 0.72, 0.55, 0.9);
+        const inventoryPressure = safeDiv(onHandUnits, onHandUnits + units);
+        const demand = Number(opsRecord?.demand_pairs || safeDiv(units, sellThroughProxy));
+        const ship = Number(opsRecord?.ship_pairs || 0) || demand * deriveFillRate(sellThroughProxy, 0, inventoryPressure);
+        const fillRate = demand > 0 ? Number(opsRecord?.fill_rate || 0) || safeDiv(ship, demand) : 0;
+        const reorderRate = demand > 0
+            ? Number(opsRecord?.reorder_rate || 0) || deriveReorderRate(fillRate, 0, inventoryPressure)
+            : 0;
+        const inferenceWeight = Math.max(demand, 1);
+
+        demandPairs += demand;
+        shipPairs += ship;
+        fillWeighted += fillRate * inferenceWeight;
+        reorderWeighted += reorderRate * inferenceWeight;
+        weight += inferenceWeight;
+    });
+
+    return {
+        demandPairs,
+        shipPairs,
+        avgFillRate: safeDiv(fillWeighted, weight),
+        avgReorderRate: safeDiv(reorderWeighted, weight),
+    };
+}
+
 interface BaselineMetric {
     netSales: number;
     cumulativeSellThrough: number | null;
     effectiveSellThrough: number | null;
     storeCount: number;
+    demandPairs?: number | null;
+    shipPairs?: number | null;
+    reorderPairs?: number | null;
+    fillRate?: number | null;
+    reorderRate?: number | null;
 }
 
 interface BaselineSnapshot {
@@ -1097,6 +1188,11 @@ function buildBaselineFromAggregation(aggregation: AggregationResult, sellThroug
             cumulativeSellThrough: safeDiv(bucket.cumulativeStWeighted, bucket.stWeight),
             effectiveSellThrough: safeDiv(bucket.effectiveStWeighted, bucket.stWeight),
             storeCount: bucket.storeSet.size,
+            demandPairs: bucket.demandPairs,
+            shipPairs: bucket.shipPairs,
+            reorderPairs: bucket.reorderPairs,
+            fillRate: safeDiv(bucket.shipPairs, bucket.demandPairs),
+            reorderRate: safeDiv(bucket.reorderPairs, bucket.demandPairs),
         });
     });
 
@@ -1106,6 +1202,11 @@ function buildBaselineFromAggregation(aggregation: AggregationResult, sellThroug
             cumulativeSellThrough: safeDiv(bucket.cumulativeStWeighted, bucket.stWeight),
             effectiveSellThrough: safeDiv(bucket.effectiveStWeighted, bucket.stWeight),
             storeCount: bucket.storeSet.size,
+            demandPairs: bucket.demandPairs,
+            shipPairs: bucket.shipPairs,
+            reorderPairs: bucket.reorderPairs,
+            fillRate: safeDiv(bucket.shipPairs, bucket.demandPairs),
+            reorderRate: safeDiv(bucket.reorderPairs, bucket.demandPairs),
         });
     });
 
@@ -1382,7 +1483,7 @@ function buildSkuActionRows(
             categoryFilterId,
             category: resolvedCategory,
             priceBand: sku.price_band || 'PBX',
-            lifecycle: normalizeLifecycle(sku.lifecycle),
+            lifecycle: normalizeLifecycle(filters, sku),
             netSales: 0,
             pairsSold: 0,
             cumulativeStWeighted: 0,
@@ -1526,10 +1627,11 @@ export function useCategoryOps(
         const channelMap = new Map<string, DimChannelRecord>();
         dimChannel.forEach((item) => channelMap.set(item.channel_id, item));
 
-        const current = aggregateSales(filters, skuMap, channelMap, null, null, categoryLevel);
+        const current = aggregateSales(filters, skuMap, channelMap, null, null, null, categoryLevel);
         const planSnapshot = buildPlanBaseline(current);
-        const modeLabel = getCompareModeLabel(compareMode);
-        const deltaLabel = getCompareDeltaLabel(compareMode);
+        const compareMetaConfig = getDashboardCompareMeta(compareMode, filters, 'category');
+        const modeLabel = compareMetaConfig.modeLabel;
+        const deltaLabel = compareMetaConfig.deltaLabel;
         const selectedYear = Number(filters.season_year);
         const sellThroughLabel = sellThroughMode === 'effective' ? '有效售罄率' : '累计售罄率';
 
@@ -1537,9 +1639,10 @@ export function useCategoryOps(
         let baselineProductStats: ReturnType<typeof buildAggregationProductStats> | null = null;
         let baselineForcedYear: number | null = null;
         let baselineForcedSeason: string | null = null;
+        let baselineForcedWave: string | null = null;
         let baselineLabel = '无基线';
         let note =
-            `无对比模式：当前值展示，不计算同期差值。当前售罄口径：${sellThroughLabel}。执行率/补单率为 v0 推导口径（fill_rate=ship/demand，reorder_rate=reorder/demand）。`;
+            `无对比模式：当前值展示，不计算同期差值。当前售罄口径：${sellThroughLabel}。执行率/补单率为运营事实口径（mock fact_ops；fill_rate=ship/demand，reorder_rate=reorder/demand）。`;
 
         if (compareMode === 'yoy') {
             const baselineYear = Number.isFinite(selectedYear) ? selectedYear - 1 : null;
@@ -1558,7 +1661,7 @@ export function useCategoryOps(
                 baselineProductStats = buildAggregationProductStats(baselineAggregation);
                 baselineLabel = `${baselineYear}年同期`;
                 note = baselineSnapshot.totals.netSales > 0
-                    ? `同比口径：基线为去年同期同筛选样本；当前售罄口径：${sellThroughLabel}；执行率/补单率为 v0 推导口径。`
+                    ? `同比口径：基线为去年同期同筛选样本；当前售罄口径：${sellThroughLabel}；执行率/补单率为运营事实口径。`
                     : '同比口径：当前筛选缺少去年同期样本，差值项显示为 0。';
             } else {
                 note = '同比口径：当前年份未锁定，无法构建去年同期基线。';
@@ -1568,29 +1671,35 @@ export function useCategoryOps(
             if (momBaseline) {
                 baselineForcedYear = momBaseline.year;
                 baselineForcedSeason = momBaseline.season;
+                baselineForcedWave = momBaseline.wave === 'all' ? null : momBaseline.wave;
                 const baselineAggregation = aggregateSales(
                     filters,
                     skuMap,
                     channelMap,
                     momBaseline.year,
                     momBaseline.season,
+                    baselineForcedWave,
                     categoryLevel,
                 );
                 baselineSnapshot = buildBaselineFromAggregation(baselineAggregation, sellThroughMode);
                 baselineProductStats = buildAggregationProductStats(baselineAggregation);
-                baselineLabel = `${momBaseline.year}-${momBaseline.season}`;
+                baselineLabel = momBaseline.label;
                 note = baselineSnapshot.totals.netSales > 0
-                    ? `环比口径：基线为上季同筛选样本；当前售罄口径：${sellThroughLabel}；执行率/补单率为 v0 推导口径。`
-                    : '环比口径：上季样本为空，差值项显示为 0。';
+                    ? (momBaseline.basis === 'wave'
+                        ? `环比口径：基线为上波段同筛选样本；当前售罄口径：${sellThroughLabel}；执行率/补单率为运营事实口径。`
+                        : `环比口径：基线为上季同筛选样本；当前售罄口径：${sellThroughLabel}；执行率/补单率为运营事实口径。`)
+                    : (momBaseline.basis === 'wave'
+                        ? '环比口径：当前筛选缺少上波段样本，差值项显示为 0。'
+                        : '环比口径：当前筛选缺少上季样本，差值项显示为 0。');
             } else {
-                note = '环比口径：请先选择具体季度（Q1-Q4），再计算较上季差值。';
+                note = compareMetaConfig.disabledReason || '环比口径：请先选择具体季度或波段，再计算较前周期差值。';
             }
         } else if (compareMode === 'plan') {
             baselineSnapshot = planSnapshot;
             baselineLabel = '计划口径';
             baselineProductStats = null;
             note = baselineSnapshot
-                ? `计划口径：销售/售罄基线来自 dim_plan；当前售罄口径：${sellThroughLabel}；执行率与补单率为 v0 推导口径。`
+                ? `计划口径：销售/售罄基线来自 dim_plan；当前售罄口径：${sellThroughLabel}；执行率与补单率为运营事实口径。`
                 : '计划口径：当前缺 dim_plan 基线，差值项显示为 0。';
         }
 
@@ -1599,10 +1708,10 @@ export function useCategoryOps(
         const baselineCellMap = baselineSnapshot?.cellMap || null;
         const baselineTotals = baselineSnapshot?.totals || null;
 
-        const currentTrendMap = aggregateSellThroughTrend(filters, skuMap, channelMap, null, null);
+        const currentTrendMap = aggregateSellThroughTrend(filters, skuMap, channelMap, null, null, null);
         const baselineTrendMap =
             baselineForcedYear !== null
-                ? aggregateSellThroughTrend(filters, skuMap, channelMap, baselineForcedYear, baselineForcedSeason)
+                ? aggregateSellThroughTrend(filters, skuMap, channelMap, baselineForcedYear, baselineForcedSeason, baselineForcedWave)
                 : null;
 
         const sellThroughTrend = Array.from(currentTrendMap.values())
@@ -1652,6 +1761,12 @@ export function useCategoryOps(
             cumulativeSellThrough: number;
             effectiveSellThrough: number;
             baselineSellThrough: number | null;
+            demandPairs: number;
+            shipPairs: number;
+            reorderPairs: number;
+            baselineDemandPairs: number | null;
+            baselineShipPairs: number | null;
+            baselineReorderPairs: number | null;
             fillRate: number;
             baselineFillRate: number | null;
             reorderRate: number;
@@ -1671,16 +1786,16 @@ export function useCategoryOps(
                 const salesPerStoreYoY = hasBaseline
                     ? deltaPercent(salesPerStoreAmt, baselineSalesPerStoreAmt)
                     : null;
-                const demandYoY = hasBaseline && baselineNetSales > 0
-                    ? safeDiv(bucket.netSales - baselineNetSales, baselineNetSales)
-                    : 0;
 
                 const cumulativeSellThrough = safeDiv(bucket.cumulativeStWeighted, bucket.stWeight);
                 const effectiveSellThrough = safeDiv(bucket.effectiveStWeighted, bucket.stWeight);
                 const sellThrough = sellThroughMode === 'effective' ? effectiveSellThrough : cumulativeSellThrough;
                 const inventoryPressure = safeDiv(bucket.onHandUnits, bucket.onHandUnits + bucket.pairsSold);
-                const fillRate = deriveFillRate(sellThrough, hasBaseline ? demandYoY : 0, inventoryPressure);
-                const reorderRate = deriveReorderRate(fillRate, hasBaseline ? demandYoY : 0, inventoryPressure);
+                const demandPairs = bucket.demandPairs;
+                const shipPairs = bucket.shipPairs;
+                const reorderPairs = bucket.reorderPairs;
+                const fillRate = safeDiv(shipPairs, demandPairs);
+                const reorderRate = safeDiv(reorderPairs, demandPairs);
                 const primaryLifecycle = resolvePrimaryLifecycle(bucket.lifecycleSkuSet);
 
                 const baselineSellThrough = hasBaseline
@@ -1688,12 +1803,18 @@ export function useCategoryOps(
                         ? baselineMetric?.effectiveSellThrough ?? null
                         : baselineMetric?.cumulativeSellThrough ?? null)
                     : null;
-                const baselineFillRate = baselineSellThrough === null
-                    ? null
-                    : deriveFillRate(baselineSellThrough, 0, inventoryPressure);
-                const baselineReorderRate = baselineFillRate === null
-                    ? null
-                    : deriveReorderRate(baselineFillRate, 0, inventoryPressure);
+                const baselineDemandPairs = baselineMetric?.demandPairs ?? null;
+                const baselineShipPairs = baselineMetric?.shipPairs ?? null;
+                const baselineReorderPairs = baselineMetric?.reorderPairs ?? null;
+                const demandYoY = hasBaseline && baselineDemandPairs && baselineDemandPairs > 0
+                    ? safeDiv(demandPairs - baselineDemandPairs, baselineDemandPairs)
+                    : (hasBaseline && baselineNetSales > 0
+                        ? safeDiv(bucket.netSales - baselineNetSales, baselineNetSales)
+                        : 0);
+                const baselineFillRate = baselineMetric?.fillRate
+                    ?? (baselineSellThrough === null ? null : deriveFillRate(baselineSellThrough, 0, inventoryPressure));
+                const baselineReorderRate = baselineMetric?.reorderRate
+                    ?? (baselineFillRate === null ? null : deriveReorderRate(baselineFillRate, 0, inventoryPressure));
 
                 return {
                     id: bucket.key,
@@ -1718,6 +1839,12 @@ export function useCategoryOps(
                     cumulativeSellThrough,
                     effectiveSellThrough,
                     baselineSellThrough,
+                    demandPairs,
+                    shipPairs,
+                    reorderPairs,
+                    baselineDemandPairs,
+                    baselineShipPairs,
+                    baselineReorderPairs,
                     fillRate,
                     baselineFillRate,
                     reorderRate,
@@ -1747,6 +1874,12 @@ export function useCategoryOps(
             cumulativeSellThrough: number;
             effectiveSellThrough: number;
             baselineSellThrough: number | null;
+            demandPairs: number;
+            shipPairs: number;
+            reorderPairs: number;
+            baselineDemandPairs: number | null;
+            baselineShipPairs: number | null;
+            baselineReorderPairs: number | null;
             fillRate: number;
             baselineFillRate: number | null;
             reorderRate: number;
@@ -1759,28 +1892,34 @@ export function useCategoryOps(
             .map((bucket) => {
                 const baselineMetric = baselineCellMap?.get(bucket.key);
                 const baselineNetSales = baselineMetric?.netSales || 0;
-                const demandYoY = hasBaseline && baselineNetSales > 0
-                    ? safeDiv(bucket.netSales - baselineNetSales, baselineNetSales)
-                    : 0;
 
                 const cumulativeSellThrough = safeDiv(bucket.cumulativeStWeighted, bucket.stWeight);
                 const effectiveSellThrough = safeDiv(bucket.effectiveStWeighted, bucket.stWeight);
                 const sellThrough = sellThroughMode === 'effective' ? effectiveSellThrough : cumulativeSellThrough;
                 const inventoryPressure = safeDiv(bucket.onHandUnits, bucket.onHandUnits + bucket.pairsSold);
-                const fillRate = deriveFillRate(sellThrough, hasBaseline ? demandYoY : 0, inventoryPressure);
-                const reorderRate = deriveReorderRate(fillRate, hasBaseline ? demandYoY : 0, inventoryPressure);
+                const demandPairs = bucket.demandPairs;
+                const shipPairs = bucket.shipPairs;
+                const reorderPairs = bucket.reorderPairs;
+                const fillRate = safeDiv(shipPairs, demandPairs);
+                const reorderRate = safeDiv(reorderPairs, demandPairs);
 
                 const baselineSellThrough = hasBaseline
                     ? (sellThroughMode === 'effective'
                         ? baselineMetric?.effectiveSellThrough ?? null
                         : baselineMetric?.cumulativeSellThrough ?? null)
                     : null;
-                const baselineFillRate = baselineSellThrough === null
-                    ? null
-                    : deriveFillRate(baselineSellThrough, 0, inventoryPressure);
-                const baselineReorderRate = baselineFillRate === null
-                    ? null
-                    : deriveReorderRate(baselineFillRate, 0, inventoryPressure);
+                const baselineDemandPairs = baselineMetric?.demandPairs ?? null;
+                const baselineShipPairs = baselineMetric?.shipPairs ?? null;
+                const baselineReorderPairs = baselineMetric?.reorderPairs ?? null;
+                const demandYoY = hasBaseline && baselineDemandPairs && baselineDemandPairs > 0
+                    ? safeDiv(demandPairs - baselineDemandPairs, baselineDemandPairs)
+                    : (hasBaseline && baselineNetSales > 0
+                        ? safeDiv(bucket.netSales - baselineNetSales, baselineNetSales)
+                        : 0);
+                const baselineFillRate = baselineMetric?.fillRate
+                    ?? (baselineSellThrough === null ? null : deriveFillRate(baselineSellThrough, 0, inventoryPressure));
+                const baselineReorderRate = baselineMetric?.reorderRate
+                    ?? (baselineFillRate === null ? null : deriveReorderRate(baselineFillRate, 0, inventoryPressure));
 
                 return {
                     id: bucket.key,
@@ -1801,6 +1940,12 @@ export function useCategoryOps(
                     cumulativeSellThrough,
                     effectiveSellThrough,
                     baselineSellThrough,
+                    demandPairs,
+                    shipPairs,
+                    reorderPairs,
+                    baselineDemandPairs,
+                    baselineShipPairs,
+                    baselineReorderPairs,
                     fillRate,
                     baselineFillRate,
                     reorderRate,
@@ -1812,20 +1957,32 @@ export function useCategoryOps(
             .sort((a, b) => b.netSales - a.netSales);
 
         const totalCellSales = cellRowsRaw.reduce((sum, item) => sum + item.netSales, 0);
+        const totalCellDemand = cellRowsRaw.reduce((sum, item) => sum + item.demandPairs, 0);
         const avgSellThrough = safeDiv(
             cellRowsRaw.reduce((sum, item) => sum + item.sellThrough * item.netSales, 0),
             totalCellSales,
         );
-        const avgFillRate = safeDiv(
-            cellRowsRaw.reduce((sum, item) => sum + item.fillRate * item.netSales, 0),
-            totalCellSales,
-        );
-        const avgReorderRate = safeDiv(
-            cellRowsRaw.reduce((sum, item) => sum + item.reorderRate * item.netSales, 0),
-            totalCellSales,
-        );
+        const avgFillRate = totalCellDemand > 0
+            ? safeDiv(
+                cellRowsRaw.reduce((sum, item) => sum + item.shipPairs, 0),
+                totalCellDemand,
+            )
+            : safeDiv(
+                cellRowsRaw.reduce((sum, item) => sum + item.fillRate * item.netSales, 0),
+                totalCellSales,
+            );
+        const avgReorderRate = totalCellDemand > 0
+            ? safeDiv(
+                cellRowsRaw.reduce((sum, item) => sum + item.reorderPairs, 0),
+                totalCellDemand,
+            )
+            : safeDiv(
+                cellRowsRaw.reduce((sum, item) => sum + item.reorderRate * item.netSales, 0),
+                totalCellSales,
+            );
 
         const baselineWeight = cellRowsRaw.reduce((sum, item) => sum + Math.max(item.baselineNetSales, 0), 0);
+        const baselineDemandWeight = cellRowsRaw.reduce((sum, item) => sum + Math.max(item.baselineDemandPairs || 0, 0), 0);
         const baselineAvgSellThrough = hasBaseline
             ? (baselineTotals?.avgSellThrough ?? safeDiv(
                 cellRowsRaw.reduce((sum, item) => {
@@ -1836,29 +1993,41 @@ export function useCategoryOps(
             ))
             : avgSellThrough;
         const baselineAvgFillRate = hasBaseline
-            ? safeDiv(
-                cellRowsRaw.reduce((sum, item) => {
-                    if (item.baselineFillRate === null) return sum;
-                    return sum + item.baselineFillRate * Math.max(item.baselineNetSales, 0);
-                }, 0),
-                baselineWeight,
-            ) || avgFillRate
+            ? (baselineDemandWeight > 0
+                ? safeDiv(
+                    cellRowsRaw.reduce((sum, item) => sum + Math.max(item.baselineShipPairs || 0, 0), 0),
+                    baselineDemandWeight,
+                )
+                : safeDiv(
+                    cellRowsRaw.reduce((sum, item) => {
+                        if (item.baselineFillRate === null) return sum;
+                        return sum + item.baselineFillRate * Math.max(item.baselineNetSales, 0);
+                    }, 0),
+                    baselineWeight,
+                )) || avgFillRate
             : avgFillRate;
         const baselineAvgReorderRate = hasBaseline
-            ? safeDiv(
-                cellRowsRaw.reduce((sum, item) => {
-                    if (item.baselineReorderRate === null) return sum;
-                    return sum + item.baselineReorderRate * Math.max(item.baselineNetSales, 0);
-                }, 0),
-                baselineWeight,
-            ) || avgReorderRate
+            ? (baselineDemandWeight > 0
+                ? safeDiv(
+                    cellRowsRaw.reduce((sum, item) => sum + Math.max(item.baselineReorderPairs || 0, 0), 0),
+                    baselineDemandWeight,
+                )
+                : safeDiv(
+                    cellRowsRaw.reduce((sum, item) => {
+                        if (item.baselineReorderRate === null) return sum;
+                        return sum + item.baselineReorderRate * Math.max(item.baselineNetSales, 0);
+                    }, 0),
+                    baselineWeight,
+                )) || avgReorderRate
             : avgReorderRate;
 
         const currentStoreCount = current.activeStoreSet.size;
         const currentActiveSku = current.activeSkuSet.size;
         const currentTotalSku = current.scopedSkuSet.size;
-        const demandPairs = safeDiv(current.totalPairs, Math.max(avgSellThrough, 0.05));
-        const shipPairs = demandPairs * avgFillRate;
+        const currentOperationalTotals = inferOperationalTotals(filters, skuMap, channelMap, factOpsMap, null, null, null);
+        const demandPairs = currentOperationalTotals.demandPairs;
+        const shipPairs = currentOperationalTotals.shipPairs;
+        const shipExecutionRate = currentOperationalTotals.avgFillRate || avgFillRate;
         const sellShipRatio = safeDiv(current.totalPairs, shipPairs);
         const salesPerSkuAmt = safeDiv(current.totalNetSales, currentActiveSku);
         const salesPerStoreAmt = safeDiv(current.totalNetSales, currentStoreCount);
@@ -1868,8 +2037,13 @@ export function useCategoryOps(
         const baselineSales = baselineTotals?.netSales || 0;
         const baselineStoreCount = baselineTotals?.storeCount || currentStoreCount;
         const baselineActiveSku = baselineProductStats?.activeSku ?? baselineTotals?.activeSku ?? 0;
-        const baselineDemandPairs = safeDiv(baselinePairs, Math.max(baselineAvgSellThrough, 0.05));
-        const baselineShipPairs = baselineDemandPairs * baselineAvgFillRate;
+        const baselineOperationalTotals = hasBaseline && compareMode !== 'plan' && baselineForcedYear !== null
+            ? inferOperationalTotals(filters, skuMap, channelMap, factOpsMap, baselineForcedYear, baselineForcedSeason, baselineForcedWave)
+            : null;
+        const baselineDemandPairs = baselineOperationalTotals?.demandPairs
+            ?? safeDiv(baselinePairs, Math.max(baselineAvgSellThrough, 0.05));
+        const baselineShipPairs = baselineOperationalTotals?.shipPairs
+            ?? (baselineDemandPairs * baselineAvgFillRate);
         const baselineSellShipRatio = safeDiv(baselinePairs, baselineShipPairs);
         const baselineSalesPerSkuAmt = safeDiv(baselineSales, Math.max(baselineActiveSku, 1));
         const baselineSalesPerStoreAmt = safeDiv(baselineSales, Math.max(baselineStoreCount, 1));
@@ -1908,7 +2082,7 @@ export function useCategoryOps(
                 valueKind: 'percent',
                 deltaValue: hasBaseline ? deltaPp(sellShipRatio, baselineSellShipRatio) : null,
                 deltaKind: 'pp',
-                description: `执行率 ${(avgFillRate * 100).toFixed(1)}%（基线：${baselineLabel}）`,
+                description: `执行率 ${(shipExecutionRate * 100).toFixed(1)}%（基线：${baselineLabel}）`,
             },
             {
                 id: 'active_sku_count',
@@ -2584,7 +2758,7 @@ export function useCategoryOps(
                 id: `decision-top-${topCategory.categoryId}`,
                 title: '主力品类加深',
                 finding: `${topCategory.category} 当前贡献 ${(contributionShare * 100).toFixed(1)}%，${deltaLabel}${(topCategoryDeltaPct || 0).toFixed(1)}%。`,
-                decision: '提高主力价带备货深度，优先补核心价位与常青款，减少非主力长尾投放。',
+                decision: '提高主力价带备货深度，优先补核心价位与老品基盘款，减少非主力长尾投放。',
                 result: '预计动销效率提升，主力品类售罄可提升 1-2pp。',
             });
         }
@@ -2641,8 +2815,8 @@ export function useCategoryOps(
                 shipPairs,
                 sellShipRatio,
                 avgSellThrough,
-                avgFillRate,
-                avgReorderRate,
+                avgFillRate: shipExecutionRate,
+                avgReorderRate: currentOperationalTotals.avgReorderRate || avgReorderRate,
             },
             baselineTotals,
             compareMeta,

@@ -15,24 +15,16 @@ type MappedItem = DesignItem & {
 export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
   const { itemId } = await params;
   const data = await assembleDesignReviewCenter();
-
-  let foundItem: MappedItem | null = null;
-  let foundSeries = null;
-  for (const series of data.series) {
-    const item = series.designItems.find((designItem) => designItem.itemId === itemId) as MappedItem | undefined;
-    if (item) {
-      foundItem = item;
-      foundSeries = series;
-      break;
-    }
-  }
+  const styleAggregate = data.derived.byStyle[itemId];
+  const foundItem = (styleAggregate?.legacyItem as MappedItem | undefined) ?? null;
+  const foundSeries = styleAggregate ? data.derived.bySeries[styleAggregate.style.seriesId]?.legacySeries ?? null : null;
 
   if (!foundItem || !foundSeries) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-slate-900">单款未找到</h1>
-          <p className="mt-2 text-slate-600">Item ID: {itemId} 不存在</p>
+          <p className="mt-2 text-slate-600">当前不存在 ID 为 {itemId} 的单款记录。</p>
         </div>
       </div>
     );
@@ -40,13 +32,11 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
 
   const reviewRecord = foundItem.openclawReviewId ? loadDesignReviewById(foundItem.openclawReviewId) : null;
   const changeOrders = foundItem.changeOrderIds?.length
-    ? loadChangeOrders().filter((changeOrder) => foundItem?.changeOrderIds?.includes(changeOrder.id))
+    ? loadChangeOrders().filter((changeOrder) => foundItem.changeOrderIds?.includes(changeOrder.id))
     : [];
 
-  const developmentPlan = foundSeries.developmentPlan.find((plan) => plan.skuCode === foundItem?.skuCode) ?? null;
-  const relatedAssets = developmentPlan
-    ? foundSeries.assets.filter((asset) => developmentPlan.referenceAssetIds.includes(asset.assetId))
-    : foundSeries.assets.slice(0, 4);
+  const developmentPlan = foundSeries.developmentPlan.find((plan) => plan.skuCode === foundItem.skuCode) ?? null;
+  const relatedAssets = foundSeries.assets.filter((asset) => asset.relatedItemId === foundItem.itemId).slice(0, 4);
 
   return (
     <ItemDetailClient

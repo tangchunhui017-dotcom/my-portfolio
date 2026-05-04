@@ -5,9 +5,13 @@ import factSalesRaw from '@/../data/dashboard/fact_sales.json';
 import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
 import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
 import dimPlanRaw from '@/../data/dashboard/dim_plan.json';
+import factOpsRaw from '@/../data/dashboard/fact_ops.json';
+import { matchesDashboardSkuCategoryFilters } from '@/hooks/useDashboardFilter';
 import type { DashboardFilters } from '@/hooks/useDashboardFilter';
-import { matchCategoryL1, matchCategoryL2 } from '@/config/categoryMapping';
 import { matchesPriceBandFilter } from '@/config/priceBand';
+import { deriveDashboardAnnualPlanTotal } from '@/config/dashboardPlan';
+import { buildDashboardOpsRecordKey, type DashboardOpsFactRecord } from '@/config/dashboardOps';
+import { matchesDashboardSeasonFilter } from '@/config/dashboardTime';
 
 interface FactSalesRecord {
     sku_id: string;
@@ -46,11 +50,17 @@ interface DimChannel {
     store_format: string;
 }
 
+interface DimPlanMonthlyRecord {
+    month?: number;
+    plan_sales_amt?: number;
+}
+
 interface DimPlan {
     season_year?: number;
     overall_plan?: {
         plan_total_sales?: number;
     };
+    monthly_plan?: DimPlanMonthlyRecord[];
 }
 
 interface RegionDerivedStats {
@@ -70,10 +80,9 @@ interface BaselineConfig {
 
 interface RegionAccumulator {
     actual_amt: number;
-    units: number;
-    on_hand: number;
-    st_weighted: number;
-    st_weight: number;
+    demand: number;
+    ship: number;
+    reorder_numerator: number;
     stores: Set<string>;
 }
 
@@ -165,6 +174,10 @@ export interface RegionQuarterOpsAction {
 }
 
 const salesRecords = factSalesRaw as FactSalesRecord[];
+const factOps = factOpsRaw as DashboardOpsFactRecord[];
+const factOpsMap = new Map<string, DashboardOpsFactRecord>(
+    factOps.map((row) => [row.record_key || buildDashboardOpsRecordKey(row), row]),
+);
 const skuRecords = dimSkuRaw as DimSku[];
 const channelRecords = dimChannelRaw as DimChannel[];
 const dimPlan = dimPlanRaw as DimPlan;
@@ -192,6 +205,20 @@ function clamp(value: number, min: number, max: number) {
 
 function toPp(value: number) {
     return value * 100;
+}
+
+function getSellThroughProxy(value: number) {
+    return clamp(value || 0.72, 0.55, 0.9);
+}
+
+function deriveOperationalFillRate(sellThrough: number, inventoryPressure: number) {
+    const rawValue = 0.74 + sellThrough * 0.2 - inventoryPressure * 0.12;
+    return clamp(rawValue, 0.62, 0.97);
+}
+
+function deriveOperationalReorderRate(fillRate: number, inventoryPressure: number) {
+    const rawValue = 0.03 + Math.max(0, 0.9 - fillRate) * 0.4 - Math.max(0, inventoryPressure - 0.4) * 0.05;
+    return clamp(rawValue, 0.015, 0.35);
 }
 
 function matchesTargetAudience(sku: DimSku, selectedAudience: string | 'all') {
@@ -239,8 +266,8 @@ function shouldIncludeRecord(
     }
 
     if (baseline?.season !== undefined) {
-        if (baseline.season !== 'all' && sale.season !== baseline.season) return false;
-    } else if (filters.season !== 'all' && sale.season !== filters.season) {
+        if (!matchesDashboardSeasonFilter(baseline.season, sale.wave, sale.season)) return false;
+    } else if (!matchesDashboardSeasonFilter(filters.season, sale.wave, sale.season)) {
         return false;
     }
 
@@ -249,8 +276,7 @@ function shouldIncludeRecord(
     if (scope.system === 'online' && scope.platform !== 'all' && channel.region !== scope.platform) return false;
 
     if (filters.wave !== 'all' && sale.wave !== filters.wave) return false;
-    if (!matchCategoryL1(filters.category_id, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
-    if (!matchCategoryL2(filters.sub_category, sku.category_name, sku.category_id, sku.sku_name, sku.category_l2, sku.product_line)) return false;
+    if (!matchesDashboardSkuCategoryFilters(filters, sku)) return false;
     if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
     if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
     if (filters.region !== 'all') {
@@ -289,62 +315,46 @@ function buildRegionStats(
         if (!accMap[region]) {
             accMap[region] = {
                 actual_amt: 0,
-                units: 0,
-                on_hand: 0,
-                st_weighted: 0,
-                st_weight: 0,
+                demand: 0,
+                ship: 0,
+                reorder_numerator: 0,
                 stores: new Set<string>(),
             };
         }
         const acc = accMap[region];
         const units = Math.max(0, sale.unit_sold || 0);
         const onHand = Math.max(0, sale.on_hand_unit || 0);
-        const st = clamp(sale.cumulative_sell_through || 0, 0, 1);
-        const weight = Math.max(units, 1);
+        const opsRecord = factOpsMap.get(buildDashboardOpsRecordKey(sale));
+        const sellThroughProxy = getSellThroughProxy(sale.cumulative_sell_through || 0);
+        const inventoryPressure = safeDiv(onHand, onHand + units);
+        const demand = Number(opsRecord?.demand_pairs || safeDiv(units, sellThroughProxy));
+        const ship = Number(opsRecord?.ship_pairs || 0) || demand * deriveOperationalFillRate(sellThroughProxy, inventoryPressure);
+        const reorderPairs = Number(opsRecord?.reorder_pairs || 0);
+        const reorderRate = demand > 0
+            ? (Number(opsRecord?.reorder_rate || 0) || safeDiv(reorderPairs, demand) || deriveOperationalReorderRate(safeDiv(ship, demand), inventoryPressure))
+            : 0;
 
         acc.actual_amt += sale.net_sales_amt || 0;
-        acc.units += units;
-        acc.on_hand += onHand;
-        acc.st_weighted += st * weight;
-        acc.st_weight += weight;
+        acc.demand += demand;
+        acc.ship += ship;
+        acc.reorder_numerator += reorderPairs > 0 ? reorderPairs : reorderRate * demand;
         acc.stores.add(channel.channel_id);
     });
 
     const result: Record<string, RegionDerivedStats> = {};
     Object.entries(accMap).forEach(([region, acc]) => {
         const storeCount = Math.max(acc.stores.size, 1);
-        const avgSt = acc.st_weight > 0 ? acc.st_weighted / acc.st_weight : 0;
-
-        // Add a small deterministic variance based on region name to prevent perfect overlap 
-        // in mock data, making the四象限图 (Four-Quadrant chart) look more realistic.
-        const varianceStr = region + (storeCount).toString();
-        let hash = 0;
-        for (let i = 0; i < varianceStr.length; i++) {
-            hash = Math.imul(31, hash) + varianceStr.charCodeAt(i) | 0;
-        }
-        const pseudoRandom = Math.abs(hash) / 2147483647; // 0 to 1
-
-        const demandVariance = 1 + (pseudoRandom * 0.15 - 0.05); // -5% to +10%
-        const shipVariance = 1 + ((pseudoRandom * 1.7 % 1) * 0.12 - 0.06); // -6% to +6%
-
-        const demand = (acc.units + acc.on_hand * 0.25) * demandVariance;
-        const ship = (acc.units + acc.on_hand * 0.22) * shipVariance;
-        const fillRate = safeDiv(ship, demand);
-        const inventoryPressure = safeDiv(acc.on_hand, acc.units + 1);
-
-        // Add slight variance to reorder rate as well
-        const reorderVariance = ((pseudoRandom * 3.1 % 1) * 0.06 - 0.03); // -3% to +3%
-        const baseReorder = 0.08 + avgSt * 0.18 - Math.min(0.08, inventoryPressure * 0.06);
-        const reorderRate = clamp(baseReorder + reorderVariance, 0.05, 0.3);
+        const fillRate = safeDiv(acc.ship, acc.demand);
+        const reorderRate = safeDiv(acc.reorder_numerator, acc.demand);
 
         result[region] = {
             actual_amt: acc.actual_amt,
-            demand,
-            ship,
+            demand: acc.demand,
+            ship: acc.ship,
             fill_rate: fillRate,
             reorder_rate: reorderRate,
-            store_avg_demand: safeDiv(demand, storeCount),
-            store_avg_ship: safeDiv(ship, storeCount),
+            store_avg_demand: safeDiv(acc.demand, storeCount),
+            store_avg_ship: safeDiv(acc.ship, storeCount),
         };
     });
 
@@ -442,7 +452,13 @@ export function useRegionQuarterOps(
             0,
         );
         const fallbackPlan = totalActual * 1.06;
-        const rawPlan = dimPlan.season_year === currentYear ? dimPlan.overall_plan?.plan_total_sales : undefined;
+        const monthlyPlanSource = Array.from({ length: 12 }, (_, index) => {
+            const row = dimPlan.monthly_plan?.find((item) => Number(item.month) === index + 1);
+            return Number(row?.plan_sales_amt || 0);
+        });
+        const rawPlan = dimPlan.season_year === currentYear
+            ? deriveDashboardAnnualPlanTotal(monthlyPlanSource, Number(dimPlan.overall_plan?.plan_total_sales || 0))
+            : undefined;
         const planTotal = Number(rawPlan || fallbackPlan || 0);
 
         const rows: RegionQuarterOpsRow[] = allRegions.map((region) => {

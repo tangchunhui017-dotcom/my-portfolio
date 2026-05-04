@@ -1,13 +1,21 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import {
     APPAREL_TO_FOOTWEAR_TERMS,
     FOOTWEAR_CORE_METRICS,
+    FOOTWEAR_LIFECYCLE_DEFINITIONS,
+    FOOTWEAR_LIFECYCLE_STRUCTURE_METRICS,
+    FOOTWEAR_SEASON_TRANSITION_METRICS,
     FOOTWEAR_SERIES_POSITIONING,
     FOOTWEAR_PLANNING_CUBE_AXES,
     FOOTWEAR_EXECUTION_MANDATES,
 } from '@/config/footwearLanguage';
+import {
+    DASHBOARD_SEASON_LIFECYCLE_NOTE,
+    DASHBOARD_SEASON_LIFECYCLE_ORDER,
+    DASHBOARD_SEASON_LIFECYCLE_STANDARDS,
+} from '@/config/dashboardSeasonLifecycleStandards';
 import {
     FOOTWEAR_CATEGORY_HIERARCHY,
     FOOTWEAR_PUBLIC_ATTRIBUTE_TAGS,
@@ -15,6 +23,25 @@ import {
 } from '@/config/footwearTaxonomy';
 import sizeRuleMatrixRaw from '@/../data/taxonomy/size_rule_matrix.json';
 import sizeCurvesRaw from '@/../data/taxonomy/size_curves.json';
+
+const MINIMAL_CARRYOVER_RULES = [
+    {
+        title: '当前准入方式',
+        detail: '现阶段以 carryover_registry 白名单为准；未入白名单的 SKU 默认仍按季节货处理，不自动升级为常青款。',
+    },
+    {
+        title: '最小状态机',
+        detail: '常青款只保留 active 和 phasing_out 两种状态。active 继续走常销逻辑；phasing_out 视为退出常青，重新回到季节货清货口径。',
+    },
+    {
+        title: '监控逻辑分流',
+        detail: '季节货看售罄率与换季承接；常青款看库存水位、断码率和补货，不触发季末清仓预警。',
+    },
+    {
+        title: '前台展示口径',
+        detail: '承接图按 上一季 / 当前季 / 下一季 / 常青款 / 其他非主承接 展示。常青款不再并入灰色非主承接桶。',
+    },
+];
 
 const CATEGORY_COLORS: Record<string, string> = {
     经营结果: 'bg-blue-100 text-blue-700',
@@ -105,19 +132,33 @@ function formatCodeList(codes: string[], labelMap: Record<string, string>) {
     return codes.map((code) => labelMap[code] || code).join('、');
 }
 
-export default function MetricsDrawer() {
+export default function MetricsDrawer({ iconOnly = false }: { iconOnly?: boolean }) {
     const [open, setOpen] = useState(false);
 
     return (
         <>
-            <button
-                onClick={() => setOpen(true)}
-                className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors"
-                title="指标口径说明"
-            >
-                <span className="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-xs font-bold">i</span>
-                <span className="hidden sm:inline">指标口径</span>
-            </button>
+            {iconOnly ? (
+                <button
+                    onClick={() => setOpen(true)}
+                    className="flex h-8 w-[42px] items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-emerald-600 transition-colors"
+                    title="指标口径"
+                >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                </button>
+            ) : (
+                <button
+                    onClick={() => setOpen(true)}
+                    className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors"
+                    title="指标口径说明"
+                >
+                    <span className="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-xs font-bold">i</span>
+                    <span className="hidden sm:inline">指标口径</span>
+                </button>
+            )}
 
             {open && (
                 <div className="fixed inset-0 z-50 flex">
@@ -162,6 +203,116 @@ export default function MetricsDrawer() {
                                 </div>
                             </section>
 
+                            <section>
+                                <h3 className="text-sm font-bold text-slate-900 mb-3">库龄层级口径</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    {FOOTWEAR_LIFECYCLE_DEFINITIONS.map((item) => (
+                                        <div key={item.id} className="border border-slate-100 rounded-lg p-3 bg-slate-50">
+                                            <div>
+                                                <h4 className="font-semibold text-slate-900">{item.label}</h4>
+                                                <p className="text-[11px] text-slate-400">{item.english}</p>
+                                            </div>
+                                            <div className="mt-2 rounded-md bg-white border border-slate-100 px-2.5 py-2 text-xs text-slate-700 leading-relaxed">
+                                                {item.rule}
+                                            </div>
+                                            <p className="mt-2 text-xs text-slate-500 leading-relaxed">{item.note}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mt-3 rounded-lg border border-slate-100 bg-slate-50 px-3 py-2 text-xs text-slate-600 leading-relaxed">
+                                    口径说明：库龄层级分组以当前筛选的年/季为锚点；当筛选只到年、未锁定季节时，默认按商品归属季在该年内进行划分。
+                                </div>
+                            </section>
+                            <section>
+                                <h3 className="text-sm font-bold text-slate-900 mb-3">库龄层级销售结构</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {FOOTWEAR_LIFECYCLE_STRUCTURE_METRICS.map((item) => (
+                                        <div key={item.id} className="border border-slate-100 rounded-lg p-3">
+                                            <div>
+                                                <h4 className="font-semibold text-slate-900">{item.label}</h4>
+                                                <p className="text-[11px] text-slate-400">{item.english}</p>
+                                            </div>
+                                            <div className="mt-2 rounded-md bg-slate-50 px-2.5 py-2 text-xs font-mono text-slate-600">
+                                                {item.formula}
+                                            </div>
+                                            <p className="mt-2 text-xs text-slate-500 leading-relaxed">{item.note}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+
+                            <section>
+                                <h3 className="text-sm font-bold text-slate-900 mb-3">季节承接节奏</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {FOOTWEAR_SEASON_TRANSITION_METRICS.map((item) => (
+                                        <div key={item.id} className="border border-slate-100 rounded-lg bg-slate-50 p-3">
+                                            <div>
+                                                <h4 className="font-semibold text-slate-900">{item.label}</h4>
+                                                <p className="text-[11px] text-slate-400">{item.english}</p>
+                                            </div>
+                                            <div className="mt-2 rounded-md border border-slate-100 bg-white px-2.5 py-2 text-xs font-mono text-slate-600">
+                                                {item.formula}
+                                            </div>
+                                            <p className="mt-2 text-xs text-slate-500 leading-relaxed">{item.note}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mt-3 rounded-lg border border-slate-100 bg-slate-50 px-3 py-2 text-xs leading-relaxed text-slate-600">
+                                    口径说明：季节承接节奏与库龄层级销售结构是两个维度。前者观察春夏秋冬货盘在预热、上新、主销、平销、清货各阶段的计划与实际偏差；后者观察新品、次新品、老品在销售结果中的结构占比与切换质量。
+                                </div>
+                            </section>
+                            <section>
+                                <h3 className="text-sm font-bold text-slate-900 mb-3">季节销售生命周期标准</h3>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                                    {DASHBOARD_SEASON_LIFECYCLE_ORDER.map((season) => {
+                                        const item = DASHBOARD_SEASON_LIFECYCLE_STANDARDS[season];
+                                        return (
+                                            <div key={season} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
+                                                <div className="flex items-start justify-between gap-3">
+                                                    <div>
+                                                        <h4 className="font-semibold text-slate-900">{item.label}</h4>
+                                                        <p className="text-[11px] text-slate-400">{item.english}</p>
+                                                    </div>
+                                                    <span className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-500">
+                                                        {item.windowLabel}
+                                                    </span>
+                                                </div>
+                                                <div className="mt-3 space-y-2">
+                                                    {item.phases.map((phase) => (
+                                                        <div key={`${season}-${phase.id}`} className="rounded-md border border-slate-100 bg-white px-2.5 py-2">
+                                                            <div className="flex items-center justify-between gap-3 text-xs">
+                                                                <span className="font-semibold text-slate-800">{phase.label}</span>
+                                                                <span className="text-slate-500">{phase.rangeLabel}</span>
+                                                            </div>
+                                                            <div className="mt-1 flex items-center justify-between gap-3 text-[11px] text-slate-500">
+                                                                <span>阶段占比 {(phase.salesShare * 100).toFixed(0)}%</span>
+                                                                <span>累计售罄率目标 {phase.sellThroughTargetLabel}</span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                <div className="mt-3 rounded-lg border border-slate-100 bg-slate-50 px-3 py-2 text-xs leading-relaxed text-slate-600">
+                                    {DASHBOARD_SEASON_LIFECYCLE_NOTE}
+                                </div>
+                            </section>
+                            <section>
+                                <h3 className="text-sm font-bold text-slate-900 mb-3">常青款最小规则</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {MINIMAL_CARRYOVER_RULES.map((item) => (
+                                        <div key={item.title} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
+                                            <div className="text-xs font-semibold text-slate-800">{item.title}</div>
+                                            <div className="mt-2 text-xs leading-relaxed text-slate-600">{item.detail}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mt-3 rounded-lg border border-slate-100 bg-slate-50 px-3 py-2 text-xs leading-relaxed text-slate-600">
+                                    当前版本先满足基础业务：常青款以白名单为准，季节货继续执行春/夏/秋/冬 5 阶段口径；后续再根据真实业务数据逐步引入自动准入算法和更细的保护期管理。
+                                </div>
+                            </section>
                             <section>
                                 <h3 className="text-sm font-bold text-slate-900 mb-3">尺码标准、配比与动态修正规则</h3>
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">

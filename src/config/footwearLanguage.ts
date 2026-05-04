@@ -1,4 +1,4 @@
-﻿export interface TerminologyMapItem {
+export interface TerminologyMapItem {
     apparel: string;
     footwear: string;
     note?: string;
@@ -294,5 +294,173 @@ export const FOOTWEAR_EXECUTION_MANDATES: FootwearExecutionMandate[] = [
         id: 'benchmark-rule',
         title: '店效对标规则',
         detail: '只做同店态调性的横向对比，避免错误关店与错误扩张。',
+    },
+];
+
+export type FootwearMerchKeyRole = '基本款' | '主推款' | '形象款' | '引流款' | '节庆/主题款';
+
+export const FOOTWEAR_KEY_ROLE_OPTIONS: Array<{
+    id: FootwearMerchKeyRole;
+    description: string;
+}> = [
+    { id: '基本款', description: '承担稳定走量与结构底盘。' },
+    { id: '主推款', description: '承担当期波段的经营重心与销量目标。' },
+    { id: '形象款', description: '承担品牌形象升级与陈列拉升。' },
+    { id: '引流款', description: '承担客流转化与活动引爆。' },
+    { id: '节庆/主题款', description: '承担节庆活动、主题场景与限定曝光。' },
+];
+
+export interface FootwearPriceBandPositioning {
+    id: 'PB1' | 'PB2' | 'PB3' | 'PB4';
+    label: string;
+    range: string;
+    role: string;
+}
+
+export const FOOTWEAR_PRICE_BAND_POSITIONING: FootwearPriceBandPositioning[] = [
+    { id: 'PB1', label: '入门带', range: '199-399', role: '引流与基础走量，强调性价比与耐穿。' },
+    { id: 'PB2', label: '核心走量带', range: '399-599', role: '品牌成交中枢，兼顾规模、毛利与复购。' },
+    { id: 'PB3', label: '形象升级带', range: '599-799', role: '承接趋势款、联名款与高感知设计。' },
+    { id: 'PB4', label: '高端形象带', range: '800+', role: '承担品牌高度、材料升级与门店形象展示。' },
+];
+
+export interface FootwearSceneOption {
+    id: string;
+    label: string;
+    description: string;
+    suggestedCategories: string[];
+    defaultKeyRole: FootwearMerchKeyRole;
+}
+
+export const FOOTWEAR_SCENE_OPTIONS: FootwearSceneOption[] = [
+    { id: 'commute', label: '通勤', description: '聚焦舒适、易搭配与全天候穿着。', suggestedCategories: ['乐福鞋', '玛丽珍', '德训鞋'], defaultKeyRole: '基本款' },
+    { id: 'holiday-travel', label: '假日出行', description: '强调轻量、舒适与多场景切换。', suggestedCategories: ['复古跑', '凉鞋', '户外/机能'], defaultKeyRole: '主推款' },
+    { id: 'light-outdoor', label: '轻户外', description: '强调抓地、防滑、耐磨与城市户外兼容。', suggestedCategories: ['户外/机能', '复古跑'], defaultKeyRole: '主推款' },
+    { id: 'season-shift', label: '换季过渡', description: '承接新旧货切换与温差波动。', suggestedCategories: ['德训鞋', '复古跑', '短靴'], defaultKeyRole: '主推款' },
+    { id: 'summer-cooling', label: '清凉夏日', description: '聚焦透气、清凉与假日场景。', suggestedCategories: ['凉鞋', '玛丽珍'], defaultKeyRole: '引流款' },
+    { id: 'festival-gifting', label: '节庆送礼', description: '聚焦成套感、礼赠感与节日主题表达。', suggestedCategories: ['形象款', '节庆/主题款'], defaultKeyRole: '节庆/主题款' },
+    { id: 'autumn-warmth', label: '秋冬保暖', description: '聚焦保暖、防滑与耐脏材质。', suggestedCategories: ['短靴', '长靴', '户外/机能'], defaultKeyRole: '主推款' },
+    { id: 'year-end-party', label: '年底聚会', description: '聚焦造型感、节庆氛围与社交曝光。', suggestedCategories: ['玛丽珍', '长靴', '形象款'], defaultKeyRole: '形象款' },
+];
+
+export interface FootwearLifecycleDefinition {
+    id: string;
+    label: string;
+    english: string;
+    rule: string;
+    note: string;
+}
+
+export const FOOTWEAR_LIFECYCLE_DEFINITIONS: FootwearLifecycleDefinition[] = [
+    {
+        id: 'new',
+        label: '新品',
+        english: 'Newness',
+        rule: '以当前筛选的年/季为锚点，归属当前季的商品计为新品。',
+        note: '用于观察当季新品承接效率与上新节奏。',
+    },
+    {
+        id: 'carryover',
+        label: '次新品',
+        english: 'Recent Carryover',
+        rule: '以上一季商品，以及去年同季仍在售的延续商品为主，统一归入次新品承接池。',
+        note: '用于观察承接去化与新旧货切换压力。',
+    },
+    {
+        id: 'legacy',
+        label: '老品',
+        english: 'Legacy / Core',
+        rule: '两年及以上仍在售的商品，统一归为老品基盘。',
+        note: '用于观察现金流底盘、老货占压与长期库存风险。',
+    },
+];
+export interface FootwearMetricLensDefinition {
+    id: string;
+    label: string;
+    english: string;
+    formula: string;
+    note: string;
+}
+
+export const FOOTWEAR_LIFECYCLE_STRUCTURE_METRICS: FootwearMetricLensDefinition[] = [
+    {
+        id: 'new-sales-share',
+        label: '新品销售占比',
+        english: 'Newness Sales Share',
+        formula: '新品销售额 /（新品 + 次新品 + 老品销售额）',
+        note: '用于判断当期销售结构是否已由当季新品主导，是库龄层级销售结构图的核心观察指标。',
+    },
+    {
+        id: 'carryover-sales-share',
+        label: '次新品销售占比',
+        english: 'Recent Carryover Sales Share',
+        formula: '次新品销售额 /（新品 + 次新品 + 老品销售额）',
+        note: '用于观察上一季商品及去年同季延续商品是否仍在压盘，评估新旧货切换压力。',
+    },
+    {
+        id: 'legacy-sales-share',
+        label: '老品销售占比',
+        english: 'Legacy Sales Share',
+        formula: '老品销售额 /（新品 + 次新品 + 老品销售额）',
+        note: '用于判断两年及以上基盘款是否过度占压陈列、预算与销售结构。',
+    },
+    {
+        id: 'newness-dominance-line',
+        label: '新品主导生命线',
+        english: '50% Newness Dominance Line',
+        formula: '新品销售占比 >= 50%',
+        note: '当新品销售占比越过 50% 时，视为当期销售结构进入新品主导区，是判断上新节奏是否真正落地的生命线。',
+    },
+    {
+        id: 'transition-rhythm-index',
+        label: '承接节奏指数',
+        english: 'Transition Rhythm Index',
+        formula: '新品销售额 /（次新品销售额 + 老品销售额）',
+        note: '大于 1 表示新品销售规模已超过旧货总和，承接进入主动区；小于 1 则说明旧货仍在主导销售结果。',
+    },
+];
+
+export const FOOTWEAR_SEASON_TRANSITION_METRICS: FootwearMetricLensDefinition[] = [
+    {
+        id: 'season-stage',
+        label: '季节阶段',
+        english: 'Season Stage',
+        formula: '以销售发生时间为准，按春 / 夏 / 秋 / 冬货季定义预热测款、上新爬坡、主销爆发、尾段平销、清货出清五段节奏',
+        note: '总周期中的“30号 / 月末”属于经营记忆锚点，实际按对应月份最后一天映射，避免页面另起一套时间骨架。',
+    },
+    {
+        id: 'new-structure-plan',
+        label: '新品结构计划',
+        english: 'Newness Structure Plan',
+        formula: '年度总控货盘切换层设定的当期新品结构目标',
+        note: '用于表达管理层预期的新品切入节奏，例如某个上新爆发周应达到的新品占比或新品结构目标。',
+    },
+    {
+        id: 'new-structure-actual',
+        label: '新品结构实际',
+        english: 'Newness Structure Actual',
+        formula: '当期新品实际销售额 / 当期总销售额',
+        note: '用于验证终端是否真正按计划主推新品，判断上新、陈列和主推动作是否兑现。',
+    },
+    {
+        id: 'legacy-discount-plan',
+        label: '老货折扣计划',
+        english: 'Legacy Discount Plan',
+        formula: '年度总控货盘切换层设定的旧货折扣率、折扣深度或清货节奏目标',
+        note: '用于控制上一季与老货的退出节奏，避免旧货折扣过慢压住新品，或过快损伤毛利。',
+    },
+    {
+        id: 'legacy-discount-actual',
+        label: '老货折扣实际',
+        english: 'Legacy Discount Actual',
+        formula: '旧货当期实际折扣率、促销深度或清货进度',
+        note: '用于与计划对比，判断旧货是否按计划退出，以及是否因异常折扣支撑了表面销售达成。',
+    },
+    {
+        id: 'transition-deviation',
+        label: '承接偏差',
+        english: 'Transition Deviation',
+        formula: '实际值 - 计划值（按新品结构或旧货折扣节奏计算）',
+        note: '用于判断季节切换是否跑偏。常见偏差包括新品结构低于计划、老货折扣慢于计划或清货提前/滞后。',
     },
 ];

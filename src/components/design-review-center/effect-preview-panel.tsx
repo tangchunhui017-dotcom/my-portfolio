@@ -1,247 +1,155 @@
-'use client';
+﻿'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import AssetWall from '@/components/design-review-center/asset-wall';
-import type { Asset, DesignItem, SeriesWithBrief, Wave } from '@/lib/design-review-center/types';
-
-type VersionStage = NonNullable<Asset['versionStage']>;
+import { ASSET_TYPE_LABELS } from '@/config/design-review-center/labels';
+import { REVIEW_CONCLUSION_MAP, RISK_LEVEL_MAP, STAGE_MAP } from '@/config/design-review-center/status-map';
+import { formatDate } from '@/lib/design-review-center/helpers/date';
+import type { DesignVersionChain } from '@/lib/design-review-center/selectors/assets';
 
 interface EffectPreviewPanelProps {
-  assets: Asset[];
-  waves: Wave[];
-  series: SeriesWithBrief[];
-  items: DesignItem[];
+  chains: DesignVersionChain[];
 }
 
-interface EffectVersionChain {
-  chainId: string;
-  itemId: string;
-  itemName: string;
-  skuCode: string;
-  seriesId: string;
-  seriesName: string;
-  waveLabel: string;
-  stages: Partial<Record<VersionStage, Asset>>;
-  stageCount: number;
-  highlighted: boolean;
-  latestCapturedAt: string | null;
-}
-
-const SERIES_NAME_MAP: Record<string, string> = {
-  'Street Wave': '\u8857\u5934\u6d6a\u6f6e',
-  'Urban Trail': '\u57ce\u5e02\u673a\u80fd\u5f92\u6b65',
-  'City Classic': '\u90fd\u5e02\u7ecf\u5178\u5546\u52a1',
-  'Comfort Flex': '\u8212\u9002\u5f39\u884c',
-};
-
-const VERSION_STAGE_ORDER: VersionStage[] = ['sketch', 'render', 'first_sample', 'final_sample'];
-
-const VERSION_STAGE_META: Record<VersionStage, { label: string; hint: string }> = {
-  sketch: { label: '\u6982\u5ff5\u8349\u56fe', hint: '\u5148\u770b\u4e3b\u9898\u65b9\u5411\u3001\u8f6e\u5ed3\u6bd4\u4f8b\u548c\u7ed3\u6784\u8bed\u8a00\u3002' },
-  render: { label: '\u6e32\u67d3\u56fe', hint: '\u786e\u8ba4\u914d\u8272\u3001\u6750\u6599\u7ec4\u5408\u548c\u54c1\u724c\u8868\u8fbe\u3002' },
-  first_sample: { label: '\u9996\u8f6e\u6837\u978b', hint: '\u91cd\u70b9\u770b\u56fe\u7269\u5dee\u5f02\u3001\u7ed3\u6784\u504f\u5dee\u548c\u521d\u7248\u6210\u672c\u3002' },
-  final_sample: { label: '\u5b9a\u6837\u5b9e\u62cd', hint: '\u786e\u8ba4\u6700\u7ec8\u6837\u978b\u3001\u6210\u672c\u548c\u4e0a\u5e02\u7248\u672c\u3002' },
-};
-
-function getSeriesDisplayName(label: string) {
-  return SERIES_NAME_MAP[label] ?? label;
-}
-
-function getLocalizedItemName(label: string, seriesId: string) {
-  const seriesName = getSeriesDisplayName(seriesId);
-  const number = label.match(/(\d{2})/)?.[1];
-  return number ? `${seriesName} ${number}` : label.replace(/^(Street Wave|Urban Trail|City Classic|Comfort Flex)/, seriesName);
-}
-
-function formatDate(value: string | null | undefined) {
-  if (!value) return '\u5f85\u8865\u5145';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleDateString('zh-CN');
-}
-
-function buildEffectVersionChains(assets: Asset[], items: DesignItem[], series: SeriesWithBrief[], waves: Wave[]): EffectVersionChain[] {
-  const effectAssets = assets.filter((asset) => asset.assetType === 'effect' && asset.relatedItemId && asset.versionStage);
-  const groups = new Map<string, Asset[]>();
-
-  effectAssets.forEach((asset) => {
-    const chainId = asset.comparisonGroupId ?? asset.relatedItemId ?? asset.assetId;
-    const current = groups.get(chainId) ?? [];
-    current.push(asset);
-    groups.set(chainId, current);
-  });
-
-  return [...groups.entries()]
-    .map(([chainId, chainAssets]) => {
-      const firstAsset = chainAssets[0];
-      const item = items.find((record) => record.itemId === firstAsset.relatedItemId) ?? null;
-      const relatedSeries = series.find((record) => record.seriesId === firstAsset.seriesId) ?? null;
-      const relatedWave = waves.find((record) => record.waveId === relatedSeries?.waveId) ?? null;
-      const stages = chainAssets.reduce<Partial<Record<VersionStage, Asset>>>((accumulator, asset) => {
-        if (!asset.versionStage) return accumulator;
-        accumulator[asset.versionStage] = asset;
-        return accumulator;
-      }, {});
-      const latestCapturedAt = chainAssets
-        .map((asset) => asset.capturedAt ?? asset.uploadedAt)
-        .sort((left, right) => new Date(right).getTime() - new Date(left).getTime())[0] ?? null;
-
-      return {
-        chainId,
-        itemId: firstAsset.relatedItemId ?? item?.itemId ?? chainId,
-        itemName: getLocalizedItemName(item?.itemName ?? firstAsset.title, firstAsset.seriesId),
-        skuCode: item?.skuCode ?? '--',
-        seriesId: firstAsset.seriesId,
-        seriesName: getSeriesDisplayName(relatedSeries?.seriesName ?? firstAsset.seriesId),
-        waveLabel: relatedWave?.waveName ?? relatedSeries?.waveId ?? '-',
-        stages,
-        stageCount: Object.keys(stages).length,
-        highlighted: chainAssets.some((asset) => asset.selectedForReview || asset.featuredInReport),
-        latestCapturedAt,
-      };
-    })
-    .sort((left, right) => {
-      if (left.highlighted !== right.highlighted) return left.highlighted ? -1 : 1;
-      return new Date(right.latestCapturedAt ?? 0).getTime() - new Date(left.latestCapturedAt ?? 0).getTime();
-    });
-}
-
-export default function EffectPreviewPanel({ assets, waves, series, items }: EffectPreviewPanelProps) {
-  const effectChains = useMemo(() => buildEffectVersionChains(assets, items, series, waves), [assets, items, series, waves]);
-  const supportingAssets = useMemo(() => assets.filter((asset) => asset.assetType !== 'effect'), [assets]);
-  const [selectedChainId, setSelectedChainId] = useState<string>(effectChains[0]?.chainId ?? '');
+export default function EffectPreviewPanel({ chains }: EffectPreviewPanelProps) {
+  const [selectedStyleId, setSelectedStyleId] = useState<string>(chains[0]?.styleId ?? '');
 
   useEffect(() => {
-    if (!effectChains.length) {
-      setSelectedChainId('');
+    if (!chains.length) {
+      setSelectedStyleId('');
       return;
     }
 
-    if (!effectChains.some((chain) => chain.chainId === selectedChainId)) {
-      setSelectedChainId(effectChains[0].chainId);
+    if (!chains.some((chain) => chain.styleId === selectedStyleId)) {
+      setSelectedStyleId(chains[0].styleId);
     }
-  }, [effectChains, selectedChainId]);
+  }, [chains, selectedStyleId]);
 
-  const selectedChain = effectChains.find((chain) => chain.chainId === selectedChainId) ?? null;
-  const highlightedCount = effectChains.filter((chain) => chain.highlighted).length;
-  const finalSampleCount = effectChains.filter((chain) => chain.stages.final_sample).length;
+  const selectedChain = useMemo(
+    () => chains.find((chain) => chain.styleId === selectedStyleId) ?? null,
+    [chains, selectedStyleId],
+  );
+
+  if (!chains.length) {
+    return (
+      <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center text-sm text-slate-500">
+        当前筛选条件下暂无设计版本资产。
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">{'\u56fe\u7269\u5bf9\u6bd4\u7248\u672c\u94fe'}</h3>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
-              把概念草图、渲染图、首轮样鞋和定样实拍放在同一条版本链里，直接评估图物偏差、配色材料调整和成本收敛。
+            <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Version Chain</div>
+            <h3 className="mt-3 text-2xl font-semibold text-slate-950">从图到物追踪每款的版本演进</h3>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+              把概念草图、效果图、样鞋照片和材料配色变化挂到同一条业务链上，直接判断评审结论、阶段推进和风险标签。
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl bg-slate-50 px-4 py-3">
-              <div className="text-xs font-medium uppercase tracking-wide text-slate-400">{'\u7248\u672c\u94fe'}</div>
-              <div className="mt-2 text-2xl font-semibold text-slate-900">{effectChains.length}</div>
-              <div className="mt-1 text-xs text-slate-500">{'\u5f53\u524d\u7b5b\u9009\u8303\u56f4\u5185\u53ef\u8bc4\u5ba1\u7684\u5355\u6b3e'}</div>
-            </div>
-            <div className="rounded-2xl bg-slate-50 px-4 py-3">
-              <div className="text-xs font-medium uppercase tracking-wide text-slate-400">{'\u91cd\u70b9\u8bc4\u5ba1'}</div>
-              <div className="mt-2 text-2xl font-semibold text-slate-900">{highlightedCount}</div>
-              <div className="mt-1 text-xs text-slate-500">{'\u5df2\u6807\u8bb0\u6c47\u62a5\u6216\u91cd\u70b9\u590d\u6838'}</div>
-            </div>
-            <div className="rounded-2xl bg-slate-50 px-4 py-3">
-              <div className="text-xs font-medium uppercase tracking-wide text-slate-400">{'\u5b9a\u6837\u5b8c\u6210'}</div>
-              <div className="mt-2 text-2xl font-semibold text-slate-900">{finalSampleCount}</div>
-              <div className="mt-1 text-xs text-slate-500">{'\u5df2\u8fdb\u5165\u6700\u7ec8\u6837\u786e\u8ba4\u7684\u5355\u6b3e'}</div>
-            </div>
+            <div className="rounded-2xl bg-slate-50 px-4 py-3"><div className="text-xs text-slate-400">版本链</div><div className="mt-2 text-2xl font-semibold text-slate-950">{chains.length}</div></div>
+            <div className="rounded-2xl bg-slate-50 px-4 py-3"><div className="text-xs text-slate-400">最新版本</div><div className="mt-2 text-2xl font-semibold text-slate-950">{chains.filter((chain) => chain.versions.some((version) => version.isLatest)).length}</div></div>
+            <div className="rounded-2xl bg-slate-50 px-4 py-3"><div className="text-xs text-slate-400">高风险 / 阻塞</div><div className="mt-2 text-2xl font-semibold text-rose-600">{chains.filter((chain) => chain.riskLevel === 'high' || chain.riskLevel === 'blocking' || chain.blocked).length}</div></div>
           </div>
         </div>
+      </section>
 
-        {effectChains.length === 0 ? (
-          <div className="mt-6 rounded-2xl border border-dashed border-slate-300 px-4 py-10 text-center text-sm text-slate-500">
-            当前筛选范围内暂时还没有可对比的版本链资产。
-          </div>
-        ) : (
-          <div className="mt-6 grid gap-6 xl:grid-cols-[320px_1fr]">
-            <div className="space-y-3">
-              {effectChains.map((chain) => {
-                const active = chain.chainId === selectedChainId;
+      <section className="grid gap-6 xl:grid-cols-[320px_1fr]">
+        <div className="space-y-3">
+          {chains.map((chain) => {
+            const riskMeta = RISK_LEVEL_MAP[chain.riskLevel];
+            const active = chain.styleId === selectedStyleId;
+            return (
+              <button
+                key={chain.styleId}
+                type="button"
+                onClick={() => setSelectedStyleId(chain.styleId)}
+                className={[
+                  'w-full rounded-3xl border px-4 py-4 text-left transition',
+                  active ? 'border-slate-900 bg-slate-900 text-white shadow-sm' : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300 hover:bg-slate-50',
+                ].join(' ')}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-semibold">{chain.styleName}</div>
+                    <div className={`mt-1 text-xs ${active ? 'text-slate-300' : 'text-slate-500'}`}>{chain.skuCode} / {chain.seriesName}</div>
+                  </div>
+                  <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${active ? 'bg-white/15 text-white' : `${riskMeta.bgColor} ${riskMeta.textColor}`}`}>
+                    {chain.blocked ? '阻塞' : riskMeta.label}
+                  </span>
+                </div>
+                <div className={`mt-3 text-xs ${active ? 'text-slate-300' : 'text-slate-500'}`}>{chain.categoryName} / {chain.waveId.toUpperCase()}</div>
+                <div className={`mt-2 text-xs ${active ? 'text-slate-300' : 'text-slate-500'}`}>v{chain.latestVersionNumber} / 最近更新 {formatDate(chain.latestUpdatedAt)}</div>
+              </button>
+            );
+          })}
+        </div>
+
+        {selectedChain ? (
+          <div className="space-y-5">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Style Header</div>
+                  <h3 className="mt-2 text-2xl font-semibold text-slate-950">{selectedChain.styleName}</h3>
+                  <p className="mt-2 text-sm text-slate-500">{selectedChain.skuCode} / {selectedChain.seriesName} / {selectedChain.categoryName} / {selectedChain.waveId.toUpperCase()}</p>
+                </div>
+                <div className="flex flex-wrap gap-2 text-xs font-semibold">
+                  <span className={`rounded-full px-3 py-1 ${STAGE_MAP[selectedChain.currentStage].bgColor} ${STAGE_MAP[selectedChain.currentStage].textColor}`}>{STAGE_MAP[selectedChain.currentStage].label}</span>
+                  <span className={`rounded-full px-3 py-1 ${RISK_LEVEL_MAP[selectedChain.riskLevel].bgColor} ${RISK_LEVEL_MAP[selectedChain.riskLevel].textColor}`}>{selectedChain.blocked ? '阻塞' : RISK_LEVEL_MAP[selectedChain.riskLevel].label}</span>
+                  {selectedChain.reviewConclusion ? (
+                    <span className={`rounded-full px-3 py-1 ${REVIEW_CONCLUSION_MAP[selectedChain.reviewConclusion].bgColor} ${REVIEW_CONCLUSION_MAP[selectedChain.reviewConclusion].textColor}`}>{REVIEW_CONCLUSION_MAP[selectedChain.reviewConclusion].label}</span>
+                  ) : null}
+                  <Link href={`/design-review-center/item/${selectedChain.styleId}`} className="rounded-full bg-slate-100 px-3 py-1 text-slate-700 hover:bg-slate-200">
+                    查看详情
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {selectedChain.versions.map((version, index) => {
+                const stageMeta = STAGE_MAP[version.currentStage];
+                const riskMeta = RISK_LEVEL_MAP[version.riskLevel];
+                const previous = selectedChain.versions[index + 1] ?? null;
                 return (
-                  <button
-                    key={chain.chainId}
-                    type="button"
-                    onClick={() => setSelectedChainId(chain.chainId)}
-                    className={`w-full rounded-2xl border px-4 py-4 text-left transition ${active ? 'border-slate-900 bg-slate-900 text-white shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-800 hover:border-slate-300 hover:bg-white'}`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="text-sm font-semibold">{chain.itemName}</div>
-                        <div className={`mt-1 text-xs ${active ? 'text-slate-300' : 'text-slate-500'}`}>{chain.skuCode} / {chain.seriesName}</div>
+                  <article key={version.assetId} className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+                    <img src={version.imageUrl} alt={version.assetId} className="aspect-[4/3] w-full object-cover" />
+                    <div className="space-y-4 p-5">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="text-sm font-semibold text-slate-900">v{version.versionNumber} / {ASSET_TYPE_LABELS[version.assetType]}</div>
+                          <div className="mt-1 text-xs text-slate-500">上传于 {formatDate(version.uploadedAt)}</div>
+                        </div>
+                        {version.isLatest ? <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">最新</span> : null}
                       </div>
-                      {chain.highlighted ? <span className={`rounded-full px-2 py-1 text-[11px] font-semibold ${active ? 'bg-white/15 text-white' : 'bg-pink-100 text-pink-700'}`}>{'\u91cd\u70b9'}</span> : null}
+
+                      <div className="flex flex-wrap gap-2 text-xs font-semibold">
+                        <span className={`rounded-full px-3 py-1 ${stageMeta.bgColor} ${stageMeta.textColor}`}>{stageMeta.label}</span>
+                        <span className={`rounded-full px-3 py-1 ${riskMeta.bgColor} ${riskMeta.textColor}`}>{riskMeta.label}</span>
+                        {version.reviewConclusion ? <span className={`rounded-full px-3 py-1 ${REVIEW_CONCLUSION_MAP[version.reviewConclusion].bgColor} ${REVIEW_CONCLUSION_MAP[version.reviewConclusion].textColor}`}>{REVIEW_CONCLUSION_MAP[version.reviewConclusion].label}</span> : null}
+                      </div>
+
+                      <div className="grid gap-3 text-sm text-slate-600 md:grid-cols-2">
+                        <div><div className="text-xs text-slate-400">材料方案</div><div className="mt-1 leading-6 text-slate-900">{version.materialPlan.join(' / ')}</div></div>
+                        <div><div className="text-xs text-slate-400">配色方案</div><div className="mt-1 leading-6 text-slate-900">{version.colorPlan.join(' / ')}</div></div>
+                        <div><div className="text-xs text-slate-400">底台</div><div className="mt-1 leading-6 text-slate-900">{version.outsole}</div></div>
+                        <div><div className="text-xs text-slate-400">楦型</div><div className="mt-1 leading-6 text-slate-900">{version.last}</div></div>
+                        <div><div className="text-xs text-slate-400">目标成本</div><div className="mt-1 leading-6 text-slate-900">{typeof version.targetCost === 'number' ? `¥ ${version.targetCost}` : '待补充'}</div></div>
+                        <div><div className="text-xs text-slate-400">相对上轮变化</div><div className="mt-1 leading-6 text-slate-900">{version.deltaNote ?? (previous ? '本轮未补充变更说明' : '首版建立基准线')}</div></div>
+                      </div>
+
+                      <div className="rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-700">{version.summary}</div>
                     </div>
-                    <div className={`mt-3 text-xs ${active ? 'text-slate-300' : 'text-slate-500'}`}>{chain.waveLabel} / {'\u5b8c\u6210'} {chain.stageCount} / 4</div>
-                    <div className={`mt-2 text-xs ${active ? 'text-slate-300' : 'text-slate-500'}`}>{'\u6700\u8fd1\u66f4\u65b0'} {formatDate(chain.latestCapturedAt)}</div>
-                  </button>
+                  </article>
                 );
               })}
             </div>
-
-            <div className="space-y-5">
-              {selectedChain ? (
-                <>
-                  <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                      <div>
-                        <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">版本链</div>
-                        <h4 className="mt-2 text-2xl font-semibold text-slate-950">{selectedChain.itemName}</h4>
-                        <p className="mt-2 text-sm text-slate-500">{selectedChain.skuCode} / {selectedChain.seriesName} / {selectedChain.waveLabel}</p>
-                      </div>
-                      <div className="flex flex-wrap gap-2 text-xs font-medium text-slate-600">
-                        <span className="rounded-full bg-white px-3 py-1">{'\u6700\u8fd1\u66f4\u65b0'} {formatDate(selectedChain.latestCapturedAt)}</span>
-                        <span className="rounded-full bg-white px-3 py-1">{'\u5b8c\u6210'} {selectedChain.stageCount} / 4</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-4 xl:grid-cols-4">
-                    {VERSION_STAGE_ORDER.map((stage) => {
-                      const asset = selectedChain.stages[stage] ?? null;
-                      return (
-                        <article key={stage} className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-                          <div className="border-b border-slate-200 bg-slate-50 px-4 py-3">
-                            <div className="text-sm font-semibold text-slate-900">{VERSION_STAGE_META[stage].label}</div>
-                            <div className="mt-1 text-xs leading-5 text-slate-500">{VERSION_STAGE_META[stage].hint}</div>
-                          </div>
-                          {asset ? (
-                            <>
-                              <img src={asset.thumbnailUrl || asset.fileUrl} alt={asset.title} className="aspect-[4/5] w-full object-cover" />
-                              <div className="space-y-3 p-4 text-sm text-slate-600">
-                                <div className="font-medium text-slate-900">{asset.title}</div>
-                                <div className="text-xs text-slate-500">{'\u62cd\u6444 / \u4e0a\u4f20'} {formatDate(asset.capturedAt ?? asset.uploadedAt)}</div>
-                                {asset.bomSummary?.length ? <div><div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">物料构成</div><div className="leading-6">{asset.bomSummary.join(' / ')}</div></div> : null}
-                                {asset.cmfSummary?.length ? <div><div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">配色与材料</div><div className="leading-6">{asset.cmfSummary.join(' / ')}</div></div> : null}
-                                {typeof asset.estimatedCost === 'number' ? <div><div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">{'\u9884\u4f30\u6210\u672c'}</div><div>¥ {asset.estimatedCost}</div></div> : null}
-                              </div>
-                            </>
-                          ) : (
-                            <div className="flex aspect-[4/5] items-center justify-center bg-slate-50 px-6 text-center text-sm text-slate-400">{'\u8be5\u9636\u6bb5\u7d20\u6750\u5f85\u8865\u5145'}</div>
-                          )}
-                        </article>
-                      );
-                    })}
-                  </div>
-                </>
-              ) : null}
-            </div>
           </div>
-        )}
-      </section>
-
-      <section className="space-y-4">
-        <div>
-          <h3 className="text-lg font-semibold text-slate-900">{'\u8f85\u52a9\u8bbe\u8ba1\u8d44\u4ea7'}</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-500">把情绪板、材料板、大底楦型板和配色板放在版本链下方，作为评审时的辅助参考。</p>
-        </div>
-        <AssetWall assets={supportingAssets} waves={waves} series={series} />
+        ) : null}
       </section>
     </div>
   );

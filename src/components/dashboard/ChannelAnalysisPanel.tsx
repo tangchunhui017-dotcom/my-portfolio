@@ -16,6 +16,7 @@ import {
 import type { EChartsOption } from 'echarts';
 import ReactECharts from 'echarts-for-react';
 import { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
+import { getDashboardCompareMeta } from '@/config/dashboardCompare';
 import { useChannelAnalysis } from '@/hooks/useChannelAnalysis';
 import { useRegionQuarterOps, type RegionQuarterOpsRow } from '@/hooks/useRegionQuarterOps';
 import StoreEfficiencyStrategyPanel from '@/components/dashboard/StoreEfficiencyStrategyPanel';
@@ -172,19 +173,7 @@ function safeDiff(current: number, baseline: number | null) {
     return current - baseline;
 }
 
-function getModeLabel(compareMode: CompareMode) {
-    if (compareMode === 'plan') return 'vs计划';
-    if (compareMode === 'yoy') return '同比去年';
-    if (compareMode === 'mom') return '环比上季';
-    return '无对比';
-}
 
-function getDeltaLabel(compareMode: CompareMode) {
-    if (compareMode === 'plan') return '较计划';
-    if (compareMode === 'yoy') return '较去年同期';
-    if (compareMode === 'mom') return '较上季';
-    return '当前值';
-}
 
 function riskTagClass(tag: string) {
     if (tag.includes('供给不足')) return 'border-rose-200 bg-rose-50 text-rose-700';
@@ -310,11 +299,13 @@ export default function ChannelAnalysisPanel({
         if (channelSystem === 'offline') return '线下体系';
         return '全渠道';
     }, [channelSystem, selectedEcomPlatform]);
-    const regionDimensionLabel = regionDimension === 'region' ? '区域' : '平台渠道';
-    const regionDimensionNoun = regionDimension === 'region' ? '区域' : '平台';
+    const compareMeta = useMemo(() => getDashboardCompareMeta(compareMode, filters, 'channel'), [compareMode, filters]);
+    const isCombinedRegionPlatformView = channelSystem === 'all';
+    const regionDimensionLabel = isCombinedRegionPlatformView ? '区域+平台' : regionDimension === 'region' ? '区域' : '平台渠道';
+    const regionDimensionNoun = isCombinedRegionPlatformView ? '节点' : regionDimension === 'region' ? '区域' : '平台';
     const sectionScopeHint = useMemo(
-        () => `口径：${channelSystemLabel} · 当前维度：${regionDimensionLabel} · ${getModeLabel(compareMode)}`,
-        [channelSystemLabel, compareMode, regionDimensionLabel],
+        () => `口径：${channelSystemLabel} · 当前维度：${regionDimensionLabel} · ${compareMeta.modeLabel}`,
+        [channelSystemLabel, compareMeta.modeLabel, regionDimensionLabel],
     );
     const showOnlineBar = channelSystem !== 'offline';
     const showOfflineBar = channelSystem !== 'online';
@@ -380,9 +371,12 @@ export default function ChannelAnalysisPanel({
     }, [regionSplitStats]);
 
     const regionKpiData = useMemo(() => {
-        const visibleRows = regionPerformance.filter((item) =>
-            regionDimension === 'region' ? geoRegionSet.has(item.region) : platformSet.has(item.region),
-        );
+        const visibleRows = regionPerformance.filter((item) => {
+            if (isCombinedRegionPlatformView) {
+                return geoRegionSet.has(item.region) || platformSet.has(item.region);
+            }
+            return regionDimension === 'region' ? geoRegionSet.has(item.region) : platformSet.has(item.region);
+        });
         const totalActual = visibleRows.reduce((sum, item) => sum + item.net_sales, 0);
         return visibleRows
             .map((item) => ({
@@ -402,13 +396,13 @@ export default function ChannelAnalysisPanel({
                 achv_pct: item.achv_rate * 100,
             }))
             .sort((a, b) => b.actual_amt - a.actual_amt);
-    }, [geoRegionSet, platformSet, regionDimension, regionPerformance, regionSplitMap]);
+    }, [geoRegionSet, isCombinedRegionPlatformView, platformSet, regionDimension, regionPerformance, regionSplitMap]);
 
     const regionTotals = useMemo(() => {
-        const actual = regionKpiData.reduce((sum, item) => sum + item.actual_amt, 0);
-        const target = regionKpiData.reduce((sum, item) => sum + item.target_amt, 0);
-        const yoy = regionKpiData.reduce((sum, item) => sum + item.yoy_sales, 0);
-        const mom = regionKpiData.reduce((sum, item) => sum + item.mom_sales, 0);
+        const actual = regionPerformance.reduce((sum, item) => sum + item.net_sales, 0);
+        const target = regionPerformance.reduce((sum, item) => sum + item.target_sales, 0);
+        const yoy = regionPerformance.reduce((sum, item) => sum + item.yoy_sales, 0);
+        const mom = regionPerformance.reduce((sum, item) => sum + item.mom_sales, 0);
         return {
             actual,
             target,
@@ -419,7 +413,7 @@ export default function ChannelAnalysisPanel({
             yoyRate: yoy > 0 ? (actual - yoy) / yoy : 0,
             momRate: mom > 0 ? (actual - mom) / mom : 0,
         };
-    }, [regionKpiData]);
+    }, [regionPerformance]);
 
     const channelShareStats = useMemo(() => {
         const online = regionSplitStats.reduce((sum, item) => sum + item.onlineSales, 0);
@@ -485,10 +479,10 @@ export default function ChannelAnalysisPanel({
         }
         if (compareMode === 'mom') {
             return {
-                label: '上季销售额',
+                label: `${compareMeta.baselineLabel}销售额`,
                 value: regionTotals.mom,
                 dataKey: 'mom_sales',
-                seriesName: '上季',
+                seriesName: compareMeta.baselineLabel,
             } as const;
         }
         return {
@@ -497,7 +491,7 @@ export default function ChannelAnalysisPanel({
             dataKey: 'target_amt',
             seriesName: '目标',
         } as const;
-    }, [compareMode, regionTotals.mom, regionTotals.target, regionTotals.yoy]);
+    }, [compareMeta.baselineLabel, compareMode, regionTotals.mom, regionTotals.target, regionTotals.yoy]);
 
     const regionMatrixCellMap = useMemo(() => {
         const map = new Map<string, (typeof regionChannelMatrix.cells)[number]>();
@@ -925,17 +919,17 @@ export default function ChannelAnalysisPanel({
         };
     }, [compareMode, opsRowsWithCompare]);
 
-    const opsModeLabel = useMemo(() => getModeLabel(compareMode), [compareMode]);
-    const opsDeltaLabel = useMemo(() => getDeltaLabel(compareMode), [compareMode]);
+    const opsModeLabel = useMemo(() => compareMeta.modeLabel, [compareMeta.modeLabel]);
+    const opsDeltaLabel = useMemo(() => compareMeta.deltaLabel, [compareMeta.deltaLabel]);
     const opsMomAvailable = useMemo(
         () => opsRowsWithCompare.some((row) => row.demand_base !== null || row.ship_base !== null),
         [opsRowsWithCompare],
     );
     const opsModeTip = useMemo(() => {
-        if (compareMode === 'mom' && !opsMomAvailable) return '当前口径缺上季链路基线，差值项显示为 —。';
+        if (compareMode === 'mom' && !opsMomAvailable) return `当前口径缺${compareMeta.baselineLabel}链路基线，差值项显示为 —。`;
         if (compareMode === 'none') return '无对比模式下展示当前值。';
         return '';
-    }, [compareMode, opsMomAvailable]);
+    }, [compareMeta.baselineLabel, compareMode, opsMomAvailable]);
 
     const opsKpis = useMemo<
         Array<{
@@ -1499,7 +1493,7 @@ export default function ChannelAnalysisPanel({
     const opsInsightsView = useMemo(() => {
         if (compareMode === 'mom' && !opsMomAvailable) {
             return [
-                { id: 'ops-mom-1', tone: 'warn' as const, text: '环比上季口径缺少链路基线，差值项已自动降级显示为 —。' },
+                { id: 'ops-mom-1', tone: 'warn' as const, text: `环比口径缺少${compareMeta.baselineLabel}链路基线，差值项已自动降级显示为 —。` },
                 ...opsInsights.slice(0, 2),
             ];
         }
@@ -1519,17 +1513,18 @@ export default function ChannelAnalysisPanel({
         opsCompareTotals.ship,
         opsInsights,
         opsMomAvailable,
+        compareMeta.baselineLabel,
     ]);
 
     const opsActionsView = useMemo(() => {
         if (compareMode === 'mom' && !opsMomAvailable) {
             return [
-                { id: 'ops-mom-action-1', priority: '中' as const, text: '补齐上季区域链路基线（需求/配发/补单）后，再启用环比动作阈值。' },
+                { id: 'ops-mom-action-1', priority: '中' as const, text: `补齐${compareMeta.baselineLabel}区域链路基线（需求/配发/补单）后，再启用环比动作阈值。` },
                 ...opsActions.slice(0, 4),
             ].slice(0, 5);
         }
         return opsActions.slice(0, 5);
-    }, [compareMode, opsActions, opsMomAvailable]);
+    }, [compareMeta.baselineLabel, compareMode, opsActions, opsMomAvailable]);
 
     return (
         <div className="flex flex-col gap-8">
@@ -1565,29 +1560,35 @@ export default function ChannelAnalysisPanel({
                                 </button>
                             ))}
                         </div>
-                        <div className="inline-flex items-center rounded-lg border border-slate-200 bg-slate-50 p-1">
-                            {[
-                                { key: 'region' as const, label: '区域维度', enabled: hasRegionDimensionData },
-                                { key: 'platform' as const, label: '平台维度', enabled: hasPlatformDimensionData },
-                            ].map((option) => (
-                                <button
-                                    key={option.key}
-                                    onClick={() => {
-                                        if (!option.enabled) return;
-                                        setRegionDimension(option.key);
-                                    }}
-                                    disabled={!option.enabled}
-                                    className={`px-2.5 py-1 text-xs rounded-md transition-colors ${regionDimension === option.key
-                                        ? 'bg-slate-900 text-white'
-                                        : option.enabled
-                                            ? 'text-slate-600 hover:bg-white'
-                                            : 'text-slate-300 cursor-not-allowed'
-                                        }`}
-                                >
-                                    {option.label}
-                                </button>
-                            ))}
-                        </div>
+                        {channelSystem === 'all' ? (
+                            <div className="inline-flex items-center rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600">
+                                全渠道混合视角
+                            </div>
+                        ) : (
+                            <div className="inline-flex items-center rounded-lg border border-slate-200 bg-slate-50 p-1">
+                                {[
+                                    { key: 'region' as const, label: '区域维度', enabled: hasRegionDimensionData },
+                                    { key: 'platform' as const, label: '平台维度', enabled: hasPlatformDimensionData },
+                                ].map((option) => (
+                                    <button
+                                        key={option.key}
+                                        onClick={() => {
+                                            if (!option.enabled) return;
+                                            setRegionDimension(option.key);
+                                        }}
+                                        disabled={!option.enabled}
+                                        className={`px-2.5 py-1 text-xs rounded-md transition-colors ${regionDimension === option.key
+                                            ? 'bg-slate-900 text-white'
+                                            : option.enabled
+                                                ? 'text-slate-600 hover:bg-white'
+                                                : 'text-slate-300 cursor-not-allowed'
+                                            }`}
+                                    >
+                                        {option.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                         {channelSystem === 'online' && (
                             <div className="inline-flex items-center rounded-lg border border-slate-200 bg-white p-1 max-w-full overflow-x-auto">
                                 <button
@@ -1633,8 +1634,10 @@ export default function ChannelAnalysisPanel({
                     </div>
                 </div>
                 <div className="mb-4 text-xs text-slate-500">
-                    当前经营体系：{channelSystemLabel}。当前统计维度：{regionDimensionLabel}。当前对比口径：{getModeLabel(compareMode)}{compareMode === 'none' ? '（无基线灰柱）' : `（灰色柱=${regionReferenceMeta.label}）`}。
-                    线上与线下采用独立运营口径，电商模式可按平台拆分查看。
+                    当前经营体系：{channelSystemLabel}。当前统计维度：{regionDimensionLabel}。当前对比口径：{compareMeta.modeLabel}{compareMode === 'none' ? '（无基线灰柱）' : `（灰色柱=${regionReferenceMeta.label}）`}。
+                    {isCombinedRegionPlatformView
+                        ? '全渠道视角下，柱图同时展示线下大区与电商平台，便于直接比较业绩体量。'
+                        : '线上与线下采用独立运营口径，电商模式可按平台拆分查看。'}
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-xs">
@@ -1669,12 +1672,12 @@ export default function ChannelAnalysisPanel({
                     </div>
                 </div>
                 <div className="mb-2 text-xs text-slate-500">
-                    当前维度：{regionDimensionLabel}（区域视角仅显示地理大区；平台视角仅显示电商平台）。
+                    {isCombinedRegionPlatformView ? '当前图表：线下大区 + 电商平台混合展示。顶部汇总卡按全渠道汇总。' : `当前维度：${regionDimensionLabel}（区域视角仅显示地理大区；平台视角仅显示电商平台）。顶部汇总卡按当前经营体系汇总。`}
                 </div>
 
                 {regionKpiData.length === 0 ? (
                     <div className="h-80 rounded-lg border border-dashed border-slate-200 bg-slate-50 flex items-center justify-center text-sm text-slate-500">
-                        当前维度暂无数据，请切换“区域维度/平台维度”查看。
+                        {isCombinedRegionPlatformView ? '当前全渠道视角暂无区域或平台数据。' : '当前维度暂无数据，请切换“区域维度/平台维度”查看。'}
                     </div>
                 ) : (
                     <ResponsiveContainer width="100%" height={320}>
@@ -1702,7 +1705,7 @@ export default function ChannelAnalysisPanel({
                                         | undefined;
                                     const regionLabel = getRegionLabel(String(label));
                                     if (!row) return regionLabel;
-                                    return `${regionLabel} ｜ ${regionDimensionLabel}业绩占比 ${(row.share_pct || 0).toFixed(1)}%`;
+                                    return `${regionLabel} ｜ ${regionDimensionNoun}业绩占比 ${(row.share_pct || 0).toFixed(1)}%`;
                                 }}
                                 formatter={(value, name) => {
                                     const numeric = Number(value);

@@ -1,199 +1,473 @@
-/**
- * 生成模拟销售数据脚本 - 企业级版本
- * 目标：300 SKU，总销售额 9000万-1亿，线下 70% / 线上 30%
- * 运行: node scripts/generate-mock-data.js
- */
 const fs = require('fs');
 const path = require('path');
 
-const skus = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/dashboard/dim_sku.json'), 'utf8'));
+const skuPath = path.join(__dirname, '../data/dashboard/dim_sku.json');
+const factSalesPath = path.join(__dirname, '../data/dashboard/fact_sales.json');
+const carryoverRegistryPath = path.join(__dirname, '../data/dashboard/carryover_registry.json');
+const skus = JSON.parse(fs.readFileSync(skuPath, 'utf8'));
 
-// ============================================================
-// 1. 渠道配置
-// 线上 30%: C01天猫(15%) C02京东(10%) C03抖音(5%)
-// 线下 70%: C04直营华东(15%) C05直营华南(10%) C06直营华北(10%)
-//           C07加盟华东(15%) C08加盟华南(10%) C09百货KA(5%) C10运动连锁KA(5%)
-// ============================================================
+const SALE_YEAR = 2024;
+
 const CHANNEL_MIX_BASE = {
-    // 线上 30%
-    C01: 0.15,  // 天猫旗舰店
-    C02: 0.10,  // 京东自营
-    C03: 0.05,  // 抖音直播
-    // 线下 70%
-    C04: 0.15,  // 直营华东
-    C05: 0.10,  // 直营华南
-    C06: 0.10,  // 直营华北
-    C07: 0.15,  // 加盟华东
-    C08: 0.10,  // 加盟华南
-    C09: 0.05,  // 百货KA
-    C10: 0.05,  // 运动连锁KA
+  C01: 0.15,
+  C02: 0.10,
+  C03: 0.05,
+  C04: 0.15,
+  C05: 0.10,
+  C06: 0.10,
+  C07: 0.15,
+  C08: 0.10,
+  C09: 0.05,
+  C10: 0.05,
 };
 
-// 不同生命周期的渠道偏好（在基础比例上微调）
-function getChannelMix(lifecycle, priceBand) {
-    const mix = { ...CHANNEL_MIX_BASE };
-
-    if (lifecycle === '清仓') {
-        // 清仓款：电商比例提升（线上清库存），KA 比例提升
-        mix.C01 += 0.05; mix.C02 += 0.03; mix.C03 += 0.02;
-        mix.C09 += 0.03; mix.C10 += 0.03;
-        mix.C04 -= 0.04; mix.C05 -= 0.04; mix.C06 -= 0.04; mix.C07 -= 0.02; mix.C08 -= 0.02;
-    } else if (lifecycle === '新品') {
-        // 新品：直营比例提升（保价），电商略低
-        mix.C04 += 0.04; mix.C05 += 0.03; mix.C06 += 0.03;
-        mix.C01 -= 0.03; mix.C02 -= 0.03; mix.C03 -= 0.02; mix.C09 -= 0.01; mix.C10 -= 0.01;
-    }
-
-    if (priceBand === 'PB5' || priceBand === 'PB6') {
-        // 高价带：直营占比更高（品牌体验），电商略低
-        mix.C04 += 0.03; mix.C05 += 0.02; mix.C06 += 0.02;
-        mix.C01 -= 0.03; mix.C02 -= 0.02; mix.C03 -= 0.02;
-    }
-
-    // 归一化确保总和为 1
-    const total = Object.values(mix).reduce((a, b) => a + b, 0);
-    Object.keys(mix).forEach(k => mix[k] = Math.round(mix[k] / total * 1000) / 1000);
-    return mix;
-}
-
-// ============================================================
-// 2. 按价格带和生命周期推算 SKU 基础参数
-// 目标总销售额：9000万-1亿
-// 300 SKU × 平均净销售额 ≈ 30万/SKU（加权后）
-// ============================================================
 const PRICE_BAND_CONFIG = {
-    //  价格带    MSRP   库存深度   毛利率   售罄目标
-    PB1: { msrp: 249, baseUnits: 2100, marginRate: 0.40, stTarget: 0.82 },  // ¥199-299 走量款
-    PB2: { msrp: 349, baseUnits: 1600, marginRate: 0.44, stTarget: 0.80 },  // ¥300-399 主力款
-    PB3: { msrp: 449, baseUnits: 1200, marginRate: 0.47, stTarget: 0.78 },  // ¥400-499 主力款
-    PB4: { msrp: 549, baseUnits: 800, marginRate: 0.50, stTarget: 0.75 },  // ¥500-599 形象款
-    PB5: { msrp: 649, baseUnits: 500, marginRate: 0.53, stTarget: 0.70 },  // ¥600-699 形象款
-    PB6: { msrp: 799, baseUnits: 280, marginRate: 0.56, stTarget: 0.65 },  // ¥700+   创新款
+  PB1: { baseUnits: 2100, marginRate: 0.40, stTarget: 0.82 },
+  PB2: { baseUnits: 1600, marginRate: 0.44, stTarget: 0.80 },
+  PB3: { baseUnits: 1200, marginRate: 0.47, stTarget: 0.78 },
+  PB4: { baseUnits: 800, marginRate: 0.50, stTarget: 0.75 },
+  PB5: { baseUnits: 500, marginRate: 0.53, stTarget: 0.70 },
+  PB6: { baseUnits: 280, marginRate: 0.56, stTarget: 0.65 },
 };
 
 const LIFECYCLE_MODIFIER = {
-    '常青': { unitsMult: 1.3, stMult: 1.05, marginMult: 1.02 },  // 常青款：销量大、售罄率高
-    '新品': { unitsMult: 1.0, stMult: 1.00, marginMult: 1.00 },  // 新品：基准
-    '清仓': { unitsMult: 0.7, stMult: 0.85, marginMult: 0.80 },  // 清仓款：折扣深、毛利低
+  evergreen: { unitsMult: 1.3, stMult: 1.05, marginMult: 1.02 },
+  new: { unitsMult: 1.0, stMult: 1.00, marginMult: 1.00 },
+  clearance: { unitsMult: 0.7, stMult: 0.85, marginMult: 0.80 },
 };
 
-function getSkuParams(sku) {
-    const bandConfig = PRICE_BAND_CONFIG[sku.price_band] || PRICE_BAND_CONFIG['PB2'];
-    const lcMod = LIFECYCLE_MODIFIER[sku.lifecycle] || LIFECYCLE_MODIFIER['新品'];
+const SEASON_MONTH_PROFILES = {
+  Q1: [
+    { month: 1, weight: 0.27 },
+    { month: 2, weight: 0.24 },
+    { month: 3, weight: 0.20 },
+    { month: 4, weight: 0.17 },
+    { month: 5, weight: 0.12 },
+  ],
+  Q2: [
+    { month: 3, weight: 0.07 },
+    { month: 4, weight: 0.22 },
+    { month: 5, weight: 0.23 },
+    { month: 6, weight: 0.19 },
+    { month: 7, weight: 0.13 },
+    { month: 8, weight: 0.10 },
+    { month: 9, weight: 0.06 },
+  ],
+  Q3: [
+    { month: 6, weight: 0.06 },
+    { month: 7, weight: 0.17 },
+    { month: 8, weight: 0.19 },
+    { month: 9, weight: 0.21 },
+    { month: 10, weight: 0.18 },
+    { month: 11, weight: 0.12 },
+    { month: 12, weight: 0.07 },
+  ],
+  Q4: [
+    { month: 10, weight: 0.09 },
+    { month: 11, weight: 0.13 },
+    { month: 12, weight: 0.15 },
+    { month: 1, weight: 0.21 },
+    { month: 2, weight: 0.22 },
+    { month: 3, weight: 0.20 },
+  ],
+};
 
-    // 加入随机扰动（±15%），让数据更真实
-    const noise = () => 0.85 + Math.random() * 0.30;
+function hashNumber(input) {
+  let hash = 0;
+  const text = String(input || '');
+  for (let index = 0; index < text.length; index += 1) {
+    hash = (hash * 31 + text.charCodeAt(index)) >>> 0;
+  }
+  return hash;
+}
 
+function seededRange(seed, min, max) {
+  const normalized = (hashNumber(seed) % 10000) / 10000;
+  return min + (max - min) * normalized;
+}
+
+function normalizeText(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function normalizeBoolean(value) {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') return value === 1;
+  const text = normalizeText(value);
+  if (!text) return null;
+  if (text === 'true' || text === '1' || text === 'yes') return true;
+  if (text === 'false' || text === '0' || text === 'no') return false;
+  return null;
+}
+
+function normalizeLegacyLifecycle(value) {
+  const text = normalizeText(value);
+  if (!text) return null;
+  if (text.includes('常青') || text.includes('carry') || text.includes('core') || text.includes('iconic')) return 'carryover';
+  if (text.includes('清仓') || text.includes('clearance') || text.includes('old')) return 'clearance';
+  if (text.includes('新品') || text.includes('new')) return 'new';
+  return null;
+}
+
+function normalizeProductTrack(value) {
+  const text = normalizeText(value);
+  if (text === 'evergreen' || text === 'carryover' || text === 'core') return 'evergreen';
+  if (text === 'seasonal') return 'seasonal';
+  return null;
+}
+
+function normalizeCarryoverType(value) {
+  const text = normalizeText(value);
+  if (text === 'iconic') return 'iconic';
+  if (text === 'seasonal') return 'seasonal';
+  return null;
+}
+
+function normalizeCarryoverStatus(value) {
+  const text = normalizeText(value);
+  if (text === 'active') return 'active';
+  if (text === 'phasing_out' || text === 'phasing-out') return 'phasing_out';
+  return null;
+}
+
+function normalizeCarryoverEntrySource(value) {
+  const text = normalizeText(value);
+  if (text === 'manual_whitelist' || text === 'manual-whitelist') return 'manual_whitelist';
+  if (text === 'seeded_from_mock_lifecycle' || text === 'seeded-from-mock-lifecycle') return 'seeded_from_mock_lifecycle';
+  if (text === 'rule_inferred' || text === 'rule-inferred') return 'rule_inferred';
+  return null;
+}
+
+function normalizeMonitorMode(value) {
+  const text = normalizeText(value);
+  if (text === 'stock_water_level' || text === 'stock-water-level') return 'stock_water_level';
+  if (text === 'sell_through' || text === 'sell-through') return 'sell_through';
+  return null;
+}
+
+function normalizeNonMainReason(value) {
+  const text = normalizeText(value);
+  if (text === 'carryover_active') return 'carryover_active';
+  if (text === 'carryover_protected') return 'carryover_protected';
+  if (text === 'aged_tail') return 'aged_tail';
+  if (text === 'future_preheat') return 'future_preheat';
+  if (text === 'unclassified') return 'unclassified';
+  return null;
+}
+
+function loadCarryoverRegistry() {
+  if (!fs.existsSync(carryoverRegistryPath)) {
+    return new Map();
+  }
+
+  const payload = JSON.parse(fs.readFileSync(carryoverRegistryPath, 'utf8'));
+  const entries = Array.isArray(payload.entries) ? payload.entries : [];
+  return new Map(entries.map((entry) => [String(entry.sku_id), entry]));
+}
+
+function resolveRegistrySchema(entry, seed) {
+  if (!entry) return null;
+
+  const isCarryover = normalizeBoolean(entry.is_carryover);
+  const carryoverStatus = normalizeCarryoverStatus(entry.carryover_status) || 'active';
+  const carryoverProtectionEnd = entry.carryover_protection_end ? String(entry.carryover_protection_end) : null;
+  const carryoverEntrySource = normalizeCarryoverEntrySource(entry.carryover_entry_source || entry.entry_source) || 'manual_whitelist';
+  const carryoverType = normalizeCarryoverType(entry.carryover_type) || (hashNumber(seed) % 100 < 45 ? 'seasonal' : 'iconic');
+  const monitorMode = normalizeMonitorMode(entry.monitor_mode) || 'stock_water_level';
+  const nonMainReason = normalizeNonMainReason(entry.non_main_reason)
+    || (carryoverProtectionEnd ? 'carryover_protected' : 'carryover_active');
+
+  if (isCarryover === false) {
     return {
-        baseUnits: Math.round(bandConfig.baseUnits * lcMod.unitsMult * noise()),
-        sellThroughTarget: Math.min(0.95, bandConfig.stTarget * lcMod.stMult * noise()),
-        marginRate: Math.min(0.65, bandConfig.marginRate * lcMod.marginMult),
-        channelMix: getChannelMix(sku.lifecycle, sku.price_band),
+      product_track: normalizeProductTrack(entry.product_track) || 'seasonal',
+      is_carryover: false,
+      carryover_type: null,
+      carryover_status: null,
+      carryover_protection_end: null,
+      carryover_entry_source: carryoverEntrySource,
+      monitor_mode: normalizeMonitorMode(entry.monitor_mode) || 'sell_through',
+      non_main_reason: normalizeNonMainReason(entry.non_main_reason) || null,
     };
+  }
+
+  return {
+    product_track: 'evergreen',
+    is_carryover: true,
+    carryover_type: carryoverType,
+    carryover_status: carryoverStatus,
+    carryover_protection_end: carryoverProtectionEnd,
+    carryover_entry_source: carryoverEntrySource,
+    monitor_mode: monitorMode,
+    non_main_reason: nonMainReason,
+  };
 }
 
-// ============================================================
-// 3. 售罄率 S 型曲线（12周上市节奏）
-// ============================================================
-function getSellThroughCurve(week, targetST) {
-    // S 型增长曲线，第12周达到目标售罄率
-    const curves = [0.08, 0.18, 0.30, 0.42, 0.54, 0.63, 0.71, 0.77, 0.82, 0.86, 0.89, 0.91];
-    return Math.min(curves[Math.min(week - 1, 11)] * (targetST / 0.91), 1.0);
+const carryoverRegistry = loadCarryoverRegistry();
+
+function inferCarryoverSchema(input, seed) {
+  const registrySchema = resolveRegistrySchema(carryoverRegistry.get(String(seed)), seed);
+  if (registrySchema) return registrySchema;
+
+  const lifecycleKind = normalizeLegacyLifecycle(input.lifecycle);
+  const explicitTrack = normalizeProductTrack(input.product_track);
+  const explicitIsCarryover = normalizeBoolean(input.is_carryover);
+  const carryoverType = normalizeCarryoverType(input.carryover_type);
+  const carryoverStatus = normalizeCarryoverStatus(input.carryover_status);
+  const carryoverProtectionEnd = input.carryover_protection_end ? String(input.carryover_protection_end) : null;
+  const carryoverEntrySource = normalizeCarryoverEntrySource(input.carryover_entry_source) || 'rule_inferred';
+  const monitorMode = normalizeMonitorMode(input.monitor_mode);
+  const nonMainReason = normalizeNonMainReason(input.non_main_reason);
+  const inferredIsCarryover = explicitTrack === 'evergreen' || lifecycleKind === 'carryover';
+  const isCarryover = explicitIsCarryover ?? inferredIsCarryover;
+  const defaultCarryoverType = hashNumber(seed) % 100 < 45 ? 'seasonal' : 'iconic';
+
+  if (isCarryover) {
+    return {
+      product_track: 'evergreen',
+      is_carryover: true,
+      carryover_type: carryoverType || defaultCarryoverType,
+      carryover_status: carryoverStatus || 'active',
+      carryover_protection_end: carryoverProtectionEnd,
+      carryover_entry_source: carryoverEntrySource,
+      monitor_mode: monitorMode || 'stock_water_level',
+      non_main_reason: nonMainReason || (carryoverProtectionEnd ? 'carryover_protected' : 'carryover_active'),
+    };
+  }
+
+  if (lifecycleKind === 'clearance') {
+    return {
+      product_track: 'seasonal',
+      is_carryover: false,
+      carryover_type: null,
+      carryover_status: null,
+      carryover_protection_end: null,
+      carryover_entry_source: carryoverEntrySource,
+      monitor_mode: monitorMode || 'sell_through',
+      non_main_reason: nonMainReason || 'aged_tail',
+    };
+  }
+
+  return {
+    product_track: explicitTrack || 'seasonal',
+    is_carryover: false,
+    carryover_type: null,
+    carryover_status: null,
+    carryover_protection_end: null,
+    carryover_entry_source: carryoverEntrySource,
+    monitor_mode: monitorMode || 'sell_through',
+    non_main_reason: nonMainReason || null,
+  };
 }
 
-// ============================================================
-// 4. 折扣曲线（随周期加深）
-// ============================================================
-function getDiscountRate(week, lifecycle) {
-    if (lifecycle === '清仓') return Math.max(0.50, 0.72 - (week * 0.015));
-    if (lifecycle === '常青') return Math.max(0.82, 0.92 - (week * 0.005));
-    // 新品：前4周保价，后续逐步折扣
-    if (week <= 4) return 0.98;
-    return Math.max(0.78, 0.98 - (week - 4) * 0.015);
+function resolveLifecycleBucket(sku) {
+  const carryoverSchema = inferCarryoverSchema(sku, sku.sku_id);
+  if (carryoverSchema.is_carryover) return 'evergreen';
+  return normalizeLegacyLifecycle(sku.lifecycle) === 'clearance' ? 'clearance' : 'new';
 }
 
-// ============================================================
-// 5. 生成记录
-// ============================================================
+function normalizeMix(mix) {
+  const total = Object.values(mix).reduce((sum, value) => sum + value, 0);
+  const normalized = {};
+  Object.entries(mix).forEach(([channelId, value]) => {
+    normalized[channelId] = value / total;
+  });
+  return normalized;
+}
+
+function getChannelMix(lifecycle, priceBand) {
+  const mix = { ...CHANNEL_MIX_BASE };
+
+  if (lifecycle === 'clearance') {
+    mix.C01 += 0.05;
+    mix.C02 += 0.03;
+    mix.C03 += 0.02;
+    mix.C09 += 0.03;
+    mix.C10 += 0.03;
+    mix.C04 -= 0.04;
+    mix.C05 -= 0.04;
+    mix.C06 -= 0.04;
+    mix.C07 -= 0.02;
+    mix.C08 -= 0.02;
+  } else if (lifecycle === 'new') {
+    mix.C04 += 0.04;
+    mix.C05 += 0.03;
+    mix.C06 += 0.03;
+    mix.C01 -= 0.03;
+    mix.C02 -= 0.03;
+    mix.C03 -= 0.02;
+    mix.C09 -= 0.01;
+    mix.C10 -= 0.01;
+  }
+
+  if (priceBand === 'PB5' || priceBand === 'PB6') {
+    mix.C04 += 0.03;
+    mix.C05 += 0.02;
+    mix.C06 += 0.02;
+    mix.C01 -= 0.03;
+    mix.C02 -= 0.02;
+    mix.C03 -= 0.02;
+  }
+
+  return normalizeMix(mix);
+}
+
+function getSkuParams(sku) {
+  const priceBandConfig = PRICE_BAND_CONFIG[sku.price_band] || PRICE_BAND_CONFIG.PB2;
+  const lifecycleBucket = resolveLifecycleBucket(sku);
+  const lifecycleConfig = LIFECYCLE_MODIFIER[lifecycleBucket] || LIFECYCLE_MODIFIER.new;
+  const carryoverSchema = inferCarryoverSchema(sku, sku.sku_id);
+  const seed = sku.sku_id;
+  const unitsNoise = seededRange(`${seed}-units`, 0.90, 1.12);
+  const stNoise = seededRange(`${seed}-st`, 0.95, 1.05);
+
+  return {
+    lifecycleBucket,
+    carryoverSchema,
+    totalInventory: Math.round(priceBandConfig.baseUnits * lifecycleConfig.unitsMult * unitsNoise),
+    sellThroughTarget: Math.min(0.95, priceBandConfig.stTarget * lifecycleConfig.stMult * stNoise),
+    marginRate: Math.min(0.65, priceBandConfig.marginRate * lifecycleConfig.marginMult),
+    channelMix: getChannelMix(lifecycleBucket, sku.price_band),
+  };
+}
+
+function getSeasonProfile(season) {
+  return (SEASON_MONTH_PROFILES[season] || []).map((entry) => ({ ...entry }));
+}
+
+function getDiscountRate(stageIndex, stageCount, lifecycle) {
+  const progress = stageCount <= 1 ? 1 : stageIndex / (stageCount - 1);
+
+  if (lifecycle === 'clearance') {
+    return Math.max(0.52, 0.78 - progress * 0.18);
+  }
+
+  if (lifecycle === 'evergreen') {
+    return Math.max(0.84, 0.93 - progress * 0.08);
+  }
+
+  if (progress <= 0.35) return 0.98;
+  if (progress <= 0.7) return 0.93;
+  return Math.max(0.80, 0.90 - (progress - 0.7) * 0.18);
+}
+
+function resolveSalesSeasonYear(season, saleYear, saleMonth) {
+  if (season === 'Q4' && saleMonth <= 4) return saleYear - 1;
+  if (season === 'Q1' && saleMonth >= 12) return saleYear + 1;
+  return saleYear;
+}
+
+function splitUnitsByChannel(totalUnits, mix) {
+  const entries = Object.entries(mix).map(([channelId, ratio]) => {
+    const raw = totalUnits * ratio;
+    const base = Math.floor(raw);
+    return {
+      channelId,
+      units: base,
+      remainder: raw - base,
+    };
+  });
+
+  let allocated = entries.reduce((sum, entry) => sum + entry.units, 0);
+  let remainderUnits = totalUnits - allocated;
+
+  entries
+    .sort((left, right) => right.remainder - left.remainder)
+    .forEach((entry) => {
+      if (remainderUnits <= 0) return;
+      entry.units += 1;
+      remainderUnits -= 1;
+    });
+
+  return entries
+    .filter((entry) => entry.units > 0)
+    .map(({ channelId, units }) => ({ channelId, units }));
+}
+
 const records = [];
 let recordId = 1;
 
-// 固定随机种子效果（通过预生成参数）
-const skuParamsCache = {};
-skus.forEach(sku => {
-    skuParamsCache[sku.sku_id] = getSkuParams(sku);
+skus.forEach((sku) => {
+  const params = getSkuParams(sku);
+  const profile = getSeasonProfile(sku.season);
+  if (profile.length === 0) return;
+
+  let cumulativeSold = 0;
+  let cumulativeWeight = 0;
+
+  profile.forEach((entry, stageIndex) => {
+    cumulativeWeight += entry.weight;
+    const cumulativeSellThrough = Math.min(params.sellThroughTarget, params.sellThroughTarget * cumulativeWeight);
+    const targetCumulativeSold = Math.round(params.totalInventory * cumulativeSellThrough);
+    const monthSold = Math.max(0, targetCumulativeSold - cumulativeSold);
+    cumulativeSold = targetCumulativeSold;
+
+    if (monthSold <= 0) return;
+
+    const discountRate = getDiscountRate(stageIndex, profile.length, params.lifecycleBucket);
+    const netPrice = sku.msrp * discountRate;
+    const salesSeasonYear = resolveSalesSeasonYear(sku.season, SALE_YEAR, entry.month);
+    const channelUnits = splitUnitsByChannel(monthSold, params.channelMix);
+
+    channelUnits.forEach(({ channelId, units }) => {
+      const grossSales = units * sku.msrp;
+      const netSales = units * netPrice;
+      const discountAmount = grossSales - netSales;
+      const cogs = netSales * (1 - params.marginRate);
+      const grossProfit = netSales - cogs;
+
+      records.push({
+        record_id: `F${String(recordId++).padStart(6, '0')}`,
+        sku_id: sku.sku_id,
+        channel_id: channelId,
+        sale_year: String(SALE_YEAR),
+        sale_month: entry.month,
+        sale_wave: `W${String(entry.month).padStart(2, '0')}`,
+        sales_season_year: String(salesSeasonYear),
+        sales_season: sku.season,
+        season_year: String(SALE_YEAR),
+        season: sku.season,
+        product_track: params.carryoverSchema.product_track,
+        is_carryover: params.carryoverSchema.is_carryover,
+        carryover_type: params.carryoverSchema.carryover_type,
+        carryover_status: params.carryoverSchema.carryover_status,
+        carryover_protection_end: params.carryoverSchema.carryover_protection_end,
+        carryover_entry_source: params.carryoverSchema.carryover_entry_source,
+        monitor_mode: params.carryoverSchema.monitor_mode,
+        non_main_reason: params.carryoverSchema.non_main_reason,
+        wave: `W${String(entry.month).padStart(2, '0')}`,
+        week_num: entry.month,
+        unit_sold: units,
+        gross_sales_amt: Math.round(grossSales),
+        net_sales_amt: Math.round(netSales),
+        discount_amt: Math.round(discountAmount),
+        discount_rate: Number((1 - discountRate).toFixed(4)),
+        cogs_amt: Math.round(cogs),
+        gross_profit_amt: Math.round(grossProfit),
+        gross_margin_rate: Number(params.marginRate.toFixed(4)),
+        cumulative_sell_through: Number(cumulativeSellThrough.toFixed(4)),
+        on_hand_unit: Math.max(0, params.totalInventory - cumulativeSold),
+      });
+    });
+  });
 });
 
-skus.forEach(sku => {
-    const params = skuParamsCache[sku.sku_id];
-    const totalInventory = params.baseUnits;
-    let cumulativeSold = 0;
-
-    for (let week = 1; week <= 12; week++) {
-        const cumulativeST = getSellThroughCurve(week, params.sellThroughTarget);
-        const targetCumulativeSold = Math.round(totalInventory * cumulativeST);
-        const weekSold = Math.max(0, targetCumulativeSold - cumulativeSold);
-        cumulativeSold = targetCumulativeSold;
-
-        if (weekSold === 0) continue;
-
-        const discountRate = getDiscountRate(week, sku.lifecycle);
-        const netPrice = sku.msrp * discountRate;
-
-        // 按渠道分配
-        Object.entries(params.channelMix).forEach(([channelId, ratio]) => {
-            if (ratio <= 0) return;
-            const channelUnits = Math.round(weekSold * ratio);
-            if (channelUnits === 0) return;
-
-            const grossSales = channelUnits * sku.msrp;
-            const netSales = channelUnits * netPrice;
-            const discountAmt = grossSales - netSales;
-            const cogs = netSales * (1 - params.marginRate);
-            const grossProfit = netSales - cogs;
-
-            records.push({
-                record_id: `F${String(recordId++).padStart(6, '0')}`,
-                sku_id: sku.sku_id,
-                channel_id: channelId,
-                season_year: sku.season_year,
-                season: sku.season,
-                wave: `W${String(week).padStart(2, '0')}`,
-                week_num: week,
-                unit_sold: channelUnits,
-                gross_sales_amt: Math.round(grossSales),
-                net_sales_amt: Math.round(netSales),
-                discount_amt: Math.round(discountAmt),
-                discount_rate: Math.round((1 - discountRate) * 100) / 100,
-                cogs_amt: Math.round(cogs),
-                gross_profit_amt: Math.round(grossProfit),
-                gross_margin_rate: Math.round(params.marginRate * 100) / 100,
-                cumulative_sell_through: Math.round(cumulativeST * 100) / 100,
-                on_hand_unit: Math.max(0, totalInventory - cumulativeSold),
-            });
-        });
-    }
+records.sort((left, right) => {
+  const monthDiff = Number(left.sale_month || 0) - Number(right.sale_month || 0);
+  if (monthDiff !== 0) return monthDiff;
+  if (left.sku_id !== right.sku_id) return left.sku_id.localeCompare(right.sku_id);
+  return left.channel_id.localeCompare(right.channel_id);
 });
 
-// ============================================================
-// 6. 输出统计
-// ============================================================
-const totalNetSales = records.reduce((sum, r) => sum + r.net_sales_amt, 0);
-const totalUnits = records.reduce((sum, r) => sum + r.unit_sold, 0);
-const onlineSales = records
-    .filter(r => ['C01', 'C02', 'C03'].includes(r.channel_id))
-    .reduce((sum, r) => sum + r.net_sales_amt, 0);
-const offlineSales = totalNetSales - onlineSales;
+const totalNetSales = records.reduce((sum, record) => sum + Number(record.net_sales_amt || 0), 0);
+const janAprWinter23 = records
+  .filter((record) => Number(record.sale_month) >= 1 && Number(record.sale_month) <= 4)
+  .filter((record) => record.sales_season === 'Q4' && String(record.sales_season_year) === '2023')
+  .reduce((sum, record) => sum + Number(record.net_sales_amt || 0), 0);
 
-console.log(`✅ 生成完成：${records.length} 条销售记录`);
-console.log(`📦 SKU 数量：${skus.length} 个`);
-console.log(`💰 总净销售额：¥${(totalNetSales / 10000).toFixed(0)} 万`);
-console.log(`👟 总销量：${totalUnits.toLocaleString()} 双`);
-console.log(`🌐 线上占比：${(onlineSales / totalNetSales * 100).toFixed(1)}%`);
-console.log(`🏪 线下占比：${(offlineSales / totalNetSales * 100).toFixed(1)}%`);
+console.log(`registry entries: ${carryoverRegistry.size}`);
+console.log(`generated records: ${records.length}`);
+console.log(`total net sales: ${(totalNetSales / 10000).toFixed(1)} wan`);
+console.log(`jan-apr winter23 sales: ${(janAprWinter23 / 10000).toFixed(1)} wan`);
 
-fs.writeFileSync(
-    path.join(__dirname, '../data/dashboard/fact_sales.json'),
-    JSON.stringify(records, null, 2)
-);
-console.log(`📁 已写入 data/dashboard/fact_sales.json`);
+fs.writeFileSync(factSalesPath, JSON.stringify(records, null, 2), 'utf8');
+console.log('wrote data/dashboard/fact_sales.json');
