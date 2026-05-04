@@ -2,7 +2,7 @@
   "breakdowns": [
     {
       "breakdownId": "cb001",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w1",
       "seriesId": "s001",
       "seriesName": "Street Wave",
@@ -39,13 +39,13 @@
       "focusNote": "主推休闲鞋必须先锁定厚底比例，再决定撞色深度。",
       "source": "manual",
       "sourceId": null,
-      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedAt": "2026-03-22T00:00:00Z",
       "updatedBy": "商品企划组",
       "syncStatus": "synced"
     },
     {
       "breakdownId": "cb002",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w1",
       "seriesId": "s001",
       "seriesName": "Street Wave",
@@ -77,13 +77,13 @@
       "focusNote": "板鞋更适合作为价格带补位，控制结构复杂度。",
       "source": "manual",
       "sourceId": null,
-      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedAt": "2026-03-22T00:00:00Z",
       "updatedBy": "商品企划组",
       "syncStatus": "synced"
     },
     {
       "breakdownId": "cb003",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w1",
       "seriesId": "s002",
       "seriesName": "Urban Trail",
@@ -120,13 +120,13 @@
       "focusNote": "户外鞋要先稳住鞋头包裹和通勤属性平衡。",
       "source": "manual",
       "sourceId": null,
-      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedAt": "2026-03-22T00:00:00Z",
       "updatedBy": "商品企划组",
       "syncStatus": "synced"
     },
     {
       "breakdownId": "cb004",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w1",
       "seriesId": "s002",
       "seriesName": "Urban Trail",
@@ -160,13 +160,13 @@
       "focusNote": "徒步鞋是否保留在当前波段内，需要结合主题统一判断。",
       "source": "manual",
       "sourceId": null,
-      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedAt": "2026-03-22T00:00:00Z",
       "updatedBy": "商品企划组",
       "syncStatus": "synced"
     },
     {
       "breakdownId": "cb005",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w2",
       "seriesId": "s003",
       "seriesName": "City Classic",
@@ -202,13 +202,13 @@
       "focusNote": "正装鞋是系列骨架，必须先把楷型舒适度打稳。",
       "source": "manual",
       "sourceId": null,
-      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedAt": "2026-03-22T00:00:00Z",
       "updatedBy": "商品企划组",
       "syncStatus": "synced"
     },
     {
       "breakdownId": "cb006",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w2",
       "seriesId": "s003",
       "seriesName": "City Classic",
@@ -240,13 +240,13 @@
       "focusNote": "乐福鞋承担风格延展，但不能稀释主线商务形象。",
       "source": "manual",
       "sourceId": null,
-      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedAt": "2026-03-22T00:00:00Z",
       "updatedBy": "商品企划组",
       "syncStatus": "synced"
     },
     {
       "breakdownId": "cb007",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w2",
       "seriesId": "s004",
       "seriesName": "Comfort Flex",
@@ -282,13 +282,13 @@
       "focusNote": "舒适乐福鞋是本系列主线，但要先确认宽楷适配和材料交期。",
       "source": "manual",
       "sourceId": null,
-      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedAt": "2026-03-22T00:00:00Z",
       "updatedBy": "商品企划组",
       "syncStatus": "synced"
     },
     {
       "breakdownId": "cb008",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w2",
       "seriesId": "s004",
       "seriesName": "Comfort Flex",
@@ -320,7 +320,7 @@
       "focusNote": "女性向休闲鞋作为补充款，需要等主线舒适款方向稳定后再推进。",
       "source": "manual",
       "sourceId": null,
-      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedAt": "2026-03-22T00:00:00Z",
       "updatedBy": "商品企划组",
       "syncStatus": "synced"
     }

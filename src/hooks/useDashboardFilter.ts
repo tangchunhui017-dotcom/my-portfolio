@@ -117,7 +117,7 @@ export interface DashboardFilters {
 
 export function getDefaultDashboardFilters(now = new Date()): DashboardFilters {
     return {
-        season_year: 2024,
+        season_year: 2025,
         season: 'all',
         wave: getCurrentDashboardWave(now),
         brand: 'all',
@@ -172,9 +172,9 @@ function resolveDashboardSaleWave(record: Pick<FactSalesRecord, 'sale_wave' | 'w
 }
 
 function resolveDashboardSelectedYear(selectedYear: number | 'all') {
-    if (selectedYear === 'all') return Number(dimPlan.season_year || 2024);
+    if (selectedYear === 'all') return Number(dimPlan.season_year || 2025);
     const normalized = Number(selectedYear);
-    return Number.isFinite(normalized) ? normalized : Number(dimPlan.season_year || 2024);
+    return Number.isFinite(normalized) ? normalized : Number(dimPlan.season_year || 2025);
 }
 
 function matchesDashboardYearFilter(selectedYear: number | 'all', record: Pick<FactSalesRecord, 'sale_year' | 'season_year'>) {
@@ -545,9 +545,13 @@ export function useDashboardFilter(compareMode: CompareMode = 'none', compareCon
         });
         const totalOnHandUnits = Object.values(skuLatestInventory).reduce((sum, item) => sum + item.units, 0);
         const totalOnHandAmt = Object.values(skuLatestInventory).reduce((sum, item) => sum + item.units * item.msrp * 0.6, 0);
-        const weekCount = Object.keys(weeklyData).length || 1;
-        const avgWeeklyUnits = totalUnits / weekCount;
-        const wos = avgWeeklyUnits > 0 ? Math.round((totalOnHandUnits / avgWeeklyUnits) * 10) / 10 : 0;
+        // WOS 使用近 4 周滚动均值，避免季初数据拉低 avgWeekly
+        const sortedWeeks = Object.keys(weeklyData).map(Number).sort((a, b) => b - a);
+        const rolling4Weeks = sortedWeeks.slice(0, 4);
+        const rolling4Units = rolling4Weeks.length > 0
+            ? rolling4Weeks.reduce((sum, w) => sum + (weeklyData[w]?.units ?? 0), 0) / rolling4Weeks.length
+            : totalUnits / (Object.keys(weeklyData).length || 1);
+        const wos = rolling4Units > 0 ? Math.round((totalOnHandUnits / rolling4Units) * 10) / 10 : 0;
         const dos = wos * 7;
 
         const categoryActual: Record<string, { actual_sales: number; actual_units: number; actual_sell_through: number; actual_margin_rate: number; sku_count: number }> = {};
@@ -765,8 +769,14 @@ export function useDashboardFilter(compareMode: CompareMode = 'none', compareCon
             }
         });
         const totalOnHandUnits = Object.values(skuLatestInventory).reduce((sum, item) => sum + item.units, 0);
-        const weekCount = new Set(baselineRecords.map((record) => record.week_num)).size || 1;
-        const avgWeeklyUnits = totalUnits / weekCount;
+        // WOS 使用近 4 周滚动均值
+        const baselineSortedWeeks = [...new Set(baselineRecords.map((record) => record.week_num))].sort((a, b) => b - a);
+        const baseline4Weeks = baselineSortedWeeks.slice(0, 4);
+        const baselineWeeklyUnits: Record<number, number> = {};
+        baselineRecords.forEach((record) => { baselineWeeklyUnits[record.week_num] = (baselineWeeklyUnits[record.week_num] ?? 0) + Number(record.unit_sold || 0); });
+        const avgWeeklyUnits = baseline4Weeks.length > 0
+            ? baseline4Weeks.reduce((sum, w) => sum + (baselineWeeklyUnits[w] ?? 0), 0) / baseline4Weeks.length
+            : totalUnits / (baselineSortedWeeks.length || 1);
         const wos = avgWeeklyUnits > 0 ? Math.round((totalOnHandUnits / avgWeeklyUnits) * 10) / 10 : 0;
 
         return {

@@ -2,89 +2,238 @@
   "briefs": [
     {
       "seriesId": "s001",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w1",
       "designConcept": "融合 90 年代复古街头与现代轻机能语汇，强调厚底、拼接和视觉冲击力。",
       "consumerScene": "城市通勤 + 周末社交",
-      "styleKeywords": ["复古", "拼接", "厚底", "撞色"],
-      "silhouetteDirections": ["中帮", "厚底", "圆头"],
-      "upperConstructionKeywords": ["多片拼接", "加厚鞋舌", "包边鞋口"],
-      "outsoleDirections": ["复古厚底", "前掌弯折槽", "外扩侧墙"],
-      "benchmarkReferences": ["90s Skate", "Campus Court", "Chunky Street"],
-      "reviewFocus": ["大底比例", "鞋口包边", "荧光色占比"],
+      "styleKeywords": [
+        "复古",
+        "拼接",
+        "厚底",
+        "撞色"
+      ],
+      "silhouetteDirections": [
+        "中帮",
+        "厚底",
+        "圆头"
+      ],
+      "upperConstructionKeywords": [
+        "多片拼接",
+        "加厚鞋舌",
+        "包边鞋口"
+      ],
+      "outsoleDirections": [
+        "复古厚底",
+        "前掌弯折槽",
+        "外扩侧墙"
+      ],
+      "benchmarkReferences": [
+        "90s Skate",
+        "Campus Court",
+        "Chunky Street"
+      ],
+      "reviewFocus": [
+        "大底比例",
+        "鞋口包边",
+        "荧光色占比"
+      ],
       "materialPackage": {
-        "primary": ["反绒牛皮", "网眼布"],
-        "accent": ["TPU 支撑片", "反光材料"]
+        "primary": [
+          "反绒牛皮",
+          "网眼布"
+        ],
+        "accent": [
+          "TPU 支撑片",
+          "反光材料"
+        ]
       },
       "colorPackage": {
-        "base": ["黑色", "白色", "米色"],
-        "accent": ["荧光绿", "橙色"]
+        "base": [
+          "黑色",
+          "白色",
+          "米色"
+        ],
+        "accent": [
+          "荧光绿",
+          "橙色"
+        ]
       },
       "plannedSkuCount": 12
     },
     {
       "seriesId": "s002",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w1",
       "designConcept": "把城市徒步和日常通勤的功能性合并在一双鞋上，外观克制但细节有性能语言。",
       "consumerScene": "城市徒步 + 日常通勤",
-      "styleKeywords": ["机能", "防水", "轻量", "透气"],
-      "silhouetteDirections": ["低帮", "流线型", "圆头"],
-      "upperConstructionKeywords": ["防水袜套结构", "分区贴膜", "拉绳鞋带"],
-      "outsoleDirections": ["全地形齿纹", "Vibram 外底", "滚动感前翘"],
-      "benchmarkReferences": ["Urban Hiker", "Trail Commuter", "Utility Runner"],
-      "reviewFocus": ["鞋头包覆", "户外感与通勤感平衡", "防水工艺可靠性"],
+      "styleKeywords": [
+        "机能",
+        "防水",
+        "轻量",
+        "透气"
+      ],
+      "silhouetteDirections": [
+        "低帮",
+        "流线型",
+        "圆头"
+      ],
+      "upperConstructionKeywords": [
+        "防水袜套结构",
+        "分区贴膜",
+        "拉绳鞋带"
+      ],
+      "outsoleDirections": [
+        "全地形齿纹",
+        "Vibram 外底",
+        "滚动感前翘"
+      ],
+      "benchmarkReferences": [
+        "Urban Hiker",
+        "Trail Commuter",
+        "Utility Runner"
+      ],
+      "reviewFocus": [
+        "鞋头包覆",
+        "户外感与通勤感平衡",
+        "防水工艺可靠性"
+      ],
       "materialPackage": {
-        "primary": ["防水面料", "橡胶大底"],
-        "accent": ["反光条", "弹力鞋带"]
+        "primary": [
+          "防水面料",
+          "橡胶大底"
+        ],
+        "accent": [
+          "反光条",
+          "弹力鞋带"
+        ]
       },
       "colorPackage": {
-        "base": ["灰色", "黑色"],
-        "accent": ["橙色", "荧光黄"]
+        "base": [
+          "灰色",
+          "黑色"
+        ],
+        "accent": [
+          "橙色",
+          "荧光黄"
+        ]
       },
       "plannedSkuCount": 8
     },
     {
       "seriesId": "s003",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w2",
       "designConcept": "以经典商务鞋型为底，加入现代舒适科技，打造通勤场景下更轻、更软、更稳的商务鞋。",
       "consumerScene": "商务通勤 + 正式社交",
-      "styleKeywords": ["经典", "简约", "舒适", "品质"],
-      "silhouetteDirections": ["尖头", "低帮", "修长"],
-      "upperConstructionKeywords": ["德比开口", "乐福一脚蹬", "简洁包边"],
-      "outsoleDirections": ["皮底 + 橡胶贴片", "后跟缓震", "薄底稳定片"],
-      "benchmarkReferences": ["Modern Derby", "Soft Loafer", "Business Comfort"],
-      "reviewFocus": ["楦型舒适度", "前掌弯折", "商务感纯度"],
+      "styleKeywords": [
+        "经典",
+        "简约",
+        "舒适",
+        "品质"
+      ],
+      "silhouetteDirections": [
+        "尖头",
+        "低帮",
+        "修长"
+      ],
+      "upperConstructionKeywords": [
+        "德比开口",
+        "乐福一脚蹬",
+        "简洁包边"
+      ],
+      "outsoleDirections": [
+        "皮底 + 橡胶贴片",
+        "后跟缓震",
+        "薄底稳定片"
+      ],
+      "benchmarkReferences": [
+        "Modern Derby",
+        "Soft Loafer",
+        "Business Comfort"
+      ],
+      "reviewFocus": [
+        "楦型舒适度",
+        "前掌弯折",
+        "商务感纯度"
+      ],
       "materialPackage": {
-        "primary": ["头层牛皮", "小牛皮"],
-        "accent": ["真皮内里", "乳胶鞋垫"]
+        "primary": [
+          "头层牛皮",
+          "小牛皮"
+        ],
+        "accent": [
+          "真皮内里",
+          "乳胶鞋垫"
+        ]
       },
       "colorPackage": {
-        "base": ["黑色", "深棕", "深蓝"],
-        "accent": ["酒红"]
+        "base": [
+          "黑色",
+          "深棕",
+          "深蓝"
+        ],
+        "accent": [
+          "酒红"
+        ]
       },
       "plannedSkuCount": 6
     },
     {
       "seriesId": "s004",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w2",
       "designConcept": "以极致舒适为核心卖点，一脚蹬结构降低穿脱门槛，满足全天候通勤与轻休闲需求。",
       "consumerScene": "日常通勤 + 轻度休闲",
-      "styleKeywords": ["舒适", "轻便", "百搭", "一脚蹬"],
-      "silhouetteDirections": ["低帮", "圆头", "宽楦"],
-      "upperConstructionKeywords": ["弹力鞋口", "无压后跟", "宽开口结构"],
-      "outsoleDirections": ["轻量 EVA 底", "前掌弯折槽", "柔软中底"],
-      "benchmarkReferences": ["Easy Slip-on", "Comfort Walker", "Daily Soft"],
-      "reviewFocus": ["宽楦适配", "后跟包裹", "材料交期"],
+      "styleKeywords": [
+        "舒适",
+        "轻便",
+        "百搭",
+        "一脚蹬"
+      ],
+      "silhouetteDirections": [
+        "低帮",
+        "圆头",
+        "宽楦"
+      ],
+      "upperConstructionKeywords": [
+        "弹力鞋口",
+        "无压后跟",
+        "宽开口结构"
+      ],
+      "outsoleDirections": [
+        "轻量 EVA 底",
+        "前掌弯折槽",
+        "柔软中底"
+      ],
+      "benchmarkReferences": [
+        "Easy Slip-on",
+        "Comfort Walker",
+        "Daily Soft"
+      ],
+      "reviewFocus": [
+        "宽楦适配",
+        "后跟包裹",
+        "材料交期"
+      ],
       "materialPackage": {
-        "primary": ["软面牛皮", "弹力布"],
-        "accent": ["记忆棉鞋垫", "EVA 中底"]
+        "primary": [
+          "软面牛皮",
+          "弹力布"
+        ],
+        "accent": [
+          "记忆棉鞋垫",
+          "EVA 中底"
+        ]
       },
       "colorPackage": {
-        "base": ["黑色", "深灰", "米白"],
-        "accent": ["驼色"]
+        "base": [
+          "黑色",
+          "深灰",
+          "米白"
+        ],
+        "accent": [
+          "驼色"
+        ]
       },
       "plannedSkuCount": 8
     }

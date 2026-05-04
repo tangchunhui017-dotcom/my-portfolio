@@ -2,7 +2,7 @@
   "architectures": [
     {
       "architectureId": "pa001",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w1",
       "seriesId": "s001",
       "seriesName": "Street Wave",
@@ -56,13 +56,13 @@
       "architectureDecision": "Street Wave 继续作为 W1 主推视觉系列，优先用同底扩上帮的方式拉开主推款和补量款层次，避免在首波段一次性拉高开模预算。",
       "source": "manual",
       "sourceId": null,
-      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedAt": "2026-03-22T00:00:00Z",
       "updatedBy": "商品企划组",
       "syncStatus": "synced"
     },
     {
       "architectureId": "pa002",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w1",
       "seriesId": "s002",
       "seriesName": "Urban Trail",
@@ -116,13 +116,13 @@
       "architectureDecision": "Urban Trail 保留城市机能定位，但新开模比例较高，必须把主推款数量压住，避免一季内同时拉开太多户外衍生款。",
       "source": "manual",
       "sourceId": null,
-      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedAt": "2026-03-22T00:00:00Z",
       "updatedBy": "商品企划组",
       "syncStatus": "synced"
     },
     {
       "architectureId": "pa003",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w2",
       "seriesId": "s003",
       "seriesName": "City Classic",
@@ -176,13 +176,13 @@
       "architectureDecision": "City Classic 先把商务楷型和舒适体验打稳，再决定是否扩乐福衍生款；W2 更适合用经典延续和换面策略稳住毛利。",
       "source": "manual",
       "sourceId": null,
-      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedAt": "2026-03-22T00:00:00Z",
       "updatedBy": "商品企划组",
       "syncStatus": "synced"
     },
     {
       "architectureId": "pa004",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w2",
       "seriesId": "s004",
       "seriesName": "Comfort Flex",
@@ -236,7 +236,7 @@
       "architectureDecision": "Comfort Flex 的卖点明确，但当前 SKU 已顶到上限，后续只能在同底换面和配色上做扩展，不能再额外增加全新模具。",
       "source": "manual",
       "sourceId": null,
-      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedAt": "2026-03-22T00:00:00Z",
       "updatedBy": "商品企划组",
       "syncStatus": "synced"
     }

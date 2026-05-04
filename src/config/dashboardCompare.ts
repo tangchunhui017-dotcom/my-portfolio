@@ -255,7 +255,7 @@ export function getDashboardCompareMeta(
         };
     }
 
-    const currentYear = filters.season_year === 'all' ? 2024 : Number(filters.season_year);
+    const currentYear = filters.season_year === 'all' ? 2025 : Number(filters.season_year);
     const baseline = resolveDashboardMomBaseline(filters, currentYear, context);
     if (baseline) {
         return {

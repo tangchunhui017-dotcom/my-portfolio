@@ -1,4 +1,4 @@
-﻿import { isPastDue, isSameWeek, startOfDay } from '@/lib/design-review-center/helpers/date';
+﻿import { isGateDelayed, isPastDue, isSameWeek, startOfDay } from '@/lib/design-review-center/helpers/date';
 import { hasOperationalBlock, isHighRisk, isStyleActive } from '@/lib/design-review-center/helpers/status';
 import type { ActionItem, ArchitectureSummary, DesignReviewMustDecideItem, DesignReviewOverview, GateNode, ReviewRecord, StyleDevelopment } from '@/lib/design-review-center/types';
 
@@ -26,7 +26,7 @@ export function createOverview(
   const highRiskStyles = activeStyles.filter((style) => isHighRisk(style.riskLevel) || hasOperationalBlock(style));
   const completedSamples = activeStyles.filter((style) => style.sampleStatus === 'completed');
   const bomLockedStyles = activeStyles.filter((style) => style.bomLocked);
-  const delayedGates = gateNodes.filter((gate) => gate.delayed);
+  const delayedGates = gateNodes.filter((gate) => isGateDelayed(gate, referenceDate));
 
   const mustDecide = activeStyles
     .filter(

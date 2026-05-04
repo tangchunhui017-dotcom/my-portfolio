@@ -2,10 +2,10 @@
   "themes": [
     {
       "themeId": "th001",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w1",
       "waveName": "W1 春季首发",
-      "launchWindow": "2024-03-01 ~ 2024-03-31",
+      "launchWindow": "2026-03-01 ~ 2026-03-31",
       "themeName": "街头机能复古",
       "themeStory": "把 90 年代街头板鞋的复古厚底语言，和城市通勤所需的机能包覆感合并到春季首发波段，先建立辨识度，再通过材料和细节补强功能认知。",
       "consumerMood": "面向在通勤、周末社交和轻徒步之间切换的年轻消费者，强调有态度但不过分夸张的日常表达。",
@@ -157,16 +157,16 @@
       ],
       "source": "manual",
       "sourceId": null,
-      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedAt": "2026-03-22T00:00:00Z",
       "updatedBy": "设计企划组",
       "syncStatus": "synced"
     },
     {
       "themeId": "th002",
-      "season": "2024SS",
+      "season": "2026SS",
       "waveId": "w2",
       "waveName": "W2 夏季主推",
-      "launchWindow": "2024-05-01 ~ 2024-06-15",
+      "launchWindow": "2026-05-01 ~ 2026-06-15",
       "themeName": "商务舒适通勤",
       "themeStory": "以现代商务鞋型为基底，加入轻量、柔软和易穿脱的舒适体验，让正式感和通勤舒适度同时成立。",
       "consumerMood": "面向需要全天通勤、开会和轻社交切换的成熟消费者，希望鞋子既稳重得体，又能明显减轻久穿负担。",
@@ -319,7 +319,7 @@
       ],
       "source": "manual",
       "sourceId": null,
-      "updatedAt": "2024-03-22T00:00:00Z",
+      "updatedAt": "2026-03-22T00:00:00Z",
       "updatedBy": "设计企划组",
       "syncStatus": "synced"
     }

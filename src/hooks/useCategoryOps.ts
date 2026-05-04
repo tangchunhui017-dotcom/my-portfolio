@@ -747,7 +747,7 @@ function resolvePrimaryLifecycle(lifecycleSkuSet: Record<LifecycleKey, Set<strin
     return entries[0]?.count > 0 ? entries[0].key : '\u6b21\u65b0\u54c1';
 }
 function resolveMomBaseline(filters: DashboardFilters) {
-    const selectedYear = filters.season_year === 'all' ? 2024 : Number(filters.season_year);
+    const selectedYear = filters.season_year === 'all' ? 2025 : Number(filters.season_year);
     if (!Number.isFinite(selectedYear)) return null;
     return resolveDashboardMomBaseline(filters, selectedYear, 'category');
 }

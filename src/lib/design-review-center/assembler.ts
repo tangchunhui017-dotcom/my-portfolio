@@ -4,7 +4,7 @@ import { getNextGateByStyle } from './selectors/gates';
 import { createOverview } from './selectors/overview';
 import { getLatestActionByStyle, getLatestReviewByStyle, getOpenActionsByStyle } from './selectors/reviews';
 import { buildProductArchitectureComputation } from './selectors/architecture';
-import { getQuarterFromLaunchWindow, isPastDue, isSameWeek, pickLatestDate, uniqueValues } from './helpers/date';
+import { getQuarterFromLaunchWindow, isGateDelayed, isPastDue, isSameWeek, pickLatestDate, uniqueValues } from './helpers/date';
 import { resolveFootwearCategoryLevels } from './helpers/taxonomy';
 import { isHighRisk, normalizeRiskLevel } from './helpers/status';
 import type {
@@ -550,7 +550,8 @@ export async function assembleDesignReviewCenter(): Promise<DesignReviewCenterDa
 
   const gatesByStyleId = gateNodes.reduce<Record<string, GateNode[]>>((accumulator, gate) => {
     if (!accumulator[gate.styleId]) accumulator[gate.styleId] = [];
-    accumulator[gate.styleId].push(gate);
+    // 自动计算 delayed：未完成且计划日期已过 referenceDate 则视为延期
+    accumulator[gate.styleId].push({ ...gate, delayed: isGateDelayed(gate, referenceDate) });
     return accumulator;
   }, {});
 

@@ -3,8 +3,8 @@
     {
       "otbStructureId": "otb-2024-ss-s001-casual",
       "projectId": "proj-2024-ss",
-      "year": "2024",
-      "season": "2024SS",
+      "year": "2026",
+      "season": "2026SS",
       "quarter": "Q1",
       "seriesId": "s001",
       "categoryName": "休闲鞋",
@@ -13,16 +13,25 @@
       "priceBand": "399-599",
       "waveId": "w1",
       "channelWeights": [
-        { "channel": "直营零售", "weight": 0.46 },
-        { "channel": "电商", "weight": 0.34 },
-        { "channel": "批发", "weight": 0.2 }
+        {
+          "channel": "直营零售",
+          "weight": 0.46
+        },
+        {
+          "channel": "电商",
+          "weight": 0.34
+        },
+        {
+          "channel": "批发",
+          "weight": 0.2
+        }
       ]
     },
     {
       "otbStructureId": "otb-2024-ss-s001-skate",
       "projectId": "proj-2024-ss",
-      "year": "2024",
-      "season": "2024SS",
+      "year": "2026",
+      "season": "2026SS",
       "quarter": "Q1",
       "seriesId": "s001",
       "categoryName": "板鞋",
@@ -31,16 +40,25 @@
       "priceBand": "399-599",
       "waveId": "w1",
       "channelWeights": [
-        { "channel": "直营零售", "weight": 0.38 },
-        { "channel": "电商", "weight": 0.42 },
-        { "channel": "批发", "weight": 0.2 }
+        {
+          "channel": "直营零售",
+          "weight": 0.38
+        },
+        {
+          "channel": "电商",
+          "weight": 0.42
+        },
+        {
+          "channel": "批发",
+          "weight": 0.2
+        }
       ]
     },
     {
       "otbStructureId": "otb-2024-ss-s002-hiking",
       "projectId": "proj-2024-ss",
-      "year": "2024",
-      "season": "2024SS",
+      "year": "2026",
+      "season": "2026SS",
       "quarter": "Q1",
       "seriesId": "s002",
       "categoryName": "徒步鞋",
@@ -49,16 +67,25 @@
       "priceBand": "599-899",
       "waveId": "w1",
       "channelWeights": [
-        { "channel": "直营零售", "weight": 0.34 },
-        { "channel": "电商", "weight": 0.26 },
-        { "channel": "户外专业店", "weight": 0.4 }
+        {
+          "channel": "直营零售",
+          "weight": 0.34
+        },
+        {
+          "channel": "电商",
+          "weight": 0.26
+        },
+        {
+          "channel": "户外专业店",
+          "weight": 0.4
+        }
       ]
     },
     {
       "otbStructureId": "otb-2024-ss-s002-outdoor",
       "projectId": "proj-2024-ss",
-      "year": "2024",
-      "season": "2024SS",
+      "year": "2026",
+      "season": "2026SS",
       "quarter": "Q1",
       "seriesId": "s002",
       "categoryName": "户外鞋",
@@ -67,16 +94,25 @@
       "priceBand": "599-899",
       "waveId": "w1",
       "channelWeights": [
-        { "channel": "直营零售", "weight": 0.28 },
-        { "channel": "电商", "weight": 0.22 },
-        { "channel": "户外专业店", "weight": 0.5 }
+        {
+          "channel": "直营零售",
+          "weight": 0.28
+        },
+        {
+          "channel": "电商",
+          "weight": 0.22
+        },
+        {
+          "channel": "户外专业店",
+          "weight": 0.5
+        }
       ]
     },
     {
       "otbStructureId": "otb-2024-ss-s003-derby",
       "projectId": "proj-2024-ss",
-      "year": "2024",
-      "season": "2024SS",
+      "year": "2026",
+      "season": "2026SS",
       "quarter": "Q1",
       "seriesId": "s003",
       "categoryName": "德比鞋",
@@ -85,16 +121,25 @@
       "priceBand": "699-999",
       "waveId": "w2",
       "channelWeights": [
-        { "channel": "直营零售", "weight": 0.44 },
-        { "channel": "电商", "weight": 0.18 },
-        { "channel": "商务团购", "weight": 0.38 }
+        {
+          "channel": "直营零售",
+          "weight": 0.44
+        },
+        {
+          "channel": "电商",
+          "weight": 0.18
+        },
+        {
+          "channel": "商务团购",
+          "weight": 0.38
+        }
       ]
     },
     {
       "otbStructureId": "otb-2024-ss-s003-loafer",
       "projectId": "proj-2024-ss",
-      "year": "2024",
-      "season": "2024SS",
+      "year": "2026",
+      "season": "2026SS",
       "quarter": "Q1",
       "seriesId": "s003",
       "categoryName": "乐福鞋",
@@ -103,16 +148,25 @@
       "priceBand": "699-999",
       "waveId": "w2",
       "channelWeights": [
-        { "channel": "直营零售", "weight": 0.4 },
-        { "channel": "电商", "weight": 0.24 },
-        { "channel": "商务团购", "weight": 0.36 }
+        {
+          "channel": "直营零售",
+          "weight": 0.4
+        },
+        {
+          "channel": "电商",
+          "weight": 0.24
+        },
+        {
+          "channel": "商务团购",
+          "weight": 0.36
+        }
       ]
     },
     {
       "otbStructureId": "otb-2024-ss-s004-loafer",
       "projectId": "proj-2024-ss",
-      "year": "2024",
-      "season": "2024SS",
+      "year": "2026",
+      "season": "2026SS",
       "quarter": "Q1",
       "seriesId": "s004",
       "categoryName": "乐福鞋",
@@ -121,16 +175,25 @@
       "priceBand": "399-599",
       "waveId": "w2",
       "channelWeights": [
-        { "channel": "直营零售", "weight": 0.35 },
-        { "channel": "电商", "weight": 0.45 },
-        { "channel": "会员私域", "weight": 0.2 }
+        {
+          "channel": "直营零售",
+          "weight": 0.35
+        },
+        {
+          "channel": "电商",
+          "weight": 0.45
+        },
+        {
+          "channel": "会员私域",
+          "weight": 0.2
+        }
       ]
     },
     {
       "otbStructureId": "otb-2024-ss-s004-casual",
       "projectId": "proj-2024-ss",
-      "year": "2024",
-      "season": "2024SS",
+      "year": "2026",
+      "season": "2026SS",
       "quarter": "Q1",
       "seriesId": "s004",
       "categoryName": "休闲鞋",
@@ -139,9 +202,18 @@
       "priceBand": "399-599",
       "waveId": "w2",
       "channelWeights": [
-        { "channel": "直营零售", "weight": 0.3 },
-        { "channel": "电商", "weight": 0.48 },
-        { "channel": "会员私域", "weight": 0.22 }
+        {
+          "channel": "直营零售",
+          "weight": 0.3
+        },
+        {
+          "channel": "电商",
+          "weight": 0.48
+        },
+        {
+          "channel": "会员私域",
+          "weight": 0.22
+        }
       ]
     }
   ]

@@ -248,7 +248,7 @@ function getLatestYear(records: FactSalesRecord[]) {
         const yearNum = Number(record.season_year);
         if (Number.isFinite(yearNum) && yearNum > latest) latest = yearNum;
     });
-    return latest || 2024;
+    return latest || 2025;
 }
 
 function shouldIncludeRecord(

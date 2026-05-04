@@ -13,7 +13,11 @@
       "outsoleDirection": "外扩厚底 + 前掌弯折槽",
       "materialFocus": "反绒皮 + 网眼布",
       "colorDirection": "黑白基底 + 荧光点缀",
-      "referenceAssetIds": ["ast001", "ast003", "ast005"],
+      "referenceAssetIds": [
+        "ast001",
+        "ast003",
+        "ast005"
+      ],
       "reviewFocus": "大底体量与帮面比例",
       "phase": "prototype_review"
     },
@@ -30,7 +34,10 @@
       "outsoleDirection": "街头平底纹路",
       "materialFocus": "全粒面皮革",
       "colorDirection": "全白 + 微撞色",
-      "referenceAssetIds": ["ast001", "ast006"],
+      "referenceAssetIds": [
+        "ast001",
+        "ast006"
+      ],
       "reviewFocus": "包边细节和鞋口舒适度",
       "phase": "prototype_review"
     },
@@ -47,7 +54,10 @@
       "outsoleDirection": "厚底包边外墙",
       "materialFocus": "反绒皮 + 网眼",
       "colorDirection": "黑绿高对比",
-      "referenceAssetIds": ["ast005", "ast006"],
+      "referenceAssetIds": [
+        "ast005",
+        "ast006"
+      ],
       "reviewFocus": "荧光色比例与市场接受度",
       "phase": "prototype_review"
     },
@@ -64,7 +74,11 @@
       "outsoleDirection": "全地形齿纹 + 前翘滚动感",
       "materialFocus": "防水面料 + 耐磨橡胶",
       "colorDirection": "灰黑机能色",
-      "referenceAssetIds": ["ast008", "ast002", "ast007"],
+      "referenceAssetIds": [
+        "ast008",
+        "ast002",
+        "ast007"
+      ],
       "reviewFocus": "鞋头包覆和防水结构",
       "phase": "sample_review"
     },
@@ -81,7 +95,10 @@
       "outsoleDirection": "轻量防滑大底",
       "materialFocus": "防水布 + 橡胶底",
       "colorDirection": "全黑商务机能",
-      "referenceAssetIds": ["ast007", "ast015"],
+      "referenceAssetIds": [
+        "ast007",
+        "ast015"
+      ],
       "reviewFocus": "城市通勤感和户外感平衡",
       "phase": "prototype_review"
     },
@@ -98,7 +115,10 @@
       "outsoleDirection": "多向防滑纹路",
       "materialFocus": "尼龙 + 橡胶",
       "colorDirection": "橄榄绿户外色",
-      "referenceAssetIds": ["ast008", "ast015"],
+      "referenceAssetIds": [
+        "ast008",
+        "ast015"
+      ],
       "reviewFocus": "户外属性是否过重",
       "phase": "concept"
     },
@@ -115,7 +135,11 @@
       "outsoleDirection": "皮底 + 橡胶贴片",
       "materialFocus": "头层牛皮",
       "colorDirection": "深棕商务色",
-      "referenceAssetIds": ["ast009", "ast004", "ast010"],
+      "referenceAssetIds": [
+        "ast009",
+        "ast004",
+        "ast010"
+      ],
       "reviewFocus": "楦型舒适度和商务纯度",
       "phase": "concept"
     },
@@ -132,7 +156,10 @@
       "outsoleDirection": "薄底稳定片 + 后跟缓震",
       "materialFocus": "头层牛皮 + 真皮内里",
       "colorDirection": "经典黑",
-      "referenceAssetIds": ["ast004", "ast010"],
+      "referenceAssetIds": [
+        "ast004",
+        "ast010"
+      ],
       "reviewFocus": "前掌弯折和行走稳定性",
       "phase": "concept"
     },
@@ -149,7 +176,10 @@
       "outsoleDirection": "薄底 + 局部贴片",
       "materialFocus": "小牛皮",
       "colorDirection": "深蓝商务休闲",
-      "referenceAssetIds": ["ast009", "ast004"],
+      "referenceAssetIds": [
+        "ast009",
+        "ast004"
+      ],
       "reviewFocus": "鞋口稳定性和通勤适配",
       "phase": "concept"
     },
@@ -166,7 +196,11 @@
       "outsoleDirection": "轻量 EVA + 前掌弯折槽",
       "materialFocus": "软皮 + 弹力布",
       "colorDirection": "黑色通勤",
-      "referenceAssetIds": ["ast011", "ast012", "ast013"],
+      "referenceAssetIds": [
+        "ast011",
+        "ast012",
+        "ast013"
+      ],
       "reviewFocus": "宽楦适配和后跟包裹",
       "phase": "concept"
     },
@@ -183,7 +217,10 @@
       "outsoleDirection": "轻量 EVA 中底",
       "materialFocus": "软皮 + 弹力布",
       "colorDirection": "深灰通勤",
-      "referenceAssetIds": ["ast012", "ast014"],
+      "referenceAssetIds": [
+        "ast012",
+        "ast014"
+      ],
       "reviewFocus": "长时间穿着舒适度",
       "phase": "concept"
     },
@@ -200,7 +237,10 @@
       "outsoleDirection": "柔软中底 + 稳定外底",
       "materialFocus": "软皮 + 记忆棉",
       "colorDirection": "米白女性向",
-      "referenceAssetIds": ["ast011", "ast014"],
+      "referenceAssetIds": [
+        "ast011",
+        "ast014"
+      ],
       "reviewFocus": "女性向配色与轻盈感",
       "phase": "concept"
     }

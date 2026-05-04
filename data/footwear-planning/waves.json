@@ -3,7 +3,7 @@
     {
       "waveId": "w1",
       "waveName": "W1 春季首发",
-      "launchWindow": "2024-03-01 ~ 2024-03-31",
+      "launchWindow": "2026-03-01 ~ 2026-03-31",
       "theme": "街头机能复古 / 城市机能徒步",
       "status": "in_progress",
       "plannedSkuCount": 16,
@@ -12,7 +12,7 @@
     {
       "waveId": "w2",
       "waveName": "W2 夏季主推",
-      "launchWindow": "2024-05-01 ~ 2024-06-15",
+      "launchWindow": "2026-05-01 ~ 2026-06-15",
       "theme": "商务舒适通勤 / 舒适弹行",
       "status": "planning",
       "plannedSkuCount": 12,

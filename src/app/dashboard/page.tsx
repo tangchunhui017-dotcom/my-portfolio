@@ -148,13 +148,13 @@ export default function DashboardPage() {
         msrp: number;
     }>>(() => {
         if (!filteredRecords || filteredRecords.length === 0) return [];
-        const skuAgg: Record<string, { onHand: number; weeklyUnits: number[]; week: number; st: number }> = {};
+        const skuAgg: Record<string, { onHand: number; weeklyByWeek: Record<number, number>; week: number; st: number }> = {};
         filteredRecords.forEach((r: any) => {
             if (!skuAgg[r.sku_id]) {
-                skuAgg[r.sku_id] = { onHand: 0, weeklyUnits: [], week: 0, st: 0 };
+                skuAgg[r.sku_id] = { onHand: 0, weeklyByWeek: {}, week: 0, st: 0 };
             }
             const entry = skuAgg[r.sku_id];
-            entry.weeklyUnits.push(r.unit_sold);
+            entry.weeklyByWeek[r.week_num] = (entry.weeklyByWeek[r.week_num] ?? 0) + r.unit_sold;
             if (r.week_num > entry.week) {
                 entry.onHand = r.on_hand_unit;
                 entry.week = r.week_num;
@@ -163,7 +163,12 @@ export default function DashboardPage() {
         });
         return Object.entries(skuAgg).map(([skuId, d]) => {
             const sku = skuMap[skuId];
-            const avgWeekly = d.weeklyUnits.length > 0 ? d.weeklyUnits.reduce((a, b) => a + b, 0) / d.weeklyUnits.length : 0;
+            // 近 4 周滚动均值
+            const sortedWeeks = Object.keys(d.weeklyByWeek).map(Number).sort((a, b) => b - a);
+            const rolling4 = sortedWeeks.slice(0, 4);
+            const avgWeekly = rolling4.length > 0
+                ? rolling4.reduce((s, w) => s + d.weeklyByWeek[w], 0) / rolling4.length
+                : 0;
             const wos = avgWeekly > 0 ? Math.round((d.onHand / avgWeekly) * 10) / 10 : 0;
             return {
                 skuId,

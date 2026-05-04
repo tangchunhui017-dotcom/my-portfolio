@@ -1,21 +1,21 @@
 {
-    "projects":  [
-                     {
-                         "projectId":  "proj-2024-ss",
-                         "year":  "2024",
-                         "season":  "2024SS",
-                         "quarter":  "Q1",
-                         "brandName":  "OpenClaw Footwear",
-                         "projectName":  "2024SS 城市通勤与街头复古企划项目",
-                         "projectOwner":  "王五",
-                         "currentStage":  "prototype_review",
-                         "leadSeries":  [
-                                            "s001",
-                                            "s002"
-                                        ],
-                         "targetLaunchDate":  "2024-06-01",
-                         "projectStatus":  "active",
-                         "architectureProfileId":  "footwear-planning-ss-core"
-                     }
-                 ]
+  "projects": [
+    {
+      "projectId": "proj-2024-ss",
+      "year": "2026",
+      "season": "2026SS",
+      "quarter": "Q1",
+      "brandName": "OpenClaw Footwear",
+      "projectName": "2024SS 城市通勤与街头复古企划项目",
+      "projectOwner": "王五",
+      "currentStage": "prototype_review",
+      "leadSeries": [
+        "s001",
+        "s002"
+      ],
+      "targetLaunchDate": "2026-06-01",
+      "projectStatus": "active",
+      "architectureProfileId": "footwear-planning-ss-core"
+    }
+  ]
 }

@@ -38,7 +38,7 @@ export function resolveDashboardLifecycleLabel(
     filters: DashboardLifecycleFilters,
     sku: DashboardLifecycleSkuScope,
 ): DashboardLifecycleLabel {
-    const anchorYear = filters.season_year === 'all' ? 2024 : Number(filters.season_year);
+    const anchorYear = filters.season_year === 'all' ? 2025 : Number(filters.season_year);
     const anchorSeason = resolveAnchorSeason(filters);
     const skuYear = parseSkuYear(sku.season_year);
     const skuSeason = (sku.season || '') as DashboardSeason | '';

@@ -108,9 +108,14 @@ export default function SkuRiskList({ filteredRecords, filters, filterSummary = 
             const totalGrossProfit = records.reduce((s, r) => s + r.gross_profit_amt, 0);
             const totalGrossSales = records.reduce((s, r) => s + r.gross_sales_amt, 0);
 
-            // Calculate WOS
-            const uniqueWeeks = new Set(records.map(r => r.week_num)).size || 1;
-            const avgWeeklyUnits = totalUnits / uniqueWeeks;
+            // WOS 使用近 4 周滚动均值
+            const weekNumsSorted = [...new Set(records.map(r => r.week_num))].sort((a, b) => b - a);
+            const rolling4Weeks = weekNumsSorted.slice(0, 4);
+            const weeklyUnitMap: Record<number, number> = {};
+            records.forEach(r => { weeklyUnitMap[r.week_num] = (weeklyUnitMap[r.week_num] ?? 0) + r.unit_sold; });
+            const avgWeeklyUnits = rolling4Weeks.length > 0
+                ? rolling4Weeks.reduce((s, w) => s + (weeklyUnitMap[w] ?? 0), 0) / rolling4Weeks.length
+                : totalUnits / (weekNumsSorted.length || 1);
             const latestRecord = records.reduce((a, b) => a.week_num > b.week_num ? a : b);
             const onHandUnit = latestRecord.on_hand_unit;
             const wos = avgWeeklyUnits > 0 ? parseFloat((onHandUnit / avgWeeklyUnits).toFixed(1)) : 99.9;

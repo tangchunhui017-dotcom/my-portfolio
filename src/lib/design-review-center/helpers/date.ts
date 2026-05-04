@@ -9,6 +9,18 @@ export function isPastDue(value: string | null | undefined, referenceDate: strin
   return startOfDay(value) < startOfDay(referenceDate);
 }
 
+/**
+ * Gate 延期自动计算：未完成且计划日期已过 referenceDate 则视为延期。
+ * 兼容手动标记：如果 JSON 中手动设为 true 也保留。
+ */
+export function isGateDelayed(
+  gate: { completed: boolean; blocked: boolean; delayed: boolean; plannedDate: string },
+  referenceDate: string,
+): boolean {
+  if (gate.completed || gate.blocked) return false;
+  return gate.delayed || isPastDue(gate.plannedDate, referenceDate);
+}
+
 export function isSameWeek(value: string | null | undefined, referenceDate: string) {
   if (!value) return false;
   const target = startOfDay(value);
