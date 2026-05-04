@@ -6,7 +6,7 @@ import { GATE_GROUP_LABELS, GATE_TYPE_LABELS } from '@/config/design-review-cent
 import { RISK_LEVEL_MAP, STAGE_MAP } from '@/config/design-review-center/status-map';
 import { formatDate } from '@/lib/design-review-center/helpers/date';
 import type { GateGroup } from '@/lib/design-review-center/types';
-import type { GateWaveGroup } from '@/lib/design-review-center/selectors/gates';
+import type { GateTableRow, GateWaveGroup } from '@/lib/design-review-center/selectors/gates';
 
 interface DevelopmentWaveTableProps {
   groups: GateWaveGroup[];
@@ -25,6 +25,77 @@ function filterLabel(filter: GateFilter) {
   return filter === 'all' ? '全部 Gate' : GATE_GROUP_LABELS[filter];
 }
 
+function parseDateMs(dateStr: string): number {
+  const ms = new Date(dateStr).getTime();
+  return Number.isFinite(ms) ? ms : 0;
+}
+
+interface GanttStripProps {
+  rows: GateTableRow[];
+  globalMin: number;
+  globalMax: number;
+}
+
+function WaveGanttStrip({ rows, globalMin, globalMax }: GanttStripProps) {
+  const span = Math.max(globalMax - globalMin, 1);
+
+  // Group rows by date so overlapping gates share a dot
+  const byDate = useMemo(() => {
+    const map = new Map<string, GateTableRow[]>();
+    rows.forEach((row) => {
+      const existing = map.get(row.plannedDate) || [];
+      existing.push(row);
+      map.set(row.plannedDate, existing);
+    });
+    return Array.from(map.entries()).sort(([a], [b]) => parseDateMs(a) - parseDateMs(b));
+  }, [rows]);
+
+  return (
+    <div className="relative mx-6 my-5 h-8">
+      {/* Track line */}
+      <div className="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-slate-200" />
+      {/* Milestone dots */}
+      {byDate.map(([dateStr, gates]) => {
+        const ms = parseDateMs(dateStr);
+        const pct = Math.max(0, Math.min(100, ((ms - globalMin) / span) * 100));
+        const isBlocked = gates.some((g) => g.blocked);
+        const isDelayed = gates.some((g) => g.delayed);
+        const isCompleted = gates.every((g) => g.completed);
+        const dotClass = isBlocked
+          ? 'bg-rose-500 ring-rose-200'
+          : isDelayed
+            ? 'bg-amber-400 ring-amber-200'
+            : isCompleted
+              ? 'bg-emerald-500 ring-emerald-200'
+              : 'bg-sky-400 ring-sky-200';
+        const count = gates.length;
+        return (
+          <div
+            key={dateStr}
+            className="group absolute top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-default"
+            style={{ left: `${pct}%` }}
+          >
+            <div className={`relative flex h-3.5 w-3.5 items-center justify-center rounded-full ring-2 ${dotClass}`}>
+              {count > 1 && (
+                <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-slate-700 text-[8px] font-bold leading-none text-white">
+                  {count}
+                </span>
+              )}
+            </div>
+            {/* Tooltip */}
+            <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 min-w-[140px] -translate-x-1/2 rounded-xl bg-slate-900 px-3 py-2 text-xs text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+              {gates.map((g) => (
+                <div key={g.gateId} className="leading-5">{g.gateName}</div>
+              ))}
+              <div className="mt-1 text-slate-400">{dateStr}</div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function DevelopmentWaveTable({ groups }: DevelopmentWaveTableProps) {
   const [gateFilter, setGateFilter] = useState<GateFilter>('all');
 
@@ -38,6 +109,15 @@ export default function DevelopmentWaveTable({ groups }: DevelopmentWaveTablePro
   }, [gateFilter, groups]);
 
   const allRows = visibleGroups.flatMap((group) => group.rows);
+
+  // Global date range for consistent Gantt axis across all waves
+  const { globalMin, globalMax } = useMemo(() => {
+    const allDates = groups.flatMap((g) => g.rows).map((r) => parseDateMs(r.plannedDate)).filter((ms) => ms > 0);
+    return {
+      globalMin: allDates.length ? Math.min(...allDates) : Date.now(),
+      globalMax: allDates.length ? Math.max(...allDates) : Date.now() + 86400000 * 30,
+    };
+  }, [groups]);
 
   if (!groups.length) {
     return (
@@ -96,6 +176,15 @@ export default function DevelopmentWaveTable({ groups }: DevelopmentWaveTablePro
                 <span className="rounded-full bg-white px-3 py-1">延期 {group.rows.filter((row) => row.delayed).length}</span>
                 <span className="rounded-full bg-white px-3 py-1">阻塞 {group.rows.filter((row) => row.blocked).length}</span>
               </div>
+            </div>
+            {/* Gate milestone Gantt — dates auto-generated from gate-nodes plannedDate */}
+            <WaveGanttStrip rows={group.rows} globalMin={globalMin} globalMax={globalMax} />
+            <div className="flex items-center gap-3 px-1 text-[10px] text-slate-400">
+              <span className="flex items-center gap-1"><span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500" />已完成</span>
+              <span className="flex items-center gap-1"><span className="inline-block h-2.5 w-2.5 rounded-full bg-sky-400" />进行中</span>
+              <span className="flex items-center gap-1"><span className="inline-block h-2.5 w-2.5 rounded-full bg-amber-400" />延期</span>
+              <span className="flex items-center gap-1"><span className="inline-block h-2.5 w-2.5 rounded-full bg-rose-500" />阻塞</span>
+              <span className="ml-auto text-slate-300">← 早   →  晚</span>
             </div>
           </div>
 

@@ -282,7 +282,19 @@ export default function AnnualControlPanel({
         if (filters.season !== 'all') return transitions.find((item) => item.season === filters.season) || transitions[0] || null;
         return transitions[0] || null;
     }, [filters.season, focus, transitions]);
-    const masterView = useMemo(() => buildAnnualControlMasterView(filters), [filters]);
+    const masterView = useMemo(() => {
+        const plan = kpis?.planData?.overall_plan;
+        const st = currentTransition?.sellThroughTarget ?? plan?.plan_avg_sell_through ?? THRESHOLDS.sellThrough.target;
+        const mg = plan?.plan_avg_margin_rate ?? THRESHOLDS.marginRate.target;
+        const wt = plan?.plan_wos ?? null;
+        return buildAnnualControlMasterView(filters, {
+            wos: kpis?.wos,
+            wosGapWeeks: kpis && wt !== null ? kpis.wos - wt : null,
+            sellThroughGapPp: kpis ? (kpis.avgSellThrough - st) * 100 : null,
+            newGoodsGapPp: currentTransition ? (currentTransition.actualNewGoodsRatio - currentTransition.newGoodsRatio) * 100 : null,
+            marginGapPp: kpis ? (kpis.avgMarginRate - mg) * 100 : null,
+        });
+    }, [filters, kpis, currentTransition]);
     const designReviewInput = useMemo(
         () => buildAnnualControlDesignReviewInput({ filters, focus, transition: currentTransition, stage }),
         [currentTransition, filters, focus, stage],

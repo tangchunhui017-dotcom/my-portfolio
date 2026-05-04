@@ -2099,7 +2099,18 @@ function buildAnnualControlTransitionControlModel(params: {
     };
 }
 
-export function buildAnnualControlMasterView(filters: Pick<DashboardFilters, 'season_year' | 'season' | 'wave' | 'region'>): AnnualControlMasterViewModel {
+export interface AnnualControlKpiContext {
+    wos?: number | null;
+    wosGapWeeks?: number | null;
+    sellThroughGapPp?: number | null;
+    newGoodsGapPp?: number | null;
+    marginGapPp?: number | null;
+}
+
+export function buildAnnualControlMasterView(
+    filters: Pick<DashboardFilters, 'season_year' | 'season' | 'wave' | 'region'>,
+    kpiContext?: AnnualControlKpiContext,
+): AnnualControlMasterViewModel {
     const stage = getAnnualControlStage(filters);
     const realCurrentMonth = new Date().getMonth() + 1;
     const selectedYear = filters.season_year === 'all' ? new Date().getFullYear() : Number(filters.season_year) || new Date().getFullYear();
@@ -2190,9 +2201,16 @@ export function buildAnnualControlMasterView(filters: Pick<DashboardFilters, 'se
         const shortLastShape = stripReserveSuffix(reserveFields.lastShapeHint);
         const nextStepHint = nextNode && axisItem.month === currentMonth ? `${nextNode.etaLabel}进入 ${nextNode.label}` : undefined;
         const actionMonthBrief = ANNUAL_CONTROL_ACTION_MONTH_BRIEFS.find((item) => item.month === axisItem.month) || null;
+        const isCurrentMonthRow = axisItem.month === currentMonth;
         const actionTracks: AnnualControlActionTrack[] = ANNUAL_CONTROL_ACTION_TEAM_ORDER.map((teamType) => {
             const action = actions.find((item) => item.teamType === teamType) || null;
             const fallbackAction = getAnnualControlDefaultAction(teamType, axisItem, scene.label);
+            const kpiRiskFlag = isCurrentMonthRow
+                ? ((kpiContext?.wos != null && kpiContext.wos > 12 && teamType === '商品') ||
+                   (kpiContext?.sellThroughGapPp != null && kpiContext.sellThroughGapPp < -3 && (teamType === '商品' || teamType === '设计企划')) ||
+                   (kpiContext?.newGoodsGapPp != null && kpiContext.newGoodsGapPp < -3 && teamType === '设计企划') ||
+                   (kpiContext?.marginGapPp != null && kpiContext.marginGapPp < -1.5 && teamType === '商品'))
+                : false;
             return {
                 teamType,
                 ownerCode: getAnnualControlTeamOwnerCode(teamType),
@@ -2202,7 +2220,7 @@ export function buildAnnualControlMasterView(filters: Pick<DashboardFilters, 'se
                 statusLabel: action?.statusLabel || getAnnualControlActionStatusLabel(axisItem.month, currentMonth),
                 weekLabel: action?.relatedWave || axisItem.wave,
                 priority: action?.priority || 'P2',
-                riskFlag: action?.riskFlag || false,
+                riskFlag: (action?.riskFlag || false) || kpiRiskFlag,
                 syncKey: action?.syncKey,
             };
         });

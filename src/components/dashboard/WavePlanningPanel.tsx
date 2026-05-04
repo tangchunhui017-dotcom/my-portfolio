@@ -308,6 +308,28 @@ export default function WavePlanningPanel({
         });
     }, [otbSummary.totalBudget, otbSummary.totalPlanSales, waveSummaries]);
 
+    // #9 OTB ↔ SKU 双向约束联动
+    const skuConstraint = useMemo(() => {
+        const totalPlanSku = waveSummaries.reduce((sum, w) => sum + w.sku_plan, 0);
+        const { totalBudget, suggestedOtb, totalPlanBuyUnits } = otbSummary;
+        if (totalPlanSku <= 0 || totalPlanBuyUnits <= 0 || totalBudget <= 0) return null;
+        const avgFobPerUnit = totalBudget / totalPlanBuyUnits;
+        const avgDepthPerSku = Math.round(totalPlanBuyUnits / totalPlanSku);
+        const costPerSku = avgFobPerUnit * avgDepthPerSku;
+        const maxSkuForSuggestedOtb = costPerSku > 0 ? Math.floor(suggestedOtb / costPerSku) : totalPlanSku;
+        const skuOverrun = totalPlanSku - maxSkuForSuggestedOtb;
+        const minBudgetForPlan = Math.round(totalPlanSku * costPerSku);
+        return {
+            totalPlanSku,
+            avgDepthPerSku,
+            maxSkuForSuggestedOtb,
+            skuOverrun,
+            costPerSku: Math.round(costPerSku),
+            constrained: skuOverrun > 0 && otbSummary.budgetGap < 0,
+            minBudgetForPlan,
+        };
+    }, [waveSummaries, otbSummary]);
+
     const timelineOption = useMemo(() => {
         const labels = stackRows.map((row) => `${row.launch_label}\n${row.wave_label}`);
         const regionCellMap = new Map(activeRegionCells.map((item) => [item.wave_id, item]));
@@ -652,6 +674,29 @@ export default function WavePlanningPanel({
                             </div>
                         </div>
                     </div>
+                    {/* SKU 宽度约束联动 advisory */}
+                    {skuConstraint && (
+                        <div className={`mt-4 rounded-xl border p-4 ${skuConstraint.constrained ? 'border-amber-200 bg-amber-50' : 'border-emerald-200 bg-emerald-50'}`}>
+                            <div className="flex flex-wrap items-start justify-between gap-3">
+                                <div>
+                                    <div className={`text-xs font-semibold uppercase tracking-wide ${skuConstraint.constrained ? 'text-amber-600' : 'text-emerald-600'}`}>
+                                        {skuConstraint.constrained ? '⚠ SKU 宽度超出建议 OTB 承载上限' : '✓ SKU 宽度在建议 OTB 范围内'}
+                                    </div>
+                                    <div className="mt-2 text-sm text-slate-700">
+                                        {skuConstraint.constrained
+                                            ? <>按建议 OTB 最多可支撑 <span className="font-bold text-amber-700">{skuConstraint.maxSkuForSuggestedOtb} 款</span>，当前计划 <span className="font-semibold">{skuConstraint.totalPlanSku} 款</span>，需削减约 <span className="font-bold text-rose-600">{skuConstraint.skuOverrun} 款</span> 或追加预算至 <span className="font-semibold">{formatWan(skuConstraint.minBudgetForPlan)}</span>。</>
+                                            : <>当前 <span className="font-bold text-emerald-700">{skuConstraint.totalPlanSku} 款</span> 计划在建议 OTB 范围内可全量承接。</>
+                                        }
+                                    </div>
+                                </div>
+                                <div className="flex flex-wrap gap-3 text-xs">
+                                    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-600">均深<div className="mt-0.5 text-base font-semibold text-slate-900">{skuConstraint.avgDepthPerSku} 双/款</div></div>
+                                    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-600">均成本/款<div className="mt-0.5 text-base font-semibold text-slate-900">{formatWan(skuConstraint.costPerSku)}</div></div>
+                                    <div className={`rounded-lg border px-3 py-2 text-slate-600 ${skuConstraint.constrained ? 'border-amber-200 bg-amber-50/50' : 'border-slate-200 bg-white'}`}>OTB 可承载款数<div className={`mt-0.5 text-base font-semibold ${skuConstraint.constrained ? 'text-amber-700' : 'text-emerald-700'}`}>{skuConstraint.maxSkuForSuggestedOtb} 款</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </section>
             )}
 
