@@ -1,13 +1,10 @@
 'use client';
 
 import { useMemo } from 'react';
-import factSalesRaw from '@/../data/dashboard/fact_sales.json';
-import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
-import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
 import dimPlanRaw from '@/../data/dashboard/dim_plan.json';
-import factOpsRaw from '@/../data/dashboard/fact_ops.json';
 import { matchesDashboardSkuCategoryFilters } from '@/hooks/useDashboardFilter';
 import type { DashboardFilters } from '@/hooks/useDashboardFilter';
+import { useFactSalesForDashboard, useDimSku, useDimChannel, useFactOpsForDashboard } from '@/hooks/useDashboardData';
 import { matchesPriceBandFilter } from '@/config/priceBand';
 import { deriveDashboardAnnualPlanTotal } from '@/config/dashboardPlan';
 import { buildDashboardOpsRecordKey, type DashboardOpsFactRecord } from '@/config/dashboardOps';
@@ -173,17 +170,7 @@ export interface RegionQuarterOpsAction {
     text: string;
 }
 
-const salesRecords = factSalesRaw as FactSalesRecord[];
-const factOps = factOpsRaw as DashboardOpsFactRecord[];
-const factOpsMap = new Map<string, DashboardOpsFactRecord>(
-    factOps.map((row) => [row.record_key || buildDashboardOpsRecordKey(row), row]),
-);
-const skuRecords = dimSkuRaw as DimSku[];
-const channelRecords = dimChannelRaw as DimChannel[];
 const dimPlan = dimPlanRaw as DimPlan;
-const ONLINE_REGION_SET = new Set(
-    channelRecords.filter((channel) => channel.is_online).map((channel) => channel.region),
-);
 
 const AUDIENCE_TO_AGE_GROUP: Record<string, string[]> = {
     '18-23岁 GenZ': ['18-25'],
@@ -258,6 +245,7 @@ function shouldIncludeRecord(
     filters: DashboardFilters,
     baseline?: BaselineConfig,
     scope: OpsFilterScope = DEFAULT_OPS_SCOPE,
+    onlineRegionSet: Set<string> = new Set(),
 ) {
     if (baseline?.year !== undefined) {
         if (Number(sale.season_year) !== baseline.year) return false;
@@ -280,7 +268,7 @@ function shouldIncludeRecord(
     if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
     if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
     if (filters.region !== 'all') {
-        const isOnlineRegionFilter = ONLINE_REGION_SET.has(filters.region);
+        const isOnlineRegionFilter = onlineRegionSet.has(filters.region);
         const shouldIgnoreRegionFilter =
             scope.system === 'online' ||
             (scope.system === 'offline' && isOnlineRegionFilter);
@@ -302,6 +290,8 @@ function buildRegionStats(
     channelMap: Record<string, DimChannel>,
     baseline?: BaselineConfig,
     scope: OpsFilterScope = DEFAULT_OPS_SCOPE,
+    onlineRegionSet: Set<string> = new Set(),
+    opsMap: Map<string, DashboardOpsFactRecord> = new Map(),
 ) {
     const accMap: Record<string, RegionAccumulator> = {};
 
@@ -309,7 +299,7 @@ function buildRegionStats(
         const sku = skuMap[sale.sku_id];
         const channel = channelMap[sale.channel_id];
         if (!sku || !channel) return;
-        if (!shouldIncludeRecord(sale, sku, channel, filters, baseline, scope)) return;
+        if (!shouldIncludeRecord(sale, sku, channel, filters, baseline, scope, onlineRegionSet)) return;
 
         const region = channel.region || '未分区';
         if (!accMap[region]) {
@@ -324,7 +314,7 @@ function buildRegionStats(
         const acc = accMap[region];
         const units = Math.max(0, sale.unit_sold || 0);
         const onHand = Math.max(0, sale.on_hand_unit || 0);
-        const opsRecord = factOpsMap.get(buildDashboardOpsRecordKey(sale));
+        const opsRecord = opsMap.get(buildDashboardOpsRecordKey(sale));
         const sellThroughProxy = getSellThroughProxy(sale.cumulative_sell_through || 0);
         const inventoryPressure = safeDiv(onHand, onHand + units);
         const demand = Number(opsRecord?.demand_pairs || safeDiv(units, sellThroughProxy));
@@ -414,14 +404,29 @@ export function useRegionQuarterOps(
     filters: DashboardFilters,
     scope: OpsFilterScope = DEFAULT_OPS_SCOPE,
 ) {
-    const latestYear = useMemo(() => getLatestYear(salesRecords), []);
-    const skuMap = useMemo(() => Object.fromEntries(skuRecords.map((sku) => [sku.sku_id, sku])), []);
+    const { data: factSalesData } = useFactSalesForDashboard(filters.season_year);
+    const { data: dimSkuRawData } = useDimSku();
+    const { data: dimChannelRawData } = useDimChannel();
+    const { data: factOpsData } = useFactOpsForDashboard(filters.season_year);
+    const salesRecords = (factSalesData ?? []) as FactSalesRecord[];
+    const skuRecords = (dimSkuRawData ?? []) as DimSku[];
+    const channelRecords = (dimChannelRawData ?? []) as DimChannel[];
+    const factOps = (factOpsData ?? []) as DashboardOpsFactRecord[];
+
+    const latestYear = useMemo(() => getLatestYear(salesRecords), [salesRecords]);
+    const skuMap = useMemo(() => Object.fromEntries(skuRecords.map((sku) => [sku.sku_id, sku])), [skuRecords]);
     const channelMap = useMemo(
         () => Object.fromEntries(channelRecords.map((channel) => [channel.channel_id, channel])),
-        [],
+        [channelRecords],
     );
 
     return useMemo(() => {
+        const factOpsMap = new Map<string, DashboardOpsFactRecord>(
+            factOps.map((row) => [row.record_key || buildDashboardOpsRecordKey(row), row]),
+        );
+        const ONLINE_REGION_SET = new Set(
+            channelRecords.filter((channel) => channel.is_online).map((channel) => channel.region),
+        );
         const currentYear = filters.season_year === 'all' ? latestYear : Number(filters.season_year);
         const yoyYear = currentYear - 1;
         const momBaseline = getMomBaseline(filters, latestYear);
@@ -430,12 +435,12 @@ export function useRegionQuarterOps(
                 ? `${currentYear}-All`
                 : `${currentYear}-${filters.season}`;
 
-        const currentStats = buildRegionStats(salesRecords, filters, skuMap, channelMap, undefined, scope);
+        const currentStats = buildRegionStats(salesRecords, filters, skuMap, channelMap, undefined, scope, ONLINE_REGION_SET, factOpsMap);
         const yoyStats = buildRegionStats(salesRecords, filters, skuMap, channelMap, {
             year: yoyYear,
             season: filters.season,
-        }, scope);
-        const momStats = buildRegionStats(salesRecords, filters, skuMap, channelMap, momBaseline, scope);
+        }, scope, ONLINE_REGION_SET, factOpsMap);
+        const momStats = buildRegionStats(salesRecords, filters, skuMap, channelMap, momBaseline, scope, ONLINE_REGION_SET, factOpsMap);
 
         const currentRegionOrder = Object.entries(currentStats)
             .sort((a, b) => b[1].actual_amt - a[1].actual_amt)
@@ -661,5 +666,5 @@ export function useRegionQuarterOps(
                 reorder_rate: totals.reorder_rate,
             },
         };
-    }, [channelMap, filters, latestYear, scope, skuMap]);
+    }, [channelMap, factOps, filters, latestYear, scope, skuMap]);
 }

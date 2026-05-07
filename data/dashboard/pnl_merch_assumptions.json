@@ -1,0 +1,17 @@
+{
+  "channel_cost_rates": [
+    { "channel": "physical",   "label": "实体店", "marketing_rate": 0.04, "rent_rate": 0.10, "labor_rate": 0.06, "logistics_rate": 0.01 },
+    { "channel": "ecommerce",  "label": "电商",   "marketing_rate": 0.08, "platform_rate": 0.05, "refund_rate": 0.137, "logistics_rate": 0.02 },
+    { "channel": "franchise",  "label": "加盟",   "marketing_rate": 0.02, "rebate_rate": 0.04, "logistics_rate": 0.01 }
+  ],
+  "markdown_rules": [
+    { "discount_band": "full_price", "label": "正价",   "discount_rate_min": 0.85, "sales_share": 0.55 },
+    { "discount_band": "promo",      "label": "活动折扣", "discount_rate_min": 0.65, "sales_share": 0.28 },
+    { "discount_band": "clearance",  "label": "清货折扣", "discount_rate_min": 0.30, "sales_share": 0.17 }
+  ],
+  "category_cost_overrides": [
+    { "key": "sneaker", "extra_marketing_rate": 0.02 },
+    { "key": "fashion",  "extra_marketing_rate": 0.015 },
+    { "key": "boot",     "extra_marketing_rate": 0.01 }
+  ]
+}

@@ -1,8 +1,7 @@
 ﻿'use client';
 
 import { useMemo } from 'react';
-import dimCompetitorRaw from '@/../data/dashboard/dim_competitor.json';
-import factCompetitorRaw from '@/../data/dashboard/fact_competitor.json';
+import { useDimCompetitor, useFactCompetitor } from '@/hooks/useDashboardData';
 
 interface CategoryMix {
     category: string;
@@ -127,8 +126,6 @@ export interface CompetitorWeakBand {
     gap: number;
 }
 
-const dimCompetitors = dimCompetitorRaw as DimCompetitor[];
-const factCompetitors = factCompetitorRaw as FactCompetitor[];
 
 const REGION_POOL = [
     { region: '华东', temp_range: '温和带 10-24℃' },
@@ -219,7 +216,13 @@ function deriveSkuBaselines(brand: DimCompetitor, skuTotal: number) {
 }
 
 export function useCompetitorAnalysis() {
-    return useMemo(() => {
+    const { data: dimCompetitorData, isLoading: l1 } = useDimCompetitor();
+    const { data: factCompetitorData, isLoading: l2 } = useFactCompetitor();
+    const isLoading = l1 || l2;
+    const dimCompetitors = (dimCompetitorData ?? []) as DimCompetitor[];
+    const factCompetitors = (factCompetitorData ?? []) as FactCompetitor[];
+
+    const result = useMemo(() => {
         const skuStructureRows: CompetitorSkuStructureRow[] = [];
         const brandSummary: CompetitorBrandSummary[] = dimCompetitors
             .map((brand) => {
@@ -493,5 +496,25 @@ export function useCompetitorAnalysis() {
             regionOptions,
             priceBandBenchmarkRows,
         };
-    }, []);
+    }, [dimCompetitors, factCompetitors]);
+
+    return {
+        brands: result?.brands ?? [],
+        categories: result?.categories ?? [],
+        brandSummary: result?.brandSummary ?? [],
+        ourBrandName: result?.ourBrandName ?? '',
+        skuStructureRows: result?.skuStructureRows ?? [],
+        skuStructureChartData: result?.skuStructureChartData ?? [],
+        bubblePoints: result?.bubblePoints ?? [],
+        priceBandOptions: result?.priceBandOptions ?? [],
+        radarIndicators: result?.radarIndicators ?? [],
+        radarRows: result?.radarRows ?? [],
+        suppressedCategories: result?.suppressedCategories ?? [],
+        weakPriceBands: result?.weakPriceBands ?? [],
+        galleryItems: result?.galleryItems ?? [],
+        waveOptions: result?.waveOptions ?? [],
+        regionOptions: result?.regionOptions ?? [],
+        priceBandBenchmarkRows: result?.priceBandBenchmarkRows ?? [],
+        isLoading,
+    };
 }

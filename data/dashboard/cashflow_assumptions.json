@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "现金流假设参数（假设数据，非事实数据）",
+    "lastUpdated": "2026-05-06"
+  },
+  "initialCash": 2000000,
+  "collectionTerms": {
+    "physical": { "label": "实体店", "lagMonths": 0, "description": "当月回款" },
+    "ecommerce": { "label": "电商", "lagMonths": 0.5, "description": "T+15，简化为本月50%+上月50%" },
+    "franchise": { "label": "加盟", "lagMonths": 1, "description": "T+30，上月回款" }
+  },
+  "otbPaymentSchedule": {
+    "deposit": { "rateOfBudget": 0.30, "leadMonths": 3, "label": "定金" },
+    "balance": { "rateOfBudget": 0.70, "leadMonths": 1, "label": "尾款" }
+  },
+  "fixedMonthlyExpenses": {
+    "headquarters": 200000,
+    "itAndSystems": 30000,
+    "insurance": 15000,
+    "other": 20000
+  },
+  "variableExpenseRates": {
+    "marketing": 0.05,
+    "logistics": 0.04,
+    "commission": 0.03
+  },
+  "alertThresholds": {
+    "safe": 500000,
+    "warning": 0
+  },
+  "channelRevenueSplit": {
+    "physical": 0.55,
+    "ecommerce": 0.35,
+    "franchise": 0.10
+  }
+}

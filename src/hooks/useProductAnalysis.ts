@@ -1,10 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
-import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
-import factSalesRaw from '@/../data/dashboard/fact_sales.json';
 import { DashboardFilters, matchesDashboardSkuCategoryFilters } from '@/hooks/useDashboardFilter';
+import { useFactSalesForDashboard, useDimSku, useDimChannel } from '@/hooks/useDashboardData';
 import { resolveFootwearCategory } from '@/config/categoryMapping';
 import { matchesAudienceFilter } from '@/config/audienceMapping';
 import { getPriceBandSortRank, matchesPriceBandFilter, normalizePriceBandKey } from '@/config/priceBand';
@@ -111,9 +109,6 @@ export interface SkuDrillRow {
 
 const AGE_ORDER = ['18-25', '26-35', '36-45', '46+', '未知'];
 
-const salesRecords = factSalesRaw as FactSalesRecord[];
-const skus = dimSkuRaw as DimSku[];
-const channels = dimChannelRaw as DimChannel[];
 
 function matchesTargetAudience(sku: DimSku, selectedAudience: string | 'all') {
     return matchesAudienceFilter(sku.target_audience, sku.target_age_group, selectedAudience);
@@ -151,6 +146,13 @@ function safeDiv(numerator: number, denominator: number) {
 }
 
 export function useProductAnalysis(filters: DashboardFilters) {
+    const { data: factSalesData } = useFactSalesForDashboard(filters.season_year);
+    const { data: dimSkuData } = useDimSku();
+    const { data: dimChannelData } = useDimChannel();
+    const salesRecords = (factSalesData ?? []) as FactSalesRecord[];
+    const skus = (dimSkuData ?? []) as DimSku[];
+    const channels = (dimChannelData ?? []) as DimChannel[];
+
     return useMemo(() => {
         const skuMap: Record<string, DimSku> = {};
         skus.forEach((sku) => {
@@ -448,5 +450,5 @@ export function useProductAnalysis(filters: DashboardFilters) {
             colorFamilies,
             ageGroupTotals,
         };
-    }, [filters]);
+    }, [filters, salesRecords, skus, channels]);
 }

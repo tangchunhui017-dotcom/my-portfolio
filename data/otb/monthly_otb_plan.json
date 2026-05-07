@@ -1,0 +1,17 @@
+{
+  "month1BeginningInventoryCost": 4000000,
+  "months": [
+    { "month": 1, "salesForecast": 4000000, "markupRate": 3.2, "discountRate": 0.85, "stockToSalesRatio": 3, "arrivalRate": 0.95, "originalPurchaseBudget": 3000000 },
+    { "month": 2, "salesForecast": 3000000, "markupRate": 3.2, "discountRate": 0.82, "stockToSalesRatio": 3, "arrivalRate": 0.95, "originalPurchaseBudget": 2200000 },
+    { "month": 3, "salesForecast": 5000000, "markupRate": 3.2, "discountRate": 0.90, "stockToSalesRatio": 3, "arrivalRate": 0.95, "originalPurchaseBudget": 4000000 },
+    { "month": 4, "salesForecast": 5000000, "markupRate": 3.2, "discountRate": 0.88, "stockToSalesRatio": 3, "arrivalRate": 0.95, "originalPurchaseBudget": 4000000 },
+    { "month": 5, "salesForecast": 4500000, "markupRate": 3.2, "discountRate": 0.85, "stockToSalesRatio": 3, "arrivalRate": 0.95, "originalPurchaseBudget": 3500000 },
+    { "month": 6, "salesForecast": 3500000, "markupRate": 3.2, "discountRate": 0.80, "stockToSalesRatio": 3, "arrivalRate": 0.95, "originalPurchaseBudget": 2800000 },
+    { "month": 7, "salesForecast": 3500000, "markupRate": 3.2, "discountRate": 0.88, "stockToSalesRatio": 3, "arrivalRate": 0.95, "originalPurchaseBudget": 3000000 },
+    { "month": 8, "salesForecast": 4000000, "markupRate": 3.2, "discountRate": 0.90, "stockToSalesRatio": 3, "arrivalRate": 0.95, "originalPurchaseBudget": 3500000 },
+    { "month": 9, "salesForecast": 5000000, "markupRate": 3.2, "discountRate": 0.90, "stockToSalesRatio": 3, "arrivalRate": 0.95, "originalPurchaseBudget": 4000000 },
+    { "month": 10, "salesForecast": 5500000, "markupRate": 3.2, "discountRate": 0.88, "stockToSalesRatio": 3, "arrivalRate": 0.95, "originalPurchaseBudget": 4500000 },
+    { "month": 11, "salesForecast": 4500000, "markupRate": 3.2, "discountRate": 0.85, "stockToSalesRatio": 3, "arrivalRate": 0.95, "originalPurchaseBudget": 3500000 },
+    { "month": 12, "salesForecast": 2500000, "markupRate": 3.2, "discountRate": 0.78, "stockToSalesRatio": 2, "arrivalRate": 0.95, "originalPurchaseBudget": 1800000 }
+  ]
+}

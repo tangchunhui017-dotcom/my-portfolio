@@ -1,0 +1,62 @@
+[
+  {
+    "channelId": "direct-store",
+    "channelName": "直营门店",
+    "storeCount": 42,
+    "avgSkuCapacityPerStore": 180,
+    "avgDisplayPairsPerSku": 2.5,
+    "safetyStockPairsPerSku": 6,
+    "totalSkuCapacity": 7560,
+    "totalInitialAllocationCapacity": 18900
+  },
+  {
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "storeCount": 68,
+    "avgSkuCapacityPerStore": 120,
+    "avgDisplayPairsPerSku": 2,
+    "safetyStockPairsPerSku": 4,
+    "totalSkuCapacity": 8160,
+    "totalInitialAllocationCapacity": 16320
+  },
+  {
+    "channelId": "ecommerce",
+    "channelName": "电商平台",
+    "storeCount": 1,
+    "avgSkuCapacityPerStore": 5000,
+    "avgDisplayPairsPerSku": 0,
+    "safetyStockPairsPerSku": 20,
+    "totalSkuCapacity": 5000,
+    "totalInitialAllocationCapacity": 0
+  },
+  {
+    "channelId": "livestream",
+    "channelName": "直播渠道",
+    "storeCount": 1,
+    "avgSkuCapacityPerStore": 1800,
+    "avgDisplayPairsPerSku": 0,
+    "safetyStockPairsPerSku": 15,
+    "totalSkuCapacity": 1800,
+    "totalInitialAllocationCapacity": 0
+  },
+  {
+    "channelId": "outlet",
+    "channelName": "奥莱/清仓",
+    "storeCount": 9,
+    "avgSkuCapacityPerStore": 220,
+    "avgDisplayPairsPerSku": 2,
+    "safetyStockPairsPerSku": 3,
+    "totalSkuCapacity": 1980,
+    "totalInitialAllocationCapacity": 3960
+  },
+  {
+    "channelId": "special",
+    "channelName": "特渠/团购",
+    "storeCount": 1,
+    "avgSkuCapacityPerStore": 800,
+    "avgDisplayPairsPerSku": 0,
+    "safetyStockPairsPerSku": 8,
+    "totalSkuCapacity": 800,
+    "totalInitialAllocationCapacity": 0
+  }
+]

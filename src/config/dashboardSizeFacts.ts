@@ -1,4 +1,3 @@
-import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
 import dimSizeRaw from '@/../data/taxonomy/dim_size.json';
 import sizeRuleMatrixRaw from '@/../data/taxonomy/size_rule_matrix.json';
 import sizeCurvesRaw from '@/../data/taxonomy/size_curves.json';
@@ -113,12 +112,9 @@ export interface VirtualDashboardSizeFactRecord {
     channel_bias: SizeChannelBiasKey;
 }
 
-const dimChannel = dimChannelRaw as DimChannelRecord[];
 const dimSize = dimSizeRaw as DimSizeData;
 const sizeRuleMatrix = sizeRuleMatrixRaw as SizeRuleMatrixData;
 const sizeCurves = sizeCurvesRaw as SizeCurvesData;
-
-const channelMap = new Map<string, DimChannelRecord>(dimChannel.map((item) => [item.channel_id, item]));
 const sizeMetaMap = new Map<string, DimSizeRecord>(dimSize.sizes.map((item) => [item.size_code, item]));
 const sizeProfileMap = new Map<string, SizeRuleProfile>(
     sizeRuleMatrix.base_profiles.map((profile) => [`${profile.gender}__${profile.line_type}`, profile] as const),
@@ -320,6 +316,7 @@ function buildStockWeights(
 export function deriveVirtualDashboardSizeFacts(
     records: DashboardSizeFactSalesRecord[],
     skuMap: Record<string, DashboardSizeFactSkuMeta | undefined>,
+    channelMap: Map<string, DimChannelRecord> = new Map(),
 ): VirtualDashboardSizeFactRecord[] {
     return records.flatMap((record, index) => {
         const sku = skuMap[record.sku_id];

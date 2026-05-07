@@ -39,7 +39,7 @@ function TonePill({ tone, children }: { tone: AnnualControlTone | 'pink'; childr
 
 function LaneMeta({ title, detail, accent }: { title: string; detail: string; accent?: string }) {
     return (
-        <div className="sticky left-0 z-30 relative flex min-h-[104px] flex-col justify-center rounded-[24px] border border-slate-200/70 bg-slate-50/62 px-4 py-3 shadow-[10px_0_18px_rgba(248,250,252,0.95)] backdrop-blur-sm">
+        <div className="sticky left-0 z-30 relative flex min-h-[104px] flex-col justify-center rounded-panel border border-slate-200/70 bg-slate-50/62 px-4 py-3 shadow-[10px_0_18px_rgba(248,250,252,0.95)] backdrop-blur-sm">
             {accent && <span className={`absolute left-3 top-5 bottom-5 w-1 rounded-full opacity-80 ${accent}`} />}
             <div className={`text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400 ${accent ? 'pl-3' : ''}`}>管理线</div>
             <div className={`mt-1 text-sm font-semibold text-slate-900 ${accent ? 'pl-3' : ''}`}>{title}</div>
@@ -58,7 +58,7 @@ function MatrixRow({ title, detail, accent, children }: { title: string; detail:
 }
 
 function TrackSurface({ children, className = '' }: { children: ReactNode; className?: string }) {
-    return <div className={['relative overflow-hidden rounded-[24px] border border-slate-200/85 bg-white/78 shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-sm', className].filter(Boolean).join(' ')}>{children}</div>;
+    return <div className={['relative overflow-hidden rounded-panel border border-slate-200/85 bg-white/78 shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-sm', className].filter(Boolean).join(' ')}>{children}</div>;
 }
 
 function getSeasonBandClass(season: keyof typeof ANNUAL_CONTROL_SEASON_LABELS) {
@@ -292,7 +292,7 @@ function TimelineContinuumRow({ model, scopeSet }: { model: AnnualControlMasterV
     return (
         <MatrixRow title="全年推进 / 季节切换" detail="先看季度经营带，再看季度下面 3 个自然月如何推进上新、主销和收口。" accent="bg-sky-400">
             <TrackSurface>
-                <div className="overflow-hidden rounded-[22px]">
+                <div className="overflow-hidden rounded-card">
                     <div className="grid grid-cols-12 border-b border-slate-200/80">
                         {CONTINUUM_SEASON_BANDS.map((band) => {
                             const isCurrent = model.currentSeason === band.season;
@@ -531,7 +531,7 @@ function GanttRow({ title, detail, accent, bars, model, scopeSet }: { title: str
                         const barGridRow = bar.id.includes('buying') || bar.id.includes('handoff') ? 2 : 1;
                         return (
                             <div key={bar.id} style={{ gridColumn: `${bar.startMonth} / span ${bar.span}`, gridRow: barGridRow }} className="px-1.5 py-2">
-                                <div className={`rounded-[20px] border px-3 py-3 shadow-sm ${getBarToneClass(bar.tone)} ${intersectsScope ? 'shadow-[0_10px_24px_rgba(15,23,42,0.08)]' : ''}`}>
+                                <div className={`rounded-card border px-3 py-3 shadow-sm ${getBarToneClass(bar.tone)} ${intersectsScope ? 'shadow-[0_10px_24px_rgba(15,23,42,0.08)]' : ''}`}>
                                     <div className="flex flex-wrap items-start justify-between gap-x-1.5 gap-y-2">
                                         <div className="flex flex-wrap items-center gap-1.5">
                                             <TonePill tone={bar.tone}>{bar.label}</TonePill>
@@ -626,7 +626,7 @@ function DependencyRow({ model, scopeSet }: { model: AnnualControlMasterViewMode
                         const span = Math.abs(dependency.toMonth - dependency.fromMonth) + 1;
                         return (
                             <div key={dependency.id} style={{ gridColumn: `${startMonth} / span ${span}` }} className="px-1.5 pb-3">
-                                <div className={`rounded-[20px] border px-3 py-3 ${dependency.severity === 'high' ? 'border-rose-200 bg-rose-50/88' : 'border-amber-200 bg-amber-50/88'}`}>
+                                <div className={`rounded-card border px-3 py-3 ${dependency.severity === 'high' ? 'border-rose-200 bg-rose-50/88' : 'border-amber-200 bg-amber-50/88'}`}>
                                     <div className="flex items-center justify-between gap-2">
                                         <TonePill tone={dependency.relation === 'pre' ? 'amber' : dependency.severity === 'high' ? 'rose' : 'sky'}>{dependency.title}</TonePill>
                                         <span className="text-[11px] text-slate-400">{dependency.relatedModule}</span>
@@ -1309,7 +1309,7 @@ function EnvironmentLaneRow({ lane, model, scopeSet }: { lane: AnnualControlMast
 
     return (
         <div className="grid items-stretch gap-2" style={{ gridTemplateColumns: String(LANE_LABEL_WIDTH) + 'px minmax(0,1fr)' }}>
-            <div className="sticky left-0 z-30 flex flex-col overflow-hidden rounded-[24px] border border-slate-200/70 bg-slate-50/62 shadow-[10px_0_18px_rgba(248,250,252,0.95)] backdrop-blur-sm">
+            <div className="sticky left-0 z-30 flex flex-col overflow-hidden rounded-panel border border-slate-200/70 bg-slate-50/62 shadow-[10px_0_18px_rgba(248,250,252,0.95)] backdrop-blur-sm">
                 {/* 贯通左侧全高的辅助线 */}
                 <span className="absolute z-10 left-[16px] top-5 bottom-6 w-1 rounded-full bg-slate-400 opacity-80" />
 
@@ -1320,7 +1320,7 @@ function EnvironmentLaneRow({ lane, model, scopeSet }: { lane: AnnualControlMast
                 </div>
 
                 <div className="relative z-0 shrink-0 pr-3 pb-4 pl-[30px]">
-                    <div className="rounded-[22px] bg-slate-200/40 p-2">
+                    <div className="rounded-card bg-slate-200/40 p-2">
                         <div className="mb-2 pl-3 pt-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">区域 · 城市</div>
                         <div className="space-y-1.5">
                             {orderedRows.map((row) => (
@@ -1513,7 +1513,7 @@ const ACTION_TEAM_LAYOUT = [
 function DepartmentActionLaneRow({ lane, model, scopeSet }: { lane: AnnualControlMasterLane; model: AnnualControlMasterViewModel; scopeSet: Set<number> }) {
     return (
         <div className="grid items-stretch gap-2" style={{ gridTemplateColumns: String(LANE_LABEL_WIDTH) + 'px minmax(0,1fr)' }}>
-            <div className="sticky left-0 z-30 overflow-hidden rounded-[24px] border border-slate-200/70 bg-slate-50/62 shadow-[10px_0_18px_rgba(248,250,252,0.95)] backdrop-blur-sm">
+            <div className="sticky left-0 z-30 overflow-hidden rounded-panel border border-slate-200/70 bg-slate-50/62 shadow-[10px_0_18px_rgba(248,250,252,0.95)] backdrop-blur-sm">
                 <div className="grid h-full grid-cols-[1fr_88px]">
                     <div className="relative flex items-center px-4 py-4">
                         <span className="absolute left-3 top-5 bottom-5 w-1 rounded-full opacity-80 bg-indigo-500" />
@@ -1617,7 +1617,7 @@ export default function AnnualControlMasterView({ model }: AnnualControlMasterVi
     };
 
     return (
-        <section className="rounded-[34px] border border-slate-200 bg-[radial-gradient(circle_at_top_left,_rgba(244,114,182,0.11),_transparent_28%),radial-gradient(circle_at_top_right,_rgba(56,189,248,0.12),_transparent_26%),linear-gradient(180deg,#ffffff_0%,#f9fbff_100%)] p-6 shadow-[0_20px_70px_rgba(15,23,42,0.08)]">
+        <section className="rounded-section border border-slate-200 bg-[radial-gradient(circle_at_top_left,_rgba(244,114,182,0.11),_transparent_28%),radial-gradient(circle_at_top_right,_rgba(56,189,248,0.12),_transparent_26%),linear-gradient(180deg,#ffffff_0%,#f9fbff_100%)] p-6 shadow-[0_20px_70px_rgba(15,23,42,0.08)]">
             <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                 {/* ─── 左侧：精简标题区 ─── */}
                 <div className="max-w-3xl">

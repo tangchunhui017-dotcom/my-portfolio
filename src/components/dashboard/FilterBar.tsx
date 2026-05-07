@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'reac
 import { CompareMode, DashboardFilters, getDefaultDashboardFilters } from '@/hooks/useDashboardFilter';
 import type { DashboardCompareMeta } from '@/config/dashboardCompare';
 import seasonWaveCalendarRaw from '@/../data/taxonomy/season_wave_calendar.json';
-import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
+import { useDimSku } from '@/hooks/useDashboardData';
 import { DASHBOARD_BRAND_OPTIONS, resolveDashboardCategoryL1 } from '@/config/dashboardFilterStandards';
 import { FOOTWEAR_CATEGORY_HIERARCHY } from '@/config/footwearTaxonomy';
 import { getPriceBandOptionList } from '@/config/priceBand';
@@ -61,35 +61,6 @@ type FilterOption = {
 };
 
 const seasonWaveCalendar = seasonWaveCalendarRaw as unknown as SeasonWaveCalendarSchema;
-const dimSku = dimSkuRaw as unknown as DimSkuRecord[];
-
-const WAVE_OPTIONS_BY_SEASON_HINT: Record<string, string[]> = seasonWaveCalendar.seasons.reduce(
-    (acc, season) => {
-        acc[season.dashboard_season_hint] = Array.from(
-            new Set(season.waves.flatMap((wave) => wave.dashboard_wave_hints)),
-        );
-        return acc;
-    },
-    {} as Record<string, string[]>,
-);
-
-const CATEGORY_L1_LANDED_SET = new Set(
-    dimSku
-        .map((row) => resolveDashboardCategoryL1(row.gender))
-        .filter((value) => value && value !== '其他'),
-);
-
-const CATEGORY_L2_LANDED_SET = new Set(
-    dimSku
-        .map((row) => String(row.category_name || row.category_id || '').trim())
-        .filter(Boolean),
-);
-
-const CATEGORY_L3_LANDED_SET = new Set(
-    dimSku
-        .map((row) => String(row.category_l2 || '').trim())
-        .filter(Boolean),
-);
 
 function appendLandedDot(label: string, landed?: boolean) {
     return landed ? `${label} •` : label;
@@ -112,32 +83,6 @@ function uniqueOptions(values: string[], landedSet?: Set<string>) {
 }
 
 const BRAND_OPTION_OBJECTS = DASHBOARD_BRAND_OPTIONS.map((option) => createPlainOption(option.value, option.label));
-const CATEGORY_L1_OPTION_OBJECTS = FOOTWEAR_CATEGORY_HIERARCHY.map((item) =>
-    createOption(item.l1, CATEGORY_L1_LANDED_SET.has(item.l1)),
-);
-const CATEGORY_L2_BY_L1: Record<string, FilterOption[]> = {};
-const CATEGORY_L3_BY_L1: Record<string, FilterOption[]> = {};
-const CATEGORY_L3_BY_L2: Record<string, FilterOption[]> = {};
-
-FOOTWEAR_CATEGORY_HIERARCHY.forEach((group) => {
-    CATEGORY_L2_BY_L1[group.l1] = uniqueOptions(group.items.map((item) => item.l2), CATEGORY_L2_LANDED_SET);
-    CATEGORY_L3_BY_L1[group.l1] = uniqueOptions(group.items.flatMap((item) => item.l3), CATEGORY_L3_LANDED_SET);
-
-    group.items.forEach((item) => {
-        const existingValues = (CATEGORY_L3_BY_L2[item.l2] || []).map((option) => option.value);
-        CATEGORY_L3_BY_L2[item.l2] = uniqueOptions([...existingValues, ...item.l3], CATEGORY_L3_LANDED_SET);
-    });
-});
-
-const ALL_CATEGORY_L2_OPTIONS = uniqueOptions(
-    FOOTWEAR_CATEGORY_HIERARCHY.flatMap((group) => group.items.map((item) => item.l2)),
-    CATEGORY_L2_LANDED_SET,
-);
-
-const ALL_CATEGORY_L3_OPTIONS = uniqueOptions(
-    FOOTWEAR_CATEGORY_HIERARCHY.flatMap((group) => group.items.flatMap((item) => item.l3)),
-    CATEGORY_L3_LANDED_SET,
-);
 
 const COMPARE_MODE_OPTIONS: Array<Exclude<CompareMode, 'none'>> = ['plan', 'mom', 'yoy'];
 const COMPARE_MODE_LABELS: Record<Exclude<CompareMode, 'none'>, string> = {
@@ -178,10 +123,16 @@ function getSelectWidthPx(label: string, value: string, options: FilterOption[])
     return Math.min(Math.max(MIN_WIDTH_BY_LABEL[label] ?? 104, base), 220);
 }
 
-function getCategoryL3Options(categoryL1: DashboardFilters['category_l1'], categoryId: DashboardFilters['category_id']) {
-    if (categoryId !== 'all') return CATEGORY_L3_BY_L2[categoryId] || [];
-    if (categoryL1 !== 'all') return CATEGORY_L3_BY_L1[categoryL1] || [];
-    return ALL_CATEGORY_L3_OPTIONS;
+function getCategoryL3Options(
+    categoryL1: DashboardFilters['category_l1'],
+    categoryId: DashboardFilters['category_id'],
+    l3ByL2: Record<string, FilterOption[]>,
+    l3ByL1: Record<string, FilterOption[]>,
+    allL3: FilterOption[],
+) {
+    if (categoryId !== 'all') return l3ByL2[categoryId] || [];
+    if (categoryL1 !== 'all') return l3ByL1[categoryL1] || [];
+    return allL3;
 }
 
 function getStoredFilterBarPinnedState() {
@@ -229,19 +180,87 @@ export default function FilterBar({
     const collapseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isOpen = isPinned || isExpanded;
 
+    const { data: dimSkuData } = useDimSku();
+    const dimSku = (dimSkuData ?? []) as DimSkuRecord[];
+
+    const {
+        CATEGORY_L1_OPTION_OBJECTS,
+        CATEGORY_L2_BY_L1,
+        CATEGORY_L3_BY_L1,
+        CATEGORY_L3_BY_L2,
+        ALL_CATEGORY_L2_OPTIONS,
+        ALL_CATEGORY_L3_OPTIONS,
+        WAVE_OPTIONS_BY_SEASON_HINT,
+    } = useMemo(() => {
+        const categoryL1LandedSet = new Set(
+            dimSku.map((row) => resolveDashboardCategoryL1(row.gender)).filter((v) => v && v !== '其他'),
+        );
+        const categoryL2LandedSet = new Set(
+            dimSku.map((row) => String(row.category_name || row.category_id || '').trim()).filter(Boolean),
+        );
+        const categoryL3LandedSet = new Set(
+            dimSku.map((row) => String(row.category_l2 || '').trim()).filter(Boolean),
+        );
+
+        const l1Options = FOOTWEAR_CATEGORY_HIERARCHY.map((item) =>
+            createOption(item.l1, categoryL1LandedSet.has(item.l1)),
+        );
+        const l2ByL1: Record<string, FilterOption[]> = {};
+        const l3ByL1: Record<string, FilterOption[]> = {};
+        const l3ByL2: Record<string, FilterOption[]> = {};
+
+        FOOTWEAR_CATEGORY_HIERARCHY.forEach((group) => {
+            l2ByL1[group.l1] = uniqueOptions(group.items.map((item) => item.l2), categoryL2LandedSet);
+            l3ByL1[group.l1] = uniqueOptions(group.items.flatMap((item) => item.l3), categoryL3LandedSet);
+            group.items.forEach((item) => {
+                const existing = (l3ByL2[item.l2] || []).map((o) => o.value);
+                l3ByL2[item.l2] = uniqueOptions([...existing, ...item.l3], categoryL3LandedSet);
+            });
+        });
+
+        const allL2 = uniqueOptions(
+            FOOTWEAR_CATEGORY_HIERARCHY.flatMap((group) => group.items.map((item) => item.l2)),
+            categoryL2LandedSet,
+        );
+        const allL3 = uniqueOptions(
+            FOOTWEAR_CATEGORY_HIERARCHY.flatMap((group) => group.items.flatMap((item) => item.l3)),
+            categoryL3LandedSet,
+        );
+
+        const waveOptionsBySeasonHint: Record<string, string[]> = seasonWaveCalendar.seasons.reduce(
+            (acc, season) => {
+                acc[season.dashboard_season_hint] = Array.from(
+                    new Set(season.waves.flatMap((wave) => wave.dashboard_wave_hints)),
+                );
+                return acc;
+            },
+            {} as Record<string, string[]>,
+        );
+
+        return {
+            CATEGORY_L1_OPTION_OBJECTS: l1Options,
+            CATEGORY_L2_BY_L1: l2ByL1,
+            CATEGORY_L3_BY_L1: l3ByL1,
+            CATEGORY_L3_BY_L2: l3ByL2,
+            ALL_CATEGORY_L2_OPTIONS: allL2,
+            ALL_CATEGORY_L3_OPTIONS: allL3,
+            WAVE_OPTIONS_BY_SEASON_HINT: waveOptionsBySeasonHint,
+        };
+    }, [dimSku]);
+
     const waveOptions = useMemo(() => {
         if (filters.season === 'all') return WAVES;
         return WAVE_OPTIONS_BY_SEASON_HINT[filters.season] || WAVES;
-    }, [filters.season]);
+    }, [filters.season, WAVE_OPTIONS_BY_SEASON_HINT]);
 
     const categoryL2Options = useMemo(() => {
         if (filters.category_l1 === 'all') return ALL_CATEGORY_L2_OPTIONS;
         return CATEGORY_L2_BY_L1[filters.category_l1] || [];
-    }, [filters.category_l1]);
+    }, [filters.category_l1, ALL_CATEGORY_L2_OPTIONS, CATEGORY_L2_BY_L1]);
 
     const categoryL3Options = useMemo(
-        () => getCategoryL3Options(filters.category_l1, filters.category_id),
-        [filters.category_l1, filters.category_id],
+        () => getCategoryL3Options(filters.category_l1, filters.category_id, CATEGORY_L3_BY_L2, CATEGORY_L3_BY_L1, ALL_CATEGORY_L3_OPTIONS),
+        [filters.category_l1, filters.category_id, CATEGORY_L3_BY_L2, CATEGORY_L3_BY_L1, ALL_CATEGORY_L3_OPTIONS],
     );
 
     const brandOptions: FilterOption[] = [{ value: 'all', label: '全部品牌' }, ...BRAND_OPTION_OBJECTS];
@@ -321,7 +340,7 @@ export default function FilterBar({
             nextFilters.category_id = 'all';
         }
 
-        const nextCategoryL3Options = getCategoryL3Options(value, nextFilters.category_id);
+        const nextCategoryL3Options = getCategoryL3Options(value, nextFilters.category_id, CATEGORY_L3_BY_L2, CATEGORY_L3_BY_L1, ALL_CATEGORY_L3_OPTIONS);
         if (filters.sub_category !== 'all' && !nextCategoryL3Options.some((option) => option.value === filters.sub_category)) {
             nextFilters.sub_category = 'all';
         }
@@ -330,7 +349,7 @@ export default function FilterBar({
     };
 
     const updateCategoryL2 = (value: string) => {
-        const nextCategoryL3Options = getCategoryL3Options(filters.category_l1, value);
+        const nextCategoryL3Options = getCategoryL3Options(filters.category_l1, value, CATEGORY_L3_BY_L2, CATEGORY_L3_BY_L1, ALL_CATEGORY_L3_OPTIONS);
         const nextFilters: DashboardFilters = { ...filters, category_id: value };
 
         if (filters.sub_category !== 'all' && !nextCategoryL3Options.some((option) => option.value === filters.sub_category)) {
@@ -417,12 +436,12 @@ export default function FilterBar({
                         <div
                             onMouseEnter={cancelQueuedCollapse}
                             onMouseLeave={queueCollapse}
-                            className="overflow-hidden rounded-[28px] border border-white/85 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(247,250,252,0.96)_100%)] shadow-[0_20px_48px_rgba(15,23,42,0.08)] ring-1 ring-inset ring-slate-200/70"
+                            className="overflow-hidden rounded-panel border border-white/85 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(247,250,252,0.96)_100%)] shadow-[0_20px_48px_rgba(15,23,42,0.08)] ring-1 ring-inset ring-slate-200/70"
                         >
 
 
                             <div className="px-4 pb-4 pt-3">
-                                <div className="rounded-[24px] border border-white/85 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(247,250,252,0.96)_100%)] p-3 shadow-[0_18px_42px_rgba(15,23,42,0.06)] ring-1 ring-inset ring-slate-200/70">
+                                <div className="rounded-panel border border-white/85 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(247,250,252,0.96)_100%)] p-3 shadow-[0_18px_42px_rgba(15,23,42,0.06)] ring-1 ring-inset ring-slate-200/70">
                                     <div className="flex flex-wrap items-center gap-x-3 gap-y-2 lg:flex-nowrap">
                                         <FilterSelect label="品牌" value={filters.brand} options={brandOptions} onChange={(value) => update('brand', value)} />
                                         <FilterSelect label="一级品类" value={filters.category_l1} options={categoryL1Options} onChange={updateCategoryL1} />

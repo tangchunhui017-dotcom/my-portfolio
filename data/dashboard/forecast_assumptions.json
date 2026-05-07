@@ -1,0 +1,106 @@
+{
+  "meta": {
+    "version": "2.1",
+    "description": "销售预测驱动参数（假设数据，非事实数据）",
+    "lastUpdated": "2026-05-06"
+  },
+  "base_year": 2024,
+  "available_years": [2022, 2023, 2024],
+  "channels": {
+    "physical": {
+      "label": "实体店",
+      "baseMonthlyRevenue": 1200000,
+      "avgTransactionValue": 520,
+      "conversionRate": 0.28,
+      "monthlyFootTraffic": 8200,
+      "refundRate": 0.06,
+      "scenarios": {
+        "conservative": { "label": "保守", "growthRate": -0.05 },
+        "base": { "label": "基准", "growthRate": 0.08 },
+        "optimistic": { "label": "乐观", "growthRate": 0.18 }
+      },
+      "history": {
+        "2022": [250000,118000,129000,155000,137000,132000,141000,184000,196000,237000,419000,177000],
+        "2023": [264000,124000,136000,163000,144000,139000,148000,193000,206000,250000,442000,187000],
+        "2024": [278856,130972,143085,172550,152156,146738,156927,204312,217680,263855,465768,197203]
+      },
+      "drivers": {
+        "avg_unit_price": 291.52,
+        "conversion_rate": 0.01,
+        "avg_ticket": 437.28,
+        "traffic_monthly": 54033,
+        "investment_budget": 400000
+      }
+    },
+    "ecommerce": {
+      "label": "电商",
+      "baseMonthlyRevenue": 980000,
+      "avgTransactionValue": 390,
+      "conversionRate": 0.032,
+      "monthlyPageViews": 850000,
+      "refundRate": 0.14,
+      "scenarios": {
+        "conservative": { "label": "保守", "growthRate": 0.05 },
+        "base": { "label": "基准", "growthRate": 0.20 },
+        "optimistic": { "label": "乐观", "growthRate": 0.38 }
+      },
+      "history": {
+        "2022": [540000,75000,397000,530000,271000,248000,145000,109000,108000,166000,136000,124000],
+        "2023": [570000,80000,419000,560000,286000,262000,153000,115000,114000,175000,144000,131000],
+        "2024": [600168,84229,441439,589744,301504,276360,161287,121417,120488,184950,151297,138490]
+      },
+      "drivers": {
+        "refund_rate": 0.137,
+        "avg_ticket": 130,
+        "conversion_rate": 0.015,
+        "traffic_cost_per_visitor": 0.25,
+        "platform_fee_rate": 0.05,
+        "payment_fee_rate": 0.004,
+        "customer_service_rate": 0.017
+      }
+    },
+    "new_store": {
+      "label": "新店",
+      "targetCity": "二线城市",
+      "storeArea": 120,
+      "efficiencyPerSqm": 8500,
+      "openingMonthFactor": 0.6,
+      "rampUpMonths": 6,
+      "breakEvenSalesMonthly": 350000,
+      "triangle": {
+        "efficiencyMethod": {
+          "label": "坪效法",
+          "salesPerSqmPerYear": 8500
+        },
+        "footTrafficMethod": {
+          "label": "客流驱动法",
+          "monthlyFootTraffic": 4500,
+          "conversionRate": 0.25,
+          "avgTransactionValue": 480
+        },
+        "breakEvenMethod": {
+          "label": "损益平衡反推法",
+          "monthlyFixedCost": 120000,
+          "grossMarginRate": 0.42,
+          "variableCostRate": 0.12
+        }
+      },
+      "divergenceThreshold": 0.30,
+      "scenarios": {
+        "conservative": { "label": "保守", "growthRate": 0.0 },
+        "base": { "label": "基准", "growthRate": 0.15 },
+        "optimistic": { "label": "乐观", "growthRate": 0.30 }
+      },
+      "city_tier_benchmarks": {
+        "tier1": { "daily_traffic_range": [5000, 10000], "entry_rate_range": [0.01, 0.03] },
+        "tier2": { "daily_traffic_range": [2000, 5000], "entry_rate_range": [0.02, 0.05] },
+        "tier3_plus": { "daily_traffic_range": [500, 2000], "entry_rate_range": [0.05, 0.10] }
+      }
+    }
+  },
+  "seasonalIndex": {
+    "1": 0.72, "2": 0.68, "3": 0.95, "4": 1.10, "5": 1.05, "6": 0.88,
+    "7": 0.90, "8": 0.95, "9": 1.15, "10": 1.20, "11": 1.35, "12": 1.08
+  }
+}
+

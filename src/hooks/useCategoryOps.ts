@@ -1,13 +1,10 @@
 'use client';
 
 import { useMemo } from 'react';
-import factSalesRaw from '@/../data/dashboard/fact_sales.json';
-import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
-import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
 import dimPlanRaw from '@/../data/dashboard/dim_plan.json';
-import factOpsRaw from '@/../data/dashboard/fact_ops.json';
 import sizeRuleMatrixRaw from '@/../data/taxonomy/size_rule_matrix.json';
 import sizeCurvesRaw from '@/../data/taxonomy/size_curves.json';
+import { useFactSalesForDashboard, useDimSku, useDimChannel, useFactOpsForDashboard } from '@/hooks/useDashboardData';
 import { matchesDashboardSkuCategoryFilters } from '@/hooks/useDashboardFilter';
 import type { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
 import { resolveFootwearCategory } from '@/config/categoryMapping';
@@ -442,14 +439,7 @@ export interface CategoryOpsDecisionItem {
     result: string;
 }
 
-const factSales = factSalesRaw as FactSalesRecord[];
-const dimSku = dimSkuRaw as DimSkuRecord[];
-const dimChannel = dimChannelRaw as DimChannelRecord[];
 const dimPlan = dimPlanRaw as DimPlanRecord;
-const factOps = factOpsRaw as DashboardOpsFactRecord[];
-const factOpsMap = new Map<string, DashboardOpsFactRecord>(
-    factOps.map((row) => [row.record_key || buildDashboardOpsRecordKey(row), row]),
-);
 const sizeRuleMatrix = sizeRuleMatrixRaw as SizeRuleMatrixData;
 const sizeCurves = sizeCurvesRaw as SizeCurvesData;
 
@@ -876,9 +866,11 @@ function createBucket(
 }
 
 function aggregateSales(
+    records: FactSalesRecord[],
     filters: DashboardFilters,
     skuMap: Map<string, DimSkuRecord>,
     channelMap: Map<string, DimChannelRecord>,
+    opsMap: Map<string, DashboardOpsFactRecord>,
     forcedYear: number | null,
     forcedSeason: string | null = null,
     forcedWave: string | null = null,
@@ -900,7 +892,7 @@ function aggregateSales(
     let totalNetSales = 0;
     let totalPairs = 0;
 
-    factSales.forEach((sale) => {
+    records.forEach((sale) => {
         const sku = skuMap.get(sale.sku_id);
         const channel = channelMap.get(sale.channel_id);
         if (!sku || !channel) return;
@@ -954,7 +946,7 @@ function aggregateSales(
         const cumulativeSellThrough = sale.cumulative_sell_through || 0;
         const inventoryPressure = safeDiv(onHandUnits, onHandUnits + units);
         const sellThroughProxy = clamp(cumulativeSellThrough || 0.72, 0.55, 0.9);
-        const opsRecord = factOpsMap.get(buildDashboardOpsRecordKey(sale));
+        const opsRecord = opsMap.get(buildDashboardOpsRecordKey(sale));
         const demandPairs = Math.max(0, Number(opsRecord?.demand_pairs) || safeDiv(units, Math.max(sellThroughProxy, 0.05)));
         const fillRate = demandPairs > 0
             ? (Number(opsRecord?.fill_rate) || deriveFillRate(sellThroughProxy, 0, inventoryPressure))
@@ -1038,6 +1030,7 @@ function aggregateSales(
 }
 
 function aggregateSellThroughTrend(
+    records: FactSalesRecord[],
     filters: DashboardFilters,
     skuMap: Map<string, DimSkuRecord>,
     channelMap: Map<string, DimChannelRecord>,
@@ -1047,7 +1040,7 @@ function aggregateSellThroughTrend(
 ) {
     const trendMap = new Map<string, SellThroughTrendBucket>();
 
-    factSales.forEach((sale) => {
+    records.forEach((sale) => {
         const sku = skuMap.get(sale.sku_id);
         const channel = channelMap.get(sale.channel_id);
         if (!sku || !channel) return;
@@ -1111,6 +1104,7 @@ interface OperationalInferenceTotals {
 }
 
 function inferOperationalTotals(
+    records: FactSalesRecord[],
     filters: DashboardFilters,
     skuMap: Map<string, DimSkuRecord>,
     channelMap: Map<string, DimChannelRecord>,
@@ -1125,7 +1119,7 @@ function inferOperationalTotals(
     let reorderWeighted = 0;
     let weight = 0;
 
-    factSales.forEach((sale) => {
+    records.forEach((sale) => {
         const sku = skuMap.get(sale.sku_id);
         const channel = channelMap.get(sale.channel_id);
         if (!sku || !channel) return;
@@ -1444,6 +1438,7 @@ type SkuActionAgg = {
 };
 
 function buildSkuActionRows(
+    records: FactSalesRecord[],
     filters: DashboardFilters,
     skuMap: Map<string, DimSkuRecord>,
     channelMap: Map<string, DimChannelRecord>,
@@ -1454,7 +1449,7 @@ function buildSkuActionRows(
     const skuMapAgg = new Map<string, SkuActionAgg>();
     const latestInventoryBySkuChannel = new Map<string, { weekNum: number; onHandUnits: number }>();
 
-    factSales.forEach((sale) => {
+    records.forEach((sale) => {
         const sku = skuMap.get(sale.sku_id);
         const channel = channelMap.get(sale.channel_id);
         if (!sku || !channel) return;
@@ -1620,14 +1615,26 @@ export function useCategoryOps(
     compareMode: CompareMode = 'none',
     categoryLevel: CategoryLevel = 'l1',
 ) {
+    const { data: factSalesData } = useFactSalesForDashboard(filters.season_year);
+    const { data: dimSkuData } = useDimSku();
+    const { data: dimChannelData } = useDimChannel();
+    const { data: factOpsData } = useFactOpsForDashboard(filters.season_year);
+    const factSales = (factSalesData ?? []) as FactSalesRecord[];
+    const dimSku = (dimSkuData ?? []) as DimSkuRecord[];
+    const dimChannel = (dimChannelData ?? []) as DimChannelRecord[];
+    const factOps = (factOpsData ?? []) as DashboardOpsFactRecord[];
+
     return useMemo(() => {
+        const factOpsMap = new Map<string, DashboardOpsFactRecord>(
+            factOps.map((row) => [row.record_key || buildDashboardOpsRecordKey(row), row]),
+        );
         const skuMap = new Map<string, DimSkuRecord>();
         dimSku.forEach((item) => skuMap.set(item.sku_id, item));
 
         const channelMap = new Map<string, DimChannelRecord>();
         dimChannel.forEach((item) => channelMap.set(item.channel_id, item));
 
-        const current = aggregateSales(filters, skuMap, channelMap, null, null, null, categoryLevel);
+        const current = aggregateSales(factSales, filters, skuMap, channelMap, factOpsMap, null, null, null, categoryLevel);
         const planSnapshot = buildPlanBaseline(current);
         const compareMetaConfig = getDashboardCompareMeta(compareMode, filters, 'category');
         const modeLabel = compareMetaConfig.modeLabel;
@@ -1650,9 +1657,11 @@ export function useCategoryOps(
                 baselineForcedYear = baselineYear;
                 baselineForcedSeason = null;
                 const baselineAggregation = aggregateSales(
+                    factSales,
                     filters,
                     skuMap,
                     channelMap,
+                    factOpsMap,
                     baselineYear,
                     null,
                     categoryLevel,
@@ -1673,9 +1682,11 @@ export function useCategoryOps(
                 baselineForcedSeason = momBaseline.season;
                 baselineForcedWave = momBaseline.wave === 'all' ? null : momBaseline.wave;
                 const baselineAggregation = aggregateSales(
+                    factSales,
                     filters,
                     skuMap,
                     channelMap,
+                    factOpsMap,
                     momBaseline.year,
                     momBaseline.season,
                     baselineForcedWave,
@@ -1708,10 +1719,10 @@ export function useCategoryOps(
         const baselineCellMap = baselineSnapshot?.cellMap || null;
         const baselineTotals = baselineSnapshot?.totals || null;
 
-        const currentTrendMap = aggregateSellThroughTrend(filters, skuMap, channelMap, null, null, null);
+        const currentTrendMap = aggregateSellThroughTrend(factSales, filters, skuMap, channelMap, null, null, null);
         const baselineTrendMap =
             baselineForcedYear !== null
-                ? aggregateSellThroughTrend(filters, skuMap, channelMap, baselineForcedYear, baselineForcedSeason, baselineForcedWave)
+                ? aggregateSellThroughTrend(factSales, filters, skuMap, channelMap, baselineForcedYear, baselineForcedSeason, baselineForcedWave)
                 : null;
 
         const sellThroughTrend = Array.from(currentTrendMap.values())
@@ -2024,7 +2035,7 @@ export function useCategoryOps(
         const currentStoreCount = current.activeStoreSet.size;
         const currentActiveSku = current.activeSkuSet.size;
         const currentTotalSku = current.scopedSkuSet.size;
-        const currentOperationalTotals = inferOperationalTotals(filters, skuMap, channelMap, factOpsMap, null, null, null);
+        const currentOperationalTotals = inferOperationalTotals(factSales, filters, skuMap, channelMap, factOpsMap, null, null, null);
         const demandPairs = currentOperationalTotals.demandPairs;
         const shipPairs = currentOperationalTotals.shipPairs;
         const shipExecutionRate = currentOperationalTotals.avgFillRate || avgFillRate;
@@ -2038,7 +2049,7 @@ export function useCategoryOps(
         const baselineStoreCount = baselineTotals?.storeCount || currentStoreCount;
         const baselineActiveSku = baselineProductStats?.activeSku ?? baselineTotals?.activeSku ?? 0;
         const baselineOperationalTotals = hasBaseline && compareMode !== 'plan' && baselineForcedYear !== null
-            ? inferOperationalTotals(filters, skuMap, channelMap, factOpsMap, baselineForcedYear, baselineForcedSeason, baselineForcedWave)
+            ? inferOperationalTotals(factSales, filters, skuMap, channelMap, factOpsMap, baselineForcedYear, baselineForcedSeason, baselineForcedWave)
             : null;
         const baselineDemandPairs = baselineOperationalTotals?.demandPairs
             ?? safeDiv(baselinePairs, Math.max(baselineAvgSellThrough, 0.05));
@@ -2460,6 +2471,7 @@ export function useCategoryOps(
             .slice(0, 10);
 
         const skuActionRows = buildSkuActionRows(
+            factSales,
             filters,
             skuMap,
             channelMap,
@@ -2856,5 +2868,5 @@ export function useCategoryOps(
             insight,
             decisionRows,
         };
-    }, [filters, heatmapXAxis, sellThroughMode, compareMode, categoryLevel]);
+    }, [filters, heatmapXAxis, sellThroughMode, compareMode, categoryLevel, factSales, dimSku, dimChannel, factOps]);
 }

@@ -216,6 +216,10 @@
   --color-foreground: var(--text-primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* 圆角设计令牌：section=页面级容器 / panel=内部面板 / card=列表项 */
+  --radius-section: 32px;
+  --radius-panel: 24px;
+  --radius-card: 20px;
 }
 
 body {

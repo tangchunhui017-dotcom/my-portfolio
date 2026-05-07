@@ -1,12 +1,11 @@
 ﻿'use client';
 
 import { useMemo } from 'react';
-import wavePlanRaw from '@/../data/dashboard/dim_wave_plan.json';
-import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
-import factSalesRaw from '@/../data/dashboard/fact_sales.json';
-import factInventoryRaw from '@/../data/dashboard/fact_inventory.json';
-import factPlanRaw from '@/../data/dashboard/fact_plan.json';
+import { useDimWavePlan, useDimSku, useFactSales, useFactInventory, useFactPlan, useDimChannel } from '@/hooks/useDashboardData';
+import { matchesDashboardSkuCategoryFilters, type DashboardFilters } from '@/hooks/useDashboardFilter';
 import { resolveFootwearCategory } from '@/config/categoryMapping';
+import { resolveDashboardLifecycleLabel } from '@/config/dashboardLifecycle';
+import { matchesPriceBandFilter } from '@/config/priceBand';
 
 interface WavePlanRecord {
     id: string;
@@ -35,11 +34,26 @@ interface DimSkuRecord {
     msrp?: number;
     launch_wave?: string;
     season_year?: string;
+    season?: string;
+    dev_season_year?: string;
+    dev_season?: string;
+    brand_name?: string | null;
+    gender?: string | null;
+    lifecycle?: string;
+    target_audience?: string;
+    target_age_group?: string;
+    color?: string;
+    color_family?: string;
 }
 
 interface FactSalesRecord {
     sku_id: string;
+    channel_id?: string;
+    sale_year?: string;
     season_year?: string;
+    sales_season?: string;
+    season?: string;
+    sale_wave?: string;
     wave?: string;
     week_num: number;
     unit_sold: number;
@@ -48,6 +62,14 @@ interface FactSalesRecord {
     gross_margin_rate?: number;
     cumulative_sell_through?: number;
     on_hand_unit?: number;
+}
+
+interface DimChannelRecord {
+    channel_id: string;
+    channel_type?: string;
+    region?: string;
+    city_tier?: string;
+    store_format?: string;
 }
 
 interface FactInventoryRecord {
@@ -164,11 +186,7 @@ export interface RegionTempRow {
     cells: RegionWaveCell[];
 }
 
-const wavePlan = wavePlanRaw as WavePlanRecord[];
-const dimSku = dimSkuRaw as DimSkuRecord[];
-const factSales = factSalesRaw as FactSalesRecord[];
-const factInventory = factInventoryRaw as FactInventoryRecord[];
-const factPlan = factPlanRaw as FactPlanRecord[];
+
 
 const CATEGORY_ORDER = [
     '跑步',
@@ -252,6 +270,51 @@ function normalizeCategory(
     return resolved.categoryL2 || '其他';
 }
 
+function matchesWavePlanningSkuFilters(filters: DashboardFilters | undefined, sku: DimSkuRecord) {
+    if (!filters) return true;
+    if (!matchesDashboardSkuCategoryFilters(filters, sku)) return false;
+    if (!matchesPriceBandFilter(Number(sku.msrp || 0), filters.price_band, sku.price_band)) return false;
+    if (filters.lifecycle !== 'all') {
+        const lifecycle = resolveDashboardLifecycleLabel(filters, {
+            season_year: sku.dev_season_year ?? sku.season_year,
+            season: sku.dev_season ?? sku.season,
+            lifecycle: sku.lifecycle,
+        });
+        if (lifecycle !== filters.lifecycle) return false;
+    }
+    if (filters.target_audience !== 'all' && sku.target_audience !== filters.target_audience && sku.target_age_group !== filters.target_audience) return false;
+    if (filters.color !== 'all' && sku.color !== filters.color && sku.color_family !== filters.color) return false;
+    return true;
+}
+
+function matchesWavePlanningChannelFilters(filters: DashboardFilters | undefined, channel: DimChannelRecord | undefined) {
+    if (!filters) return true;
+    if (filters.channel_type !== 'all' && channel?.channel_type !== filters.channel_type) return false;
+    if (filters.region !== 'all' && channel?.region !== filters.region) return false;
+    if (filters.city_tier !== 'all' && channel?.city_tier !== filters.city_tier) return false;
+    if (filters.store_format !== 'all' && channel?.store_format !== filters.store_format) return false;
+    return true;
+}
+
+function matchesWavePlanningTimeFilters(filters: DashboardFilters | undefined, row: FactSalesRecord) {
+    if (!filters) return true;
+    if (filters.season_year !== 'all' && String(row.sale_year ?? row.season_year) !== String(filters.season_year)) return false;
+    if (filters.season !== 'all') {
+        const season = String(row.sales_season ?? row.season ?? '').toUpperCase();
+        if (season && season !== String(filters.season).toUpperCase()) return false;
+    }
+    if (filters.wave !== 'all' && normalizeWaveCode(row.sale_wave || row.wave) !== normalizeWaveCode(filters.wave)) return false;
+    return true;
+}
+
+function matchesWavePlanningPlanFilters(filters: DashboardFilters | undefined, wave: WavePlanRecord) {
+    if (!filters) return true;
+    if (filters.season_year !== 'all' && !String(wave.season).startsWith(String(filters.season_year))) return false;
+    if (filters.season !== 'all' && !String(wave.season).toUpperCase().endsWith(String(filters.season).toUpperCase())) return false;
+    if (filters.wave !== 'all' && normalizeWaveCode(wave.wave) !== normalizeWaveCode(filters.wave)) return false;
+    return true;
+}
+
 function parseDateMs(dateStr: string) {
     const ms = Number(new Date(dateStr));
     return Number.isFinite(ms) ? ms : 0;
@@ -317,17 +380,52 @@ function evaluateWaveTempStatus(
     };
 }
 
-export function useWavePlanning() {
-    return useMemo(() => {
-        const orderedWaves = [...wavePlan].sort((a, b) => parseDateMs(a.launch_date) - parseDateMs(b.launch_date));
+export function useWavePlanning(filters?: DashboardFilters) {
+    const { data: wavePlanData, isLoading: l1 } = useDimWavePlan();
+    const { data: dimSkuData, isLoading: l2 } = useDimSku();
+    const selectedYear = filters
+        ? (filters.season_year !== 'all' ? String(filters.season_year) : undefined)
+        : '2025';
+    const { data: factSalesData, isLoading: l3 } = useFactSales(selectedYear);
+    const { data: factInventoryData, isLoading: l4 } = useFactInventory();
+    const { data: factPlanData, isLoading: l5 } = useFactPlan();
+    const { data: dimChannelData } = useDimChannel();
 
+    const isLoading = l1 || l2 || l3 || l4 || l5;
+    const wavePlan = useMemo(() => (wavePlanData ?? []) as WavePlanRecord[], [wavePlanData]);
+    const dimSku = useMemo(() => (dimSkuData ?? []) as DimSkuRecord[], [dimSkuData]);
+    const factSales = useMemo(() => (factSalesData ?? []) as FactSalesRecord[], [factSalesData]);
+    const factInventory = useMemo(() => (factInventoryData ?? []) as FactInventoryRecord[], [factInventoryData]);
+    const factPlan = useMemo(() => (factPlanData ?? []) as FactPlanRecord[], [factPlanData]);
+    const dimChannel = useMemo(() => (dimChannelData ?? []) as DimChannelRecord[], [dimChannelData]);
+
+    const result = useMemo(() => {
         const skuMap = new Map<string, DimSkuRecord>();
         dimSku.forEach((sku) => {
             skuMap.set(sku.sku_id, sku);
         });
 
+        const channelMap = new Map<string, DimChannelRecord>();
+        dimChannel.forEach((channel) => {
+            channelMap.set(channel.channel_id, channel);
+        });
+
+        const scopedDimSku = dimSku.filter((sku) => matchesWavePlanningSkuFilters(filters, sku));
+        const scopedSkuIds = new Set(scopedDimSku.map((sku) => sku.sku_id));
+        const scopedFactSales = factSales.filter((row) => {
+            const sku = skuMap.get(row.sku_id);
+            if (!sku || !matchesWavePlanningSkuFilters(filters, sku)) return false;
+            if (!matchesWavePlanningChannelFilters(filters, channelMap.get(row.channel_id || ''))) return false;
+            return matchesWavePlanningTimeFilters(filters, row);
+        });
+        const scopedFactInventory = factInventory.filter((row) => scopedSkuIds.has(row.sku_id));
+
+        const orderedWaves = [...wavePlan]
+            .filter((wave) => matchesWavePlanningPlanFilters(filters, wave))
+            .sort((a, b) => parseDateMs(a.launch_date) - parseDateMs(b.launch_date));
+
         const salesBySku = new Map<string, SkuSalesAgg>();
-        factSales.forEach((row) => {
+        scopedFactSales.forEach((row) => {
             const current = salesBySku.get(row.sku_id) || {
                 units: 0,
                 netSales: 0,
@@ -356,7 +454,7 @@ export function useWavePlanning() {
         });
 
         const inventoryBySku = new Map<string, SkuInventoryAgg>();
-        factInventory.forEach((row) => {
+        scopedFactInventory.forEach((row) => {
             const current = inventoryBySku.get(row.sku_id) || {
                 shipQty: 0,
                 salesQty: 0,
@@ -368,8 +466,8 @@ export function useWavePlanning() {
             inventoryBySku.set(row.sku_id, current);
         });
 
-        const hasInboundField = factInventory.some((row) => typeof row.inbound_qty === 'number' || typeof row.transfer_in === 'number');
-        const hasSalesField = factInventory.some((row) => typeof row.sales_qty === 'number');
+        const hasInboundField = scopedFactInventory.some((row) => typeof row.inbound_qty === 'number' || typeof row.transfer_in === 'number');
+        const hasSalesField = scopedFactInventory.some((row) => typeof row.sales_qty === 'number');
 
         const planBySeasonWave = new Map<string, FactPlanRecord>();
         factPlan.forEach((row) => {
@@ -379,11 +477,11 @@ export function useWavePlanning() {
         const waveSummaries: WaveSummary[] = orderedWaves.map((wave, index) => {
             const waveCode = normalizeWaveCode(wave.wave);
             const waveYear = wave.season.slice(0, 4);
-            let waveSkus = dimSku.filter(
+            let waveSkus = scopedDimSku.filter(
                 (sku) => normalizeWaveCode(sku.launch_wave) === waveCode && (!waveYear || sku.season_year === waveYear),
             );
             if (!waveSkus.length) {
-                waveSkus = dimSku.filter((sku) => normalizeWaveCode(sku.launch_wave) === waveCode);
+                waveSkus = scopedDimSku.filter((sku) => normalizeWaveCode(sku.launch_wave) === waveCode);
             }
 
             let actualUnits = 0;
@@ -511,7 +609,7 @@ export function useWavePlanning() {
                 theme: wave.theme,
                 temp_zone: wave.temp_zone || '全国',
                 sku_plan: wave.sku_plan || 0,
-                sku_actual: wave.sku_actual || 0,
+                sku_actual: filters ? waveSkus.length : (wave.sku_actual || 0),
                 new_ratio: wave.new_ratio || 0,
                 old_ratio: wave.old_ratio || 0,
                 actual_units: actualUnits,
@@ -589,7 +687,7 @@ export function useWavePlanning() {
         const regionOptions = regionTempRows.map((row) => row.region);
         const defaultRegion = regionOptions.includes('全国统管') ? '全国统管' : (regionOptions[0] || '');
 
-        const salesYears = Array.from(new Set(factSales.map((row) => row.season_year).filter(Boolean))).sort();
+        const salesYears = Array.from(new Set(scopedFactSales.map((row) => row.season_year).filter(Boolean))).sort();
         const planYears = Array.from(new Set(factPlan.map((row) => String(row.year)))).sort();
         const dataScopeHint = `样本口径：fact_sales ${salesYears.join('/')}；fact_plan ${planYears.join('/')}。跨年比较仅用于演示。`;
 
@@ -603,5 +701,17 @@ export function useWavePlanning() {
             defaultRegion,
             dataScopeHint,
         };
-    }, []);
+    }, [wavePlan, dimSku, dimChannel, factSales, factInventory, factPlan, filters]);
+
+    return {
+        waveSummaries: result?.waveSummaries ?? [],
+        stackCategories: result?.stackCategories ?? [],
+        stackRows: result?.stackRows ?? [],
+        regionTempRows: result?.regionTempRows ?? [],
+        regionSeriesMap: result?.regionSeriesMap ?? {},
+        regionOptions: result?.regionOptions ?? [],
+        defaultRegion: result?.defaultRegion ?? '',
+        dataScopeHint: result?.dataScopeHint ?? '',
+        isLoading,
+    };
 }

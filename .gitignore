@@ -55,6 +55,7 @@ read_store_excel.js
 tmp_annual_control_polish.cjs
 tmp_fix_spring_carry.py
 tmp_rebuild_annual_control.py
+tmp_check_db.js
 tmp_annual_control_timeline/
 tmp/
 
@@ -68,4 +69,3 @@ region_excel_preview_utf8.txt
 store_excel_preview_utf8.txt
 *.bat
 .claude/
-

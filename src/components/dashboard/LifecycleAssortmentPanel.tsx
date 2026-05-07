@@ -2259,7 +2259,7 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
     }, [assortmentChartData, assortmentData, assortmentLabelMeta, assortmentSalesScaleLine]);
 
     return (
-        <div className="relative mb-6 w-full overflow-hidden rounded-[24px] bg-white shadow-[0_12px_28px_rgba(15,23,42,0.04)] ring-1 ring-slate-200">
+        <div className="relative mb-6 w-full overflow-hidden rounded-panel bg-white shadow-[0_12px_28px_rgba(15,23,42,0.04)] ring-1 ring-slate-200">
             <div className="relative flex items-center justify-between border-b border-slate-100 px-8 pb-4 pt-6">
                 <div>
                     <h2 className="flex items-center gap-3 text-xl font-semibold tracking-wide text-slate-900">
@@ -2553,10 +2553,10 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                         )}
                     </div>
 
-                    <div className="relative h-[650px] overflow-visible rounded-[24px] border border-slate-100 bg-white shadow-inner">
+                    <div className="relative h-[650px] overflow-visible rounded-panel border border-slate-100 bg-white shadow-inner">
                         {activeTab === 'transition' ? (
                             hasTransitionChartData ? (
-                                <div className="flex h-full flex-col overflow-hidden rounded-[24px]">
+                                <div className="flex h-full flex-col overflow-hidden rounded-panel">
                                     <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
                                         <div className="hidden flex-1 lg:block"></div>
                                         <div className="flex flex-[2] items-center justify-center gap-6 whitespace-nowrap text-[10.5px] font-medium text-slate-500">
@@ -2602,7 +2602,7 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                                 <div className="flex h-full items-center justify-center text-sm text-slate-400">{"\u5f53\u524d\u7b5b\u9009\u4e0b\u6682\u65e0\u751f\u547d\u5468\u671f\u9500\u552e\u7ed3\u6784\u6570\u636e"}</div>
                             )
                         ) : hasAssortmentData ? (
-                            <div className="flex h-full flex-col overflow-hidden rounded-[24px]">
+                            <div className="flex h-full flex-col overflow-hidden rounded-panel">
                                 <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
                                     <div className="hidden flex-1 lg:block"></div>
                                     <div className="flex flex-[2] flex-wrap items-center justify-center gap-x-6 gap-y-2 whitespace-nowrap text-[10.5px] font-medium text-slate-500">

@@ -1,0 +1,29 @@
+{
+  "categories": [
+    { "key": "sneaker", "label": "运动鞋", "sales_share": 0.32, "gross_margin_rate": 0.58, "growth_rate": 0.12 },
+    { "key": "casual",  "label": "休闲鞋", "sales_share": 0.28, "gross_margin_rate": 0.55, "growth_rate": 0.08 },
+    { "key": "fashion", "label": "时装鞋", "sales_share": 0.18, "gross_margin_rate": 0.62, "growth_rate": 0.10 },
+    { "key": "sandal",  "label": "凉鞋",   "sales_share": 0.12, "gross_margin_rate": 0.50, "growth_rate": 0.05 },
+    { "key": "boot",    "label": "靴子",   "sales_share": 0.10, "gross_margin_rate": 0.65, "growth_rate": 0.15 }
+  ],
+  "price_bands": [
+    { "key": "299-",     "label": "299以下",   "sales_share": 0.12, "target_share": 0.10 },
+    { "key": "300-399",  "label": "300-399",   "sales_share": 0.24, "target_share": 0.22 },
+    { "key": "400-499",  "label": "400-499",   "sales_share": 0.30, "target_share": 0.32 },
+    { "key": "500-699",  "label": "500-699",   "sales_share": 0.22, "target_share": 0.24 },
+    { "key": "700+",     "label": "700以上",   "sales_share": 0.12, "target_share": 0.12 }
+  ],
+  "lifecycle": [
+    { "key": "new",        "label": "新品",   "sales_share": 0.52, "target_share": 0.55 },
+    { "key": "carryover",  "label": "延续款", "sales_share": 0.30, "target_share": 0.28 },
+    { "key": "clearance",  "label": "清货款", "sales_share": 0.18, "target_share": 0.17 }
+  ],
+  "waves": [
+    { "key": "W1", "label": "春季第一波", "months": [2, 3],   "sales_share": 0.16 },
+    { "key": "W2", "label": "春季第二波", "months": [4, 5],   "sales_share": 0.18 },
+    { "key": "W3", "label": "夏季波段",   "months": [6, 7],   "sales_share": 0.14 },
+    { "key": "W4", "label": "秋季第一波", "months": [8, 9],   "sales_share": 0.20 },
+    { "key": "W5", "label": "秋冬主推波", "months": [10, 11], "sales_share": 0.25 },
+    { "key": "W6", "label": "年末清货波", "months": [12, 1],  "sales_share": 0.07 }
+  ]
+}

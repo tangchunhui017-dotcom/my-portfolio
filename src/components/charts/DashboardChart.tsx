@@ -11,7 +11,7 @@ export type SellThroughCaliber = 'cohort' | 'active' | 'stage';
 
 interface DashboardChartProps {
     title: string;
-    type: 'bar' | 'line' | 'pie' | 'scatter' | 'heatmap' | 'gauge' | 'bar-compare';
+    type: 'bar' | 'line' | 'pie' | 'pie-category' | 'scatter' | 'heatmap' | 'gauge' | 'bar-compare';
     compareMode?: 'category' | 'channel'; // used when type === 'bar-compare'
     kpis: {
         weeklyData: Record<number, { units: number; sales: number; st: number }>;
@@ -338,15 +338,46 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                     .map(([name, value], i) => ({ name, value, itemStyle: { color: CHART_COLORS[i % CHART_COLORS.length] } }));
 
                 option = {
-                    title: { text: title, left: 'center', textStyle: { fontSize: 13, fontWeight: 'bold', color: '#1e293b' } },
                     tooltip: { trigger: 'item', formatter: '{b}: {d}%' },
-                    legend: { orient: 'vertical', left: 'left', top: 'middle', textStyle: { fontSize: 11 } },
                     series: [{
-                        name: '渠道', type: 'pie', radius: ['40%', '65%'],
+                        name: '渠道', type: 'pie', radius: ['42%', '68%'],
+                        center: ['50%', '50%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
+                        label: { show: false },
+                        labelLine: { show: false },
+                        data: channelData,
+                        animationType: 'scale', animationEasing: 'elasticOut',
+                    }],
+                };
+                break;
+            }
+
+            case 'pie-category': {
+                // 品类销售占比（甜甜圈）
+                const catEntries = Object.entries(kpis.categoryActual ?? {})
+                    .sort((a, b) => b[1].actual_sales - a[1].actual_sales);
+                const catPieData = catEntries.map(([name, d], i) => ({
+                    name,
+                    value: Math.round(d.actual_sales),
+                    itemStyle: { color: CHART_COLORS[i % CHART_COLORS.length] },
+                }));
+
+                option = {
+                    tooltip: { trigger: 'item', formatter: (p: any) => {
+                        const d = kpis.categoryActual?.[p.name];
+                        const st = d ? (d.actual_sell_through * 100).toFixed(1) + '%' : '--';
+                        const margin = d ? (d.actual_margin_rate * 100).toFixed(1) + '%' : '--';
+                        return `<b>${p.name}</b><br/>销售占比: ${p.percent?.toFixed(1)}%<br/>售罄率: ${st}<br/>毛利率: ${margin}`;
+                    }},
+                    series: [{
+                        name: '品类', type: 'pie', radius: ['42%', '68%'],
+                        center: ['50%', '50%'],
                         avoidLabelOverlap: true,
                         itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
-                        label: { show: true, formatter: '{b}\n{d}%', fontSize: 10 },
-                        data: channelData,
+                        label: { show: true, formatter: '{d}%', fontSize: 10, color: '#334155' },
+                        labelLine: { show: true, length: 5, length2: 6, lineStyle: { width: 1 } },
+                        data: catPieData,
                         animationType: 'scale', animationEasing: 'elasticOut',
                     }],
                 };
@@ -556,6 +587,14 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
         }
 
         chart.setOption(option);
+        // pie 类型的 chartRef div 是条件渲染，挂载时浏览器可能还没完成布局
+        // 推迟一帧让浏览器确定宽高后再让 ECharts 重算
+        let rafId: number | null = null;
+        if (type === 'pie' || type === 'pie-category') {
+            rafId = requestAnimationFrame(() => {
+                if (!chart.isDisposed()) chart.resize();
+            });
+        }
 
         // 散点图点击事件：钉取 SKU 详情
         if (type === 'scatter' && onSkuClick) {
@@ -575,7 +614,11 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
 
         const handleResize = () => chart.resize();
         window.addEventListener('resize', handleResize);
-        return () => { window.removeEventListener('resize', handleResize); chart.dispose(); };
+        return () => {
+            if (rafId !== null) cancelAnimationFrame(rafId);
+            window.removeEventListener('resize', handleResize);
+            chart.dispose();
+        };
     }, [title, type, kpis, heatmapMetric, onSkuClick, compareMode, currentSellThroughCaliber]);
 
     // 热力图行列合计 + 结构空缺清单
@@ -625,43 +668,81 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
         }));
     })();
 
+    const isPieLike = type === 'pie' || type === 'pie-category';
+    const isScatter = type === 'scatter';
+    const hasSidebar = (isPieLike && !!kpis) || (isScatter && !!scatterQuadrants);
+
     return (
         <div className="w-full h-full min-h-[320px] flex flex-col">
-            {type === 'pie' && kpis ? (
-                // 渠道图：甜甜圈 + 右侧质量榜
-                <div className="flex gap-4 h-full min-h-[320px]">
-                    <div ref={chartRef} className="flex-1 min-w-0" />
+            {/* 图表主区 + 可选侧边栏 */}
+            <div className={hasSidebar ? 'flex gap-4 flex-1 min-h-[320px]' : 'flex-1 flex flex-col min-h-[320px]'}>
+                {/* ECharts 容器 — 永远在 DOM 里，保证宽高可测 */}
+                <div ref={chartRef} className={hasSidebar ? 'flex-1 min-w-0 h-[320px]' : 'flex-1'} />
+
+                {/* 品类 / 渠道 饼图右侧排行 */}
+                {isPieLike && kpis && (
                     <div className="w-52 flex-shrink-0 flex flex-col justify-center py-2 pr-2">
-                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">渠道贡献排行</div>
-                        {Object.entries(kpis.channelSales)
-                            .sort((a, b) => b[1] - a[1])
-                            .map(([channel, sales], i) => {
-                                const total = Object.values(kpis.channelSales).reduce((s, v) => s + v, 0);
-                                const pct = total > 0 ? Math.round(sales / total * 100) : 0;
-                                const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
-                                const color = colors[i % colors.length];
-                                const salesWan = (sales / 10000).toFixed(0);
-                                return (
-                                    <div key={channel} className="mb-3">
-                                        <div className="flex justify-between items-center mb-1">
-                                            <span className="text-xs text-slate-700 font-medium truncate">{channel}</span>
-                                            <span className="text-xs text-slate-500 ml-1 flex-shrink-0">¥{salesWan}万</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: color }} />
+                        {type === 'pie' ? (
+                            <>
+                                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">渠道贡献排行</div>
+                                {Object.entries(kpis.channelSales)
+                                    .sort((a, b) => b[1] - a[1])
+                                    .map(([channel, sales], i) => {
+                                        const total = Object.values(kpis.channelSales).reduce((s, v) => s + v, 0);
+                                        const pct = total > 0 ? Math.round(sales / total * 100) : 0;
+                                        const color = CHART_COLORS[i % CHART_COLORS.length];
+                                        const salesWan = (sales / 10000).toFixed(0);
+                                        return (
+                                            <div key={channel} className="mb-3">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <span className="text-xs text-slate-700 font-medium truncate">{channel}</span>
+                                                    <span className="text-xs text-slate-500 ml-1 flex-shrink-0">¥{salesWan}万</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: color }} />
+                                                    </div>
+                                                    <span className="text-xs font-semibold w-8 text-right flex-shrink-0" style={{ color }}>{pct}%</span>
+                                                </div>
                                             </div>
-                                            <span className="text-xs font-semibold w-8 text-right flex-shrink-0" style={{ color }}>{pct}%</span>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                                        );
+                                    })}
+                            </>
+                        ) : (
+                            <>
+                                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">品类贡献排行</div>
+                                {Object.entries(kpis.categoryActual ?? {})
+                                    .sort((a, b) => b[1].actual_sales - a[1].actual_sales)
+                                    .map(([cat, d], i) => {
+                                        const total = Object.values(kpis.categoryActual ?? {}).reduce((s, v) => s + v.actual_sales, 0);
+                                        const pct = total > 0 ? Math.round(d.actual_sales / total * 100) : 0;
+                                        const color = CHART_COLORS[i % CHART_COLORS.length];
+                                        const st = (d.actual_sell_through * 100).toFixed(0);
+                                        return (
+                                            <div key={cat} className="mb-3">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <span className="flex items-center gap-1.5 min-w-0">
+                                                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+                                                        <span className="text-xs text-slate-700 font-medium truncate">{cat}</span>
+                                                    </span>
+                                                    <span className="text-xs text-slate-400 ml-1 flex-shrink-0">ST {st}%</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: color }} />
+                                                    </div>
+                                                    <span className="text-xs font-semibold w-8 text-right flex-shrink-0" style={{ color }}>{pct}%</span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                            </>
+                        )}
                     </div>
-                </div>
-            ) : type === 'scatter' && scatterQuadrants ? (
-                // 散点图：ECharts + 右侧四象限统计卡
-                <div className="flex gap-3 h-full min-h-[320px]">
-                    <div ref={chartRef} className="flex-1 min-w-0" />
+                )}
+
+                {/* 散点图右侧四象限卡 */}
+                {isScatter && scatterQuadrants && (
                     <div className="w-44 flex-shrink-0 flex flex-col justify-center gap-2 py-2 pr-1">
                         <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">四象限分布</div>
                         {scatterQuadrants.map((q) => (
@@ -679,10 +760,8 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                             </div>
                         ))}
                     </div>
-                </div>
-            ) : (
-                <div ref={chartRef} className="flex-1" />
-            )}
+                )}
+            </div>
             {type === 'heatmap' && heatmapTotals && (
                 <div className="mt-3 px-1 space-y-2">
                     {/* 列合计（价格带合计行） */}

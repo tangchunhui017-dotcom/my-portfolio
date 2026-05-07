@@ -36,6 +36,16 @@ export const THRESHOLDS = {
     channelConcentration: {
         warning: 0.60,   // 单渠道占比警戒
     },
+    /**
+     * 库存周转 WOS（周）— 全局统一口径：期末库存件数 ÷ 周均销量件数
+     * 所有组件（MonthlyAchievementPanel / OverviewKpiBar / SkuRiskList）须使用此阈值
+     */
+    wos: {
+        stockout: 4,      // <4 周: 断货风险 (danger)
+        healthy: 8,       // ≤8 周: 库存健康 (good)
+        overstocked: 12,  // >12 周: 积压风险 (danger)
+        // 8 < wos ≤ 12: 库存偏高 (warn)
+    },
 } as const;
 
 /** 风险优先级评分规则 */

@@ -1,0 +1,29 @@
+{
+  "_meta": {
+    "version": "4.0",
+    "description": "OTB 采购预算引擎参数（P1 模板默认值，P3 接入历史推导后会自动更新）",
+    "lastUpdated": "2026-05-06"
+  },
+  "default_sell_through_target": 0.80,
+  "default_ecommerce_return_rate": 0.08,
+  "default_markup_multiplier": 3.2,
+  "default_discount_rate": 0.85,
+  "ending_inventory_policy": {
+    "safe_wos": 4,
+    "warning_wos": 8,
+    "danger_wos": 12
+  },
+  "season_split": [
+    { "key": "spring_summer", "label": "春夏季", "months": [1,2,3,4,5,6,7,8,9], "sales_share": 0.71 },
+    { "key": "fall_winter",   "label": "秋冬季", "months": [10,11,12],             "sales_share": 0.29 }
+  ],
+  "new_goods_split": [
+    { "key": "new",       "label": "新品",       "target_share": 0.70 },
+    { "key": "carryover", "label": "过季/延续款", "target_share": 0.30 }
+  ],
+  "otb_payment_schedule": {
+    "deposit_rate": 0.30,
+    "deposit_offset_months": -3,
+    "balance_offset_months": -1
+  }
+}

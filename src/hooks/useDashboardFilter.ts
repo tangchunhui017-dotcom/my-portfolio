@@ -2,10 +2,8 @@
 
 import { useMemo, useState } from 'react';
 
-import factSalesRaw from '@/../data/dashboard/fact_sales.json';
-import dimChannelRaw from '@/../data/dashboard/dim_channel.json';
 import dimPlanRaw from '@/../data/dashboard/dim_plan.json';
-import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
+import { useDimSku, useDimChannel, useFactSalesForDashboard } from '@/hooks/useDashboardData';
 import { FOOTWEAR_CATEGORY_CORE_ORDER, matchCategoryL1, matchCategoryL2, resolveFootwearCategory } from '@/config/categoryMapping';
 import { getDashboardCompareMeta, resolveDashboardMomBaseline, type DashboardCompareContext } from '@/config/dashboardCompare';
 import { matchesDashboardBrand, matchesDashboardCategoryL1 } from '@/config/dashboardFilterStandards';
@@ -92,9 +90,6 @@ interface DimPlan {
     monthly_plan?: DimPlanMonthlyRecord[];
 }
 
-const factSales = factSalesRaw as unknown as FactSalesRecord[];
-const dimSku = dimSkuRaw as unknown as DimSku[];
-const dimChannel = dimChannelRaw as unknown as DimChannel[];
 const dimPlan = dimPlanRaw as unknown as DimPlan;
 
 export interface DashboardFilters {
@@ -272,13 +267,20 @@ function resolveBaselineSelection(
 export function useDashboardFilter(compareMode: CompareMode = 'none', compareContext: DashboardCompareContext = 'overview') {
     const [filters, setFilters] = useState<DashboardFilters>(() => getDefaultDashboardFilters());
 
+    const { data: factSalesData } = useFactSalesForDashboard(filters.season_year);
+    const { data: dimSkuData } = useDimSku();
+    const { data: dimChannelData } = useDimChannel();
+    const factSales = useMemo(() => (factSalesData ?? []) as FactSalesRecord[], [factSalesData]);
+    const dimSku = useMemo(() => (dimSkuData ?? []) as DimSku[], [dimSkuData]);
+    const dimChannel = useMemo(() => (dimChannelData ?? []) as DimChannel[], [dimChannelData]);
+
     const skuMap = useMemo(() => {
         const map: Record<string, DimSku> = {};
         dimSku.forEach((sku) => {
             map[sku.sku_id] = sku;
         });
         return map;
-    }, []);
+    }, [dimSku]);
 
     const channelMap = useMemo(() => {
         const map: Record<string, DimChannel> = {};
@@ -286,7 +288,7 @@ export function useDashboardFilter(compareMode: CompareMode = 'none', compareCon
             map[channel.channel_id] = channel;
         });
         return map;
-    }, []);
+    }, [dimChannel]);
 
     const filteredRecords = useMemo(() => {
         return factSales.filter((record) => {
@@ -296,7 +298,7 @@ export function useDashboardFilter(compareMode: CompareMode = 'none', compareCon
             if (!matchesDashboardTimeFilters(filters, record)) return false;
             return matchesDashboardNonTimeFilters(filters, sku, channel);
         });
-    }, [filters, skuMap, channelMap]);
+    }, [filters, skuMap, channelMap, factSales]);
 
     const transitionRecords = useMemo(() => {
         return factSales.filter((record) => {
@@ -306,7 +308,7 @@ export function useDashboardFilter(compareMode: CompareMode = 'none', compareCon
             if (!matchesDashboardYearFilter(filters.season_year, record)) return false;
             return matchesDashboardNonTimeFilters(filters, sku, channel);
         });
-    }, [filters, skuMap, channelMap]);
+    }, [filters, skuMap, channelMap, factSales]);
 
     const compareMeta = useMemo(
         () => getDashboardCompareMeta(compareMode, filters, compareContext),
@@ -323,14 +325,15 @@ export function useDashboardFilter(compareMode: CompareMode = 'none', compareCon
         const totalDiscountAmt = filteredRecords.reduce((sum, record) => sum + Number(record.discount_amt || 0), 0);
 
         const skuLatestST: Record<string, number> = {};
+        const skuLatestWeekNum: Record<string, number> = {};
         filteredRecords.forEach((record) => {
-            const weekKey = `${record.sku_id}_week`;
-            if (!skuLatestST[record.sku_id] || record.week_num > (skuLatestST[weekKey] ?? 0)) {
-                skuLatestST[record.sku_id] = record.cumulative_sell_through;
-                skuLatestST[weekKey] = record.week_num;
+            const prevWeek = skuLatestWeekNum[record.sku_id] ?? -1;
+            if (record.week_num > prevWeek) {
+                skuLatestST[record.sku_id] = Number(record.cumulative_sell_through ?? 0);
+                skuLatestWeekNum[record.sku_id] = record.week_num;
             }
         });
-        const skuIds = Object.keys(skuLatestST).filter((key) => !key.endsWith('_week'));
+        const skuIds = Object.keys(skuLatestST);
         const avgSellThrough = skuIds.length > 0
             ? skuIds.reduce((sum, skuId) => sum + skuLatestST[skuId], 0) / skuIds.length
             : 0;
@@ -652,6 +655,62 @@ export function useDashboardFilter(compareMode: CompareMode = 'none', compareCon
         });
         const periodRatio = scopedAnnualPlanTotal > 0 ? planBreakdown.periodPlanTotal / scopedAnnualPlanTotal : 0;
 
+        // ── 正价 vs 折扣售罄率 ──────────────────────────────────────────
+        const fullPriceST: Record<string, number> = {};
+        const fullPriceWk: Record<string, number> = {};
+        const discountedST: Record<string, number> = {};
+        const discountedWk: Record<string, number> = {};
+        filteredRecords.forEach((record) => {
+            const depthRatio = Number(record.gross_sales_amt) > 0
+                ? (Number(record.gross_sales_amt) - Number(record.net_sales_amt)) / Number(record.gross_sales_amt)
+                : 0;
+            const isFullPrice = depthRatio < 0.05;
+            const stMap = isFullPrice ? fullPriceST : discountedST;
+            const wkMap = isFullPrice ? fullPriceWk : discountedWk;
+            const prevWk = wkMap[record.sku_id] ?? -1;
+            if (record.week_num > prevWk) {
+                stMap[record.sku_id] = Number(record.cumulative_sell_through ?? 0);
+                wkMap[record.sku_id] = record.week_num;
+            }
+        });
+        const fpIds = Object.keys(fullPriceST);
+        const discIds = Object.keys(discountedST);
+        const fullPriceSellThrough = fpIds.length > 0
+            ? fpIds.reduce((s, id) => s + fullPriceST[id], 0) / fpIds.length
+            : null;
+        const discountedSellThrough = discIds.length > 0
+            ? discIds.reduce((s, id) => s + discountedST[id], 0) / discIds.length
+            : null;
+
+        // ── 新品贡献率 ──────────────────────────────────────────────────
+        let newGoodsSalesAmt = 0;
+        filteredRecords.forEach((record) => {
+            const sku = skuMap[record.sku_id];
+            if (!sku) return;
+            if (resolveSkuLifecycle(filters, sku) === '新品') {
+                newGoodsSalesAmt += Number(record.net_sales_amt || 0);
+            }
+        });
+        const newGoodsShare = totalNetSales > 0 ? newGoodsSalesAmt / totalNetSales : 0;
+
+        // ── 当前周次 & 季节标签 ──────────────────────────────────────────
+        const currentWeekNum = filteredRecords.reduce((mx, r) => Math.max(mx, Number(r.week_num || 0)), 0);
+        const seasonLabel = (() => {
+            const s = String(filters.season || 'all');
+            if (s === 'all') return '全年';
+            if (s === 'Q1' || /spring/i.test(s)) return '春季';
+            if (s === 'Q2' || /summer/i.test(s)) return '夏季';
+            if (s === 'Q3' || /fall|autumn/i.test(s)) return '秋季';
+            if (s === 'Q4' || /winter/i.test(s)) return '冬季';
+            return s;
+        })();
+
+        // ── 到货达成率代理：(已售+在手) / 计划总量，proxy for 收货进度 ────
+        const planTotalUnitsForPeriod = Math.round(Number(dimPlan.overall_plan?.plan_total_units || 0) * periodRatio);
+        const arrivalRateProxy = planTotalUnitsForPeriod > 0
+            ? Math.min((totalUnits + totalOnHandUnits) / planTotalUnitsForPeriod, 2)
+            : null;
+
         return {
             totalNetSales,
             totalGrossSales,
@@ -705,8 +764,15 @@ export function useDashboardFilter(compareMode: CompareMode = 'none', compareCon
                 sales,
                 pct: totalNetSales > 0 ? sales / totalNetSales : 0,
             })),
+            fullPriceSellThrough,
+            discountedSellThrough,
+            newGoodsShare,
+            newGoodsSalesAmt,
+            currentWeekNum,
+            seasonLabel,
+            arrivalRateProxy,
         };
-    }, [filteredRecords, filters, skuMap, channelMap]);
+    }, [filteredRecords, filters, skuMap, channelMap, factSales]);
 
     const baselineSelection = useMemo(
         () => resolveBaselineSelection(compareMode, filters, compareContext),
@@ -727,7 +793,7 @@ export function useDashboardFilter(compareMode: CompareMode = 'none', compareCon
 
             return matchesDashboardNonTimeFilters(filters, sku, channel);
         });
-    }, [baselineSelection, channelMap, filters, skuMap]);
+    }, [baselineSelection, channelMap, filters, skuMap, factSales]);
 
     const baselineKpis = useMemo(() => {
         if (baselineRecords.length === 0) return null;
@@ -738,17 +804,41 @@ export function useDashboardFilter(compareMode: CompareMode = 'none', compareCon
         const totalGrossProfit = baselineRecords.reduce((sum, record) => sum + Number(record.gross_profit_amt || 0), 0);
         const totalDiscountAmt = baselineRecords.reduce((sum, record) => sum + Number(record.discount_amt || 0), 0);
         const skuLatestST: Record<string, number> = {};
+        const skuLatestWk: Record<string, number> = {};
         baselineRecords.forEach((record) => {
-            const weekKey = `${record.sku_id}_week`;
-            if (!skuLatestST[record.sku_id] || record.week_num > (skuLatestST[weekKey] ?? 0)) {
-                skuLatestST[record.sku_id] = record.cumulative_sell_through;
-                skuLatestST[weekKey] = record.week_num;
+            const prevWk = skuLatestWk[record.sku_id] ?? -1;
+            if (record.week_num > prevWk) {
+                skuLatestST[record.sku_id] = Number(record.cumulative_sell_through ?? 0);
+                skuLatestWk[record.sku_id] = record.week_num;
             }
         });
-        const skuIds = Object.keys(skuLatestST).filter((key) => !key.endsWith('_week'));
+        const skuIds = Object.keys(skuLatestST);
         const avgSellThrough = skuIds.length > 0
             ? skuIds.reduce((sum, skuId) => sum + skuLatestST[skuId], 0) / skuIds.length
             : 0;
+
+        // 正价售罄率 (baseline)
+        const fpSTb: Record<string, number> = {};
+        const fpWkb: Record<string, number> = {};
+        const discSTb: Record<string, number> = {};
+        const discWkb: Record<string, number> = {};
+        baselineRecords.forEach((record) => {
+            const depthRatio = Number(record.gross_sales_amt) > 0
+                ? (Number(record.gross_sales_amt) - Number(record.net_sales_amt)) / Number(record.gross_sales_amt)
+                : 0;
+            const isFullPrice = depthRatio < 0.05;
+            const stMap = isFullPrice ? fpSTb : discSTb;
+            const wkMap = isFullPrice ? fpWkb : discWkb;
+            const prevWk = wkMap[record.sku_id] ?? -1;
+            if (record.week_num > prevWk) {
+                stMap[record.sku_id] = Number(record.cumulative_sell_through ?? 0);
+                wkMap[record.sku_id] = record.week_num;
+            }
+        });
+        const fpIdsB = Object.keys(fpSTb);
+        const fullPriceSellThrough = fpIdsB.length > 0
+            ? fpIdsB.reduce((s, id) => s + fpSTb[id], 0) / fpIdsB.length
+            : null;
 
         const avgMarginRate = totalNetSales > 0 ? totalGrossProfit / totalNetSales : 0;
         const avgDiscountRate = totalGrossSales > 0 ? totalNetSales / totalGrossSales : 0;
@@ -791,6 +881,7 @@ export function useDashboardFilter(compareMode: CompareMode = 'none', compareCon
             activeSKUs,
             totalOnHandUnits,
             wos,
+            fullPriceSellThrough,
         };
     }, [baselineRecords, skuMap]);
 

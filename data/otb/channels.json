@@ -1,0 +1,86 @@
+[
+  {
+    "channelId": "omni-channel",
+    "channelName": "全渠道",
+    "channelType": "omni",
+    "defaultSellThroughTarget": 0.82,
+    "defaultReturnRate": 0.04,
+    "defaultDiscountRate": 0.83,
+    "defaultStockToSalesRatio": 2.5,
+    "capacityConstraintEnabled": false,
+    "salesWeight": 1.0,
+    "ecomReturnDanger": false
+  },
+  {
+    "channelId": "direct-store",
+    "channelName": "直营门店",
+    "channelType": "offline",
+    "defaultSellThroughTarget": 0.80,
+    "defaultReturnRate": 0.02,
+    "defaultDiscountRate": 0.85,
+    "defaultStockToSalesRatio": 3,
+    "capacityConstraintEnabled": true,
+    "salesWeight": 0.38,
+    "ecomReturnDanger": false
+  },
+  {
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "channelType": "offline",
+    "defaultSellThroughTarget": 0.78,
+    "defaultReturnRate": 0.03,
+    "defaultDiscountRate": 0.82,
+    "defaultStockToSalesRatio": 3.5,
+    "capacityConstraintEnabled": true,
+    "salesWeight": 0.22,
+    "ecomReturnDanger": false
+  },
+  {
+    "channelId": "ecommerce",
+    "channelName": "电商平台",
+    "channelType": "online",
+    "defaultSellThroughTarget": 0.90,
+    "defaultReturnRate": 0.08,
+    "defaultDiscountRate": 0.78,
+    "defaultStockToSalesRatio": 2,
+    "capacityConstraintEnabled": false,
+    "salesWeight": 0.28,
+    "ecomReturnDanger": false
+  },
+  {
+    "channelId": "livestream",
+    "channelName": "直播渠道",
+    "channelType": "online",
+    "defaultSellThroughTarget": 0.95,
+    "defaultReturnRate": 0.15,
+    "defaultDiscountRate": 0.65,
+    "defaultStockToSalesRatio": 1.5,
+    "capacityConstraintEnabled": false,
+    "salesWeight": 0.07,
+    "ecomReturnDanger": true
+  },
+  {
+    "channelId": "outlet",
+    "channelName": "奥莱/清仓",
+    "channelType": "clearance",
+    "defaultSellThroughTarget": 0.95,
+    "defaultReturnRate": 0.01,
+    "defaultDiscountRate": 0.55,
+    "defaultStockToSalesRatio": 1,
+    "capacityConstraintEnabled": false,
+    "salesWeight": 0.03,
+    "ecomReturnDanger": false
+  },
+  {
+    "channelId": "special",
+    "channelName": "特渠/团购",
+    "channelType": "special",
+    "defaultSellThroughTarget": 0.98,
+    "defaultReturnRate": 0.01,
+    "defaultDiscountRate": 0.60,
+    "defaultStockToSalesRatio": 1,
+    "capacityConstraintEnabled": false,
+    "salesWeight": 0.02,
+    "ecomReturnDanger": false
+  }
+]

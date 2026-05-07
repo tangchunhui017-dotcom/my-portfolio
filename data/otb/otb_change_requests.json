@@ -1,0 +1,28 @@
+[
+  {
+    "changeRequestId": "CR-2025-001",
+    "sourceVersionId": "approved",
+    "targetVersionId": "rolling",
+    "targetField": "AW-12A plannedPurchaseAmount",
+    "oldValue": 6300000,
+    "newValue": 7000000,
+    "changeReason": "秋冬主推跑步款订货会反馈强于预期，需追加核心波段预算",
+    "impactAmount": 700000,
+    "createdBy": "merch-ops",
+    "createdAt": "2025-05-01",
+    "status": "submitted"
+  },
+  {
+    "changeRequestId": "CR-2025-002",
+    "sourceVersionId": "approved",
+    "targetVersionId": "rolling",
+    "targetField": "SS-3A categorySalesRatio",
+    "oldValue": 0.4,
+    "newValue": 0.35,
+    "changeReason": "春夏跑步库存承接偏慢，向休闲和户外转移部分预算",
+    "impactAmount": -450000,
+    "createdBy": "merch-planning",
+    "createdAt": "2025-05-03",
+    "status": "approved"
+  }
+]

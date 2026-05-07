@@ -1,0 +1,74 @@
+[
+  {
+    "brandId": "id-claw-main",
+    "brandName": "ID Claw 主品牌",
+    "positioning": "都市运动休闲",
+    "targetConsumer": "25-40岁城市中产",
+    "defaultGrossMarginTarget": 0.45,
+    "defaultSellThroughTarget": 0.80,
+    "defaultMarkupRate": 3.2,
+    "defaultDiscountRate": 0.85,
+    "defaultStockToSalesRatio": 3,
+    "defaultNewProductRatio": 0.65,
+    "priceBands": [
+      { "band": "Entry",   "label": "入门引流", "min": 299,  "max": 399  },
+      { "band": "Volume",  "label": "主力走量", "min": 499,  "max": 699  },
+      { "band": "Premium", "label": "利润核心", "min": 799,  "max": 999  },
+      { "band": "Image",   "label": "品牌形象", "min": 1099, "max": 1599 }
+    ]
+  },
+  {
+    "brandId": "sub-brand-a",
+    "brandName": "轻速",
+    "positioning": "专业跑步",
+    "targetConsumer": "20-35岁跑步爱好者",
+    "defaultGrossMarginTarget": 0.42,
+    "defaultSellThroughTarget": 0.82,
+    "defaultMarkupRate": 3.5,
+    "defaultDiscountRate": 0.88,
+    "defaultStockToSalesRatio": 2.5,
+    "defaultNewProductRatio": 0.70,
+    "priceBands": [
+      { "band": "Entry",   "label": "入门跑步", "min": 399,  "max": 599  },
+      { "band": "Volume",  "label": "主力竞速", "min": 699,  "max": 899  },
+      { "band": "Premium", "label": "专业精英", "min": 999,  "max": 1299 },
+      { "band": "Image",   "label": "极限竞技", "min": 1399, "max": 1999 }
+    ]
+  },
+  {
+    "brandId": "sub-brand-b",
+    "brandName": "街潮",
+    "positioning": "潮流街头",
+    "targetConsumer": "18-28岁潮流青年",
+    "defaultGrossMarginTarget": 0.50,
+    "defaultSellThroughTarget": 0.75,
+    "defaultMarkupRate": 4.0,
+    "defaultDiscountRate": 0.80,
+    "defaultStockToSalesRatio": 2,
+    "defaultNewProductRatio": 0.75,
+    "priceBands": [
+      { "band": "Entry",   "label": "联名引流", "min": 399,  "max": 599  },
+      { "band": "Volume",  "label": "核心款式", "min": 699,  "max": 999  },
+      { "band": "Premium", "label": "设计师款", "min": 1199, "max": 1599 },
+      { "band": "Image",   "label": "限量联名", "min": 1799, "max": 2999 }
+    ]
+  },
+  {
+    "brandId": "ecom-brand",
+    "brandName": "ID Claw 电商专供",
+    "positioning": "性价比电商",
+    "targetConsumer": "全年龄层线上消费者",
+    "defaultGrossMarginTarget": 0.38,
+    "defaultSellThroughTarget": 0.90,
+    "defaultMarkupRate": 2.8,
+    "defaultDiscountRate": 0.72,
+    "defaultStockToSalesRatio": 2,
+    "defaultNewProductRatio": 0.55,
+    "priceBands": [
+      { "band": "Entry",   "label": "爆款引流", "min": 199,  "max": 299  },
+      { "band": "Volume",  "label": "主力走量", "min": 349,  "max": 499  },
+      { "band": "Premium", "label": "品质升级", "min": 599,  "max": 799  },
+      { "band": "Image",   "label": "精品旗舰", "min": 899,  "max": 1199 }
+    ]
+  }
+]

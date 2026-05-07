@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "品牌 P&L 假设参数（假设数据，非事实数据）",
+    "lastUpdated": "2026-05-06"
+  },
+  "brand": {
+    "cogsRate": 0.58,
+    "marketingRate": 0.08,
+    "logisticsRate": 0.04,
+    "laborRate": 0.06,
+    "rentRate": 0.10,
+    "adminRate": 0.03,
+    "depreciationRate": 0.015,
+    "otherOpexRate": 0.01,
+    "taxRate": 0.25,
+    "returnRate": 0.07
+  },
+  "storeTemplates": {
+    "mall_flagship": {
+      "label": "商场旗舰店",
+      "area": 200,
+      "fixedRent": 60000,
+      "propertyFee": 8000,
+      "revShareRate": 0.18,
+      "staffCount": 8,
+      "staffCostPerHead": 8000,
+      "fitoutCost": 800000,
+      "fitoutAmortizationMonths": 60,
+      "depositMonths": 3,
+      "targetMonthlyRevenue": 600000
+    },
+    "mall_standard": {
+      "label": "商场标准店",
+      "area": 120,
+      "fixedRent": 30000,
+      "propertyFee": 4000,
+      "revShareRate": 0.16,
+      "staffCount": 5,
+      "staffCostPerHead": 7500,
+      "fitoutCost": 400000,
+      "fitoutAmortizationMonths": 60,
+      "depositMonths": 3,
+      "targetMonthlyRevenue": 350000
+    },
+    "street": {
+      "label": "街铺",
+      "area": 80,
+      "fixedRent": 20000,
+      "propertyFee": 2000,
+      "revShareRate": 0.0,
+      "staffCount": 3,
+      "staffCostPerHead": 7000,
+      "fitoutCost": 200000,
+      "fitoutAmortizationMonths": 48,
+      "depositMonths": 3,
+      "targetMonthlyRevenue": 200000
+    }
+  },
+  "storeGradeRules": {
+    "A": { "label": "A级店", "minSalesPerSqmPerYear": 12000, "minProfitRate": 0.08 },
+    "B": { "label": "B级店", "minSalesPerSqmPerYear": 8000, "minProfitRate": 0.0 },
+    "C": { "label": "C级店", "minSalesPerSqmPerYear": 0, "minProfitRate": -1 }
+  }
+}

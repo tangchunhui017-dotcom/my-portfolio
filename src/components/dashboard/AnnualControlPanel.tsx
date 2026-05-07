@@ -200,7 +200,7 @@ function InsightCard({
     }[tone];
 
     return (
-        <div className={`relative overflow-hidden rounded-[24px] border bg-white p-5 shadow-sm ${borderClass} border-l-[6px]`}>
+        <div className={`relative overflow-hidden rounded-panel border bg-white p-5 shadow-sm ${borderClass} border-l-[6px]`}>
             <div className="mb-3 flex items-center gap-2">
                 <span className={`h-2 w-2 rounded-full ${dotClass}`} />
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{label}</span>
@@ -784,7 +784,7 @@ export default function AnnualControlPanel({
         <div className="space-y-8">
             <AnnualControlMasterView model={masterView} />
 
-            <section className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+            <section className="rounded-section border border-slate-200 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <SectionHeading
                         title="经营体征"
@@ -799,7 +799,7 @@ export default function AnnualControlPanel({
                     </div>
                 </div>
 
-                <div className={`mt-6 rounded-[28px] border p-6 ${TONE_PANEL_CLASS[getRiskPanelTone(annualHealthTone)]}`}>
+                <div className={`mt-6 rounded-panel border p-6 ${TONE_PANEL_CLASS[getRiskPanelTone(annualHealthTone)]}`}>
                     <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
                         <div className="flex-1 max-w-2xl">
                             <div className="flex items-center justify-between">
@@ -861,7 +861,7 @@ export default function AnnualControlPanel({
                             return (
                                 <div
                                     key={item.label}
-                                    className={`relative overflow-hidden rounded-[20px] bg-white p-5 shadow-[0_2px_10px_rgba(15,23,42,0.06)] ring-1 transition hover:shadow-md ${
+                                    className={`relative overflow-hidden rounded-card bg-white p-5 shadow-[0_2px_10px_rgba(15,23,42,0.06)] ring-1 transition hover:shadow-md ${
                                         isWorst ? 'ring-rose-200 ring-2' : 'ring-slate-100'
                                     }`}
                                 >
@@ -951,7 +951,7 @@ export default function AnnualControlPanel({
                 </div>
             </section>
 
-            <section className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+            <section className="rounded-section border border-slate-200 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
                 <SectionHeading
                     title="风险干预中心"
                     description="发现背离并挂载确定性动作。仅展示会改变季度经营路径的 P0 级事项。"
@@ -1148,7 +1148,7 @@ export default function AnnualControlPanel({
                 </div>
             </section>
 
-            <section className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+            <section className="rounded-section border border-slate-200 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
                 <div className="flex items-start justify-between gap-4">
                     <SectionHeading
                         title="协作枢纽"
@@ -1183,7 +1183,7 @@ export default function AnnualControlPanel({
                         return (
                             <div
                                 key={item.key}
-                                className={`group relative flex flex-col rounded-[24px] border bg-white p-5 transition hover:shadow-md border-l-[6px] ${
+                                className={`group relative flex flex-col rounded-panel border bg-white p-5 transition hover:shadow-md border-l-[6px] ${
                                     hasIssue ? 'shadow-sm' : 'opacity-75 hover:opacity-100'
                                 } ${isUrgent ? 'ring-2 ring-rose-100' : 'border-slate-100'}`}
                                 style={{ borderLeftColor: accentColor }}

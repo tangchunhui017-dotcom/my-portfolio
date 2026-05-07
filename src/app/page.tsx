@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import factSales from '@/../data/dashboard/fact_sales.json';
 
 type KpiState = {
   totalSales: number;
@@ -39,31 +38,36 @@ function useLightKpis() {
   });
 
   useEffect(() => {
-    const totalSales = factSales.reduce((sum, row) => sum + row.net_sales_amt, 0);
-    const totalProfit = factSales.reduce((sum, row) => sum + row.gross_profit_amt, 0);
-    const avgMarginRate = totalSales > 0 ? totalProfit / totalSales : 0;
-    const skuLatest: Record<string, { st: number; week: number }> = {};
+    fetch('/api/dashboard/fact-sales')
+      .then((res) => res.json())
+      .then((rows: Array<{ sku_id: string; week_num: number; net_sales_amt: number; gross_profit_amt: number; cumulative_sell_through: number }>) => {
+        const totalSales = rows.reduce((sum, row) => sum + Number(row.net_sales_amt || 0), 0);
+        const totalProfit = rows.reduce((sum, row) => sum + Number(row.gross_profit_amt || 0), 0);
+        const avgMarginRate = totalSales > 0 ? totalProfit / totalSales : 0;
+        const skuLatest: Record<string, { st: number; week: number }> = {};
 
-    factSales.forEach((row) => {
-      if (!skuLatest[row.sku_id] || row.week_num > skuLatest[row.sku_id].week) {
-        skuLatest[row.sku_id] = {
-          st: row.cumulative_sell_through,
-          week: row.week_num,
-        };
-      }
-    });
+        rows.forEach((row) => {
+          if (!skuLatest[row.sku_id] || row.week_num > skuLatest[row.sku_id].week) {
+            skuLatest[row.sku_id] = {
+              st: row.cumulative_sell_through,
+              week: row.week_num,
+            };
+          }
+        });
 
-    const sellThroughValues = Object.values(skuLatest).map((item) => item.st);
-    const avgSellThrough = sellThroughValues.length
-      ? sellThroughValues.reduce((sum, value) => sum + value, 0) / sellThroughValues.length
-      : 0;
+        const sellThroughValues = Object.values(skuLatest).map((item) => item.st);
+        const avgSellThrough = sellThroughValues.length
+          ? sellThroughValues.reduce((sum, value) => sum + value, 0) / sellThroughValues.length
+          : 0;
 
-    setKpis({
-      totalSales,
-      avgSellThrough,
-      avgMarginRate,
-      activeSkus: sellThroughValues.length,
-    });
+        setKpis({
+          totalSales,
+          avgSellThrough,
+          avgMarginRate,
+          activeSkus: sellThroughValues.length,
+        });
+      })
+      .catch(() => {});
   }, []);
 
   return kpis;

@@ -1,0 +1,12 @@
+[
+  { "id": "SS-3A-RUN", "season": "SS", "wave": "3A", "category": "running", "categoryLabel": "跑步", "categorySalesRatio": 0.40, "retailPrice": 699, "costPrice": 210, "sellThroughTarget": 0.82, "plannedStyleCount": 12, "plannedColorCount": 2 },
+  { "id": "SS-3A-BKT", "season": "SS", "wave": "3A", "category": "basketball", "categoryLabel": "篮球", "categorySalesRatio": 0.20, "retailPrice": 799, "costPrice": 240, "sellThroughTarget": 0.80, "plannedStyleCount": 6, "plannedColorCount": 2 },
+  { "id": "SS-3A-TRN", "season": "SS", "wave": "3A", "category": "training", "categoryLabel": "训练", "categorySalesRatio": 0.15, "retailPrice": 599, "costPrice": 180, "sellThroughTarget": 0.80, "plannedStyleCount": 5, "plannedColorCount": 2 },
+  { "id": "SS-3A-CAS", "season": "SS", "wave": "3A", "category": "casual", "categoryLabel": "休闲", "categorySalesRatio": 0.15, "retailPrice": 499, "costPrice": 150, "sellThroughTarget": 0.78, "plannedStyleCount": 6, "plannedColorCount": 3 },
+  { "id": "SS-3A-OUT", "season": "SS", "wave": "3A", "category": "outdoor", "categoryLabel": "户外", "categorySalesRatio": 0.10, "retailPrice": 749, "costPrice": 225, "sellThroughTarget": 0.78, "plannedStyleCount": 4, "plannedColorCount": 2 },
+  { "id": "AW-12A-RUN", "season": "AW", "wave": "12A", "category": "running", "categoryLabel": "跑步", "categorySalesRatio": 0.38, "retailPrice": 799, "costPrice": 240, "sellThroughTarget": 0.82, "plannedStyleCount": 14, "plannedColorCount": 2 },
+  { "id": "AW-12A-BKT", "season": "AW", "wave": "12A", "category": "basketball", "categoryLabel": "篮球", "categorySalesRatio": 0.22, "retailPrice": 899, "costPrice": 270, "sellThroughTarget": 0.80, "plannedStyleCount": 7, "plannedColorCount": 2 },
+  { "id": "AW-12A-TRN", "season": "AW", "wave": "12A", "category": "training", "categoryLabel": "训练", "categorySalesRatio": 0.15, "retailPrice": 649, "costPrice": 195, "sellThroughTarget": 0.80, "plannedStyleCount": 5, "plannedColorCount": 2 },
+  { "id": "AW-12A-CAS", "season": "AW", "wave": "12A", "category": "casual", "categoryLabel": "休闲", "categorySalesRatio": 0.15, "retailPrice": 549, "costPrice": 165, "sellThroughTarget": 0.78, "plannedStyleCount": 6, "plannedColorCount": 2 },
+  { "id": "AW-12A-OUT", "season": "AW", "wave": "12A", "category": "outdoor", "categoryLabel": "户外", "categorySalesRatio": 0.10, "retailPrice": 849, "costPrice": 255, "sellThroughTarget": 0.78, "plannedStyleCount": 4, "plannedColorCount": 2 }
+]

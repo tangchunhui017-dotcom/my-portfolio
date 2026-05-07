@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import type { DashboardFilters } from '@/hooks/useDashboardFilter';
 import { resolveDashboardLifecycleLabel } from '@/config/dashboardLifecycle';
 import { calcRiskPriority, getActionSuggestion, getEstimatedImpact } from '@/config/thresholds';
+import { useDimSku } from '@/hooks/useDashboardData';
+import { useSizeHealthAnalysis } from '@/hooks/useSizeHealthAnalysis';
 
 // 显式类型定义
 interface DimSkuRecord {
@@ -38,10 +40,6 @@ interface FactSalesRecord {
     on_hand_unit: number;
 }
 
-import dimSkuRaw from '@/../data/dashboard/dim_sku.json';
-
-const dimSku = dimSkuRaw as unknown as DimSkuRecord[];
-
 interface SkuRiskRow {
     sku_id: string;
     sku_name: string;
@@ -57,13 +55,21 @@ interface SkuRiskRow {
     avgMarginRate: number;
     onHandUnit: number;
     wos: number; // New P2 feature
+    sizeFullRate: number | null;
+    sizeStockoutRate: number | null;
+    sizeCoreShare: number | null;
+    sizeEdgeStockShare: number | null;
+    sizeStockoutSizes: string[];
+    sizeAction: string | null;
+    sizeRiskScore: number;
+    riskScore: number;
     risks: string[];
     priority: 'P0' | 'P1' | 'P2';
     actionSuggestion: string;
     estimatedImpact: string;
 }
 
-type SortKey = keyof Pick<SkuRiskRow, 'msrp' | 'totalUnits' | 'totalStockIn' | 'avgSellThrough' | 'avgDiscountDepth' | 'avgMarginRate' | 'onHandUnit' | 'wos' | 'totalSales'>;
+type SortKey = keyof Pick<SkuRiskRow, 'msrp' | 'totalUnits' | 'totalStockIn' | 'avgSellThrough' | 'avgDiscountDepth' | 'avgMarginRate' | 'onHandUnit' | 'wos' | 'totalSales' | 'riskScore'>;
 
 const RISK_STYLES: Record<string, string> = {
     '低售罄': 'bg-red-100 text-red-700',
@@ -72,6 +78,9 @@ const RISK_STYLES: Record<string, string> = {
     '高库存': 'bg-orange-100 text-orange-700',
     '低毛利': 'bg-yellow-100 text-yellow-700',
     '折扣异常': 'bg-purple-100 text-purple-700',
+    '核心尺码断码': 'bg-rose-100 text-rose-700 font-bold',
+    '边缘码积压': 'bg-amber-100 text-amber-800 font-bold',
+    '核心尺码贡献弱': 'bg-sky-100 text-sky-700',
     '健康': 'bg-emerald-100 text-emerald-700',
 };
 
@@ -84,6 +93,31 @@ const STATUS_STYLE: Record<StatusType, string> = {
     '已搁置': 'bg-slate-100 text-slate-500 border-slate-200',
 };
 
+const PRIORITY_RANK: Record<SkuRiskRow['priority'], number> = { P0: 3, P1: 2, P2: 1 };
+
+function maxPriority(a: SkuRiskRow['priority'], b: SkuRiskRow['priority']) {
+    return PRIORITY_RANK[a] >= PRIORITY_RANK[b] ? a : b;
+}
+
+function buildBaseRiskScore(risks: string[], wos: number, sellThrough: number, marginRate: number, onHandUnit: number) {
+    let score = 0;
+    if (risks.includes('断货风险')) score += 70 + Math.max(0, 4 - wos) * 8;
+    if (risks.includes('积压风险')) score += 58 + Math.min(Math.max(wos - 12, 0), 12) * 3;
+    if (risks.includes('低售罄')) score += Math.max(0, 0.7 - sellThrough) * 80;
+    if (risks.includes('高库存')) score += Math.min(onHandUnit / 80, 18);
+    if (risks.includes('低毛利')) score += Math.max(0, 0.38 - marginRate) * 80;
+    if (risks.includes('折扣异常')) score += 18;
+    return score;
+}
+
+function renderSortIcon(activeSortKey: SortKey, sortAsc: boolean, key: SortKey) {
+    return (
+        <span className="ml-1 text-slate-300">
+            {activeSortKey === key ? (sortAsc ? '↑' : '↓') : '↕'}
+        </span>
+    );
+}
+
 interface SkuRiskListProps {
     filteredRecords: FactSalesRecord[];
     filters: DashboardFilters;
@@ -91,12 +125,17 @@ interface SkuRiskListProps {
 }
 
 export default function SkuRiskList({ filteredRecords, filters, filterSummary = '全部数据' }: SkuRiskListProps) {
-    const [sortKey, setSortKey] = useState<SortKey>('avgSellThrough');
-    const [sortAsc, setSortAsc] = useState(true);
+    const [sortKey, setSortKey] = useState<SortKey>('riskScore');
+    const [sortAsc, setSortAsc] = useState(false);
     const [filterRisk, setFilterRisk] = useState<string>('全部');
     const [expanded, setExpanded] = useState(false);
     const [statusMap, setStatusMap] = useState<Record<string, StatusType>>({});
     const COLLAPSED_COUNT = 10;
+
+    const { data: dimSkuData } = useDimSku();
+    const { summary: sizeHealthSummary } = useSizeHealthAnalysis(filters);
+    const dimSku = useMemo(() => (dimSkuData ?? []) as DimSkuRecord[], [dimSkuData]);
+    const sizeRiskMap = useMemo(() => sizeHealthSummary?.riskMap ?? {}, [sizeHealthSummary?.riskMap]);
 
     const skuRows = useMemo<SkuRiskRow[]>(() => {
         return dimSku.map(sku => {
@@ -134,15 +173,27 @@ export default function SkuRiskList({ filteredRecords, filters, filterSummary = 
             if (onHandUnit > 200 && wos > 8) risks.push('高库存');
             if (avgMarginRate < 0.38) risks.push('低毛利');
             if (avgDiscountDepth > 0.20) risks.push('折扣异常');
+
+            const sizeRisk = sizeRiskMap[sku.sku_id];
+            const sizeRiskLabels = (sizeRisk?.riskLabels ?? []).filter((risk) => risk !== '尺码健康');
+            sizeRiskLabels.forEach((risk) => {
+                if (!risks.includes(risk)) risks.push(risk);
+            });
             if (risks.length === 0) risks.push('健康');
 
-            // Priority & Action (using updated risk logic if applicable, or existing helpers)
-            // Note: calcRiskPriority might ideally need update to handle '断货风险', but existing string matching works if new risks are mapped or we extend it.
-            // For now we rely on existing helpers. If '断货风险' isn't handled by helpers, we might want to map it to high priority manually if needed.
-            // Let's assume existing helpers handle standard keys or default to something reasonable.
-            const priority = calcRiskPriority(risks);
-            const actionSuggestion = getActionSuggestion(risks, avgSellThrough, onHandUnit);
-            const estimatedImpact = getEstimatedImpact(risks, avgSellThrough, onHandUnit, sku.msrp);
+            const basePriority = calcRiskPriority(risks);
+            const sizePriority = sizeRiskLabels.length ? sizeRisk?.priority ?? 'P2' : 'P2';
+            const priority = maxPriority(basePriority, sizePriority);
+            const baseActionSuggestion = getActionSuggestion(risks, avgSellThrough, onHandUnit);
+            const actionSuggestion = sizeRiskLabels.length && PRIORITY_RANK[sizePriority] >= PRIORITY_RANK[basePriority]
+                ? sizeRisk?.action ?? baseActionSuggestion
+                : baseActionSuggestion;
+            const estimatedImpact = sizeRiskLabels.includes('核心尺码断码')
+                ? `补齐${sizeRisk?.stockoutSizes.slice(0, 4).join('/') || '核心尺码'}，减少断码销售损失`
+                : getEstimatedImpact(risks, avgSellThrough, onHandUnit, sku.msrp);
+            const baseRiskScore = buildBaseRiskScore(risks, wos, avgSellThrough, avgMarginRate, onHandUnit);
+            const sizeRiskScore = sizeRiskLabels.length ? sizeRisk?.riskScore ?? 0 : 0;
+            const riskScore = baseRiskScore + sizeRiskScore;
 
             return {
                 sku_id: sku.sku_id,
@@ -159,13 +210,21 @@ export default function SkuRiskList({ filteredRecords, filters, filterSummary = 
                 avgMarginRate,
                 onHandUnit,
                 wos,
+                sizeFullRate: sizeRisk?.fullSizeRate ?? null,
+                sizeStockoutRate: sizeRisk?.stockoutRate ?? null,
+                sizeCoreShare: sizeRisk?.coreSizeSalesShare ?? null,
+                sizeEdgeStockShare: sizeRisk?.edgeStockShare ?? null,
+                sizeStockoutSizes: sizeRisk?.stockoutSizes ?? [],
+                sizeAction: sizeRiskLabels.length ? sizeRisk?.action ?? null : null,
+                sizeRiskScore,
+                riskScore,
                 risks,
                 priority,
                 actionSuggestion,
                 estimatedImpact,
             };
         }).filter(Boolean) as SkuRiskRow[];
-    }, [filteredRecords, filters]);
+    }, [filteredRecords, filters, dimSku, sizeRiskMap]);
 
     const filtered = useMemo(() => {
         const rows = filterRisk === '全部' ? skuRows : skuRows.filter(r => r.risks.includes(filterRisk));
@@ -180,12 +239,6 @@ export default function SkuRiskList({ filteredRecords, filters, filterSummary = 
         else { setSortKey(key); setSortAsc(true); }
     };
 
-    const SortIcon = ({ k }: { k: SortKey }) => (
-        <span className="ml-1 text-slate-300">
-            {sortKey === k ? (sortAsc ? '↑' : '↓') : '↕'}
-        </span>
-    );
-
     // CSV Export
     const exportCsv = () => {
         const now = new Date().toLocaleString('zh-CN');
@@ -196,7 +249,7 @@ export default function SkuRiskList({ filteredRecords, filters, filterSummary = 
             ``,
         ].join('\n');
 
-        const headers = ['款号', '商品名', '品类', '库龄层级', '吊牌价', '季节', '进货量', '销量', '净销售额', '售罄率', '折扣深度', '毛利率', '剩余库存', 'WOS(周)', '风险标签', '优先级', '建议动作', '预估收益', '状态'];
+        const headers = ['款号', '商品名', '品类', '库龄层级', '吊牌价', '季节', '进货量', '销量', '净销售额', '售罄率', '折扣深度', '毛利率', '剩余库存', 'WOS(周)', '核心齐码率', '核心断码率', '缺码尺码', '边缘码库存占比', '风险标签', '优先级', '建议动作', '预估收益', '状态'];
 
         const rows = filtered.map(r => [
             r.sku_id, r.sku_name, r.category_id, r.lifecycle, r.msrp, r.season,
@@ -204,7 +257,12 @@ export default function SkuRiskList({ filteredRecords, filters, filterSummary = 
             `${(r.avgSellThrough * 100).toFixed(1)}%`,
             `${(r.avgDiscountDepth * 100).toFixed(1)}%`,
             `${(r.avgMarginRate * 100).toFixed(1)}%`,
-            r.onHandUnit, r.wos, r.risks.join('|'), r.priority, r.actionSuggestion, r.estimatedImpact,
+            r.onHandUnit, r.wos,
+            r.sizeFullRate !== null ? `${(r.sizeFullRate * 100).toFixed(1)}%` : '',
+            r.sizeStockoutRate !== null ? `${(r.sizeStockoutRate * 100).toFixed(1)}%` : '',
+            r.sizeStockoutSizes.join('/'),
+            r.sizeEdgeStockShare !== null ? `${(r.sizeEdgeStockShare * 100).toFixed(1)}%` : '',
+            r.risks.join('|'), r.priority, r.actionSuggestion, r.estimatedImpact,
             statusMap[r.sku_id] ?? '待处理',
         ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
 
@@ -220,7 +278,7 @@ export default function SkuRiskList({ filteredRecords, filters, filterSummary = 
     const riskCounts = useMemo(() => {
         const counts: Record<string, number> = { '全部': skuRows.length };
         // Initialize common keys to ensure order if desired, or just let them generate
-        ['断货风险', '积压风险', '低售罄', '高库存', '低毛利', '折扣异常', '健康'].forEach(k => counts[k] = 0);
+        ['断货风险', '积压风险', '核心尺码断码', '边缘码积压', '低售罄', '高库存', '低毛利', '折扣异常', '核心尺码贡献弱', '健康'].forEach(k => counts[k] = 0);
 
         skuRows.forEach(r => r.risks.forEach(risk => { counts[risk] = (counts[risk] || 0) + 1; }));
         // Filter out zero-count keys if preferred, or keep all. Let's filter for cleanliness but keep "主要" risks.
@@ -269,27 +327,28 @@ export default function SkuRiskList({ filteredRecords, filters, filterSummary = 
                             <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">商品</th>
                             <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">品类 / 周期</th>
                             <th className="text-right px-4 py-3 font-semibold whitespace-nowrap cursor-pointer hover:text-slate-800" onClick={() => handleSort('msrp')}>
-                                吊牌价 <SortIcon k="msrp" />
+                                吊牌价 {renderSortIcon(sortKey, sortAsc, 'msrp')}
                             </th>
                             <th className="text-right px-4 py-3 font-semibold whitespace-nowrap cursor-pointer hover:text-slate-800" onClick={() => handleSort('totalUnits')}>
-                                销量 <SortIcon k="totalUnits" />
+                                销量 {renderSortIcon(sortKey, sortAsc, 'totalUnits')}
                             </th>
                             <th className="text-right px-4 py-3 font-semibold whitespace-nowrap cursor-pointer hover:text-slate-800" onClick={() => handleSort('avgSellThrough')}>
-                                售罄率 <SortIcon k="avgSellThrough" />
+                                售罄率 {renderSortIcon(sortKey, sortAsc, 'avgSellThrough')}
                             </th>
                             <th className="text-right px-4 py-3 font-semibold whitespace-nowrap cursor-pointer hover:text-slate-800" onClick={() => handleSort('avgDiscountDepth')}>
-                                折扣 <SortIcon k="avgDiscountDepth" />
+                                折扣 {renderSortIcon(sortKey, sortAsc, 'avgDiscountDepth')}
                             </th>
                             <th className="text-right px-4 py-3 font-semibold whitespace-nowrap cursor-pointer hover:text-slate-800" onClick={() => handleSort('avgMarginRate')}>
-                                毛利 <SortIcon k="avgMarginRate" />
+                                毛利 {renderSortIcon(sortKey, sortAsc, 'avgMarginRate')}
                             </th>
                             <th className="text-right px-4 py-3 font-semibold whitespace-nowrap cursor-pointer hover:text-slate-800" onClick={() => handleSort('onHandUnit')}>
-                                库存 <SortIcon k="onHandUnit" />
+                                库存 {renderSortIcon(sortKey, sortAsc, 'onHandUnit')}
                             </th>
                             {/* WOS Column - New P2 */}
                             <th className="text-right px-4 py-3 font-semibold whitespace-nowrap cursor-pointer hover:text-slate-800" onClick={() => handleSort('wos')}>
-                                WOS <SortIcon k="wos" />
+                                WOS {renderSortIcon(sortKey, sortAsc, 'wos')}
                             </th>
+                            <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">尺码健康</th>
                             <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">风险标签</th>
                             <th className="text-center px-4 py-3 font-semibold whitespace-nowrap">优先级</th>
                             <th className="text-left px-4 py-3 font-semibold whitespace-nowrap min-w-[120px]">建议动作</th>
@@ -327,6 +386,26 @@ export default function SkuRiskList({ filteredRecords, filters, filterSummary = 
                                         }`}>
                                         {row.wos}
                                     </span>
+                                </td>
+                                <td className="px-4 py-3">
+                                    <div className="w-[130px] text-[10px] leading-4 text-slate-500">
+                                        {row.sizeFullRate !== null ? (
+                                            <>
+                                                <div className="font-semibold text-slate-700">
+                                                    齐码 {(row.sizeFullRate * 100).toFixed(0)}% · 断码 {((row.sizeStockoutRate ?? 0) * 100).toFixed(0)}%
+                                                </div>
+                                                {row.sizeStockoutSizes.length > 0 ? (
+                                                    <div className="mt-0.5 truncate text-rose-600" title={row.sizeStockoutSizes.join('/')}>
+                                                        缺 {row.sizeStockoutSizes.slice(0, 4).join('/')}
+                                                    </div>
+                                                ) : (
+                                                    <div className="mt-0.5 text-emerald-600">核心码完整</div>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <span className="text-slate-300">--</span>
+                                        )}
+                                    </div>
                                 </td>
                                 <td className="px-4 py-3">
                                     <div className="flex flex-wrap gap-1 w-[120px]">

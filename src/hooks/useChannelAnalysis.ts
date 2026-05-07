@@ -1,9 +1,7 @@
 import { useMemo } from 'react';
-import rawSalesData from '../../data/dashboard/fact_sales.json';
-import rawChannelData from '../../data/dashboard/dim_channel.json';
-import rawSkuData from '../../data/dashboard/dim_sku.json';
 import rawPlanData from '../../data/dashboard/dim_plan.json';
 import { DashboardFilters, matchesDashboardSkuCategoryFilters } from '@/hooks/useDashboardFilter';
+import { useFactSalesForDashboard, useDimChannel, useDimSku } from '@/hooks/useDashboardData';
 import { matchesPriceBandFilter } from '@/config/priceBand';
 import { resolveDashboardMomBaseline } from '@/config/dashboardCompare';
 import { deriveDashboardAnnualPlanTotal, deriveDashboardMonthlyPlanBreakdown, deriveScopedAnnualPlanTotal } from '@/config/dashboardPlan';
@@ -243,13 +241,7 @@ const PLAN_FALLBACK_GROWTH_RATE = 0.08;
 const SALES_BUCKETS = ['超高', '高', '中', '低'];
 const CITY_TIER_ORDER = ['全国', '一线', '新一线', '二线', '三线', '四线'];
 
-const salesRecords = rawSalesData as FactSalesRecord[];
-const channels = rawChannelData as DimChannel[];
-const skus = rawSkuData as DimSku[];
 const dimPlan = rawPlanData as DimPlan;
-const ONLINE_REGION_SET = new Set(
-    channels.filter((channel) => channel.is_online).map((channel) => channel.region),
-);
 
 function sortByTierOrder(a: string, b: string) {
     const ai = CITY_TIER_ORDER.indexOf(a);
@@ -296,7 +288,8 @@ function shouldIncludeRecord(
     channel: DimChannel,
     filters: DashboardFilters,
     yearOverride?: number,
-    scope: ChannelFilterScope = DEFAULT_CHANNEL_SCOPE
+    scope: ChannelFilterScope = DEFAULT_CHANNEL_SCOPE,
+    onlineRegionSet: Set<string> = new Set(),
 ) {
     if (yearOverride !== undefined) {
         if (Number(sale.season_year) !== yearOverride) return false;
@@ -316,7 +309,7 @@ function shouldIncludeRecord(
     if (filters.lifecycle !== 'all' && sku.lifecycle !== filters.lifecycle) return false;
 
     if (filters.region !== 'all') {
-        const isOnlineRegionFilter = ONLINE_REGION_SET.has(filters.region);
+        const isOnlineRegionFilter = onlineRegionSet.has(filters.region);
         const shouldIgnoreRegionFilter =
             scope.system === 'online' ||
             (scope.system === 'offline' && isOnlineRegionFilter);
@@ -393,13 +386,20 @@ export function useChannelAnalysis(
     filters: DashboardFilters,
     scope: ChannelFilterScope = DEFAULT_CHANNEL_SCOPE,
 ) {
+    const { data: factSalesData } = useFactSalesForDashboard(filters.season_year);
+    const { data: dimChannelData } = useDimChannel();
+    const { data: dimSkuData } = useDimSku();
+    const salesRecords = (factSalesData ?? []) as FactSalesRecord[];
+    const channels = (dimChannelData ?? []) as DimChannel[];
+    const skus = (dimSkuData ?? []) as DimSku[];
+
     const channelMap = useMemo(() => {
         const map: Record<string, DimChannel> = {};
         channels.forEach((channel) => {
             map[channel.channel_id] = channel;
         });
         return map;
-    }, []);
+    }, [channels]);
 
     const skuMap = useMemo(() => {
         const map: Record<string, DimSku> = {};
@@ -407,7 +407,7 @@ export function useChannelAnalysis(
             map[sku.sku_id] = sku;
         });
         return map;
-    }, []);
+    }, [skus]);
 
     return useMemo(() => {
         const regionStatsMap: Record<string, AggregatedStats> = {};
@@ -422,6 +422,9 @@ export function useChannelAnalysis(
         const latestYear = getLatestYear(salesRecords);
         const currentYear = filters.season_year === 'all' ? latestYear : Number(filters.season_year);
         const baselineYear = currentYear - 1;
+        const onlineRegionSet = new Set(
+            channels.filter((channel) => channel.is_online).map((channel) => channel.region),
+        );
         const annualScopeFilters: DashboardFilters = { ...filters, season: 'all', wave: 'all' };
         const currentScopeMonthlyActuals = Array.from({ length: 12 }, () => 0);
         const previousScopeMonthlyActuals = Array.from({ length: 12 }, () => 0);
@@ -444,7 +447,7 @@ export function useChannelAnalysis(
             const sku = skuMap[sale.sku_id];
             if (!channel || !sku) return;
 
-            if (shouldIncludeRecord(sale, sku, channel, filters, undefined, scope)) {
+            if (shouldIncludeRecord(sale, sku, channel, filters, undefined, scope, onlineRegionSet)) {
                 const regionKey = channel.region || '未知大区';
                 const formatKey = channel.store_format || '未知店态';
                 const tierKey = channel.city_tier || '未知线级';
@@ -521,29 +524,29 @@ export function useChannelAnalysis(
                 overallAnnualActualTotal += sale.net_sales_amt || 0;
             }
 
-            if (shouldIncludeRecord(sale, sku, channel, filters, currentYear, scope)) {
+            if (shouldIncludeRecord(sale, sku, channel, filters, currentYear, scope, onlineRegionSet)) {
                 const regionKey = channel.region || '未知大区';
                 accumulateYear(regionCurrentMap, regionKey, sale);
             }
 
-            if (shouldIncludeRecord(sale, sku, channel, annualScopeFilters, currentYear, scope)) {
+            if (shouldIncludeRecord(sale, sku, channel, annualScopeFilters, currentYear, scope, onlineRegionSet)) {
                 const regionKey = channel.region || '未知大区';
                 accumulateYear(regionAnnualMap, regionKey, sale);
                 const month = getDashboardMonthByWave(sale.wave);
                 if (month) currentScopeMonthlyActuals[month - 1] += sale.net_sales_amt || 0;
             }
 
-            if (shouldIncludeRecord(sale, sku, channel, annualScopeFilters, baselineYear, scope)) {
+            if (shouldIncludeRecord(sale, sku, channel, annualScopeFilters, baselineYear, scope, onlineRegionSet)) {
                 const month = getDashboardMonthByWave(sale.wave);
                 if (month) previousScopeMonthlyActuals[month - 1] += sale.net_sales_amt || 0;
             }
 
-            if (shouldIncludeRecord(sale, sku, channel, filters, baselineYear, scope)) {
+            if (shouldIncludeRecord(sale, sku, channel, filters, baselineYear, scope, onlineRegionSet)) {
                 const regionKey = channel.region || '未知大区';
                 accumulateYear(regionBaselineMap, regionKey, sale);
             }
 
-            if (momBaseline && shouldIncludeRecord(sale, sku, channel, momFilters, momBaseline.year, scope)) {
+            if (momBaseline && shouldIncludeRecord(sale, sku, channel, momFilters, momBaseline.year, scope, onlineRegionSet)) {
                 const regionKey = channel.region || '未知大区';
                 accumulateYear(regionMomMap, regionKey, sale);
             }
@@ -996,6 +999,6 @@ export function useChannelAnalysis(
             laggingLeaderboard,
             ecomPlatforms,
         };
-    }, [channelMap, filters, scope, skuMap]);
+    }, [channelMap, filters, salesRecords, scope, skuMap]);
 }
 

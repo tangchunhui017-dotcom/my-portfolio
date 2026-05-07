@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 import type { EChartsOption } from 'echarts';
 import { deriveVirtualDashboardSizeFacts } from '@/config/dashboardSizeFacts';
+import { useDimChannel } from '@/hooks/useDashboardData';
 
 interface DashboardSalesRecord {
     sku_id: string;
@@ -134,10 +135,11 @@ type SizeDepthSummary = {
     sizeData: SizeDepthNode[];
     riskySizeNode: SizeDepthNode;
     stableSizeNode: SizeDepthNode;
+    isSizeDataVirtual: boolean;
 };
 
-function buildSizeDepthNodes(records: DashboardSalesRecord[], skuMap: Record<string, DashboardSkuMeta | undefined>): SizeDepthSummary {
-    const sizeFacts = deriveVirtualDashboardSizeFacts(records, skuMap);
+function buildSizeDepthNodes(records: DashboardSalesRecord[], skuMap: Record<string, DashboardSkuMeta | undefined>, channelMap: Map<string, { channel_id: string; channel_type?: string; region?: string }>): SizeDepthSummary {
+    const sizeFacts = deriveVirtualDashboardSizeFacts(records, skuMap, channelMap);
     const fallbackCategory = records[0] ? resolveCategoryLabel(skuMap[records[0].sku_id]) : '核心品类';
 
     if (!sizeFacts.length) {
@@ -147,6 +149,7 @@ function buildSizeDepthNodes(records: DashboardSalesRecord[], skuMap: Record<str
             sizeData: [riskyFallback, stableFallback],
             riskySizeNode: riskyFallback,
             stableSizeNode: stableFallback,
+            isSizeDataVirtual: true,
         };
     }
 
@@ -243,10 +246,11 @@ return {
         sizeData: [riskySizeNode, stableSizeNode],
         riskySizeNode,
         stableSizeNode,
+        isSizeDataVirtual: false,
     };
 }
 
-function deriveInventoryData(records: DashboardSalesRecord[], skuMap: Record<string, DashboardSkuMeta | undefined>) {
+function deriveInventoryData(records: DashboardSalesRecord[], skuMap: Record<string, DashboardSkuMeta | undefined>, channelMap: Map<string, { channel_id: string; channel_type?: string; region?: string }>) {
     const skuBuckets = new Map<string, { skuId: string; sku: string; category: string; units: number; weeks: Set<number>; stWeighted: number; stWeight: number; onHand: number }>();
     const latestSkuChannel = new Map<string, { skuId: string; week: number; onHand: number }>();
 
@@ -307,7 +311,7 @@ function deriveInventoryData(records: DashboardSalesRecord[], skuMap: Record<str
         .filter((node) => node.onHand > 0 || node.wos > 0)
         .sort((a, b) => riskScore(b) - riskScore(a));
 
-    const { sizeData, riskySizeNode, stableSizeNode } = buildSizeDepthNodes(records, skuMap);
+    const { sizeData, riskySizeNode, stableSizeNode, isSizeDataVirtual } = buildSizeDepthNodes(records, skuMap, channelMap);
 
     return {
         riskData: riskData.slice(0, 8),
@@ -316,13 +320,19 @@ function deriveInventoryData(records: DashboardSalesRecord[], skuMap: Record<str
         overstockAlert: riskData.find((node) => node.riskStatus === 'danger_overstock') || null,
         riskySizeNode,
         stableSizeNode,
+        isSizeDataVirtual,
     };
 }
 export default function InventoryRadarPanel({ records = [], skuMap = {} }: Props) {
     const [activeTab, setActiveTab] = useState<'pulse' | 'radar'>('pulse');
-    const { riskData, sizeData, stockoutAlert, overstockAlert, riskySizeNode, stableSizeNode } = useMemo(
-        () => deriveInventoryData(records, skuMap),
-        [records, skuMap],
+    const { data: dimChannelData } = useDimChannel();
+    const channelMap = useMemo(() => {
+        const rows = (dimChannelData ?? []) as Array<{ channel_id: string; channel_type?: string; region?: string }>;
+        return new Map(rows.map((item) => [item.channel_id, item]));
+    }, [dimChannelData]);
+    const { riskData, sizeData, stockoutAlert, overstockAlert, riskySizeNode, stableSizeNode, isSizeDataVirtual } = useMemo(
+        () => deriveInventoryData(records, skuMap, channelMap),
+        [records, skuMap, channelMap],
     );
 
     const hasRiskData = riskData.length > 0;
@@ -383,7 +393,7 @@ export default function InventoryRadarPanel({ records = [], skuMap = {} }: Props
     }), [sizeData]);
 
     return (
-        <div className="w-full relative mb-6 overflow-hidden rounded-[24px] bg-white ring-1 ring-slate-200 shadow-[0_12px_28px_rgba(15,23,42,0.04)]">
+        <div className="w-full relative mb-6 overflow-hidden rounded-panel bg-white ring-1 ring-slate-200 shadow-[0_12px_28px_rgba(15,23,42,0.04)]">
             <div className="relative px-8 pt-6 pb-4 border-b border-slate-100 flex items-center justify-between bg-white/80 backdrop-blur-md z-20">
                 <div>
                     <h2 className="text-xl font-semibold tracking-wide text-slate-900 flex items-center gap-3">
@@ -404,7 +414,17 @@ export default function InventoryRadarPanel({ records = [], skuMap = {} }: Props
                         {activeTab === 'pulse' ? (
                             hasRiskData ? <ReactECharts key="inventory-pulse" option={pulseOption} notMerge={true} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'svg' }} /> : <div className="h-full flex items-center justify-center text-sm text-slate-400">当前筛选下暂无库存脉冲数据</div>
                         ) : (
-                            hasSizeData ? <ReactECharts key="inventory-radar" option={radarOption} notMerge={true} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'svg' }} /> : <div className="h-full flex items-center justify-center text-sm text-slate-400">当前筛选下缺少可用于尺码雷达的结构信号</div>
+                            hasSizeData ? (
+                                <div className="relative h-full w-full">
+                                    <ReactECharts key="inventory-radar" option={radarOption} notMerge={true} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'svg' }} />
+                                    {isSizeDataVirtual && (
+                                        <div className="absolute top-3 left-3 flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-[11px] font-semibold text-amber-700 ring-1 ring-amber-200">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                                            模拟示例数据 · 无真实尺码事实表，不可直接用于采购决策
+                                        </div>
+                                    )}
+                                </div>
+                            ) : <div className="h-full flex items-center justify-center text-sm text-slate-400">当前筛选下缺少可用于尺码雷达的结构信号</div>
                         )}
                         {activeTab === 'pulse' && hasRiskData && <div className="absolute inset-0 bg-gradient-to-b from-transparent via-rose-500/10 to-transparent h-[100%] animate-[scan_6s_linear_infinite] pointer-events-none" />}
                     </div>
