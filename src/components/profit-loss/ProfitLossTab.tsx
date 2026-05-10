@@ -6,6 +6,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useBrandPnl, useStorePnl } from '@/hooks/usePnl';
 import type { StorePnlInput } from '@/hooks/usePnl';
+import { useMerchMetricConfig } from '@/hooks/useMerchMetricConfig';
+import { resolveBusinessThreshold } from '@/utils/merchMetricResolver';
 import { formatMoneyCny } from '@/config/numberFormat';
 import ChannelPnlPanel from './ChannelPnlPanel';
 import CategoryPnlPanel from './CategoryPnlPanel';
@@ -113,6 +115,9 @@ function MonthlyTrendChart({ data }: { data: Array<{ label: string; netRevenue: 
 
 function BrandPnlView({ filters, scenario }: { filters: Filters; scenario: ForecastScenario }) {
     const pnl = useBrandPnl(filters);
+    const merchMetricConfig = useMerchMetricConfig();
+    const grossMarginThreshold = resolveBusinessThreshold('grossMarginRate', merchMetricConfig).value;
+    const grossMarginHealthyMin = grossMarginThreshold?.rules.find(rule => rule.status === 'health' && rule.condition === '>=')?.value ?? 0.4;
     const [analysisView, setAnalysisView] = useState<BrandAnalysisView>('summary');
 
     if (!pnl) return <div className="flex items-center justify-center h-40 text-slate-400 text-sm">加载损益数据中…</div>;
@@ -166,7 +171,7 @@ function BrandPnlView({ filters, scenario }: { filters: Filters; scenario: Forec
                     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
                         <KpiCard label="净收入" value={formatMoneyCny(pnl.netRevenue)} estimated={estimated} />
                         <KpiCard label="毛利" value={formatMoneyCny(pnl.grossProfit)} estimated={estimated} />
-                        <KpiCard label="毛利率" value={`${(pnl.grossMarginRate * 100).toFixed(1)}%`} tone={pnl.grossMarginRate >= 0.4 ? 'positive' : 'warning'} estimated={estimated} />
+                        <KpiCard label="毛利率" value={`${(pnl.grossMarginRate * 100).toFixed(1)}%`} tone={pnl.grossMarginRate >= grossMarginHealthyMin ? 'positive' : 'warning'} estimated={estimated} />
                         <KpiCard label="EBIT" value={formatMoneyCny(pnl.ebit)} tone={pnl.ebit >= 0 ? 'positive' : 'negative'} estimated={estimated} />
                         <KpiCard label="EBIT率" value={`${(pnl.ebitRate * 100).toFixed(1)}%`} tone={pnl.ebitRate >= 0.05 ? 'positive' : pnl.ebitRate >= 0 ? 'warning' : 'negative'} estimated={estimated} />
                         <KpiCard label="净利润" value={formatMoneyCny(pnl.netProfit)} tone={pnl.netProfit >= 0 ? 'positive' : 'negative'} estimated={estimated} />

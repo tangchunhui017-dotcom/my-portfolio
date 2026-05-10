@@ -1,0 +1,101 @@
+{
+  "_note": "渠道指标规则。每个渠道有各自的默认运营参数。渠道ID对应 data/dashboard/dim_channel.json 中的 channelId 字段。",
+  "rules": [
+    {
+      "channelId": "offline-direct",
+      "channelLabel": "线下直营",
+      "defaultSellThroughTarget": 0.80,
+      "defaultDiscountRate": 0.88,
+      "defaultReturnRate": 0.05,
+      "defaultGrossMarginTarget": 0.55,
+      "defaultStockToSalesRatio": 4.0,
+      "defaultCollectionDays": 0,
+      "defaultPlatformCommissionRate": 0,
+      "capacityConstraintEnabled": true,
+      "capacityConstraintNote": "受门店面积和陈列容量约束，单店SKC上限需配置",
+      "otherParams": {
+        "storeStaffCommissionRate": 0.03,
+        "rentCostBenchmark": 0.12
+      }
+    },
+    {
+      "channelId": "offline-franchise",
+      "channelLabel": "线下加盟",
+      "defaultSellThroughTarget": 0.78,
+      "defaultDiscountRate": 0.87,
+      "defaultReturnRate": 0.04,
+      "defaultGrossMarginTarget": 0.52,
+      "defaultStockToSalesRatio": 4.5,
+      "defaultCollectionDays": 30,
+      "defaultPlatformCommissionRate": 0,
+      "capacityConstraintEnabled": true,
+      "capacityConstraintNote": "加盟商订货量受加盟协议约束",
+      "otherParams": {
+        "franchiseeDiscount": 0.60,
+        "minimumOrderPairs": 6
+      }
+    },
+    {
+      "channelId": "ecommerce-tmall",
+      "channelLabel": "天猫旗舰",
+      "defaultSellThroughTarget": 0.82,
+      "defaultDiscountRate": 0.82,
+      "defaultReturnRate": 0.18,
+      "defaultGrossMarginTarget": 0.48,
+      "defaultStockToSalesRatio": 3.5,
+      "defaultCollectionDays": 7,
+      "defaultPlatformCommissionRate": 0.05,
+      "capacityConstraintEnabled": false,
+      "otherParams": {
+        "activityCommissionPremium": 0.03,
+        "depositRate": 0.30
+      }
+    },
+    {
+      "channelId": "ecommerce-jd",
+      "channelLabel": "京东旗舰",
+      "defaultSellThroughTarget": 0.80,
+      "defaultDiscountRate": 0.83,
+      "defaultReturnRate": 0.15,
+      "defaultGrossMarginTarget": 0.47,
+      "defaultStockToSalesRatio": 3.5,
+      "defaultCollectionDays": 14,
+      "defaultPlatformCommissionRate": 0.06,
+      "capacityConstraintEnabled": false,
+      "otherParams": {}
+    },
+    {
+      "channelId": "ecommerce-douyin",
+      "channelLabel": "抖音直播",
+      "defaultSellThroughTarget": 0.90,
+      "defaultDiscountRate": 0.72,
+      "defaultReturnRate": 0.28,
+      "defaultGrossMarginTarget": 0.38,
+      "defaultStockToSalesRatio": 2.5,
+      "defaultCollectionDays": 7,
+      "defaultPlatformCommissionRate": 0.08,
+      "capacityConstraintEnabled": false,
+      "otherParams": {
+        "influencerFeeRate": 0.20,
+        "returnRateNote": "直播退货率高，建议单独做OTB预算"
+      }
+    },
+    {
+      "channelId": "outlet",
+      "channelLabel": "奥莱/折扣店",
+      "defaultSellThroughTarget": 0.92,
+      "defaultDiscountRate": 0.60,
+      "defaultReturnRate": 0.03,
+      "defaultGrossMarginTarget": 0.30,
+      "defaultStockToSalesRatio": 6.0,
+      "defaultCollectionDays": 0,
+      "defaultPlatformCommissionRate": 0,
+      "capacityConstraintEnabled": true,
+      "capacityConstraintNote": "主要接收老品/清仓品，按货龄配货",
+      "otherParams": {
+        "minProductAgeDays": 90,
+        "preferredProductAgeLevel": ["watch","aged","clearance"]
+      }
+    }
+  ]
+}

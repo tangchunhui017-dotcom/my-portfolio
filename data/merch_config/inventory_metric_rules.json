@@ -1,0 +1,63 @@
+{
+  "_note": "库存健康指标规则。定义库存分级预警、周转目标、资金占用基准等参数，用于库存健康仪表盘和运营预警。",
+  "turnoverTargets": {
+    "annualTurnoverTimesMin": 2.5,
+    "annualTurnoverTimesTarget": 3.5,
+    "annualTurnoverTimesMax": 5.0,
+    "inventoryDaysMin": 73,
+    "inventoryDaysTarget": 104,
+    "inventoryDaysMax": 146,
+    "note": "库存周转次数 = 年化销售成本 / 平均库存成本；库存天数 = 365 / 周转次数"
+  },
+  "stockToSalesTargets": {
+    "offlineDirect": { "healthy": 4.0, "warning": 6.0 },
+    "offlineFranchise": { "healthy": 4.5, "warning": 6.5 },
+    "ecommerceTmall": { "healthy": 3.5, "warning": 5.0 },
+    "ecommerceDouyin": { "healthy": 2.5, "warning": 4.0 },
+    "outlet": { "healthy": 6.0, "warning": 8.0 },
+    "default": { "healthy": 4.0, "warning": 6.0 }
+  },
+  "weeksOfSupplyTargets": {
+    "springSummer": { "healthy": 12, "warning": 18, "danger": 24 },
+    "autumnWinter": { "healthy": 14, "warning": 20, "danger": 28 },
+    "default": { "healthy": 13, "warning": 19, "danger": 26 }
+  },
+  "ageWarningDays": {
+    "watch": 120,
+    "aged": 180,
+    "clearance": 365,
+    "note": "以上市日或采购入库日为起算点"
+  },
+  "agedInventoryRateThresholds": {
+    "healthy": 0.10,
+    "warning": 0.20,
+    "danger": 0.30,
+    "note": "老品库存金额 / 总库存金额。超过30%需立即启动清货专项"
+  },
+  "brokenSizeThresholds": {
+    "healthy": 0.10,
+    "warning": 0.20,
+    "danger": 0.30,
+    "note": "断码SKU数 / 总在售SKU数"
+  },
+  "inventoryReduceActions": [
+    {
+      "triggerCondition": "sellThroughRate < 0.50 AND productAgeDays > 90",
+      "action": "启动折扣促销",
+      "discountRange": [0.75, 0.85],
+      "priority": 1
+    },
+    {
+      "triggerCondition": "sellThroughRate < 0.50 AND productAgeDays > 150",
+      "action": "向折扣渠道/奥莱渠道转移",
+      "discountRange": [0.50, 0.70],
+      "priority": 2
+    },
+    {
+      "triggerCondition": "sellThroughRate < 0.30 AND productAgeDays > 365",
+      "action": "批量出清或销毁处理",
+      "discountRange": [0.30, 0.50],
+      "priority": 3
+    }
+  ]
+}

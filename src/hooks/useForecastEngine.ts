@@ -12,6 +12,8 @@ import { useDimSku, useDimWavePlan, useFactSales, useForecastMerchMixData } from
 import { useForecast } from './useForecast';
 import type { ForecastScenario } from './useForecast';
 import { useGlobalConfig } from '@/context/GlobalConfigContext';
+import { useMerchMetricConfig } from '@/hooks/useMerchMetricConfig';
+import { resolveBusinessThreshold } from '@/utils/merchMetricResolver';
 
 interface RawCategory {
     key: string;
@@ -215,6 +217,10 @@ function boundedGrowth(value: number): number {
 
 export function useForecastEngine(scenario: ForecastScenario): ForecastEngineResult | null {
     const { config } = useGlobalConfig();
+    const merchMetricConfig = useMerchMetricConfig();
+    const grossMarginThreshold = resolveBusinessThreshold('grossMarginRate', merchMetricConfig).value;
+    const grossMarginHealthyMin = grossMarginThreshold?.rules.find(rule => rule.status === 'health' && rule.condition === '>=')?.value ?? 0.50;
+    const grossMarginWarningMin = grossMarginThreshold?.rules.find(rule => rule.status === 'warning' && rule.condition === '>=')?.value ?? 0.38;
     const { data: mixRaw } = useForecastMerchMixData() as { data: RawMerchMix | undefined };
     const { data: dimSkuRaw } = useDimSku() as { data: RawDimSku[] | undefined };
     const { data: dimWavePlanRaw } = useDimWavePlan() as { data: RawDimWavePlan[] | undefined };
@@ -513,18 +519,18 @@ export function useForecastEngine(scenario: ForecastScenario): ForecastEngineRes
             }
         }
 
-        if (weightedGrossMarginRate < 0.50) {
+        if (weightedGrossMarginRate < grossMarginWarningMin) {
             risks.push({
                 type: 'margin',
                 level: 'danger',
-                message: `加权毛利率 ${(weightedGrossMarginRate * 100).toFixed(1)}% 低于健康线 50%`,
+                message: `加权毛利率 ${(weightedGrossMarginRate * 100).toFixed(1)}% 低于配置危险线 ${(grossMarginWarningMin * 100).toFixed(0)}%`,
                 action: '检查各品类毛利配置，优先增加高毛利品类占比，审查折扣政策',
             });
-        } else if (weightedGrossMarginRate < 0.55) {
+        } else if (weightedGrossMarginRate < grossMarginHealthyMin) {
             risks.push({
                 type: 'margin',
                 level: 'warning',
-                message: `加权毛利率 ${(weightedGrossMarginRate * 100).toFixed(1)}%，接近警戒线 55%`,
+                message: `加权毛利率 ${(weightedGrossMarginRate * 100).toFixed(1)}%，低于配置健康线 ${(grossMarginHealthyMin * 100).toFixed(0)}%`,
                 action: '关注清货款对毛利的侵蚀，控制促销折扣深度',
             });
         }
@@ -569,6 +575,8 @@ export function useForecastEngine(scenario: ForecastScenario): ForecastEngineRes
         physForecast,
         ecomForecast,
         newStoreForecast,
+        grossMarginHealthyMin,
+        grossMarginWarningMin,
         scenario,
     ]);
 }

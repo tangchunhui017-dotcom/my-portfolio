@@ -1,0 +1,77 @@
+{
+  "_note": "货龄/库龄分级标准。以上市日或入库日为起算点，单位为天。鞋类标准：春夏季节商品生命周期约180天，秋冬约150天，超期即进入关注/老品阶段。",
+  "levels": [
+    {
+      "levelId": "new",
+      "label": "新品",
+      "dayMin": 0,
+      "dayMax": 59,
+      "description": "上市60天以内，正常销售阶段",
+      "targetSellThroughMin": 0.25,
+      "targetSellThroughMax": 0.50,
+      "discountSuggestion": "正价销售，不建议折扣低于9折",
+      "otbAction": "正常补货，保持安全库存",
+      "inventoryAction": "维持正常配货，关注补码及时性"
+    },
+    {
+      "levelId": "near-new",
+      "label": "次新品",
+      "dayMin": 60,
+      "dayMax": 89,
+      "description": "上市60~89天，爬坡到主销阶段",
+      "targetSellThroughMin": 0.50,
+      "targetSellThroughMax": 0.70,
+      "discountSuggestion": "可做季中活动，折扣保持85折以上",
+      "otbAction": "评估销售速度，调整补货计划",
+      "inventoryAction": "关注断码，及时调拨滞销门店库存"
+    },
+    {
+      "levelId": "normal",
+      "label": "正常品",
+      "dayMin": 90,
+      "dayMax": 119,
+      "description": "上市90~119天，处于主销后期",
+      "targetSellThroughMin": 0.65,
+      "targetSellThroughMax": 0.80,
+      "discountSuggestion": "可做促销，折扣建议8折以上",
+      "otbAction": "停止补货，消化存量",
+      "inventoryAction": "集中库存到高效渠道，准备清货动作"
+    },
+    {
+      "levelId": "watch",
+      "label": "关注品",
+      "dayMin": 120,
+      "dayMax": 179,
+      "description": "上市120~179天，售罄率未达标需关注",
+      "targetSellThroughMin": 0.75,
+      "targetSellThroughMax": 0.90,
+      "discountSuggestion": "主动降价促销，折扣可至75~80折",
+      "otbAction": "不再补货，评估是否启动出清预算",
+      "inventoryAction": "制定分货方案，向折扣渠道/线上投放"
+    },
+    {
+      "levelId": "aged",
+      "label": "老品",
+      "dayMin": 180,
+      "dayMax": 364,
+      "description": "上市180天以上，属于跨季库存",
+      "targetSellThroughMin": 0.90,
+      "targetSellThroughMax": 0.95,
+      "discountSuggestion": "折扣清仓，5~7折为主",
+      "otbAction": "全额计提库存减值准备",
+      "inventoryAction": "批量出售给折扣渠道或合作伙伴"
+    },
+    {
+      "levelId": "clearance",
+      "label": "清仓品",
+      "dayMin": 365,
+      "dayMax": 9999,
+      "description": "上市满一年，须紧急出清",
+      "targetSellThroughMin": 0.95,
+      "targetSellThroughMax": 1.00,
+      "discountSuggestion": "3~5折出清，甚至按成本价批量处理",
+      "otbAction": "全额减值，清零库存指标",
+      "inventoryAction": "优先批量出售，尾货捐赠或销毁"
+    }
+  ]
+}

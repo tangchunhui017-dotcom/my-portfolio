@@ -23,7 +23,7 @@ interface FilterBarProps {
 const YEARS = [2025, 2024, 2023];
 const SEASONS = ['Q1', 'Q2', 'Q3', 'Q4'];
 const WAVES = ['W01', 'W02', 'W03', 'W04', 'W05', 'W06', 'W07', 'W08', 'W09', 'W10', 'W11', 'W12'];
-const CHANNEL_TYPES = ['电商', '直营', '加盟', 'KA'];
+const CHANNEL_TYPES = ['电商', '直营', '加盟', '直播', '奥莱', '特渠', 'KA'];
 const LIFECYCLES = ['新品', '次新品', '老品'];
 const PRICE_BANDS = getPriceBandOptionList();
 
@@ -181,7 +181,7 @@ export default function FilterBar({
     const isOpen = isPinned || isExpanded;
 
     const { data: dimSkuData } = useDimSku();
-    const dimSku = (dimSkuData ?? []) as DimSkuRecord[];
+    const dimSku = useMemo(() => (dimSkuData ?? []) as DimSkuRecord[], [dimSkuData]);
 
     const {
         CATEGORY_L1_OPTION_OBJECTS,

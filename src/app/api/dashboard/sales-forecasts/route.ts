@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import data from '../../../../../data/dashboard/sales_forecasts.json';
 
 export async function GET() {
-    const filePath = join(process.cwd(), 'data/dashboard/sales_forecasts.json');
-    const raw = readFileSync(filePath, 'utf-8');
-    return NextResponse.json(JSON.parse(raw));
+    return NextResponse.json(data);
 }

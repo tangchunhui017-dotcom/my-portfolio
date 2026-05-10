@@ -7,6 +7,8 @@ import { useMemo } from 'react';
 import { useForecastAssumptions, useSalesForecasts } from './useDashboardData';
 import { useGlobalConfig } from '@/context/GlobalConfigContext';
 import type { ForecastMethod, GlobalConfig } from '@/context/GlobalConfigContext';
+import forecastAssumptionsFallback from '../../data/dashboard/forecast_assumptions.json';
+import salesForecastsFallback from '../../data/dashboard/sales_forecasts.json';
 
 export type { ForecastMethod };
 
@@ -207,9 +209,11 @@ function median3(a: number, b: number, c: number): number {
 }
 
 export function useForecast(channel: ForecastChannel, scenario: ForecastScenario): ForecastResult | null {
-    const { data: assumptions } = useForecastAssumptions() as { data: ForecastAssumptions | undefined };
-    const { data: forecasts } = useSalesForecasts();
+    const { data: assumptionsRemote } = useForecastAssumptions() as { data: ForecastAssumptions | undefined };
+    const { data: forecastsRemote } = useSalesForecasts();
     const { config: globalConfig } = useGlobalConfig();
+    const assumptions = assumptionsRemote ?? (forecastAssumptionsFallback as unknown as ForecastAssumptions);
+    const forecasts = forecastsRemote ?? salesForecastsFallback;
 
     return useMemo(() => {
         if (!assumptions) return null;

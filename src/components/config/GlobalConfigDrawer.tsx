@@ -5,21 +5,24 @@
  */
 import { useState, type ReactNode } from 'react';
 import { useGlobalConfig } from '@/context/GlobalConfigContext';
+import { useMerchMetricConfig } from '@/hooks/useMerchMetricConfig';
 
 interface Props {
     open: boolean;
     onClose: () => void;
 }
 
-type ConfigDomain = 'forecast' | 'cashflow' | 'pnl';
+type ConfigDomain = 'forecast' | 'cashflow' | 'pnl' | 'merch';
 type ForecastSubTab = 'basis' | 'growth' | 'physical' | 'ecommerce' | 'newStore' | 'merch';
 type CashflowSubTab = 'manualOutflows' | 'inventory';
 type PnlSubTab = 'brandPnl' | 'channelCost' | 'markdownRules';
+type MerchSubTab = 'metricDefs' | 'panelMetrics' | 'thresholds' | 'seasonLifecycle' | 'productAge' | 'categoryPrice' | 'channelMetric' | 'financialMetric' | 'cashflowMetric';
 
 const DOMAINS: Array<{ key: ConfigDomain; label: string; desc: string }> = [
     { key: 'forecast', label: '销售预测', desc: '基准、方法、增长率、渠道参数、货盘结构' },
     { key: 'cashflow', label: '现金流', desc: '回款、支出、库存占款、清货模拟' },
     { key: 'pnl', label: '损益表', desc: '毛利、税费、渠道费用率、折扣规则' },
+    { key: 'merch', label: '指标口径', desc: '指标定义、阈值、品类/价格/渠道/财务标准' },
 ];
 
 const FORECAST_TABS: Array<{ key: ForecastSubTab; label: string }> = [
@@ -40,6 +43,36 @@ const PNL_TABS: Array<{ key: PnlSubTab; label: string }> = [
     { key: 'brandPnl', label: '品牌损益口径' },
     { key: 'channelCost', label: '渠道费用率' },
     { key: 'markdownRules', label: '折扣损失规则' },
+];
+
+const MERCH_TAB_GROUPS: Array<{ title: string; desc: string; tabs: Array<{ key: MerchSubTab; label: string }> }> = [
+    {
+        title: '指标体系',
+        desc: '统一指标定义、面板依赖和健康阈值',
+        tabs: [
+            { key: 'metricDefs', label: '指标定义' },
+            { key: 'panelMetrics', label: '面板指标清单' },
+            { key: 'thresholds', label: '业务阈值' },
+        ],
+    },
+    {
+        title: '商品标准',
+        desc: '季节、库龄、品类价格带和渠道规则',
+        tabs: [
+            { key: 'seasonLifecycle', label: '季节生命周期' },
+            { key: 'productAge', label: '货龄/库龄结构' },
+            { key: 'categoryPrice', label: '品类/价格带' },
+            { key: 'channelMetric', label: '渠道指标' },
+        ],
+    },
+    {
+        title: '经营财务',
+        desc: '损益、费用、回款和资金规则',
+        tabs: [
+            { key: 'financialMetric', label: '财务指标' },
+            { key: 'cashflowMetric', label: '现金流指标' },
+        ],
+    },
 ];
 
 const BASE_WEIGHT_YEARS = ['2022', '2023', '2024'];
@@ -132,6 +165,42 @@ function SubTabs<T extends string>({ tabs, active, onChange }: {
     );
 }
 
+function GroupedSubTabs<T extends string>({ groups, active, onChange }: {
+    groups: Array<{ title: string; desc: string; tabs: Array<{ key: T; label: string }> }>;
+    active: T;
+    onChange: (key: T) => void;
+}) {
+    return (
+        <div className="mb-5 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
+                {groups.map(group => (
+                    <div key={group.title} className="rounded-xl bg-slate-50/70 p-3">
+                        <div className="mb-2">
+                            <div className="text-xs font-semibold text-slate-700">{group.title}</div>
+                            <div className="mt-0.5 text-[11px] leading-4 text-slate-400">{group.desc}</div>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                            {group.tabs.map(tab => (
+                                <button
+                                    key={tab.key}
+                                    onClick={() => onChange(tab.key)}
+                                    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+                                        active === tab.key
+                                            ? 'border-sky-500 bg-sky-500 text-white shadow-sm'
+                                            : 'border-slate-200 bg-white text-slate-500 hover:border-sky-200 hover:text-sky-600'
+                                    }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 export default function GlobalConfigDrawer({ open, onClose }: Props) {
     const {
         config,
@@ -149,6 +218,8 @@ export default function GlobalConfigDrawer({ open, onClose }: Props) {
     const [forecastTab, setForecastTab] = useState<ForecastSubTab>('basis');
     const [cashflowTab, setCashflowTab] = useState<CashflowSubTab>('manualOutflows');
     const [pnlTab, setPnlTab] = useState<PnlSubTab>('brandPnl');
+    const [merchTab, setMerchTab] = useState<MerchSubTab>('metricDefs');
+    const merch = useMerchMetricConfig();
     const { brand, forecast } = config;
 
     if (!open) return null;
@@ -505,6 +576,350 @@ export default function GlobalConfigDrawer({ open, onClose }: Props) {
                                             </table>
                                         </div>
                                     </ContentCard>
+                                )}
+                            </>
+                        )}
+
+                        {activeDomain === 'merch' && (
+                            <>
+                                <GroupedSubTabs groups={MERCH_TAB_GROUPS} active={merchTab} onChange={setMerchTab} />
+
+                                {merchTab === 'metricDefs' && (
+                                    <div className="space-y-4">
+                                        <ContentCard title="核心指标定义" desc="企划中台使用的所有指标 ID、中文名、计算公式与单位。只读展示，如需修改请编辑 data/merch_config/metric_definitions.json。">
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-xs">
+                                                    <thead>
+                                                        <tr className="border-b border-slate-100 text-left text-slate-400">
+                                                            <th className="py-2 pr-3 font-medium">指标ID</th>
+                                                            <th className="py-2 pr-3 font-medium">名称</th>
+                                                            <th className="py-2 pr-3 font-medium">单位</th>
+                                                            <th className="py-2 pr-3 font-medium">公式</th>
+                                                            <th className="py-2 font-medium">说明</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {merch.metricDefinitions.map(m => (
+                                                            <tr key={m.metricId} className="border-b border-slate-50 hover:bg-slate-50">
+                                                                <td className="py-1.5 pr-3 font-mono text-sky-700">{m.metricId}</td>
+                                                                <td className="py-1.5 pr-3 font-medium text-slate-800">{m.label}</td>
+                                                                <td className="py-1.5 pr-3 text-slate-500">{m.unit}</td>
+                                                                <td className="py-1.5 pr-3 font-mono text-slate-500 max-w-[200px] truncate" title={m.formula}>{m.formula}</td>
+                                                                <td className="py-1.5 text-slate-400 max-w-[220px]">{m.description}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </ContentCard>
+                                    </div>
+                                )}
+
+                                {merchTab === 'panelMetrics' && (
+                                    <div className="space-y-4">
+                                        <ContentCard title="面板指标清单" desc="每个仪表盘面板所使用的必用指标和可选指标。只读展示，如需修改请编辑 data/merch_config/metric_usage_by_panel.json。">
+                                            <div className="space-y-4">
+                                                {Object.entries(merch.metricUsageByPanel).map(([panelKey, usage]) => (
+                                                    <div key={panelKey} className="rounded-xl border border-slate-100 p-4">
+                                                        <div className="mb-2 flex items-center gap-2">
+                                                            <span className="font-medium text-slate-800">{usage.label}</span>
+                                                            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500 font-mono">{panelKey}</span>
+                                                        </div>
+                                                        <div className="mb-1.5 flex flex-wrap gap-1">
+                                                            {usage.requiredMetrics.map(id => (
+                                                                <span key={id} className="rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-xs text-sky-700">{id}</span>
+                                                            ))}
+                                                        </div>
+                                                        {usage.optionalMetrics.length > 0 && (
+                                                            <div className="flex flex-wrap gap-1">
+                                                                {usage.optionalMetrics.map(id => (
+                                                                    <span key={id} className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs text-slate-400">{id}</span>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </ContentCard>
+                                    </div>
+                                )}
+
+                                {merchTab === 'thresholds' && (
+                                    <div className="space-y-4">
+                                        <ContentCard title="业务健康阈值" desc="各指标的健康/关注/危险三级阈值。只读展示，如需修改请编辑 data/merch_config/business_thresholds.json。">
+                                            <div className="space-y-4">
+                                                {merch.businessThresholds.map(t => (
+                                                    <div key={t.metricId} className="rounded-xl border border-slate-100 p-4">
+                                                        <div className="mb-2 flex items-center gap-2">
+                                                            <span className="font-medium text-slate-800">{t.label}</span>
+                                                            <span className="text-xs text-slate-400">（{t.unit}）</span>
+                                                        </div>
+                                                        <div className="space-y-1.5">
+                                                            {t.rules.map((r, i) => (
+                                                                <div key={i} className={`flex items-center gap-3 rounded-lg px-3 py-1.5 text-xs ${
+                                                                    r.status === 'health' ? 'bg-emerald-50 text-emerald-700' :
+                                                                    r.status === 'warning' ? 'bg-amber-50 text-amber-700' :
+                                                                    'bg-rose-50 text-rose-700'
+                                                                }`}>
+                                                                    <span className="font-semibold min-w-[32px]">
+                                                                        {r.status === 'health' ? '正常' : r.status === 'warning' ? '关注' : '危险'}
+                                                                    </span>
+                                                                    <span className="font-mono">{r.condition} {r.value}</span>
+                                                                    <span className="text-inherit/70">{r.description}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </ContentCard>
+                                    </div>
+                                )}
+
+                                {merchTab === 'seasonLifecycle' && (
+                                    <div className="space-y-4">
+                                        <ContentCard title="季节生命周期标准" desc="春夏秋冬四季各自的销售阶段划分与售罄率目标。数据源：data/merch_config/season_lifecycle_standards.json。">
+                                            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                                {Object.entries(merch.seasonLifecycle.seasons ?? {}).map(([seasonKey, season]) => (
+                                                    <div key={seasonKey} className="rounded-xl border border-slate-100 p-4">
+                                                        <div className="mb-3 flex items-center gap-2">
+                                                            <span className="text-base font-semibold text-slate-800">{season.label}</span>
+                                                            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500">{season.english}</span>
+                                                            <span className="rounded bg-sky-50 px-1.5 py-0.5 text-xs text-sky-600 font-mono">{seasonKey}</span>
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            {season.phases.map(phase => {
+                                                                const phaseDef = (merch.seasonLifecycle.phases ?? []).find(p => p.phaseId === phase.phaseId);
+                                                                return (
+                                                                    <div key={phase.phaseId} className="flex items-center gap-3 text-xs">
+                                                                        <span className="min-w-[80px] font-medium text-slate-700">{phaseDef?.label ?? phase.phaseId}</span>
+                                                                        <span className="text-slate-400">销售占比 {(phase.salesShare * 100).toFixed(0)}%</span>
+                                                                        <span className="ml-auto rounded bg-emerald-50 px-2 py-0.5 text-emerald-700">
+                                                                            售罄目标 {(phase.sellThroughTargetMin * 100).toFixed(0)}%~{(phase.sellThroughTargetMax * 100).toFixed(0)}%
+                                                                        </span>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </ContentCard>
+                                    </div>
+                                )}
+
+                                {merchTab === 'productAge' && (
+                                    <div className="space-y-4">
+                                        <ContentCard title="货龄/库龄分级标准" desc="商品上市天数对应的货龄等级、售罄目标与运营建议。数据源：data/merch_config/product_age_standards.json。">
+                                            <div className="space-y-3">
+                                                {merch.productAgeLevels.map(level => (
+                                                    <div key={level.levelId} className="rounded-xl border border-slate-100 p-4">
+                                                        <div className="mb-2 flex items-center gap-3">
+                                                            <span className="font-semibold text-slate-800">{level.label}</span>
+                                                            <span className="text-xs text-slate-400">{level.dayMin}~{level.dayMax === 9999 ? '∞' : level.dayMax} 天</span>
+                                                            <span className="ml-auto rounded bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">
+                                                                售罄目标 {(level.targetSellThroughMin * 100).toFixed(0)}%~{(level.targetSellThroughMax * 100).toFixed(0)}%
+                                                            </span>
+                                                        </div>
+                                                        <p className="mb-2 text-xs text-slate-500">{level.description}</p>
+                                                        <div className="grid grid-cols-1 gap-1 text-xs sm:grid-cols-3">
+                                                            <div className="rounded bg-amber-50 px-2 py-1 text-amber-700"><span className="font-medium">折扣建议：</span>{level.discountSuggestion}</div>
+                                                            <div className="rounded bg-sky-50 px-2 py-1 text-sky-700"><span className="font-medium">OTB：</span>{level.otbAction}</div>
+                                                            <div className="rounded bg-slate-50 px-2 py-1 text-slate-600"><span className="font-medium">库存动作：</span>{level.inventoryAction}</div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </ContentCard>
+                                    </div>
+                                )}
+
+                                {merchTab === 'categoryPrice' && (
+                                    <div className="space-y-4">
+                                        <ContentCard title="品类/价格带规则" desc="多维度价格带配置，支持按品牌、渠道、季节、品类精确匹配。数据源：data/merch_config/category_price_rules.json。">
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-xs">
+                                                    <thead>
+                                                        <tr className="border-b border-slate-100 text-left text-slate-400">
+                                                            <th className="py-2 pr-3 font-medium">价格带</th>
+                                                            <th className="py-2 pr-3 font-medium">价格区间</th>
+                                                            <th className="py-2 pr-3 font-medium">角色</th>
+                                                            <th className="py-2 pr-3 font-medium">毛利目标</th>
+                                                            <th className="py-2 pr-3 font-medium">售罄目标</th>
+                                                            <th className="py-2 pr-3 font-medium">均深范围</th>
+                                                            <th className="py-2 font-medium">销售占比目标</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {merch.categoryPriceRules.map(r => (
+                                                            <tr key={r.ruleId} className="border-b border-slate-50 hover:bg-slate-50">
+                                                                <td className="py-1.5 pr-3 font-medium text-slate-800">{r.priceBandLabel}</td>
+                                                                <td className="py-1.5 pr-3 text-slate-500">¥{r.minPrice}~{r.maxPrice === 9999 ? '∞' : `¥${r.maxPrice}`}</td>
+                                                                <td className="py-1.5 pr-3">
+                                                                    <span className={`rounded-full px-2 py-0.5 ${
+                                                                        r.priceBandRole === 'traffic-driver' ? 'bg-sky-50 text-sky-600' :
+                                                                        r.priceBandRole === 'volume' ? 'bg-emerald-50 text-emerald-600' :
+                                                                        r.priceBandRole === 'profit' ? 'bg-amber-50 text-amber-600' :
+                                                                        r.priceBandRole === 'image' ? 'bg-purple-50 text-purple-600' :
+                                                                        'bg-slate-50 text-slate-500'
+                                                                    }`}>{r.priceBandRole}</span>
+                                                                </td>
+                                                                <td className="py-1.5 pr-3 text-slate-600">{(r.targetGrossMargin * 100).toFixed(0)}%</td>
+                                                                <td className="py-1.5 pr-3 text-slate-600">{(r.defaultSellThroughTarget * 100).toFixed(0)}%</td>
+                                                                <td className="py-1.5 pr-3 text-slate-600">{r.defaultDepthMin}~{r.defaultDepthMax}双</td>
+                                                                <td className="py-1.5 text-slate-600">{r.targetSalesRatio !== null ? `${(r.targetSalesRatio * 100).toFixed(0)}%` : '—'}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </ContentCard>
+                                    </div>
+                                )}
+
+                                {merchTab === 'channelMetric' && (
+                                    <div className="space-y-4">
+                                        <ContentCard title="渠道指标规则" desc="各渠道的默认运营参数基准。数据源：data/merch_config/channel_metric_rules.json。">
+                                            <div className="space-y-3">
+                                                {merch.channelMetricRules.map(ch => (
+                                                    <div key={ch.channelId} className="rounded-xl border border-slate-100 p-4">
+                                                        <div className="mb-3 flex items-center gap-2">
+                                                            <span className="font-semibold text-slate-800">{ch.channelLabel}</span>
+                                                            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500 font-mono">{ch.channelId}</span>
+                                                            {ch.capacityConstraintEnabled && (
+                                                                <span className="rounded bg-amber-50 px-1.5 py-0.5 text-xs text-amber-600">容量约束</span>
+                                                            )}
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+                                                            <div className="rounded bg-slate-50 px-2 py-1.5">
+                                                                <div className="text-slate-400">售罄目标</div>
+                                                                <div className="font-semibold text-slate-700">{(ch.defaultSellThroughTarget * 100).toFixed(0)}%</div>
+                                                            </div>
+                                                            <div className="rounded bg-slate-50 px-2 py-1.5">
+                                                                <div className="text-slate-400">折扣率基准</div>
+                                                                <div className="font-semibold text-slate-700">{(ch.defaultDiscountRate * 100).toFixed(0)}%</div>
+                                                            </div>
+                                                            <div className="rounded bg-slate-50 px-2 py-1.5">
+                                                                <div className="text-slate-400">退货率基准</div>
+                                                                <div className="font-semibold text-slate-700">{(ch.defaultReturnRate * 100).toFixed(0)}%</div>
+                                                            </div>
+                                                            <div className="rounded bg-slate-50 px-2 py-1.5">
+                                                                <div className="text-slate-400">毛利目标</div>
+                                                                <div className="font-semibold text-slate-700">{(ch.defaultGrossMarginTarget * 100).toFixed(0)}%</div>
+                                                            </div>
+                                                            <div className="rounded bg-slate-50 px-2 py-1.5">
+                                                                <div className="text-slate-400">存销比基准</div>
+                                                                <div className="font-semibold text-slate-700">{ch.defaultStockToSalesRatio}×</div>
+                                                            </div>
+                                                            <div className="rounded bg-slate-50 px-2 py-1.5">
+                                                                <div className="text-slate-400">回款账期</div>
+                                                                <div className="font-semibold text-slate-700">{ch.defaultCollectionDays === 0 ? '当日' : `${ch.defaultCollectionDays}天`}</div>
+                                                            </div>
+                                                            <div className="rounded bg-slate-50 px-2 py-1.5">
+                                                                <div className="text-slate-400">平台佣金率</div>
+                                                                <div className="font-semibold text-slate-700">{(ch.defaultPlatformCommissionRate * 100).toFixed(0)}%</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </ContentCard>
+                                    </div>
+                                )}
+
+                                {merchTab === 'financialMetric' && (
+                                    <div className="space-y-4">
+                                        <ContentCard title="财务指标规则" desc="损益口径下的目标毛利率、净利率、税率和渠道费率基准。只读展示，如需修改请编辑 data/merch_config/financial_metric_rules.json。">
+                                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                                <div className="space-y-2 text-sm">
+                                                    <h4 className="font-semibold text-slate-700">全局目标</h4>
+                                                    <div className="flex justify-between rounded-lg border border-slate-100 px-3 py-2">
+                                                        <span className="text-slate-500">目标毛利率</span>
+                                                        <span className="font-semibold text-emerald-700">
+                                                            {((merch.financialMetricRules.global?.targetGrossMarginRate ?? 0.52) * 100).toFixed(0)}%
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between rounded-lg border border-slate-100 px-3 py-2">
+                                                        <span className="text-slate-500">目标净利率</span>
+                                                        <span className="font-semibold text-emerald-700">
+                                                            {((merch.financialMetricRules.global?.targetNetProfitRate ?? 0.12) * 100).toFixed(0)}%
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between rounded-lg border border-slate-100 px-3 py-2">
+                                                        <span className="text-slate-500">增值税率</span>
+                                                        <span className="font-semibold text-slate-700">
+                                                            {((merch.financialMetricRules.global?.valueAddedTaxRate ?? 0.13) * 100).toFixed(0)}%
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-2 text-sm">
+                                                    <h4 className="font-semibold text-slate-700">渠道综合费率</h4>
+                                                    {Object.entries(merch.financialMetricRules.channelFeeRates ?? {}).filter(([k]) => !k.startsWith('_')).map(([channelId, rate]) => (
+                                                        <div key={channelId} className="flex justify-between rounded-lg border border-slate-100 px-3 py-2">
+                                                            <span className="text-slate-500 font-mono text-xs">{channelId}</span>
+                                                            <span className="font-semibold text-amber-700">{(rate * 100).toFixed(0)}%</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </ContentCard>
+                                    </div>
+                                )}
+
+                                {merchTab === 'cashflowMetric' && (
+                                    <div className="space-y-4">
+                                        <ContentCard title="现金流指标规则" desc="回款账期、供应商付款条件和最低现金余额配置。只读展示，如需修改请编辑 data/merch_config/cashflow_metric_rules.json。">
+                                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                                <div className="space-y-2 text-sm">
+                                                    <h4 className="font-semibold text-slate-700">供应商付款条件</h4>
+                                                    {(() => {
+                                                        const sp = merch.cashflowMetricRules.supplierPayment;
+                                                        return (
+                                                            <>
+                                                                <div className="flex justify-between rounded-lg border border-slate-100 px-3 py-2">
+                                                                    <span className="text-slate-500">定金比例</span>
+                                                                    <span className="font-semibold text-sky-700">{(( sp?.depositRate ?? 0.30) * 100).toFixed(0)}%</span>
+                                                                </div>
+                                                                <div className="flex justify-between rounded-lg border border-slate-100 px-3 py-2">
+                                                                    <span className="text-slate-500">尾款比例</span>
+                                                                    <span className="font-semibold text-sky-700">{(( sp?.balanceRate ?? 0.70) * 100).toFixed(0)}%</span>
+                                                                </div>
+                                                                <div className="flex justify-between rounded-lg border border-slate-100 px-3 py-2">
+                                                                    <span className="text-slate-500">尾款账期</span>
+                                                                    <span className="font-semibold text-slate-700">{sp?.balancePaymentTermDays ?? 30}天</span>
+                                                                </div>
+                                                                {sp?.description && (
+                                                                    <p className="text-xs text-slate-400 px-1">{sp.description}</p>
+                                                                )}
+                                                            </>
+                                                        );
+                                                    })()}
+                                                </div>
+                                                <div className="space-y-2 text-sm">
+                                                    <h4 className="font-semibold text-slate-700">现金管理基准</h4>
+                                                    {(() => {
+                                                        const cm = merch.cashflowMetricRules.cashManagement;
+                                                        return (
+                                                            <>
+                                                                <div className="flex justify-between rounded-lg border border-slate-100 px-3 py-2">
+                                                                    <span className="text-slate-500">最低现金余额</span>
+                                                                    <span className="font-semibold text-slate-700">¥{((cm?.minimumCashBalance ?? 3000000) / 10000).toFixed(0)}万</span>
+                                                                </div>
+                                                                <div className="flex justify-between rounded-lg border border-amber-100 px-3 py-2">
+                                                                    <span className="text-slate-500">资金缺口预警</span>
+                                                                    <span className="font-semibold text-amber-700">¥{((cm?.fundingGapWarningThreshold ?? 1000000) / 10000).toFixed(0)}万</span>
+                                                                </div>
+                                                                <div className="flex justify-between rounded-lg border border-rose-100 px-3 py-2">
+                                                                    <span className="text-slate-500">资金缺口危险</span>
+                                                                    <span className="font-semibold text-rose-700">¥{((cm?.fundingGapDangerThreshold ?? 5000000) / 10000).toFixed(0)}万</span>
+                                                                </div>
+                                                            </>
+                                                        );
+                                                    })()}
+                                                </div>
+                                            </div>
+                                        </ContentCard>
+                                    </div>
                                 )}
                             </>
                         )}

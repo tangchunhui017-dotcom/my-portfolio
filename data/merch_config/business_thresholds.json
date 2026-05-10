@@ -1,0 +1,105 @@
+{
+  "_note": "所有阈值为比率（0~1）或绝对值，单位见unit字段。status: health=正常 / warning=关注 / danger=危险",
+  "thresholds": [
+    {
+      "metricId": "sellThroughRate",
+      "label": "售罄率",
+      "unit": "percent",
+      "rules": [
+        { "status": "health",  "condition": ">=", "value": 0.70, "description": "70%以上，正常去化" },
+        { "status": "warning", "condition": ">=", "value": 0.50, "description": "50%~70%，需关注库存" },
+        { "status": "danger",  "condition": "<",  "value": 0.50, "description": "低于50%，高库存风险" }
+      ]
+    },
+    {
+      "metricId": "grossMarginRate",
+      "label": "毛利率",
+      "unit": "percent",
+      "rules": [
+        { "status": "health",  "condition": ">=", "value": 0.50, "description": "50%以上，良好盈利空间" },
+        { "status": "warning", "condition": ">=", "value": 0.38, "description": "38%~50%，需控费" },
+        { "status": "danger",  "condition": "<",  "value": 0.38, "description": "低于38%，盈利能力不足" }
+      ]
+    },
+    {
+      "metricId": "netProfitRate",
+      "label": "净利率",
+      "unit": "percent",
+      "rules": [
+        { "status": "health",  "condition": ">=", "value": 0.12, "description": "12%以上，经营健康" },
+        { "status": "warning", "condition": ">=", "value": 0.05, "description": "5%~12%，需优化费用" },
+        { "status": "danger",  "condition": "<",  "value": 0.05, "description": "低于5%，盈利危险" }
+      ]
+    },
+    {
+      "metricId": "stockToSalesRatio",
+      "label": "存销比",
+      "unit": "ratio",
+      "rules": [
+        { "status": "health",  "condition": "<=", "value": 4.0, "description": "4倍以内，库存适中" },
+        { "status": "warning", "condition": "<=", "value": 6.0, "description": "4~6倍，库存偏高" },
+        { "status": "danger",  "condition": ">",  "value": 6.0, "description": "超过6倍，库存积压严重" }
+      ]
+    },
+    {
+      "metricId": "weeksOfSupply",
+      "label": "库存周数",
+      "unit": "weeks",
+      "rules": [
+        { "status": "health",  "condition": "<=", "value": 16, "description": "16周以内，安全库存" },
+        { "status": "warning", "condition": "<=", "value": 24, "description": "16~24周，需加大销售" },
+        { "status": "danger",  "condition": ">",  "value": 24, "description": "超过24周，库存过高" }
+      ]
+    },
+    {
+      "metricId": "averageDepth",
+      "label": "均深",
+      "unit": "pairs",
+      "rules": [
+        { "status": "health",  "condition": ">=", "value": 30, "description": "30双以上，结构合理" },
+        { "status": "warning", "condition": ">=", "value": 18, "description": "18~30双，款式过多或深度不足" },
+        { "status": "danger",  "condition": "<",  "value": 18, "description": "低于18双，过度分散，执行风险高" }
+      ]
+    },
+    {
+      "metricId": "brokenSizeRate",
+      "label": "断码率",
+      "unit": "percent",
+      "rules": [
+        { "status": "health",  "condition": "<=", "value": 0.10, "description": "10%以内，尺码健康" },
+        { "status": "warning", "condition": "<=", "value": 0.20, "description": "10%~20%，需补码或调货" },
+        { "status": "danger",  "condition": ">",  "value": 0.20, "description": "超过20%，断码严重影响销售" }
+      ]
+    },
+    {
+      "metricId": "fundingGap",
+      "label": "资金缺口",
+      "unit": "currency",
+      "rules": [
+        { "status": "health",  "condition": "==", "value": 0,        "description": "无资金缺口，现金流健康" },
+        { "status": "warning", "condition": "<=", "value": 5000000,  "description": "缺口500万以内，可通过短贷覆盖" },
+        { "status": "danger",  "condition": ">",  "value": 5000000,  "description": "缺口超500万，需压缩采购或融资" }
+      ]
+    },
+    {
+      "metricId": "discountRate",
+      "label": "折扣率",
+      "unit": "percent",
+      "rules": [
+        { "status": "health",  "condition": ">=", "value": 0.85, "description": "85折以上，折扣控制良好" },
+        { "status": "warning", "condition": ">=", "value": 0.75, "description": "75~85折，需关注品牌定价体系" },
+        { "status": "danger",  "condition": "<",  "value": 0.75, "description": "低于75折，折扣过大损伤品牌" }
+      ]
+    },
+    {
+      "metricId": "salesAchievementRate",
+      "label": "销售达成率",
+      "unit": "percent",
+      "rules": [
+        { "status": "health",  "condition": ">=", "value": 0.95, "description": "95%以上，目标达成良好" },
+        { "status": "warning", "condition": ">=", "value": 0.80, "description": "80%~95%，需分析差距" },
+        { "status": "danger",  "condition": "<",  "value": 0.80, "description": "低于80%，严重未达成" }
+      ]
+    }
+  ]
+}

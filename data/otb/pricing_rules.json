@@ -1,0 +1,68 @@
+{
+  "pricingStages": [
+    { "stageId": "unprice",    "stageLabel": "未定价",       "order": 0 },
+    { "stageId": "merch_suggest", "stageLabel": "商品部建议", "order": 1 },
+    { "stageId": "finance_check", "stageLabel": "财务校验中", "order": 2 },
+    { "stageId": "revised",    "stageLabel": "订货会反馈调整","order": 3 },
+    { "stageId": "confirmed",  "stageLabel": "已确认",       "order": 4 },
+    { "stageId": "margin_alert","stageLabel": "毛利异常",    "order": 5 },
+    { "stageId": "cost_exceed","stageLabel": "成本超限",     "order": 6 }
+  ],
+  "globalRules": {
+    "minGrossMarginByRole": {
+      "entry":     0.32,
+      "volume":    0.40,
+      "profit":    0.46,
+      "image":     0.48,
+      "hero":      0.40,
+      "clearance": 0.10
+    },
+    "maxCostRatioByRole": {
+      "entry":     0.68,
+      "volume":    0.60,
+      "profit":    0.54,
+      "image":     0.52,
+      "hero":      0.60,
+      "clearance": 0.90
+    },
+    "markupRateFloorByRole": {
+      "entry":     2.5,
+      "volume":    3.0,
+      "profit":    3.6,
+      "image":     3.8,
+      "hero":      3.0,
+      "clearance": 1.5
+    },
+    "entryRatioWarningThreshold": 0.30,
+    "imageRatioWarningThreshold": 0.15,
+    "testDepthWarningMultiplier":  0.60,
+    "heroDepthDangerMultiplier":   2.0
+  },
+  "competitorBenchmarks": {
+    "running": {
+      "priceBandCoverage": [399, 1599],
+      "mainPriceBand": [599, 899],
+      "topBrands": ["Nike", "Adidas", "李宁", "安踏"]
+    },
+    "basketball": {
+      "priceBandCoverage": [499, 1999],
+      "mainPriceBand": [699, 1299],
+      "topBrands": ["Jordan", "Nike", "Adidas", "361°"]
+    },
+    "casual": {
+      "priceBandCoverage": [199, 999],
+      "mainPriceBand": [399, 599],
+      "topBrands": ["Vans", "Converse", "New Balance", "FILA"]
+    },
+    "outdoor": {
+      "priceBandCoverage": [699, 2299],
+      "mainPriceBand": [999, 1499],
+      "topBrands": ["Salomon", "Merrell", "Columbia", "北面"]
+    },
+    "boots": {
+      "priceBandCoverage": [599, 2499],
+      "mainPriceBand": [899, 1499],
+      "topBrands": ["UGG", "Timberland", "DR.MARTENS", "骆驼"]
+    }
+  }
+}

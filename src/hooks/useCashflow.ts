@@ -1,17 +1,21 @@
 'use client';
 /**
  * src/hooks/useCashflow.ts
- * 月度现金流计算 Hook — 自动/手工支出分拆，主预算源接入 useOtbEngine
+ * 月度现金流计算 Hook — 自动/手工支出分拆，OTB 波段计划联动
  */
 import { useMemo } from 'react';
-import { useCashflowAssumptions, useFactPlan, useDimWavePlan, useFactInventory } from './useDashboardData';
+import { useCashflowAssumptions, useFactInventory } from './useDashboardData';
 import { useForecast } from './useForecast';
 import type { ForecastScenario } from './useForecast';
-import { useOtbEngine } from './useOtbEngine';
 import { useGlobalConfig } from '@/context/GlobalConfigContext';
 import otbExecutionTrackingRaw from '../../data/otb/otb_execution_tracking.json';
+import waveOtbPlanRaw from '../../data/otb/wave_otb_plan.json';
+import cashflowAssumptionsFallback from '../../data/dashboard/cashflow_assumptions.json';
+import factInventoryFallback from '../../data/dashboard/fact_inventory.json';
 
 export type CashflowAlertLevel = 'safe' | 'warning' | 'danger';
+
+export type SpendCategory = '采购付款' | '营销费用' | '人力成本' | '租金/办公' | '其他/手工';
 
 export interface MonthlyCashflow {
     month: number;
@@ -29,6 +33,39 @@ export interface MonthlyCashflow {
     netCashflow: number;
     closingBalance: number;
     alertLevel: CashflowAlertLevel;
+    // v3.0: new
+    cashRunwayMonths: number;
+    otbPaymentShare: number; // OTB付款占总支出比
+    yoyDelta: number | null;
+    // v3.1: new
+    spendByCategory: Record<SpendCategory, number>;
+    paymentMinusCollection: number; // OTB付款 - 销售回款（正=净流出）
+}
+
+export interface CreditPool {
+    total: number;
+    used: number;
+    available: number;
+    expireDate: string;
+}
+
+export interface CashflowEvent {
+    month: number;
+    label: string;
+    title: string;
+    type: 'payment' | 'collection' | 'milestone';
+    amount?: number;
+}
+
+export interface CashflowScenarioComparison {
+    label: string;
+    yearEndBalance: number;
+    netCashflow: number;
+    maxGapMonth: number | null;
+    maxGapAmount: number;
+    dangerMonthCount: number;
+    breachSafetyMonthCount: number;
+    suggestedCredit: number;
 }
 
 export interface CashflowResult {
@@ -41,6 +78,7 @@ export interface CashflowResult {
     maxGapAmount: number;
     dangerMonths: number[];
     warningMonths: number[];
+    breachSafetyMonths: number[]; // v3.0
     // v2.1
     manualOutflowTop3Months: Array<{ month: number; label: string; manualTotal: number }>;
     // P3: OTB 预算来源
@@ -53,6 +91,17 @@ export interface CashflowResult {
     paymentToCollectionRatio: number | null;
     inventoryCashPressure: number;
     cashflowAdvice: string[];
+    // v3.0: new aggregate metrics
+    cashSafetyMonths: number;        // 年未余额 / 月均支出
+    averageMonthlySpend: number;
+    dso: number | null;              // Days Sales Outstanding
+    dpo: number | null;              // Days Payable Outstanding
+    ccc: number | null;              // Cash Conversion Cycle
+    // v3.1: new
+    creditPool: CreditPool;          // 授信额度池
+    spendByCategoryAnnual: Record<SpendCategory, number>; // 年度支出按科目
+    consecutiveBreachRanges: Array<{ start: number; end: number; length: number }>; // 连续跌破水位月段
+    suggestedCreditAmount: number;   // 建议授信额度（=最大缺口绝对值 × 1.2 安全系数）
 }
 
 export interface CashflowSimulationOptions {
@@ -62,6 +111,15 @@ export interface CashflowSimulationOptions {
     clearanceInventoryRate?: number;
     clearanceDiscount?: number;
     clearanceMonth?: number;
+    // v3.0: new P0 options
+    depositLeadMonths?: number;     // OTB定金提前N月（覆盖假设文件）
+    balanceLeadMonths?: number;     // OTB尾款提前N月
+    cashSafetyThreshold?: number;   // 现金安全水位（默认500万）
+    // v3.1: new
+    collectionLagDays?: number;     // 销售回款滞后N天（覆盖月口径）
+    creditTotal?: number;           // 授信总额度（默认 3000 万）
+    creditUsed?: number;            // 已用授信
+    creditExpireDate?: string;      // 授信到期日
 }
 
 interface CashflowAssumptions {
@@ -104,6 +162,20 @@ interface OTBExecutionTrackingSourceRow {
     arrivedAmount?: number;
 }
 
+interface WaveOtbPlanSourceRow {
+    launchDate?: string;
+    launch_date?: string;
+    planOtbBudget?: number;
+    plan_otb_budget?: number;
+}
+
+function monthFromDate(rawDate: string | undefined): number {
+    if (!rawDate) return 0;
+    const parsed = new Date(rawDate);
+    if (Number.isNaN(parsed.getTime())) return 0;
+    return parsed.getMonth() + 1;
+}
+
 function reduceFirstOtbPayments(deposit: number[], balance: number[], reduceRate: number) {
     if (reduceRate <= 0) return { deposit, balance };
     const nextDeposit = [...deposit];
@@ -120,16 +192,13 @@ function reduceFirstOtbPayments(deposit: number[], balance: number[], reduceRate
 }
 
 export function useCashflow(scenario: ForecastScenario, simulation: CashflowSimulationOptions = {}): CashflowResult | null {
-    const { data: cfAss } = useCashflowAssumptions() as { data: CashflowAssumptions | undefined };
+    const { data: cfAssRemote } = useCashflowAssumptions() as { data: CashflowAssumptions | undefined };
     const physForecast = useForecast('physical', scenario);
     const ecomForecast = useForecast('ecommerce', scenario);
     const newStoreForecast = useForecast('new_store', scenario);
-    const { data: factPlanRaw } = useFactPlan();
-    const { data: dimWavePlan } = useDimWavePlan();
     const { data: factInventoryRaw } = useFactInventory();
-    // P3: OTB 引擎作为 fact_plan 为空时的备用预算源
-    const otbEngine = useOtbEngine(scenario);
     const { config: globalConfig } = useGlobalConfig();
+    const cfAss = cfAssRemote ?? (cashflowAssumptionsFallback as CashflowAssumptions);
 
     return useMemo(() => {
         if (!cfAss || !physForecast || !ecomForecast || !newStoreForecast) return null;
@@ -162,8 +231,23 @@ export function useCashflow(scenario: ForecastScenario, simulation: CashflowSimu
             if (i > 0) collectionByMonth[i] += franRevByMonth[i - 1];
         }
 
+        // 应用 collectionLagDays 滞后（按 30 天=1月折算）
+        if (simulation.collectionLagDays && simulation.collectionLagDays > 0) {
+            const lagMonths = Math.round(simulation.collectionLagDays / 30);
+            if (lagMonths > 0) {
+                const shifted = Array(12).fill(0);
+                collectionByMonth.forEach((v, i) => {
+                    const targetIdx = i + lagMonths;
+                    if (targetIdx < 12) shifted[targetIdx] += v;
+                });
+                collectionByMonth.splice(0, 12, ...shifted);
+            }
+        }
+
         if (simulation.clearanceInventoryRate && simulation.clearanceInventoryRate > 0) {
-            const inventoryRows: InventoryRow[] = Array.isArray(factInventoryRaw) ? factInventoryRaw : [];
+            const inventoryRows: InventoryRow[] = Array.isArray(factInventoryRaw)
+                ? factInventoryRaw
+                : (factInventoryFallback as InventoryRow[]);
             const latestDate = inventoryRows.reduce((max, row) => row.date && row.date > max ? row.date : max, '');
             const inventoryCapital = inventoryRows
                 .filter(row => row.date === latestDate)
@@ -173,76 +257,35 @@ export function useCashflow(scenario: ForecastScenario, simulation: CashflowSimu
             collectionByMonth[targetMonthIndex] += clearanceCashIn;
         }
 
-        // OTB 付款：优先使用 useOtbEngine 的动态预算，fact_plan 只作为引擎不可用时的兜底。
-        type PlanRow = {
-            year?: number | string;
-            season?: string;
-            wave?: string;
-            plan_otb_budget?: number | string;
-        };
-        type WavePlanRow = {
-            id?: string;
-            season?: string;
-            wave?: string;
-            launch_date?: string;
-        };
-        const planRows: PlanRow[] = Array.isArray(factPlanRaw) ? factPlanRaw : [];
-        const waveRows: WavePlanRow[] = Array.isArray(dimWavePlan) ? dimWavePlan : [];
-        const waveMonthByKey = new Map<string, number>();
-        waveRows.forEach((wave) => {
-            if (!wave.launch_date) return;
-            const parsed = new Date(wave.launch_date);
-            if (Number.isNaN(parsed.getTime())) return;
-            const month = parsed.getMonth() + 1;
-            if (wave.id) waveMonthByKey.set(wave.id, month);
-            if (wave.season && wave.wave) waveMonthByKey.set(`${wave.season}-${wave.wave}`, month);
-        });
-
+        // OTB 付款：现金流使用 OTB 波段拆解计划作为主来源，避免页面依赖大事实表或数据库 API。
         const otbByMonth: number[] = Array(12).fill(0);
-        let otbSource: 'plan' | 'engine' | 'uniform' = 'engine';
-        if (otbEngine && otbEngine.annual.otbCostBudget > 0) {
-            for (const w of otbEngine.byWave) {
-                if (!w.months.length) continue;
-                const firstMonth = Math.min(...w.months);
-                const arrivalMonth = ((firstMonth - 2 + 11) % 12) + 1;
-                if (arrivalMonth >= 1 && arrivalMonth <= 12) {
-                    otbByMonth[arrivalMonth - 1] += w.otbCostBudget;
-                }
-            }
-        } else {
-            otbSource = 'plan';
-            const fiscalYear = Number(globalConfig.brand.fiscalYear);
-            const scopedPlanRows = planRows.filter((row) => {
-                const rowYear = Number(row.year);
-                return Number.isFinite(fiscalYear) ? rowYear === fiscalYear : true;
-            });
-            const planSourceRows = scopedPlanRows.length > 0 ? scopedPlanRows : planRows;
-            planSourceRows.forEach((r: PlanRow) => {
-                const budget = Number(r.plan_otb_budget || 0);
-                const waveKey = r.season && r.wave ? `${r.season}-${r.wave}` : '';
-                const month = waveKey ? Number(waveMonthByKey.get(waveKey) || 0) : 0;
-                if (month >= 1 && month <= 12) {
-                    otbByMonth[month - 1] += budget;
-                }
-            });
-            const totalPlanOtbBudget = otbByMonth.reduce((s, v) => s + v, 0);
-            if (totalPlanOtbBudget === 0) {
-                otbSource = 'uniform';
-                const annualOtbTotal = planSourceRows.reduce((s, row) => s + Number(row.plan_otb_budget || 0), 0);
-                for (let i = 0; i < 12; i++) otbByMonth[i] = annualOtbTotal / 12;
-            }
+        let otbSource: 'plan' | 'engine' | 'uniform' = 'plan';
+        const wavePlanRows = waveOtbPlanRaw as WaveOtbPlanSourceRow[];
+        wavePlanRows.forEach((row) => {
+            const month = monthFromDate(row.launchDate ?? row.launch_date);
+            const budget = Number(row.planOtbBudget ?? row.plan_otb_budget ?? 0);
+            if (month >= 1 && month <= 12) otbByMonth[month - 1] += budget;
+        });
+        const totalPlanOtbBudget = otbByMonth.reduce((s, v) => s + v, 0);
+        if (totalPlanOtbBudget === 0) {
+            otbSource = 'uniform';
+            const annualOtbTotal = (otbExecutionTrackingRaw as OTBExecutionTrackingSourceRow[])
+                .reduce((sum, row) => sum + Number(row.plannedPurchaseAmount || 0), 0);
+            for (let i = 0; i < 12; i++) otbByMonth[i] = annualOtbTotal / 12;
         }
 
         // 定金和尾款按时序偏移
         let depositByMonth: number[] = Array(12).fill(0);
         let balanceByMonth: number[] = Array(12).fill(0);
+        const effectiveDepositLead = simulation.depositLeadMonths ?? schedule.deposit.leadMonths;
+        const effectiveBalanceLead = simulation.balanceLeadMonths ?? schedule.balance.leadMonths;
         for (let i = 0; i < 12; i++) {
             const budget = otbByMonth[i];
-            // 定金：提前 3 个月支付
-            const depositIdx = i - schedule.deposit.leadMonths;
+            // 定金：提前 N 个月支付
+            const depositIdx = i - effectiveDepositLead;
             if (depositIdx >= 0) depositByMonth[depositIdx] += budget * schedule.deposit.rateOfBudget;
-            // 尾款：提前 1 个月支付
-            const balanceIdx = i - schedule.balance.leadMonths;
+            // 尾款：提前 N 个月支付
+            const balanceIdx = i - effectiveBalanceLead;
             if (balanceIdx >= 0) balanceByMonth[balanceIdx] += budget * schedule.balance.rateOfBudget;
         }
 
@@ -258,6 +301,7 @@ export function useCashflow(scenario: ForecastScenario, simulation: CashflowSimu
 
         // 构建月度现金流
         let openingBalance = cfAss.initialCash + (simulation.extraOpeningCash ?? 0);
+        const safetyThreshold = simulation.cashSafetyThreshold ?? cfAss.alertThresholds.safe;
         const monthly: MonthlyCashflow[] = [];
 
         for (let i = 0; i < 12; i++) {
@@ -275,7 +319,20 @@ export function useCashflow(scenario: ForecastScenario, simulation: CashflowSimu
 
             let alertLevel: CashflowAlertLevel = 'safe';
             if (closingBalance <= thresholds.warning) alertLevel = 'danger';
-            else if (closingBalance <= thresholds.safe) alertLevel = 'warning';
+            else if (closingBalance <= safetyThreshold) alertLevel = 'warning';
+
+            const otbPaymentShare = totalExpenses > 0 ? (otbDeposit + otbBalance) / totalExpenses : 0;
+            const paymentMinusCollection = (otbDeposit + otbBalance) - collection;
+
+            // 支出按科目拆分（基于配置的固定支出科目+可变=营销，OTB 单独，手工归"其他"）
+            // 假设 fixedMonthlyExpenses 中包含人力/租金等科目；为简化用经验比例分摊
+            const spendByCategory: Record<SpendCategory, number> = {
+                '采购付款': otbDeposit + otbBalance,
+                '营销费用': variableExpenses,
+                '人力成本': fixedTotal * 0.55,  // 经验比例
+                '租金/办公': fixedTotal * 0.30,
+                '其他/手工': fixedTotal * 0.15 + manualExpenses,
+            };
 
             monthly.push({
                 month: i + 1,
@@ -292,8 +349,20 @@ export function useCashflow(scenario: ForecastScenario, simulation: CashflowSimu
                 netCashflow,
                 closingBalance,
                 alertLevel,
+                cashRunwayMonths: 0, // filled below
+                otbPaymentShare,
+                yoyDelta: null, // no LY data available
+                spendByCategory,
+                paymentMinusCollection,
             });
             openingBalance = closingBalance;
+        }
+
+        // Compute cashRunwayMonths: closing balance / average monthly spend (forward-looking)
+        const totalSpend = monthly.reduce((s, m) => s + m.totalExpenses, 0);
+        const avgMonthlySpend = totalSpend / 12;
+        for (let i = 0; i < 12; i++) {
+            monthly[i].cashRunwayMonths = avgMonthlySpend > 0 ? +(monthly[i].closingBalance / avgMonthlySpend).toFixed(1) : 0;
         }
 
         const totalCollection = monthly.reduce((s, m) => s + m.collection, 0);
@@ -303,6 +372,17 @@ export function useCashflow(scenario: ForecastScenario, simulation: CashflowSimu
         const yearEndBalance = monthly[11].closingBalance;
         const dangerMonths = monthly.filter(m => m.alertLevel === 'danger').map(m => m.month);
         const warningMonths = monthly.filter(m => m.alertLevel === 'warning').map(m => m.month);
+        const breachSafetyMonths = monthly
+            .filter(m => m.closingBalance < (simulation.cashSafetyThreshold ?? cfAss.alertThresholds.safe))
+            .map(m => m.month);
+        const averageMonthlySpend = totalExpenses / 12;
+        const cashSafetyMonths = averageMonthlySpend > 0 ? +(yearEndBalance / averageMonthlySpend).toFixed(1) : 0;
+
+        // DSO / DPO / CCC approximation (annual)
+        const annualRevenue = totalCollection;
+        const dso = annualRevenue > 0 ? (otbPaymentTotal / annualRevenue) * 365 : null; // proxy
+        const dpo = totalCollection > 0 ? (otbPaymentTotal / totalExpenses) * 365 : null;
+        const ccc = (dso !== null && dpo !== null) ? dso - dpo : null;
 
         const minClosing = Math.min(...monthly.map(m => m.closingBalance));
         const maxGapMonth = minClosing < 0 ? (monthly.find(m => m.closingBalance === minClosing)?.month ?? null) : null;
@@ -329,6 +409,43 @@ export function useCashflow(scenario: ForecastScenario, simulation: CashflowSimu
             netCashflow < 0 && otbOrderedAmount < otbPlannedPurchaseAmount ? '预算仍有余量但现金流紧张，建议控制非核心款下单' : '',
         ].filter(Boolean);
 
+        // v3.1: 年度支出按科目汇总
+        const spendByCategoryAnnual: Record<SpendCategory, number> = {
+            '采购付款': 0, '营销费用': 0, '人力成本': 0, '租金/办公': 0, '其他/手工': 0,
+        };
+        monthly.forEach(m => {
+            (Object.keys(m.spendByCategory) as SpendCategory[]).forEach(k => {
+                spendByCategoryAnnual[k] += m.spendByCategory[k];
+            });
+        });
+
+        // v3.1: 连续跌破水位月段
+        const safetyT = simulation.cashSafetyThreshold ?? cfAss.alertThresholds.safe;
+        const consecutiveBreachRanges: Array<{ start: number; end: number; length: number }> = [];
+        let runStart: number | null = null;
+        for (let i = 0; i < 12; i++) {
+            const breached = monthly[i].closingBalance < safetyT;
+            if (breached && runStart === null) runStart = i + 1;
+            if ((!breached || i === 11) && runStart !== null) {
+                const end = breached ? i + 1 : i;
+                consecutiveBreachRanges.push({ start: runStart, end, length: end - runStart + 1 });
+                runStart = null;
+            }
+        }
+
+        // v3.1: 建议授信额度 = 最大缺口绝对值 × 1.2 安全系数
+        const suggestedCreditAmount = minClosing < 0 ? Math.ceil(Math.abs(minClosing) * 1.2 / 100000) * 100000 : 0;
+
+        // v3.1: 授信额度池（支持模拟参数覆盖）
+        const creditTotal = simulation.creditTotal ?? 30000000;
+        const creditUsed = simulation.creditUsed ?? 0;
+        const creditPool: CreditPool = {
+            total: creditTotal,
+            used: creditUsed,
+            available: Math.max(0, creditTotal - creditUsed),
+            expireDate: simulation.creditExpireDate ?? '2027-12-31',
+        };
+
         return {
             monthly,
             totalCollection,
@@ -339,6 +456,7 @@ export function useCashflow(scenario: ForecastScenario, simulation: CashflowSimu
             maxGapAmount: minClosing < 0 ? minClosing : 0,
             dangerMonths,
             warningMonths,
+            breachSafetyMonths,
             manualOutflowTop3Months,
             otbSource,
             otbPlannedPurchaseAmount,
@@ -348,17 +466,22 @@ export function useCashflow(scenario: ForecastScenario, simulation: CashflowSimu
             paymentToCollectionRatio,
             inventoryCashPressure,
             cashflowAdvice,
+            cashSafetyMonths,
+            averageMonthlySpend,
+            dso,
+            dpo,
+            ccc,
+            creditPool,
+            spendByCategoryAnnual,
+            consecutiveBreachRanges,
+            suggestedCreditAmount,
         };
     }, [
         cfAss,
         physForecast,
         ecomForecast,
         newStoreForecast,
-        factPlanRaw,
-        dimWavePlan,
         factInventoryRaw,
-        otbEngine,
-        globalConfig.brand.fiscalYear,
         globalConfig.cashflowManualOutflows,
         simulation.delayOtbPaymentsMonths,
         simulation.reduceFirstOtbRate,
@@ -366,5 +489,91 @@ export function useCashflow(scenario: ForecastScenario, simulation: CashflowSimu
         simulation.clearanceInventoryRate,
         simulation.clearanceDiscount,
         simulation.clearanceMonth,
+        simulation.depositLeadMonths,
+        simulation.balanceLeadMonths,
+        simulation.cashSafetyThreshold,
+        simulation.collectionLagDays,
+        simulation.creditTotal,
+        simulation.creditUsed,
+        simulation.creditExpireDate,
     ]);
+}
+
+// ─── 工具函数 ─────────────────────────────────────────────────
+
+/** 安全水位告警分析：返回跌破月份和连续跌破段 */
+export function calcCashSafetyAlerts(monthly: MonthlyCashflow[], threshold: number): {
+    breachMonths: number[];
+    consecutiveBreaches: Array<{ start: number; end: number; length: number }>;
+    maxConsecutiveLength: number;
+} {
+    const breachMonths = monthly.filter(m => m.closingBalance < threshold).map(m => m.month);
+    const consecutiveBreaches: Array<{ start: number; end: number; length: number }> = [];
+    let runStart: number | null = null;
+    for (let i = 0; i < monthly.length; i++) {
+        const breached = monthly[i].closingBalance < threshold;
+        if (breached && runStart === null) runStart = monthly[i].month;
+        if ((!breached || i === monthly.length - 1) && runStart !== null) {
+            const end = breached ? monthly[i].month : monthly[i - 1]?.month ?? runStart;
+            consecutiveBreaches.push({ start: runStart, end, length: end - runStart + 1 });
+            runStart = null;
+        }
+    }
+    const maxConsecutiveLength = consecutiveBreaches.reduce((max, r) => Math.max(max, r.length), 0);
+    return { breachMonths, consecutiveBreaches, maxConsecutiveLength };
+}
+
+/** 多场景对比：基准 + 多个模拟场景的关键指标对比 */
+export function compareCashflowScenarios(scenarios: Array<{ label: string; result: CashflowResult }>): CashflowScenarioComparison[] {
+    return scenarios.map(({ label, result }) => ({
+        label,
+        yearEndBalance: result.yearEndBalance,
+        netCashflow: result.netCashflow,
+        maxGapMonth: result.maxGapMonth,
+        maxGapAmount: result.maxGapAmount,
+        dangerMonthCount: result.dangerMonths.length,
+        breachSafetyMonthCount: result.breachSafetyMonths.length,
+        suggestedCredit: result.suggestedCreditAmount,
+    }));
+}
+
+/** 现金流时间线事件：识别月度关键节点（最大付款月、最大回款月、连续负月起点等） */
+export function generateCashflowEvents(monthly: MonthlyCashflow[]): CashflowEvent[] {
+    const events: CashflowEvent[] = [];
+    if (monthly.length === 0) return events;
+
+    // 最大付款月
+    const maxPayment = monthly.reduce((max, m) =>
+        (m.otbDeposit + m.otbBalance) > (max.otbDeposit + max.otbBalance) ? m : max, monthly[0]);
+    events.push({
+        month: maxPayment.month,
+        label: maxPayment.label,
+        title: '最大OTB付款月',
+        type: 'payment',
+        amount: maxPayment.otbDeposit + maxPayment.otbBalance,
+    });
+
+    // 最大回款月
+    const maxCollection = monthly.reduce((max, m) => m.collection > max.collection ? m : max, monthly[0]);
+    events.push({
+        month: maxCollection.month,
+        label: maxCollection.label,
+        title: '最大销售回款月',
+        type: 'collection',
+        amount: maxCollection.collection,
+    });
+
+    // 最大缺口月（如果有）
+    const minBalance = monthly.reduce((min, m) => m.closingBalance < min.closingBalance ? m : min, monthly[0]);
+    if (minBalance.closingBalance < 0) {
+        events.push({
+            month: minBalance.month,
+            label: minBalance.label,
+            title: '最大现金缺口月',
+            type: 'milestone',
+            amount: minBalance.closingBalance,
+        });
+    }
+
+    return events;
 }

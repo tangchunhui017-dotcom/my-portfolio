@@ -1,0 +1,54 @@
+{
+  "_note": "现金流指标规则。定义回款账期、付款条件、最低现金余额等参数，用于现金流预测和资金缺口预警。",
+  "salesCollection": {
+    "offlineDirect": {
+      "collectionDays": 0,
+      "description": "线下直营当日收款"
+    },
+    "offlineFranchise": {
+      "collectionDays": 30,
+      "depositRateOnOrder": 0.30,
+      "balanceRateOnShipment": 0.70,
+      "description": "加盟商：下订单时付30%定金，发货后30天内付尾款"
+    },
+    "ecommerceTmall": {
+      "collectionDays": 7,
+      "description": "天猫平台 T+7 打款"
+    },
+    "ecommerceJd": {
+      "collectionDays": 14,
+      "description": "京东平台 T+14 打款"
+    },
+    "ecommerceDouyin": {
+      "collectionDays": 7,
+      "description": "抖音平台 T+7 打款"
+    },
+    "outlet": {
+      "collectionDays": 0,
+      "description": "奥莱/折扣店现金销售"
+    }
+  },
+  "supplierPayment": {
+    "depositRate": 0.30,
+    "depositTiming": "on-order",
+    "balanceRate": 0.70,
+    "balanceTiming": "on-arrival",
+    "balancePaymentTermDays": 30,
+    "description": "下单时付30%定金，到货后30天内付70%尾款"
+  },
+  "cashManagement": {
+    "minimumCashBalance": 3000000,
+    "minimumCashBalanceNote": "最低现金余额300万元，低于此值触发资金预警",
+    "fundingGapWarningThreshold": 1000000,
+    "fundingGapDangerThreshold": 5000000,
+    "shortTermCreditLine": 10000000,
+    "shortTermCreditLineNote": "可动用短期贷款额度1000万元应对临时资金缺口"
+  },
+  "inventoryCapitalRule": {
+    "method": "weighted-average-cost",
+    "turnoverDays": 120,
+    "turnoverDaysNote": "库存资金占用按加权平均成本法计算，目标周转天数120天",
+    "capitalCostRate": 0.06,
+    "capitalCostRateNote": "库存资金机会成本按年化6%估算"
+  }
+}

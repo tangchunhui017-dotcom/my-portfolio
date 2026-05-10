@@ -1,0 +1,53 @@
+{
+  "_note": "季节生命周期标准。数据来源于 data/taxonomy/season_sales_lifecycle_standards.json，此文件为企划中台配置化副本，可在年度配置页覆盖。year_offset: -1=前一年, 0=当年, 1=次年。",
+  "_source": "data/taxonomy/season_sales_lifecycle_standards.json",
+  "phases": [
+    { "phaseId": "teaser",    "label": "预热测款期", "description": "新品试水，测试市场反应，销售占比较低" },
+    { "phaseId": "ramp",      "label": "上新爬坡期", "description": "正式上架，销售快速爬坡" },
+    { "phaseId": "peak",      "label": "主销爆发期", "description": "旺季主推，销售额最高" },
+    { "phaseId": "steady",    "label": "尾段平销期", "description": "旺季尾声，折扣促销维持销量" },
+    { "phaseId": "clearance", "label": "清货出清期", "description": "清仓大促，目标清仓95%以上" }
+  ],
+  "seasons": {
+    "Q1": {
+      "label": "春季", "english": "Spring",
+      "phases": [
+        { "phaseId": "teaser",    "salesShare": 0.10, "start": { "month": 12, "day": 10, "yearOffset": -1 }, "end": { "month": 12, "day": 26, "yearOffset": -1 }, "sellThroughTargetMin": 0.05, "sellThroughTargetMax": 0.10 },
+        { "phaseId": "ramp",      "salesShare": 0.20, "start": { "month": 12, "day": 27, "yearOffset": -1 }, "end": { "month": 1,  "day": 29, "yearOffset":  0 }, "sellThroughTargetMin": 0.25, "sellThroughTargetMax": 0.35 },
+        { "phaseId": "peak",      "salesShare": 0.30, "start": { "month": 1,  "day": 30, "yearOffset":  0 }, "end": { "month": 3,  "day": 22, "yearOffset":  0 }, "sellThroughTargetMin": 0.65, "sellThroughTargetMax": 0.75 },
+        { "phaseId": "steady",    "salesShare": 0.20, "start": { "month": 3,  "day": 23, "yearOffset":  0 }, "end": { "month": 4,  "day": 25, "yearOffset":  0 }, "sellThroughTargetMin": 0.80, "sellThroughTargetMax": 0.85 },
+        { "phaseId": "clearance", "salesShare": 0.20, "start": { "month": 4,  "day": 26, "yearOffset":  0 }, "end": { "month": 5,  "day": "month_end", "yearOffset": 0 }, "sellThroughTargetMin": 0.90, "sellThroughTargetMax": 0.95 }
+      ]
+    },
+    "Q2": {
+      "label": "夏季", "english": "Summer",
+      "phases": [
+        { "phaseId": "teaser",    "salesShare": 0.10, "start": { "month": 3, "day": 5,  "yearOffset": 0 }, "end": { "month": 3, "day": 25, "yearOffset": 0 }, "sellThroughTargetMin": 0.05, "sellThroughTargetMax": 0.10 },
+        { "phaseId": "ramp",      "salesShare": 0.20, "start": { "month": 3, "day": 26, "yearOffset": 0 }, "end": { "month": 5, "day": 6,  "yearOffset": 0 }, "sellThroughTargetMin": 0.25, "sellThroughTargetMax": 0.35 },
+        { "phaseId": "peak",      "salesShare": 0.30, "start": { "month": 5, "day": 7,  "yearOffset": 0 }, "end": { "month": 7, "day": 8,  "yearOffset": 0 }, "sellThroughTargetMin": 0.65, "sellThroughTargetMax": 0.75 },
+        { "phaseId": "steady",    "salesShare": 0.20, "start": { "month": 7, "day": 9,  "yearOffset": 0 }, "end": { "month": 8, "day": 19, "yearOffset": 0 }, "sellThroughTargetMin": 0.80, "sellThroughTargetMax": 0.85 },
+        { "phaseId": "clearance", "salesShare": 0.20, "start": { "month": 8, "day": 20, "yearOffset": 0 }, "end": { "month": 9, "day": "month_end", "yearOffset": 0 }, "sellThroughTargetMin": 0.90, "sellThroughTargetMax": 0.95 }
+      ]
+    },
+    "Q3": {
+      "label": "秋季", "english": "Autumn",
+      "phases": [
+        { "phaseId": "teaser",    "salesShare": 0.10, "start": { "month": 6,  "day": 25, "yearOffset": 0 }, "end": { "month": 7,  "day": 10, "yearOffset": 0 }, "sellThroughTargetMin": 0.05, "sellThroughTargetMax": 0.10 },
+        { "phaseId": "ramp",      "salesShare": 0.20, "start": { "month": 7,  "day": 11, "yearOffset": 0 }, "end": { "month": 8,  "day": 11, "yearOffset": 0 }, "sellThroughTargetMin": 0.25, "sellThroughTargetMax": 0.35 },
+        { "phaseId": "peak",      "salesShare": 0.30, "start": { "month": 8,  "day": 12, "yearOffset": 0 }, "end": { "month": 9,  "day": 28, "yearOffset": 0 }, "sellThroughTargetMin": 0.65, "sellThroughTargetMax": 0.75 },
+        { "phaseId": "steady",    "salesShare": 0.20, "start": { "month": 9,  "day": 29, "yearOffset": 0 }, "end": { "month": 10, "day": 30, "yearOffset": 0 }, "sellThroughTargetMin": 0.80, "sellThroughTargetMax": 0.85 },
+        { "phaseId": "clearance", "salesShare": 0.20, "start": { "month": 10, "day": 31, "yearOffset": 0 }, "end": { "month": 11, "day": "month_end", "yearOffset": 0 }, "sellThroughTargetMin": 0.90, "sellThroughTargetMax": 0.95 }
+      ]
+    },
+    "Q4": {
+      "label": "冬季", "english": "Winter",
+      "phases": [
+        { "phaseId": "teaser",    "salesShare": 0.10, "start": { "month": 9,  "day": 30, "yearOffset": 0 }, "end": { "month": 10, "day": 17, "yearOffset": 0 }, "sellThroughTargetMin": 0.05, "sellThroughTargetMax": 0.10 },
+        { "phaseId": "ramp",      "salesShare": 0.20, "start": { "month": 10, "day": 18, "yearOffset": 0 }, "end": { "month": 11, "day": 22, "yearOffset": 0 }, "sellThroughTargetMin": 0.25, "sellThroughTargetMax": 0.35 },
+        { "phaseId": "peak",      "salesShare": 0.30, "start": { "month": 11, "day": 23, "yearOffset": 0 }, "end": { "month": 1,  "day": 16, "yearOffset": 1 }, "sellThroughTargetMin": 0.65, "sellThroughTargetMax": 0.75 },
+        { "phaseId": "steady",    "salesShare": 0.20, "start": { "month": 1,  "day": 17, "yearOffset": 1 }, "end": { "month": 2,  "day": 21, "yearOffset": 1 }, "sellThroughTargetMin": 0.80, "sellThroughTargetMax": 0.85 },
+        { "phaseId": "clearance", "salesShare": 0.20, "start": { "month": 2,  "day": 22, "yearOffset": 1 }, "end": { "month": 3,  "day": "month_end", "yearOffset": 1 }, "sellThroughTargetMin": 0.90, "sellThroughTargetMax": 0.95 }
+      ]
+    }
+  }
+}

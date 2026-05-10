@@ -68,6 +68,7 @@ export type DimSku = {
 export type DimChannel = {
   channel_id: string;
   channel_type?: string;
+  channel_name?: string;
   region?: string;
   city_tier?: string;
   store_format?: string;
@@ -158,6 +159,23 @@ function matchesColor(filters: DashboardFilters, sku: DimSku): boolean {
   return sku.color === filters.color || sku.color_family === filters.color;
 }
 
+function matchesChannelTypeFilter(selectedChannel: DashboardFilters['channel_type'], channel: DimChannel): boolean {
+  if (selectedChannel === 'all') return true;
+  const channelType = channel.channel_type ?? '';
+  const channelText = `${channel.channel_name ?? ''} ${channel.store_format ?? ''}`;
+
+  if (selectedChannel === '直播') {
+    return channelType === '电商' && /直播|兴趣内容/.test(channelText);
+  }
+  if (selectedChannel === '奥莱') {
+    return /奥莱|奥特莱斯|Outlet|折扣/i.test(channelText);
+  }
+  if (selectedChannel === '特渠') {
+    return channelType === 'KA' || /特渠|团购/.test(channelText);
+  }
+  return channelType === selectedChannel;
+}
+
 function matchesScopedFilters(
   filters: DashboardFilters,
   sku: DimSku | undefined,
@@ -165,7 +183,7 @@ function matchesScopedFilters(
 ): boolean {
   if (!sku || !channel) return false;
   if (!matchesDashboardSkuCategoryFilters(filters, sku)) return false;
-  if (filters.channel_type !== 'all' && channel.channel_type !== filters.channel_type) return false;
+  if (!matchesChannelTypeFilter(filters.channel_type, channel)) return false;
   if (filters.lifecycle !== 'all' && resolveDashboardLifecycleLabel(filters, sku) !== filters.lifecycle) return false;
   if (filters.region !== 'all' && channel.region !== filters.region) return false;
   if (filters.city_tier !== 'all' && channel.city_tier !== filters.city_tier) return false;

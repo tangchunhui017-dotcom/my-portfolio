@@ -9,6 +9,7 @@ import { useCashflow } from './useCashflow';
 import type { CashflowSimulationOptions } from './useCashflow';
 import { useForecast } from './useForecast';
 import type { ForecastScenario } from './useForecast';
+import factInventoryFallback from '../../data/dashboard/fact_inventory.json';
 
 interface FactInventoryRow {
     date: string;
@@ -52,11 +53,14 @@ export function useCashflowInventoryPressure(scenario: ForecastScenario, simulat
     const newStoreForecast = useForecast('new_store', scenario);
 
     return useMemo(() => {
-        if (!inventoryRaw || !cashflow || !baselineCashflow || !physForecast || !ecomForecast || !newStoreForecast) return null;
+        const inventoryRows: FactInventoryRow[] = Array.isArray(inventoryRaw)
+            ? inventoryRaw
+            : (factInventoryFallback as FactInventoryRow[]);
+        if (inventoryRows.length === 0 || !cashflow || !baselineCashflow || !physForecast || !ecomForecast || !newStoreForecast) return null;
 
         // 取最新日期的库存总金额
-        const latestDate = inventoryRaw.reduce((max, r) => r.date > max ? r.date : max, '');
-        const latestRows = inventoryRaw.filter(r => r.date === latestDate);
+        const latestDate = inventoryRows.reduce((max, r) => r.date > max ? r.date : max, '');
+        const latestRows = inventoryRows.filter(r => r.date === latestDate);
         const endingInventoryAmount = latestRows.reduce((s, r) => s + r.inventory_amount, 0);
         // 库存占款 = 库存金额（已含成本）
         const inventoryCapital = endingInventoryAmount;

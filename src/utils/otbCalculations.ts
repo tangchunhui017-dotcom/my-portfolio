@@ -67,30 +67,50 @@ export function formatQty(v: number | null | undefined, decimals = 0): string {
 }
 
 // ── 年度 OTB ──────────────────────────────────────────────────────────────────
+// 计算层级：年度 → SS/AW（大季）→ 四季（春夏秋冬）→ 波段（见 WaveOTBPlanningPanel）
 
 export interface AnnualOTBInputs {
     annualSalesTarget: number;
-    janToSepSalesTarget?: number;
-    janToSepSalesRatio: number;
-    newProductRatio: number;
+    approvedBudget: number;
     carryoverRatio: number;
-    ssNewProductRatio: number;
-    awNewProductRatio: number;
-    ssSellThroughTarget: number;
-    awSellThroughTarget: number;
+    springSalesRatio: number;
+    summerSalesRatio: number;
+    autumnSalesRatio: number;
+    winterSalesRatio: number;
+    springNewProductRatio: number;
+    summerNewProductRatio: number;
+    autumnNewProductRatio: number;
+    winterNewProductRatio: number;
+    springSellThroughTarget: number;
+    summerSellThroughTarget: number;
+    autumnSellThroughTarget: number;
+    winterSellThroughTarget: number;
     maxCarryoverRatio?: number;
     defaultStockToSalesRatio?: number;
     defaultArrivalRate?: number;
-    approvedBudget: number;
 }
 
 export interface AnnualOTBResult {
-    janToSepSalesTarget: number;
-    janToSepSalesRatio: number;
-    janToSepNewProductSales: number;
-    carryoverSalesTarget: number;
-    ssNewProductSales: number;
-    awNewProductSales: number;
+    springTarget: number;
+    summerTarget: number;
+    autumnTarget: number;
+    winterTarget: number;
+    springNPSales: number;
+    summerNPSales: number;
+    autumnNPSales: number;
+    winterNPSales: number;
+    // 期初结转货值（= 季节销售目标 × 结转占比）
+    springCarryover: number;
+    summerCarryover: number;
+    autumnCarryover: number;
+    winterCarryover: number;
+    // 采购 OTB = 销售目标 / 售罄率 − 期初结转
+    springOTB: number | null;
+    summerOTB: number | null;
+    autumnOTB: number | null;
+    winterOTB: number | null;
+    ssSalesTarget: number;
+    awSalesTarget: number;
     ssInvestmentBudget: number | null;
     awInvestmentBudget: number | null;
     annualNewProductInvestmentBudget: number | null;
@@ -101,36 +121,114 @@ export interface AnnualOTBResult {
 
 export function calcAnnualOTB(inputs: AnnualOTBInputs): AnnualOTBResult {
     const annual = safeNumber(inputs.annualSalesTarget) ?? 0;
-    const jsr = safeNumber(inputs.janToSepSalesRatio) ?? 0;
-    const manualJanToSep = safeNumber(inputs.janToSepSalesTarget);
-    const janToSep = manualJanToSep !== null && manualJanToSep > 0 ? manualJanToSep : annual * jsr;
-    const actualJanToSepRatio = annual > 0 ? janToSep / annual : jsr;
-    const newProd = janToSep * (safeNumber(inputs.newProductRatio) ?? 0);
-    const carryover = janToSep * (safeNumber(inputs.carryoverRatio) ?? 0);
-    const ssNP = janToSep * (safeNumber(inputs.ssNewProductRatio) ?? 0);
-    const awNP = janToSep * (safeNumber(inputs.awNewProductRatio) ?? 0);
-    const ssST = safeNumber(inputs.ssSellThroughTarget);
-    const awST = safeNumber(inputs.awSellThroughTarget);
-    const ssInv = ssST && ssST > 0 ? ssNP / ssST : null;
-    const awInv = awST && awST > 0 ? awNP / awST : null;
+    const carryover = safeNumber(inputs.carryoverRatio) ?? 0;
+
+    const springTarget = annual * (safeNumber(inputs.springSalesRatio) ?? 0);
+    const summerTarget = annual * (safeNumber(inputs.summerSalesRatio) ?? 0);
+    const autumnTarget = annual * (safeNumber(inputs.autumnSalesRatio) ?? 0);
+    const winterTarget = annual * (safeNumber(inputs.winterSalesRatio) ?? 0);
+
+    const springNPSales = springTarget * (safeNumber(inputs.springNewProductRatio) ?? 0);
+    const summerNPSales = summerTarget * (safeNumber(inputs.summerNewProductRatio) ?? 0);
+    const autumnNPSales = autumnTarget * (safeNumber(inputs.autumnNewProductRatio) ?? 0);
+    const winterNPSales = winterTarget * (safeNumber(inputs.winterNewProductRatio) ?? 0);
+
+    // 期初结转货值：每季按统一结转占比估算（后续可细化为分季结转）
+    const springCarryover = springTarget * carryover;
+    const summerCarryover = summerTarget * carryover;
+    const autumnCarryover = autumnTarget * carryover;
+    const winterCarryover = winterTarget * carryover;
+
+    const springST = safeNumber(inputs.springSellThroughTarget);
+    const summerST = safeNumber(inputs.summerSellThroughTarget);
+    const autumnST = safeNumber(inputs.autumnSellThroughTarget);
+    const winterST = safeNumber(inputs.winterSellThroughTarget);
+
+    // OTB = 季节销售目标 / 售罄率 − 期初结转（不买已有的货）
+    // 年度总控是新品采购预算闸口，净 OTB 必须受新品占比影响。
+    const springOTB  = springST  && springST  > 0 ? springNPSales  / springST  - springCarryover  : null;
+    const summerOTB  = summerST  && summerST  > 0 ? summerNPSales  / summerST  - summerCarryover  : null;
+    const autumnOTB  = autumnST  && autumnST  > 0 ? autumnNPSales  / autumnST  - autumnCarryover  : null;
+    const winterOTB  = winterST  && winterST  > 0 ? winterNPSales  / winterST  - winterCarryover  : null;
+
+    const ssSalesTarget = springTarget + summerTarget;
+    const awSalesTarget = autumnTarget + winterTarget;
+    const ssInv = springOTB !== null && summerOTB !== null ? springOTB + summerOTB : null;
+    const awInv = autumnOTB !== null && winterOTB !== null ? autumnOTB + winterOTB : null;
     const annualInv = ssInv !== null && awInv !== null ? ssInv + awInv : null;
     const approved = safeNumber(inputs.approvedBudget) ?? 0;
     const gap = annualInv !== null ? annualInv - approved : null;
 
     return {
-        janToSepSalesTarget: janToSep,
-        janToSepSalesRatio: actualJanToSepRatio,
-        janToSepNewProductSales: newProd,
-        carryoverSalesTarget: carryover,
-        ssNewProductSales: ssNP,
-        awNewProductSales: awNP,
+        springTarget, summerTarget, autumnTarget, winterTarget,
+        springNPSales, summerNPSales, autumnNPSales, winterNPSales,
+        springCarryover, summerCarryover, autumnCarryover, winterCarryover,
+        springOTB, summerOTB, autumnOTB, winterOTB,
+        ssSalesTarget, awSalesTarget,
         ssInvestmentBudget: ssInv,
         awInvestmentBudget: awInv,
         annualNewProductInvestmentBudget: annualInv,
         budgetGap: gap,
-        ssSeasonSalesTarget: annual * 0.40,
-        awSeasonSalesTarget: annual * 0.60,
+        ssSeasonSalesTarget: ssSalesTarget,
+        awSeasonSalesTarget: awSalesTarget,
     };
+}
+
+// ── Annual OTB helper functions ───────────────────────────────────────────────
+
+/** 加权平均售罄目标 = Σ (季节销售占比 × 季节售罄目标) */
+export function calcWeightedSellThroughTarget(inputs: AnnualOTBInputs): number {
+    return (
+        (safeNumber(inputs.springSalesRatio) ?? 0) * (safeNumber(inputs.springSellThroughTarget) ?? 0) +
+        (safeNumber(inputs.summerSalesRatio) ?? 0) * (safeNumber(inputs.summerSellThroughTarget) ?? 0) +
+        (safeNumber(inputs.autumnSalesRatio) ?? 0) * (safeNumber(inputs.autumnSellThroughTarget) ?? 0) +
+        (safeNumber(inputs.winterSalesRatio) ?? 0) * (safeNumber(inputs.winterSellThroughTarget) ?? 0)
+    );
+}
+
+/** 季节平衡度 — 春夏 OTB / 年度净OTB */
+export function calcSeasonBalance(result: AnnualOTBResult): { ssShare: number; balance: 'ok' | 'warn' | 'danger' } {
+    const total = result.annualNewProductInvestmentBudget ?? 0;
+    const ss = (result.ssInvestmentBudget ?? 0);
+    const ssShare = total > 0 ? ss / total : 0.5;
+    const balance: 'ok' | 'warn' | 'danger' =
+        ssShare >= 0.40 && ssShare <= 0.60 ? 'ok'
+        : ssShare >= 0.35 && ssShare <= 0.65 ? 'warn'
+        : 'danger';
+    return { ssShare, balance };
+}
+
+/** 单季最大 OTB 占年度净OTB 比例 */
+export function calcMaxSeasonShare(result: AnnualOTBResult): { share: number; key: 'spring' | 'summer' | 'autumn' | 'winter' } {
+    const total = result.annualNewProductInvestmentBudget ?? 0;
+    const entries: Array<[number, 'spring' | 'summer' | 'autumn' | 'winter']> = [
+        [result.springOTB ?? 0, 'spring'],
+        [result.summerOTB ?? 0, 'summer'],
+        [result.autumnOTB ?? 0, 'autumn'],
+        [result.winterOTB ?? 0, 'winter'],
+    ];
+    const max = entries.reduce((a, b) => (a[0] >= b[0] ? a : b));
+    return { share: total > 0 ? max[0] / total : 0, key: max[1] };
+}
+
+/** 敏感度模拟 — 不修改实际目标，仅返回调整后净OTB和预算缺口 */
+export function calcSensitivityImpact(
+    inputs: AnnualOTBInputs,
+    deltas: { sellThrough?: number; carryover?: number; salesTarget?: number },
+): { netOtb: number; budgetGap: number } {
+    const adjustedInputs: AnnualOTBInputs = {
+        ...inputs,
+        annualSalesTarget: inputs.annualSalesTarget * (1 + (deltas.salesTarget ?? 0)),
+        carryoverRatio: Math.max(0, Math.min(0.99, inputs.carryoverRatio + (deltas.carryover ?? 0))),
+        springSellThroughTarget: Math.max(0.01, Math.min(0.99, inputs.springSellThroughTarget + (deltas.sellThrough ?? 0))),
+        summerSellThroughTarget: Math.max(0.01, Math.min(0.99, inputs.summerSellThroughTarget + (deltas.sellThrough ?? 0))),
+        autumnSellThroughTarget: Math.max(0.01, Math.min(0.99, inputs.autumnSellThroughTarget + (deltas.sellThrough ?? 0))),
+        winterSellThroughTarget: Math.max(0.01, Math.min(0.99, inputs.winterSellThroughTarget + (deltas.sellThrough ?? 0))),
+    };
+    const adj = calcAnnualOTB(adjustedInputs);
+    const netOtb = adj.annualNewProductInvestmentBudget ?? 0;
+    const budgetGap = netOtb - (safeNumber(inputs.approvedBudget) ?? 0);
+    return { netOtb, budgetGap };
 }
 
 // ── 月度 OTB ──────────────────────────────────────────────────────────────────
@@ -154,6 +252,60 @@ export interface MonthlyOTBRow extends MonthlyOTBInput {
     actualPurchaseRequiredAmount: number;
     budgetDiff: number;
     budgetDiffRate: number | null;
+}
+
+// ── 月度滚动状态 ──────────────────────────────────────────────────────────────
+
+/**
+ * 月度滚动所需状态。
+ * 当前阶段实现预算重分配，actualPurchaseAmount / actualArrivalAmount / actualEndingInventory
+ * 保留真实滚动语义，供后续扩展在途/库存测算使用。
+ */
+export interface MonthlyRollingState {
+    lockedMonths: number[];                         // 已锁定的月份索引（0-based）
+    actualSales: Record<number, number>;            // 实际销售额（元）
+    actualPurchaseAmount: Record<number, number>;   // 实际下单金额（元）
+    actualArrivalAmount: Record<number, number>;    // 实际到货金额（元）
+    actualEndingInventory: Record<number, number>;  // 实际期末库存（元）
+}
+
+/**
+ * 重分配剩余采购预算到未锁定月份。
+ * @param annualPurchaseBudget 年度总采购预算（元）——不能传年度销售目标
+ */
+export function calcRollingOTBRebalance(
+    inputs: MonthlyOTBInput[],
+    state: MonthlyRollingState,
+    annualPurchaseBudget: number,
+): MonthlyOTBInput[] {
+    const { lockedMonths, actualSales, actualPurchaseAmount } = state;
+
+    // 已锁定月份实际消耗的采购额（有实际值用实际值，否则用原计划）
+    const lockedSpent = lockedMonths.reduce(
+        (sum, idx) => sum + (actualPurchaseAmount[idx] ?? inputs[idx]?.originalPurchaseBudget ?? 0),
+        0,
+    );
+    const remainingBudget = annualPurchaseBudget - lockedSpent;
+
+    const unlockedForecastSum = inputs
+        .filter((_, idx) => !lockedMonths.includes(idx))
+        .reduce((s, m) => s + m.salesForecast, 0);
+
+    return inputs.map((input, idx) => {
+        if (lockedMonths.includes(idx)) {
+            // 锁定月份：用实际值替代预测值
+            return {
+                ...input,
+                salesForecast: actualSales[idx] ?? input.salesForecast,
+                originalPurchaseBudget: actualPurchaseAmount[idx] ?? input.originalPurchaseBudget,
+            };
+        }
+        // 未锁定月份：按销售预测占比重新分配剩余预算
+        const newBudget = unlockedForecastSum > 0
+            ? remainingBudget * (input.salesForecast / unlockedForecastSum)
+            : input.originalPurchaseBudget;
+        return { ...input, originalPurchaseBudget: Math.round(newBudget) };
+    });
 }
 
 export function calcMonthlyOTB(inputs: MonthlyOTBInput[], month1Beginning: number): MonthlyOTBRow[] {
@@ -212,6 +364,7 @@ export interface WaveOTBInput {
     season: string;
     seasonLabel: string;
     wave: string;
+    waveRole?: string;
     launchMonth: number;
     launchDate: string;
     promotion: string;
@@ -223,8 +376,11 @@ export interface WaveOTBInput {
     plannedStyleCount?: number;
     averageDepth?: number;
     mainCategory?: string;
+    priceBandFocus?: string[];
+    productRoleFocus?: string[];
     arrivalMonth?: number;
     arrivalSuggestion?: string;
+    planOtbBudget?: number;
 }
 
 export interface WaveOTBRow extends WaveOTBInput {
@@ -273,18 +429,44 @@ export interface CategoryDepthInput {
     priceBandRole?: string;
     priceBandSalesRatio?: number;
     priceBandStyleCount?: number;
+    productRoleId?: string;
+    productRoleName?: string;
+    productRoleSalesRatio?: number;
+    roleDepthMultiplier?: number;
+    costCeiling?: number;
+    targetMarkupRate?: number;
+    grossMarginTarget?: number;
+    isHeroProduct?: boolean;
+    isTestProduct?: boolean;
+    isCarryoverProduct?: boolean;
+    isManualOverride?: boolean;
+    ruleSource?: string;
     categorySalesRatio: number;
     retailPrice: number;
     costPrice: number;
     sellThroughTarget: number;
     plannedStyleCount: number;
     plannedColorCount: number;
+    averageDepthOverride?: number;
+    sizeGroupId?: string;  // 尺码组ID（men / women / unisex / kids），缺省视为 'men'
+    // 波段生命周期字段（来自波段拆解）
+    waveId?: string;
+    seasonLabel?: string;
+    launchDate?: string;
+    launchMonth?: number;
+    waveRole?: string;
+    mainCategoryLabel?: string;
+    priceBandFocus?: string[];
+    productRoleFocus?: string[];
+    waveOtbBudget?: number | null;
+    waveLifecycle?: 'closed' | 'current' | 'planning';
 }
 
 export interface CategoryDepthRow extends CategoryDepthInput {
     waveSalesTarget: number;
     categorySalesTarget: number;
     priceBandSalesTarget: number;
+    productRoleSalesTarget: number;
     priceBandPlannedPairs: number | null;
     priceBandProductionPairs: number | null;
     priceBandAverageDepth: number | null;
@@ -308,23 +490,30 @@ export function calcCategoryDepth(
         const wst = waveSalesTargets[waveKey] ?? 0;
         const catST = wst * (safeNumber(item.categorySalesRatio) ?? 0);
         const priceBandRatio = safeNumber(item.priceBandSalesRatio) ?? 1;
+        const roleRatio = safeNumber(item.productRoleSalesRatio) ?? 1;
         const priceBandStyleCount = Math.max(1, Math.round(safeNumber(item.priceBandStyleCount) ?? safeNumber(item.plannedStyleCount) ?? 1));
         const priceBandST = catST * priceBandRatio;
+        const roleST = priceBandST * roleRatio;
         const rp = safeNumber(item.retailPrice);
         const cp = safeNumber(item.costPrice);
         const st = safeNumber(item.sellThroughTarget);
         const styles = Math.max(1, Math.round(safeNumber(item.plannedStyleCount) ?? 1));
         const colors = Math.max(1, Math.round(safeNumber(item.plannedColorCount) ?? 1));
+        const skuCount = styles * colors;
 
         const grossMargin = rp && cp && rp > 0 ? 1 - cp / rp : null;
-        const salesPairs = rp && rp > 0 ? safeDiv(catST, rp) : null;
-        const productionPairs = salesPairs !== null && st && st > 0 ? salesPairs / st : null;
+        const salesPairs = rp && rp > 0 ? safeDiv(roleST, rp) : null;
+        const calculatedProductionPairs = salesPairs !== null && st && st > 0 ? salesPairs / st : null;
+        const requestedAverageDepth = safeNumber(item.averageDepthOverride);
+        const productionPairs = requestedAverageDepth && requestedAverageDepth > 0
+            ? requestedAverageDepth * skuCount
+            : calculatedProductionPairs;
         const priceBandPlannedPairs = rp && rp > 0 ? safeDiv(priceBandST, rp) : null;
         const priceBandProductionPairs = priceBandPlannedPairs !== null && st && st > 0 ? priceBandPlannedPairs / st : null;
-        const priceBandAverageDepth = priceBandProductionPairs !== null ? priceBandProductionPairs / priceBandStyleCount : null;
-        const priceBandOTB = priceBandProductionPairs !== null && cp ? priceBandProductionPairs * cp : null;
-        const avgDepth = productionPairs !== null ? productionPairs / styles : null;
-        const skuCount = styles * colors;
+        const priceBandSkuCount = Math.max(1, priceBandStyleCount * colors);
+        const priceBandAverageDepth = priceBandProductionPairs !== null ? priceBandProductionPairs / priceBandSkuCount : null;
+        const priceBandOTB = productionPairs !== null && cp ? productionPairs * cp : null;
+        const avgDepth = productionPairs !== null && skuCount > 0 ? productionPairs / skuCount : null;
         const productionAmount = productionPairs !== null && cp ? productionPairs * cp : null;
 
         let diagnosis = '✅ 结构健康';
@@ -353,11 +542,23 @@ export function calcCategoryDepth(
             diagnosisLevel = 'warn';
         }
 
+        if (diagnosisLevel === 'ok' && item.productRoleId === 'test' && avgDepth !== null && avgDepth > 600) {
+            diagnosis = 'Test role depth is too high; trial inventory risk';
+            diagnosisLevel = 'warn';
+        } else if (diagnosisLevel === 'ok' && item.productRoleId === 'image' && roleRatio > 0.15) {
+            diagnosis = 'Image role ratio is high; inventory risk';
+            diagnosisLevel = 'warn';
+        } else if (item.costCeiling !== undefined && cp !== null && cp > item.costCeiling) {
+            diagnosis = 'Cost exceeds price-band ceiling';
+            diagnosisLevel = 'danger';
+        }
+
         return {
             ...item,
             waveSalesTarget: wst,
             categorySalesTarget: catST,
             priceBandSalesTarget: priceBandST,
+            productRoleSalesTarget: roleST,
             priceBandPlannedPairs,
             priceBandProductionPairs,
             priceBandAverageDepth,
@@ -449,6 +650,15 @@ export interface ExecutionTrackingInput {
     wave: string;
     category: string;
     categoryLabel: string;
+    priceBandId?: string;
+    priceBandLabel?: string;
+    productRoleId?: string;
+    productRoleName?: string;
+    costCeiling?: number;
+    targetGrossMargin?: number;
+    actualGrossMargin?: number;
+    pricingStatus?: string;
+    costRisk?: string;
     plannedStyleCount: number;
     developedStyleCount: number;
     pricedStyleCount: number;
@@ -465,6 +675,9 @@ export interface ExecutionTrackingInput {
     bulkProductionDueDate?: string;
     warehouseDueDate?: string;
     status: ExecutionStatus;
+    sellThroughRate?: number;
+    sellThroughBenchmark?: number;
+    reorderTriggered?: boolean;
 }
 
 export interface ExecutionTrackingRow extends ExecutionTrackingInput {
@@ -485,6 +698,9 @@ export interface ExecutionTrackingRow extends ExecutionTrackingInput {
     costingNodeRisk: boolean;
     orderNodeRisk: boolean;
     warehouseNodeRisk: boolean;
+    pricingRisk: boolean;
+    productRoleRisk: boolean;
+    costRiskMessage: string | null;
     milestoneRisks: string[];
 }
 
@@ -537,11 +753,28 @@ export function calcExecutionStatus(row: ExecutionTrackingInput, today = new Dat
     const costingNodeRisk = isDatePassed(costingDueDate, today) && row.pricedStyleCount < row.developedStyleCount;
     const orderNodeRisk = isDatePassed(orderDueDate, today) && row.orderedStyleCount < row.plannedStyleCount;
     const warehouseNodeRisk = isDatePassed(warehouseDueDate, today) && aa < oa;
+    const targetGrossMargin = safeNumber(row.targetGrossMargin);
+    const actualGrossMargin = safeNumber(row.actualGrossMargin);
+    const costCeiling = safeNumber(row.costCeiling);
+    const pricingRisk =
+        row.pricingStatus === '毛利异常' ||
+        row.pricingStatus === '成本超限' ||
+        (targetGrossMargin !== null && actualGrossMargin !== null && actualGrossMargin < targetGrossMargin);
+    const productRoleRisk =
+        (row.productRoleId === 'main' && (developmentGap || orderNodeRisk)) ||
+        (row.productRoleId === 'hero' && (orderNodeRisk || warehouseNodeRisk)) ||
+        (row.productRoleId === 'image' && row.orderedStyleCount > Math.max(2, row.plannedStyleCount * 0.8)) ||
+        (row.productRoleId === 'test' && oa > ppa * 0.25);
+    const costRiskMessage = pricingRisk
+        ? (costCeiling !== null ? `cost ceiling ${formatCurrency(costCeiling)}` : 'pricing margin risk')
+        : null;
     const milestoneRisks = [
         designNodeRisk ? '设计开发滞后' : '',
         costingNodeRisk ? '核价滞后' : '',
         orderNodeRisk ? '下单滞后' : '',
         warehouseNodeRisk ? '入仓/到货风险' : '',
+        pricingRisk ? '定价/毛利风险' : '',
+        productRoleRisk ? '货品角色执行风险' : '',
     ].filter(Boolean);
 
     const status: ExecutionStatus = row.status !== '已关闭' && (orderRisk || arrivalRisk || developmentGap || milestoneRisks.length > 0)
@@ -568,6 +801,9 @@ export function calcExecutionStatus(row: ExecutionTrackingInput, today = new Dat
         costingNodeRisk,
         orderNodeRisk,
         warehouseNodeRisk,
+        pricingRisk,
+        productRoleRisk,
+        costRiskMessage,
         milestoneRisks,
     };
 }

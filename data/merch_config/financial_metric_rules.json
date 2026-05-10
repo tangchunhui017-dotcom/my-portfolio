@@ -1,0 +1,42 @@
+{
+  "_note": "财务指标规则。定义损益口径下的目标值、费率基准和规则。所有比率以小数表示（0~1），货币单位为元。",
+  "global": {
+    "targetGrossMarginRate": 0.52,
+    "targetNetProfitRate": 0.12,
+    "valueAddedTaxRate": 0.13,
+    "corporateIncomeTaxRate": 0.25,
+    "effectiveTaxRateNote": "增值税已含在销售价中，实际税负约销售额的 2~3%"
+  },
+  "channelFeeRates": {
+    "_note": "各渠道综合费用率（含平台佣金、物流、售后）占销售额比例",
+    "offline-direct": 0.18,
+    "offline-franchise": 0.08,
+    "ecommerce-tmall": 0.22,
+    "ecommerce-jd": 0.24,
+    "ecommerce-douyin": 0.35,
+    "outlet": 0.12
+  },
+  "operatingExpenseRates": {
+    "marketingExpenseRate": 0.08,
+    "logisticsExpenseRate": 0.04,
+    "laborExpenseRate": 0.10,
+    "rentExpenseRate": 0.06,
+    "adminExpenseRate": 0.03,
+    "otherExpenseRate": 0.02,
+    "_note": "以上费率均以销售额为基数。实际营销费率因大促可提至12%~15%"
+  },
+  "discountLossRule": {
+    "method": "markdownLoss",
+    "description": "折扣损失 = 吊牌销售额 - 实际销售额，计入损益为促销费用科目",
+    "markdownLossAccountingCode": "销售折扣",
+    "annualMarkdownLossBudgetRate": 0.06,
+    "warningThresholdRate": 0.08,
+    "dangerThresholdRate": 0.12
+  },
+  "grossProfitDefinition": {
+    "description": "毛利 = 净销售额 - 商品成本（含入库仓配成本）",
+    "cogsBasis": "weighted-average-cost",
+    "cogsIncludesWarehouse": true,
+    "cogsIncludesInboundLogistics": true
+  }
+}

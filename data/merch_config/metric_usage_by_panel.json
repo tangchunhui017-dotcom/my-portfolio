@@ -1,0 +1,57 @@
+{
+  "overview": {
+    "label": "经营概览",
+    "requiredMetrics": ["salesAmount","salesAchievementRate","yoyGrowth","grossMarginRate","inventoryCost","stockToSalesRatio","netCashflow","endingCashBalance","fundingGap","purchaseBudget"],
+    "optionalMetrics": ["netProfit","netProfitRate","cashInFromSales"]
+  },
+  "forecast": {
+    "label": "销售预测",
+    "requiredMetrics": ["salesAmount","salesPairs","avgSellingPrice","yoyGrowth","momGrowth","seasonSalesTarget","categorySalesRatio","channelSalesRatio"],
+    "optionalMetrics": ["discountRate","priceBandSalesRatio"]
+  },
+  "annual-control": {
+    "label": "年度管控",
+    "requiredMetrics": ["salesAmount","salesAchievementRate","purchaseBudget","grossMarginRate","netProfitRate","inventoryCost","stockToSalesRatio","seasonSalesTarget"],
+    "optionalMetrics": ["weeksOfSupply","fundingGap"]
+  },
+  "region-store": {
+    "label": "区域/门店",
+    "requiredMetrics": ["salesAmount","salesPairs","avgSellingPrice","discountRate","yoyGrowth","salesAchievementRate","stockToSalesRatio","weeksOfSupply","brokenSizeRate"],
+    "optionalMetrics": ["sellThroughRate","momGrowth"]
+  },
+  "consumer": {
+    "label": "消费者洞察",
+    "requiredMetrics": ["avgSellingPrice","discountRate","categorySalesRatio","priceBandSalesRatio"],
+    "optionalMetrics": ["yoyGrowth"]
+  },
+  "competitor-trend": {
+    "label": "竞品趋势",
+    "requiredMetrics": ["avgSellingPrice","discountRate","categorySalesRatio","priceBandSalesRatio"],
+    "optionalMetrics": ["yoyGrowth"]
+  },
+  "category-ops": {
+    "label": "品类运营",
+    "requiredMetrics": ["salesAmount","salesPairs","avgSellingPrice","discountRate","sellThroughRate","cumulativeSellThroughRate","categorySalesRatio","priceBandSalesRatio","grossMarginRate","skuCount","skcCount","styleCount","averageDepth","inventoryCost","agedInventory","inventoryTurnover","productRoleRatio"],
+    "optionalMetrics": ["colorCount","retailSalesAmount","inventoryRetail","brokenSizeRate"]
+  },
+  "wave-planning": {
+    "label": "波段企划",
+    "requiredMetrics": ["waveSalesTarget","seasonSalesTarget","plannedProductionPairs","styleCount","averageDepth","launchDate","launchPhase","sellThroughRate","cumulativeSellThroughRate","sellThroughTarget","stockToSalesRatio","arrivalRate"],
+    "optionalMetrics": ["skuCount","skcCount","discountRate"]
+  },
+  "otb": {
+    "label": "OTB预算",
+    "requiredMetrics": ["purchaseBudget","plannedPurchaseAmount","orderedAmount","arrivedAmount","arrivalRate","plannedProductionPairs","sellThroughTarget","markupRate","stockToSalesRatio","cashOutForPurchase","fundingGap","skuCount","skcCount"],
+    "optionalMetrics": ["inventoryCost","averageDepth","grossMarginRate"]
+  },
+  "inventory-health": {
+    "label": "库存健康",
+    "requiredMetrics": ["inventoryCost","inventoryRetail","sellableInventory","agedInventory","weeksOfSupply","stockToSalesRatio","sellThroughRate","cumulativeSellThroughRate","brokenSizeRate","inventoryTurnover","inventoryCapitalOccupied","fundingGap"],
+    "optionalMetrics": ["skuCount","launchPhase"]
+  },
+  "pnl": {
+    "label": "损益表",
+    "requiredMetrics": ["salesRevenue","netSalesAmount","cogs","grossProfit","grossMarginRate","operatingExpense","netProfit","netProfitRate"],
+    "optionalMetrics": ["discountRate","markupRate","cashInFromSales"]
+  }
+}

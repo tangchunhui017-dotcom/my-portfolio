@@ -1,0 +1,74 @@
+[
+  {
+    "roleId": "basic",
+    "roleName": "基础款",
+    "description": "长期销售、稳定补货、承担基础销售",
+    "defaultStyleRatio": 0.30,
+    "defaultDepthMultiplier": 1.15,
+    "riskRule": "款数可少，深度要足",
+    "canBeHeroProduct": false,
+    "allowRepeatOrder": true,
+    "maxSalesRatioWarning": 0.50,
+    "minSalesRatioDanger": 0.05
+  },
+  {
+    "roleId": "main",
+    "roleName": "主推款",
+    "description": "承担波段主销和陈列核心，必须保证首铺和补货深度",
+    "defaultStyleRatio": 0.35,
+    "defaultDepthMultiplier": 1.35,
+    "riskRule": "必须保证首铺和补货深度",
+    "canBeHeroProduct": true,
+    "allowRepeatOrder": true,
+    "maxSalesRatioWarning": 0.65,
+    "minSalesRatioDanger": 0.15
+  },
+  {
+    "roleId": "hero",
+    "roleName": "爆款候选",
+    "description": "重点投放、可追单、需监控售罄，深度不足会错失销售",
+    "defaultStyleRatio": 0.12,
+    "defaultDepthMultiplier": 1.70,
+    "riskRule": "深度不足会错失销售，深度过高会形成库存",
+    "canBeHeroProduct": true,
+    "allowRepeatOrder": true,
+    "maxSalesRatioWarning": 0.35,
+    "minSalesRatioDanger": 0.05
+  },
+  {
+    "roleId": "image",
+    "roleName": "形象款",
+    "description": "提升品牌调性，承担内容传播，款数少、深度浅",
+    "defaultStyleRatio": 0.08,
+    "defaultDepthMultiplier": 0.50,
+    "riskRule": "款数少、深度浅，不应承担过高销售",
+    "canBeHeroProduct": false,
+    "allowRepeatOrder": false,
+    "maxSalesRatioWarning": 0.15,
+    "minSalesRatioDanger": 0
+  },
+  {
+    "roleId": "test",
+    "roleName": "测试款",
+    "description": "小批量验证趋势、新材料、新楦型、新工艺，严格控制深度",
+    "defaultStyleRatio": 0.08,
+    "defaultDepthMultiplier": 0.40,
+    "riskRule": "严格控制深度，避免试错库存",
+    "canBeHeroProduct": false,
+    "allowRepeatOrder": false,
+    "maxSalesRatioWarning": 0.10,
+    "minSalesRatioDanger": 0
+  },
+  {
+    "roleId": "repeat",
+    "roleName": "翻单款",
+    "description": "历史验证有效，可滚动补单，需结合售罄速度和交期判断",
+    "defaultStyleRatio": 0.07,
+    "defaultDepthMultiplier": 1.40,
+    "riskRule": "需要结合售罄速度和交期判断补单",
+    "canBeHeroProduct": false,
+    "allowRepeatOrder": true,
+    "maxSalesRatioWarning": 0.30,
+    "minSalesRatioDanger": 0
+  }
+]

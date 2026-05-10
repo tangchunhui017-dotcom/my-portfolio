@@ -31,6 +31,7 @@ import InventoryHealth from '@/components/dashboard/InventoryHealth';
 import ForecastTab from '@/components/forecast/ForecastTab';
 import ProfitLossTab from '@/components/profit-loss/ProfitLossTab';
 import OtbTab from '@/components/otb/OtbTab';
+import CashflowPanel from '@/components/otb/CashflowPanel';
 import ChartMetricStrip, { type ChartMetricStripItem } from '@/components/dashboard/ChartMetricStrip';
 import { FOOTWEAR_ANALYSIS_MODULES } from '@/config/footwearLanguage';
 import { useState, useRef, useMemo } from 'react';
@@ -39,7 +40,7 @@ import { THRESHOLDS } from '@/config/thresholds';
 import { GlobalConfigProvider, useGlobalConfig } from '@/context/GlobalConfigContext';
 import GlobalConfigDrawer from '@/components/config/GlobalConfigDrawer';
 
-type DashboardTab = 'overview' | 'annual-control' | 'consumer' | 'category' | 'channel' | 'planning' | 'otb' | 'forecast' | 'profit-loss' | 'competitor' | 'inventory';
+type DashboardTab = 'overview' | 'annual-control' | 'consumer' | 'category' | 'channel' | 'planning' | 'otb' | 'cashflow' | 'forecast' | 'profit-loss' | 'competitor' | 'inventory';
 type DashboardRecord = ReturnType<typeof useDashboardFilter>['filteredRecords'][number];
 type DashboardFilterWindow = Window & { __openDashboardFilterBar?: () => void };
 
@@ -51,6 +52,7 @@ const TABS: { key: DashboardTab; label: string; icon: string }[] = [
     { key: 'category', label: '品类运营', icon: '📋' },
     { key: 'planning', label: '波段企划', icon: '📅' },
     { key: 'otb', label: 'OTB预算', icon: '💰' },
+    { key: 'cashflow', label: '现金流', icon: '💧' },
     { key: 'forecast', label: '销售预测', icon: '📈' },
     { key: 'profit-loss', label: '损益', icon: '💹' },
     { key: 'competitor', label: '竞品&趋势', icon: '🧭' },
@@ -631,7 +633,10 @@ function DashboardPageInner() {
                         />
                     )}
                     {activeTab === 'otb' && (
-                        <OtbTab filters={filters} />
+                        <OtbTab filters={filters} compareMode={effectiveCompareMode} />
+                    )}
+                    {activeTab === 'cashflow' && (
+                        <CashflowPanel />
                     )}
                     {activeTab === 'forecast' && (
                         <ForecastTab />
