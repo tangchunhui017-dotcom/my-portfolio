@@ -22,7 +22,7 @@ import OTBGovernancePanel, { type OTBVersionRecord } from './OTBGovernancePanel'
 import { calcWaveOTB, generateOTBInsights, type WaveOTBInput } from '@/utils/otbCalculations';
 import { useOtbBusinessContext } from '@/hooks/useOtbBusinessContext';
 import type { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
-import defaultWaves from '../../../data/otb/wave_otb_plan.json';
+import { getWaveOtbInputs } from '@/utils/wavePlanMaster';
 import versionsRaw from '../../../data/otb/otb_versions.json';
 import annualOtbDefaults from '../../../data/otb/otb_assumptions.json';
 
@@ -55,7 +55,7 @@ interface OtbTabProps {
 export default function OtbTab({ filters, compareMode = 'none' }: OtbTabProps) {
     const [subView, setSubView]     = useState<OtbSubView>('annual');
     const [settings, setSettings]   = useState<OTBLocalSettings>(DEFAULT_OTB_LOCAL_SETTINGS);
-    const [waveInputs, setWaveInputs] = useState<WaveOTBInput[]>(defaultWaves as WaveOTBInput[]);
+    const [waveInputs, setWaveInputs] = useState<WaveOTBInput[]>(() => getWaveOtbInputs());
     const [priceStructure, setPriceStructure] = useState<OTBPriceStructureOutput | null>(null);
     const businessContext = useOtbBusinessContext(filters, settings);
 
@@ -211,6 +211,7 @@ export default function OtbTab({ filters, compareMode = 'none' }: OtbTabProps) {
                     seasonSalesTargets={seasonSalesTargets}
                     annualOtbBudget={adjustedAnnualApprovedBudget}
                     compareMode={compareMode}
+                    filters={filters}
                 />
             )}
             {subView === 'pricestructure' && (

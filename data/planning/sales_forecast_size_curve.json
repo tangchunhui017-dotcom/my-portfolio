@@ -1,0 +1,210 @@
+[
+  {
+    "forecastVersion": "forecast_2026_base_v1",
+    "scenario": "base",
+    "channelType": "all",
+    "waveKey": "2026-SS-2A",
+    "waveLabel": "SS 26 2A",
+    "categoryId": "运动/跑步",
+    "sizeSegment": "mens_sport",
+    "sizes": [
+      {
+        "size": "38",
+        "tier": "edge",
+        "forecastUnits": 120,
+        "stockRatio": 0.045,
+        "targetRatio": 0.03,
+        "deviation": 0.015
+      },
+      {
+        "size": "39",
+        "tier": "extended",
+        "forecastUnits": 380,
+        "stockRatio": 0.14,
+        "targetRatio": 0.12,
+        "deviation": 0.02
+      },
+      {
+        "size": "40",
+        "tier": "core",
+        "forecastUnits": 620,
+        "stockRatio": 0.228,
+        "targetRatio": 0.22,
+        "deviation": 0.008
+      },
+      {
+        "size": "41",
+        "tier": "core",
+        "forecastUnits": 680,
+        "stockRatio": 0.25,
+        "targetRatio": 0.25,
+        "deviation": 0
+      },
+      {
+        "size": "42",
+        "tier": "core",
+        "forecastUnits": 580,
+        "stockRatio": 0.213,
+        "targetRatio": 0.22,
+        "deviation": -0.007
+      },
+      {
+        "size": "43",
+        "tier": "extended",
+        "forecastUnits": 280,
+        "stockRatio": 0.103,
+        "targetRatio": 0.12,
+        "deviation": -0.017
+      },
+      {
+        "size": "44",
+        "tier": "edge",
+        "forecastUnits": 60,
+        "stockRatio": 0.022,
+        "targetRatio": 0.03,
+        "deviation": -0.008
+      }
+    ],
+    "coreSizeCoverageRate": 0.691,
+    "edgeSizeOverweightRisk": true,
+    "breakSizeRisk": false,
+    "riskNote": "38码库存备货超标25%，建议压缩",
+    "action": "减少38码备货量，将余量转移至42-43码"
+  },
+  {
+    "forecastVersion": "forecast_2026_base_v1",
+    "scenario": "base",
+    "channelType": "all",
+    "waveKey": "2026-SS-2A",
+    "waveLabel": "SS 26 2A",
+    "categoryId": "女鞋/凉鞋",
+    "sizeSegment": "womens_sport",
+    "sizes": [
+      {
+        "size": "34",
+        "tier": "edge",
+        "forecastUnits": 80,
+        "stockRatio": 0.04,
+        "targetRatio": 0.03,
+        "deviation": 0.01
+      },
+      {
+        "size": "35",
+        "tier": "extended",
+        "forecastUnits": 240,
+        "stockRatio": 0.12,
+        "targetRatio": 0.12,
+        "deviation": 0
+      },
+      {
+        "size": "36",
+        "tier": "core",
+        "forecastUnits": 460,
+        "stockRatio": 0.23,
+        "targetRatio": 0.23,
+        "deviation": 0
+      },
+      {
+        "size": "37",
+        "tier": "core",
+        "forecastUnits": 480,
+        "stockRatio": 0.24,
+        "targetRatio": 0.25,
+        "deviation": -0.01
+      },
+      {
+        "size": "38",
+        "tier": "core",
+        "forecastUnits": 440,
+        "stockRatio": 0.22,
+        "targetRatio": 0.22,
+        "deviation": 0
+      },
+      {
+        "size": "39",
+        "tier": "extended",
+        "forecastUnits": 200,
+        "stockRatio": 0.1,
+        "targetRatio": 0.12,
+        "deviation": -0.02
+      },
+      {
+        "size": "40",
+        "tier": "edge",
+        "forecastUnits": 100,
+        "stockRatio": 0.05,
+        "targetRatio": 0.03,
+        "deviation": 0.02
+      }
+    ],
+    "coreSizeCoverageRate": 0.69,
+    "edgeSizeOverweightRisk": true,
+    "breakSizeRisk": false,
+    "riskNote": "40码女鞋超备，建议限量；39码偏少可能断码",
+    "action": "39码补货20%，40码减少备货"
+  },
+  {
+    "forecastVersion": "forecast_2026_base_v1",
+    "scenario": "base",
+    "channelType": "all",
+    "waveKey": "2026-AW-6A",
+    "waveLabel": "AW 26 6A",
+    "categoryId": "棉鞋/靴",
+    "sizeSegment": "mens_sport",
+    "sizes": [
+      {
+        "size": "39",
+        "tier": "extended",
+        "forecastUnits": 320,
+        "stockRatio": 0.105,
+        "targetRatio": 0.12,
+        "deviation": -0.015
+      },
+      {
+        "size": "40",
+        "tier": "core",
+        "forecastUnits": 620,
+        "stockRatio": 0.204,
+        "targetRatio": 0.22,
+        "deviation": -0.016
+      },
+      {
+        "size": "41",
+        "tier": "core",
+        "forecastUnits": 780,
+        "stockRatio": 0.257,
+        "targetRatio": 0.25,
+        "deviation": 0.007
+      },
+      {
+        "size": "42",
+        "tier": "core",
+        "forecastUnits": 720,
+        "stockRatio": 0.237,
+        "targetRatio": 0.22,
+        "deviation": 0.017
+      },
+      {
+        "size": "43",
+        "tier": "extended",
+        "forecastUnits": 440,
+        "stockRatio": 0.145,
+        "targetRatio": 0.12,
+        "deviation": 0.025
+      },
+      {
+        "size": "44",
+        "tier": "edge",
+        "forecastUnits": 160,
+        "stockRatio": 0.053,
+        "targetRatio": 0.04,
+        "deviation": 0.013
+      }
+    ],
+    "coreSizeCoverageRate": 0.698,
+    "edgeSizeOverweightRisk": false,
+    "breakSizeRisk": true,
+    "riskNote": "40码偏少，可能出现断码风险",
+    "action": "40码追加备货15%，同时关注双11备货节点"
+  }
+]

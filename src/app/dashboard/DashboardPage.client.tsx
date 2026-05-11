@@ -627,6 +627,7 @@ function DashboardPageInner() {
                             defaultView="wave"
                             lockView
                             compareMode={effectiveCompareMode}
+                            filters={filters}
                             onJumpToChannel={() => jumpToTab('channel')}
                             onJumpToOtb={() => jumpToTab('otb')}
                             onJumpToSkuRisk={jumpToSkuRisk}
@@ -642,7 +643,7 @@ function DashboardPageInner() {
                         <ForecastTab />
                     )}
                     {activeTab === 'profit-loss' && (
-                        <ProfitLossTab filters={filters} />
+                        <ProfitLossTab />
                     )}
                     {activeTab === 'competitor' && (
                         <CompetitorTrendPanel
@@ -654,7 +655,7 @@ function DashboardPageInner() {
                     )}
                     {activeTab === 'inventory' && (
                         <div className="space-y-6">
-                            <InventoryHealth skuWosData={skuWosData} />
+                            <InventoryHealth />
                         </div>
                     )}
 

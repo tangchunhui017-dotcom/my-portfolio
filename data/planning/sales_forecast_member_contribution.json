@@ -1,0 +1,101 @@
+{
+  "_comment": "会员销售贡献占比（按渠道/月份）",
+  "physical": {
+    "overallRate": 0.68,
+    "monthlyRate": [
+      0.71,
+      0.73,
+      0.68,
+      0.65,
+      0.62,
+      0.6,
+      0.62,
+      0.64,
+      0.67,
+      0.69,
+      0.72,
+      0.75
+    ],
+    "byGrade": [
+      {
+        "grade": "S",
+        "memberRate": 0.82,
+        "avgSpend": 4800
+      },
+      {
+        "grade": "A",
+        "memberRate": 0.72,
+        "avgSpend": 3200
+      },
+      {
+        "grade": "B",
+        "memberRate": 0.62,
+        "avgSpend": 2100
+      },
+      {
+        "grade": "C",
+        "memberRate": 0.48,
+        "avgSpend": 1500
+      },
+      {
+        "grade": "outlet",
+        "memberRate": 0.35,
+        "avgSpend": 800
+      }
+    ],
+    "newMemberConversion": 0.23,
+    "memberRepurchaseCycle": 78
+  },
+  "ecommerce": {
+    "overallRate": 0.55,
+    "monthlyRate": [
+      0.52,
+      0.5,
+      0.55,
+      0.58,
+      0.6,
+      0.65,
+      0.62,
+      0.6,
+      0.55,
+      0.52,
+      0.7,
+      0.68
+    ],
+    "byPlatform": [
+      {
+        "platform": "天猫",
+        "memberRate": 0.72
+      },
+      {
+        "platform": "抖音",
+        "memberRate": 0.28
+      },
+      {
+        "platform": "京东",
+        "memberRate": 0.65
+      }
+    ],
+    "newMemberConversion": 0.18,
+    "memberRepurchaseCycle": 95
+  },
+  "new_store": {
+    "overallRate": 0.22,
+    "monthlyRate": [
+      0.12,
+      0.14,
+      0.18,
+      0.22,
+      0.26,
+      0.3,
+      0.32,
+      0.34,
+      0.35,
+      0.36,
+      0.38,
+      0.4
+    ],
+    "targetRate6M": 0.4,
+    "targetRate12M": 0.55
+  }
+}

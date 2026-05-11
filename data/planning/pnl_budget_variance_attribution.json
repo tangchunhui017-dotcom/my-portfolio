@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "year": "2025",
+    "currency": "CNY"
+  },
+  "summary": {
+    "budgetNetRevenue": 8500000,
+    "actualNetRevenue": 8650000,
+    "budgetNetProfit": 1200000,
+    "actualNetProfit": 490000,
+    "revenueVariance": 150000,
+    "profitVariance": -710000
+  },
+  "varianceItems": [
+    {
+      "item": "净收入",
+      "budget": 8500000,
+      "actual": 8650000,
+      "variance": 150000,
+      "type": "positive",
+      "attribution": "电商渠道超额完成目标，618大促表现超预期",
+      "priority": "P2"
+    },
+    {
+      "item": "COGS",
+      "budget": -4080000,
+      "actual": -4193000,
+      "variance": -113000,
+      "type": "overspend",
+      "attribution": "原材料涨价及汇率影响，采购成本上升约2.6%",
+      "priority": "P1"
+    },
+    {
+      "item": "营销投放",
+      "budget": -680000,
+      "actual": -860000,
+      "variance": -180000,
+      "type": "overspend",
+      "attribution": "双11电商投流超额，ROI低于基准值2.1",
+      "priority": "P0"
+    },
+    {
+      "item": "库存跌价/清货损失",
+      "budget": -200000,
+      "actual": -285000,
+      "variance": -85000,
+      "type": "overspend",
+      "attribution": "双11清货比例上升至12%，超预算8%",
+      "priority": "P0"
+    },
+    {
+      "item": "仓配物流",
+      "budget": -320000,
+      "actual": -360000,
+      "variance": -40000,
+      "type": "overspend",
+      "attribution": "电商退货率超基准，退件物流成本增加",
+      "priority": "P1"
+    },
+    {
+      "item": "人工费用",
+      "budget": -480000,
+      "actual": -502000,
+      "variance": -22000,
+      "type": "overspend",
+      "attribution": "新开门店爬坡期人员提前到岗",
+      "priority": "P2"
+    },
+    {
+      "item": "装修摊销",
+      "budget": -180000,
+      "actual": -200000,
+      "variance": -20000,
+      "type": "overspend",
+      "attribution": "商场旗舰店装修超预算5万，摊销提前",
+      "priority": "P2"
+    },
+    {
+      "item": "平台/商场扣点",
+      "budget": -680000,
+      "actual": -680000,
+      "variance": 0,
+      "type": "neutral",
+      "attribution": "符合预算",
+      "priority": "P2"
+    }
+  ],
+  "top5Overspend": [
+    {
+      "rank": 1,
+      "item": "营销投放",
+      "variance": -180000,
+      "attribution": "双11电商投流超额，建议投流ROI设下限2.5",
+      "otbLink": null
+    },
+    {
+      "rank": 2,
+      "item": "COGS",
+      "variance": -113000,
+      "attribution": "采购成本上升，建议锁汇+集中订货降本",
+      "otbLink": "Q3_AW"
+    },
+    {
+      "rank": 3,
+      "item": "库存跌价/清货损失",
+      "variance": -85000,
+      "attribution": "清货品占比超阈值，建议下季OTB控清货款<8%",
+      "otbLink": "Q1_SS"
+    },
+    {
+      "rank": 4,
+      "item": "仓配物流",
+      "variance": -40000,
+      "attribution": "电商退货率16%超基准12%，建议优化尺码预测",
+      "otbLink": null
+    },
+    {
+      "rank": 5,
+      "item": "人工费用",
+      "variance": -22000,
+      "attribution": "控制新店提前到岗周期，标准化爬坡人效",
+      "otbLink": null
+    }
+  ]
+}

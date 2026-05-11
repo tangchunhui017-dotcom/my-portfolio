@@ -1,0 +1,292 @@
+{
+  "_comment": "品牌年度P&L — 完整口径：吊牌GMV→折扣→净收入→COGS→毛利→费用→EBIT→净利",
+  "scenario": "base",
+  "fiscalYear": "2026",
+  "version": "v1.0",
+  "sourceSystem": "损益引擎",
+  "updatedAt": "2026-05-11",
+  "brandAnnual": {
+    "tagPriceSales": 168000000,
+    "discountDeduction": 33600000,
+    "returnRefund": 12600000,
+    "netRevenue": 121800000,
+    "cogs": 58464000,
+    "warehouseInboundLogistics": 3654000,
+    "grossProfit": 59682000,
+    "grossMarginRate": 0.49,
+    "platformDeduction": 4872000,
+    "mallDeduction": 7308000,
+    "marketingSpend": 9744000,
+    "storeRent": 6708000,
+    "laborCost": 8526000,
+    "warehouseDistribution": 3654000,
+    "fitoutAmortization": 1218000,
+    "adminExpense": 3654000,
+    "inventoryImpairment": 2436000,
+    "clearanceLoss": 1827000,
+    "totalOpex": 49947000,
+    "ebit": 9735000,
+    "ebitRate": 0.0799,
+    "incomeTax": 2433750,
+    "netProfit": 7301250,
+    "netProfitRate": 0.0599,
+    "budgetVarianceNetRevenue": 3600000,
+    "budgetVarianceNetProfit": -698750,
+    "riskLevel": "medium"
+  },
+  "waterfallItems": [
+    {
+      "id": "tag_sales",
+      "label": "吊牌GMV",
+      "value": 168000000,
+      "type": "total",
+      "order": 1
+    },
+    {
+      "id": "discount_deduction",
+      "label": "折扣折让",
+      "value": -33600000,
+      "type": "subtract",
+      "order": 2
+    },
+    {
+      "id": "return_refund",
+      "label": "退货退款",
+      "value": -12600000,
+      "type": "subtract",
+      "order": 3
+    },
+    {
+      "id": "net_revenue",
+      "label": "净收入",
+      "value": 121800000,
+      "type": "subtotal",
+      "order": 4
+    },
+    {
+      "id": "cogs",
+      "label": "商品成本 COGS",
+      "value": -58464000,
+      "type": "subtract",
+      "order": 5
+    },
+    {
+      "id": "warehouse_inbound",
+      "label": "入仓/头程物流",
+      "value": -3654000,
+      "type": "subtract",
+      "order": 6
+    },
+    {
+      "id": "gross_profit",
+      "label": "毛利",
+      "value": 59682000,
+      "type": "subtotal",
+      "order": 7
+    },
+    {
+      "id": "platform_deduction",
+      "label": "平台/商场扣点",
+      "value": -12180000,
+      "type": "subtract",
+      "order": 8
+    },
+    {
+      "id": "marketing",
+      "label": "营销投放",
+      "value": -9744000,
+      "type": "subtract",
+      "order": 9
+    },
+    {
+      "id": "rent",
+      "label": "门店租金",
+      "value": -6708000,
+      "type": "subtract",
+      "order": 10
+    },
+    {
+      "id": "labor",
+      "label": "人工费用",
+      "value": -8526000,
+      "type": "subtract",
+      "order": 11
+    },
+    {
+      "id": "warehouse_dist",
+      "label": "仓配物流",
+      "value": -3654000,
+      "type": "subtract",
+      "order": 12
+    },
+    {
+      "id": "fitout",
+      "label": "装修摊销",
+      "value": -1218000,
+      "type": "subtract",
+      "order": 13
+    },
+    {
+      "id": "admin",
+      "label": "管理费用",
+      "value": -3654000,
+      "type": "subtract",
+      "order": 14
+    },
+    {
+      "id": "inventory_loss",
+      "label": "库存跌价/清货损失",
+      "value": -4263000,
+      "type": "subtract",
+      "order": 15
+    },
+    {
+      "id": "ebit",
+      "label": "EBIT",
+      "value": 9735000,
+      "type": "subtotal",
+      "order": 16
+    },
+    {
+      "id": "tax",
+      "label": "所得税",
+      "value": -2433750,
+      "type": "subtract",
+      "order": 17
+    },
+    {
+      "id": "net_profit",
+      "label": "净利润",
+      "value": 7301250,
+      "type": "total",
+      "order": 18
+    }
+  ],
+  "priceStructure": {
+    "fullPrice": {
+      "salesAmount": 73080000,
+      "salesShare": 0.6,
+      "avgDiscount": 0.92
+    },
+    "promotional": {
+      "salesAmount": 34104000,
+      "salesShare": 0.28,
+      "avgDiscount": 0.72
+    },
+    "clearance": {
+      "salesAmount": 14616000,
+      "salesShare": 0.12,
+      "avgDiscount": 0.42
+    }
+  },
+  "monthlyBreakdown": [
+    {
+      "month": 1,
+      "label": "1月",
+      "netRevenue": 7308000,
+      "grossProfit": 3692586,
+      "grossMarginRate": 0.5053,
+      "ebit": 670334,
+      "ebitRate": 0.0917
+    },
+    {
+      "month": 2,
+      "label": "2月",
+      "netRevenue": 6087000,
+      "grossProfit": 3075639,
+      "grossMarginRate": 0.5053,
+      "ebit": 545200,
+      "ebitRate": 0.0896
+    },
+    {
+      "month": 3,
+      "label": "3月",
+      "netRevenue": 9135000,
+      "grossProfit": 4708047,
+      "grossMarginRate": 0.5154,
+      "ebit": 887207,
+      "ebitRate": 0.0971
+    },
+    {
+      "month": 4,
+      "label": "4月",
+      "netRevenue": 10965600,
+      "grossProfit": 5540698,
+      "grossMarginRate": 0.5053,
+      "ebit": 1005832,
+      "ebitRate": 0.0917
+    },
+    {
+      "month": 5,
+      "label": "5月",
+      "netRevenue": 10599120,
+      "grossProfit": 5248413,
+      "grossMarginRate": 0.4952,
+      "ebit": 915027,
+      "ebitRate": 0.0863
+    },
+    {
+      "month": 6,
+      "label": "6月",
+      "netRevenue": 12185520,
+      "grossProfit": 5664531,
+      "grossMarginRate": 0.4649,
+      "ebit": 723238,
+      "ebitRate": 0.0594
+    },
+    {
+      "month": 7,
+      "label": "7月",
+      "netRevenue": 11087520,
+      "grossProfit": 5378210,
+      "grossMarginRate": 0.4851,
+      "ebit": 897366,
+      "ebitRate": 0.0809
+    },
+    {
+      "month": 8,
+      "label": "8月",
+      "netRevenue": 10721040,
+      "grossProfit": 5308785,
+      "grossMarginRate": 0.4952,
+      "ebit": 925552,
+      "ebitRate": 0.0863
+    },
+    {
+      "month": 9,
+      "label": "9月",
+      "netRevenue": 10232400,
+      "grossProfit": 5170227,
+      "grossMarginRate": 0.5053,
+      "ebit": 938578,
+      "ebitRate": 0.0917
+    },
+    {
+      "month": 10,
+      "label": "10月",
+      "netRevenue": 14636400,
+      "grossProfit": 7247570,
+      "grossMarginRate": 0.4952,
+      "ebit": 1263567,
+      "ebitRate": 0.0863
+    },
+    {
+      "month": 11,
+      "label": "11月",
+      "netRevenue": 12185520,
+      "grossProfit": 5418248,
+      "grossMarginRate": 0.4446,
+      "ebit": 460242,
+      "ebitRate": 0.0378
+    },
+    {
+      "month": 12,
+      "label": "12月",
+      "netRevenue": 6656880,
+      "grossProfit": 3229046,
+      "grossMarginRate": 0.4851,
+      "ebit": 502857,
+      "ebitRate": 0.0755
+    }
+  ]
+}

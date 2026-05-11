@@ -9,6 +9,7 @@ import { DASHBOARD_BRAND_OPTIONS, resolveDashboardCategoryL1 } from '@/config/da
 import { FOOTWEAR_CATEGORY_HIERARCHY } from '@/config/footwearTaxonomy';
 import { getPriceBandOptionList } from '@/config/priceBand';
 import { getDashboardMonthByWave } from '@/config/dashboardTime';
+import { WAVE_PLAN_MASTER } from '@/utils/wavePlanMaster';
 
 interface FilterBarProps {
     filters: DashboardFilters;
@@ -20,7 +21,10 @@ interface FilterBarProps {
     hideTrigger?: boolean;
 }
 
-const YEARS = [2025, 2024, 2023];
+const PLANNING_YEARS = Array.from(new Set(WAVE_PLAN_MASTER.map((row) => row.fiscalYear)))
+    .filter((year) => Number.isFinite(year))
+    .sort((a, b) => b - a);
+const YEARS = Array.from(new Set([...PLANNING_YEARS, 2025, 2024, 2023])).sort((a, b) => b - a);
 const SEASONS = ['Q1', 'Q2', 'Q3', 'Q4'];
 const WAVES = ['W01', 'W02', 'W03', 'W04', 'W05', 'W06', 'W07', 'W08', 'W09', 'W10', 'W11', 'W12'];
 const CHANNEL_TYPES = ['电商', '直营', '加盟', '直播', '奥莱', '特渠', 'KA'];
@@ -195,9 +199,15 @@ export default function FilterBar({
         const categoryL1LandedSet = new Set(
             dimSku.map((row) => resolveDashboardCategoryL1(row.gender)).filter((v) => v && v !== '其他'),
         );
-        const categoryL2LandedSet = new Set(
-            dimSku.map((row) => String(row.category_name || row.category_id || '').trim()).filter(Boolean),
+        const planningCategoryL2Set = new Set(
+            WAVE_PLAN_MASTER.flatMap((row) => row.mainCategoryList ?? [row.mainCategory])
+                .map((category) => String(category || '').trim())
+                .filter(Boolean),
         );
+        const categoryL2LandedSet = new Set([
+            ...dimSku.map((row) => String(row.category_name || row.category_id || '').trim()).filter(Boolean),
+            ...planningCategoryL2Set,
+        ]);
         const categoryL3LandedSet = new Set(
             dimSku.map((row) => String(row.category_l2 || '').trim()).filter(Boolean),
         );

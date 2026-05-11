@@ -8,8 +8,9 @@ import { useCashflowAssumptions, useFactInventory } from './useDashboardData';
 import { useForecast } from './useForecast';
 import type { ForecastScenario } from './useForecast';
 import { useGlobalConfig } from '@/context/GlobalConfigContext';
+import { WAVE_PLAN_MASTER } from '@/utils/wavePlanMaster';
 import otbExecutionTrackingRaw from '../../data/otb/otb_execution_tracking.json';
-import waveOtbPlanRaw from '../../data/otb/wave_otb_plan.json';
+import purchasePaymentPlanRaw from '../../data/planning/purchase_payment_plan.json';
 import cashflowAssumptionsFallback from '../../data/dashboard/cashflow_assumptions.json';
 import factInventoryFallback from '../../data/dashboard/fact_inventory.json';
 
@@ -169,6 +170,13 @@ interface WaveOtbPlanSourceRow {
     plan_otb_budget?: number;
 }
 
+interface PurchasePaymentPlanSourceRow {
+    paymentNode?: 'deposit' | 'balance' | string;
+    paymentMonth?: number;
+    paymentDate?: string;
+    paymentAmount?: number;
+}
+
 function monthFromDate(rawDate: string | undefined): number {
     if (!rawDate) return 0;
     const parsed = new Date(rawDate);
@@ -257,36 +265,50 @@ export function useCashflow(scenario: ForecastScenario, simulation: CashflowSimu
             collectionByMonth[targetMonthIndex] += clearanceCashIn;
         }
 
-        // OTB 付款：现金流使用 OTB 波段拆解计划作为主来源，避免页面依赖大事实表或数据库 API。
-        const otbByMonth: number[] = Array(12).fill(0);
+        // OTB付款：优先读取统一planning付款排期；若缺失或模拟调整账期，则回退到波段预算推导。
         let otbSource: 'plan' | 'engine' | 'uniform' = 'plan';
-        const wavePlanRows = waveOtbPlanRaw as WaveOtbPlanSourceRow[];
-        wavePlanRows.forEach((row) => {
-            const month = monthFromDate(row.launchDate ?? row.launch_date);
-            const budget = Number(row.planOtbBudget ?? row.plan_otb_budget ?? 0);
-            if (month >= 1 && month <= 12) otbByMonth[month - 1] += budget;
-        });
-        const totalPlanOtbBudget = otbByMonth.reduce((s, v) => s + v, 0);
-        if (totalPlanOtbBudget === 0) {
-            otbSource = 'uniform';
-            const annualOtbTotal = (otbExecutionTrackingRaw as OTBExecutionTrackingSourceRow[])
-                .reduce((sum, row) => sum + Number(row.plannedPurchaseAmount || 0), 0);
-            for (let i = 0; i < 12; i++) otbByMonth[i] = annualOtbTotal / 12;
-        }
-
-        // 定金和尾款按时序偏移
         let depositByMonth: number[] = Array(12).fill(0);
         let balanceByMonth: number[] = Array(12).fill(0);
-        const effectiveDepositLead = simulation.depositLeadMonths ?? schedule.deposit.leadMonths;
-        const effectiveBalanceLead = simulation.balanceLeadMonths ?? schedule.balance.leadMonths;
-        for (let i = 0; i < 12; i++) {
-            const budget = otbByMonth[i];
-            // 定金：提前 N 个月支付
-            const depositIdx = i - effectiveDepositLead;
-            if (depositIdx >= 0) depositByMonth[depositIdx] += budget * schedule.deposit.rateOfBudget;
-            // 尾款：提前 N 个月支付
-            const balanceIdx = i - effectiveBalanceLead;
-            if (balanceIdx >= 0) balanceByMonth[balanceIdx] += budget * schedule.balance.rateOfBudget;
+
+        const hasLeadSimulation = simulation.depositLeadMonths !== undefined || simulation.balanceLeadMonths !== undefined;
+        if (!hasLeadSimulation) {
+            (purchasePaymentPlanRaw as PurchasePaymentPlanSourceRow[]).forEach((row) => {
+                const month = Number(row.paymentMonth) || monthFromDate(row.paymentDate);
+                const amount = Number(row.paymentAmount || 0);
+                if (month < 1 || month > 12 || amount <= 0) return;
+                if (row.paymentNode === 'deposit') depositByMonth[month - 1] += amount;
+                else balanceByMonth[month - 1] += amount;
+            });
+        }
+
+        const plannedPaymentTotal = depositByMonth.reduce((s, v) => s + v, 0) + balanceByMonth.reduce((s, v) => s + v, 0);
+        if (plannedPaymentTotal === 0 || hasLeadSimulation) {
+            const otbByMonth: number[] = Array(12).fill(0);
+            const wavePlanRows = WAVE_PLAN_MASTER as WaveOtbPlanSourceRow[];
+            wavePlanRows.forEach((row) => {
+                const month = monthFromDate(row.launchDate ?? row.launch_date);
+                const budget = Number(row.planOtbBudget ?? row.plan_otb_budget ?? 0);
+                if (month >= 1 && month <= 12) otbByMonth[month - 1] += budget;
+            });
+            const totalPlanOtbBudget = otbByMonth.reduce((s, v) => s + v, 0);
+            if (totalPlanOtbBudget === 0) {
+                otbSource = 'uniform';
+                const annualOtbTotal = (otbExecutionTrackingRaw as OTBExecutionTrackingSourceRow[])
+                    .reduce((sum, row) => sum + Number(row.plannedPurchaseAmount || 0), 0);
+                for (let i = 0; i < 12; i++) otbByMonth[i] = annualOtbTotal / 12;
+            }
+
+            depositByMonth = Array(12).fill(0);
+            balanceByMonth = Array(12).fill(0);
+            const effectiveDepositLead = simulation.depositLeadMonths ?? schedule.deposit.leadMonths;
+            const effectiveBalanceLead = simulation.balanceLeadMonths ?? schedule.balance.leadMonths;
+            for (let i = 0; i < 12; i++) {
+                const budget = otbByMonth[i];
+                const depositIdx = i - effectiveDepositLead;
+                if (depositIdx >= 0) depositByMonth[depositIdx] += budget * schedule.deposit.rateOfBudget;
+                const balanceIdx = i - effectiveBalanceLead;
+                if (balanceIdx >= 0) balanceByMonth[balanceIdx] += budget * schedule.balance.rateOfBudget;
+            }
         }
 
         if (simulation.delayOtbPaymentsMonths && simulation.delayOtbPaymentsMonths > 0) {

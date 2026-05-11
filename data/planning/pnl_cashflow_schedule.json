@@ -1,0 +1,152 @@
+{
+  "meta": {
+    "year": "2025",
+    "currency": "CNY"
+  },
+  "monthly": [
+    {
+      "month": "Jan",
+      "label": "1月",
+      "salesReceipt": 550000,
+      "purchasePayment": 380000,
+      "opexPayment": 280000,
+      "netCashflow": -110000,
+      "gapFlag": false,
+      "note": "春节前收款平稳"
+    },
+    {
+      "month": "Feb",
+      "label": "2月",
+      "salesReceipt": 480000,
+      "purchasePayment": 620000,
+      "opexPayment": 270000,
+      "netCashflow": -410000,
+      "gapFlag": true,
+      "note": "SS采购付款集中"
+    },
+    {
+      "month": "Mar",
+      "label": "3月",
+      "salesReceipt": 610000,
+      "purchasePayment": 720000,
+      "opexPayment": 290000,
+      "netCashflow": -400000,
+      "gapFlag": true,
+      "note": "SS主力款到货付款"
+    },
+    {
+      "month": "Apr",
+      "label": "4月",
+      "salesReceipt": 720000,
+      "purchasePayment": 680000,
+      "opexPayment": 300000,
+      "netCashflow": -260000,
+      "gapFlag": true,
+      "note": "SS大量采购付款"
+    },
+    {
+      "month": "May",
+      "label": "5月",
+      "salesReceipt": 810000,
+      "purchasePayment": 520000,
+      "opexPayment": 310000,
+      "netCashflow": -20000,
+      "gapFlag": false,
+      "note": "劳动节大促收款回升"
+    },
+    {
+      "month": "Jun",
+      "label": "6月",
+      "salesReceipt": 920000,
+      "purchasePayment": 480000,
+      "opexPayment": 320000,
+      "netCashflow": 120000,
+      "gapFlag": false,
+      "note": "618大促峰值"
+    },
+    {
+      "month": "Jul",
+      "label": "7月",
+      "salesReceipt": 780000,
+      "purchasePayment": 860000,
+      "opexPayment": 300000,
+      "netCashflow": -380000,
+      "gapFlag": true,
+      "note": "AW采购付款启动"
+    },
+    {
+      "month": "Aug",
+      "label": "8月",
+      "salesReceipt": 680000,
+      "purchasePayment": 920000,
+      "opexPayment": 295000,
+      "netCashflow": -535000,
+      "gapFlag": true,
+      "note": "AW主力款付款高峰"
+    },
+    {
+      "month": "Sep",
+      "label": "9月",
+      "salesReceipt": 750000,
+      "purchasePayment": 720000,
+      "opexPayment": 310000,
+      "netCashflow": -280000,
+      "gapFlag": false,
+      "note": "秋季开盘回暖"
+    },
+    {
+      "month": "Oct",
+      "label": "10月",
+      "salesReceipt": 850000,
+      "purchasePayment": 560000,
+      "opexPayment": 320000,
+      "netCashflow": -30000,
+      "gapFlag": false,
+      "note": "国庆大促"
+    },
+    {
+      "month": "Nov",
+      "label": "11月",
+      "salesReceipt": 1200000,
+      "purchasePayment": 480000,
+      "opexPayment": 380000,
+      "netCashflow": 340000,
+      "gapFlag": false,
+      "note": "双11大促峰值"
+    },
+    {
+      "month": "Dec",
+      "label": "12月",
+      "salesReceipt": 920000,
+      "purchasePayment": 420000,
+      "opexPayment": 350000,
+      "netCashflow": 150000,
+      "gapFlag": false,
+      "note": "双12+元旦备货"
+    }
+  ],
+  "summary": {
+    "dso": 18,
+    "dio": 95,
+    "dpo": 42,
+    "ccc": 71,
+    "arBalance": 280000,
+    "apBalance": 650000,
+    "peakGapMonth": "Aug",
+    "totalGapMonths": 5
+  },
+  "otbLinkage": [
+    {
+      "quarter": "Q3",
+      "otbAmount": 8000000,
+      "paymentMonth": "Jul-Aug",
+      "note": "Q3 OTB ¥800万将于7-8月集中付款，需备足现金"
+    },
+    {
+      "quarter": "Q1",
+      "otbAmount": 6500000,
+      "paymentMonth": "Feb-Mar",
+      "note": "Q1 OTB ¥650万SS订单2-3月付款"
+    }
+  ]
+}

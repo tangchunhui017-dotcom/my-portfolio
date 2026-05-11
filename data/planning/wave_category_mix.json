@@ -1,0 +1,558 @@
+[
+  {
+    "waveKey": "2026-SS-1A",
+    "fiscalYear": 2026,
+    "seasonCode": "SS",
+    "waveCode": "1A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "休闲",
+      "训练"
+    ],
+    "plannedStyleCount": 18,
+    "plannedSkuCount": 36,
+    "salesShare": 1,
+    "plannedSalesAmount": 2400000,
+    "plannedOtbBudget": 1850000,
+    "averageDepth": 520,
+    "sellThroughTarget": 0.75,
+    "priceBandFocus": [
+      "entry",
+      "volume"
+    ],
+    "productRoleFocus": [
+      "basic",
+      "main"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-SS-1B",
+    "fiscalYear": 2026,
+    "seasonCode": "SS",
+    "waveCode": "1B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "休闲"
+    ],
+    "plannedStyleCount": 20,
+    "plannedSkuCount": 40,
+    "salesShare": 1,
+    "plannedSalesAmount": 2800000,
+    "plannedOtbBudget": 2300000,
+    "averageDepth": 580,
+    "sellThroughTarget": 0.78,
+    "priceBandFocus": [
+      "volume",
+      "profit"
+    ],
+    "productRoleFocus": [
+      "test",
+      "main"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-SS-2A",
+    "fiscalYear": 2026,
+    "seasonCode": "SS",
+    "waveCode": "2A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "休闲"
+    ],
+    "plannedStyleCount": 28,
+    "plannedSkuCount": 56,
+    "salesShare": 1,
+    "plannedSalesAmount": 4700000,
+    "plannedOtbBudget": 3900000,
+    "averageDepth": 700,
+    "sellThroughTarget": 0.82,
+    "priceBandFocus": [
+      "volume",
+      "profit"
+    ],
+    "productRoleFocus": [
+      "main",
+      "hero"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-SS-2B",
+    "fiscalYear": 2026,
+    "seasonCode": "SS",
+    "waveCode": "2B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "篮球"
+    ],
+    "plannedStyleCount": 30,
+    "plannedSkuCount": 90,
+    "salesShare": 1,
+    "plannedSalesAmount": 5200000,
+    "plannedOtbBudget": 4300000,
+    "averageDepth": 760,
+    "sellThroughTarget": 0.82,
+    "priceBandFocus": [
+      "volume",
+      "profit"
+    ],
+    "productRoleFocus": [
+      "main",
+      "hero"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-SS-3A",
+    "fiscalYear": 2026,
+    "seasonCode": "SS",
+    "waveCode": "3A",
+    "categoryId": "凉拖鞋",
+    "categoryName": "凉拖鞋",
+    "categoryL3": "凉鞋",
+    "sourceCategoryNames": [
+      "凉拖"
+    ],
+    "plannedStyleCount": 14,
+    "plannedSkuCount": 42,
+    "salesShare": 0.5,
+    "plannedSalesAmount": 2400000,
+    "plannedOtbBudget": 1750000,
+    "averageDepth": 720,
+    "sellThroughTarget": 0.8,
+    "priceBandFocus": [
+      "entry",
+      "volume"
+    ],
+    "productRoleFocus": [
+      "main",
+      "hero"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-SS-3A",
+    "fiscalYear": 2026,
+    "seasonCode": "SS",
+    "waveCode": "3A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "轻量跑步"
+    ],
+    "plannedStyleCount": 14,
+    "plannedSkuCount": 42,
+    "salesShare": 0.5,
+    "plannedSalesAmount": 2400000,
+    "plannedOtbBudget": 1750000,
+    "averageDepth": 720,
+    "sellThroughTarget": 0.8,
+    "priceBandFocus": [
+      "entry",
+      "volume"
+    ],
+    "productRoleFocus": [
+      "main",
+      "hero"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-SS-3B",
+    "fiscalYear": 2026,
+    "seasonCode": "SS",
+    "waveCode": "3B",
+    "categoryId": "凉拖鞋",
+    "categoryName": "凉拖鞋",
+    "categoryL3": "凉鞋",
+    "sourceCategoryNames": [
+      "凉拖"
+    ],
+    "plannedStyleCount": 12,
+    "plannedSkuCount": 24,
+    "salesShare": 0.5,
+    "plannedSalesAmount": 1900000,
+    "plannedOtbBudget": 1050000,
+    "averageDepth": 650,
+    "sellThroughTarget": 0.78,
+    "priceBandFocus": [
+      "entry",
+      "volume"
+    ],
+    "productRoleFocus": [
+      "repeat",
+      "clearance"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-SS-3B",
+    "fiscalYear": 2026,
+    "seasonCode": "SS",
+    "waveCode": "3B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "休闲"
+    ],
+    "plannedStyleCount": 12,
+    "plannedSkuCount": 24,
+    "salesShare": 0.5,
+    "plannedSalesAmount": 1900000,
+    "plannedOtbBudget": 1050000,
+    "averageDepth": 650,
+    "sellThroughTarget": 0.78,
+    "priceBandFocus": [
+      "entry",
+      "volume"
+    ],
+    "productRoleFocus": [
+      "repeat",
+      "clearance"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-AW-4A",
+    "fiscalYear": 2026,
+    "seasonCode": "AW",
+    "waveCode": "4A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "德训鞋",
+    "sourceCategoryNames": [
+      "训练"
+    ],
+    "plannedStyleCount": 11,
+    "plannedSkuCount": 22,
+    "salesShare": 0.5,
+    "plannedSalesAmount": 1300000,
+    "plannedOtbBudget": 950000,
+    "averageDepth": 600,
+    "sellThroughTarget": 0.78,
+    "priceBandFocus": [
+      "volume",
+      "profit"
+    ],
+    "productRoleFocus": [
+      "test",
+      "main"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-AW-4A",
+    "fiscalYear": 2026,
+    "seasonCode": "AW",
+    "waveCode": "4A",
+    "categoryId": "户外鞋",
+    "categoryName": "户外鞋",
+    "categoryL3": "潮流机能",
+    "sourceCategoryNames": [
+      "户外"
+    ],
+    "plannedStyleCount": 11,
+    "plannedSkuCount": 22,
+    "salesShare": 0.5,
+    "plannedSalesAmount": 1300000,
+    "plannedOtbBudget": 950000,
+    "averageDepth": 600,
+    "sellThroughTarget": 0.78,
+    "priceBandFocus": [
+      "volume",
+      "profit"
+    ],
+    "productRoleFocus": [
+      "test",
+      "main"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-AW-4B",
+    "fiscalYear": 2026,
+    "seasonCode": "AW",
+    "waveCode": "4B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "休闲"
+    ],
+    "plannedStyleCount": 28,
+    "plannedSkuCount": 56,
+    "salesShare": 1,
+    "plannedSalesAmount": 4100000,
+    "plannedOtbBudget": 3400000,
+    "averageDepth": 720,
+    "sellThroughTarget": 0.8,
+    "priceBandFocus": [
+      "volume",
+      "profit"
+    ],
+    "productRoleFocus": [
+      "main",
+      "hero"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-AW-5A",
+    "fiscalYear": 2026,
+    "seasonCode": "AW",
+    "waveCode": "5A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步"
+    ],
+    "plannedStyleCount": 15,
+    "plannedSkuCount": 45,
+    "salesShare": 0.5,
+    "plannedSalesAmount": 2300000,
+    "plannedOtbBudget": 1900000,
+    "averageDepth": 780,
+    "sellThroughTarget": 0.82,
+    "priceBandFocus": [
+      "volume",
+      "profit"
+    ],
+    "productRoleFocus": [
+      "main",
+      "hero"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-AW-5A",
+    "fiscalYear": 2026,
+    "seasonCode": "AW",
+    "waveCode": "5A",
+    "categoryId": "户外鞋",
+    "categoryName": "户外鞋",
+    "categoryL3": "潮流机能",
+    "sourceCategoryNames": [
+      "户外"
+    ],
+    "plannedStyleCount": 15,
+    "plannedSkuCount": 45,
+    "salesShare": 0.5,
+    "plannedSalesAmount": 2300000,
+    "plannedOtbBudget": 1900000,
+    "averageDepth": 780,
+    "sellThroughTarget": 0.82,
+    "priceBandFocus": [
+      "volume",
+      "profit"
+    ],
+    "productRoleFocus": [
+      "main",
+      "hero"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-AW-5B",
+    "fiscalYear": 2026,
+    "seasonCode": "AW",
+    "waveCode": "5B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "篮球"
+    ],
+    "plannedStyleCount": 16,
+    "plannedSkuCount": 48,
+    "salesShare": 0.5,
+    "plannedSalesAmount": 2600000,
+    "plannedOtbBudget": 2100000,
+    "averageDepth": 840,
+    "sellThroughTarget": 0.83,
+    "priceBandFocus": [
+      "profit",
+      "image"
+    ],
+    "productRoleFocus": [
+      "main",
+      "hero"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-AW-5B",
+    "fiscalYear": 2026,
+    "seasonCode": "AW",
+    "waveCode": "5B",
+    "categoryId": "户外鞋",
+    "categoryName": "户外鞋",
+    "categoryL3": "潮流机能",
+    "sourceCategoryNames": [
+      "户外"
+    ],
+    "plannedStyleCount": 16,
+    "plannedSkuCount": 48,
+    "salesShare": 0.5,
+    "plannedSalesAmount": 2600000,
+    "plannedOtbBudget": 2100000,
+    "averageDepth": 840,
+    "sellThroughTarget": 0.83,
+    "priceBandFocus": [
+      "profit",
+      "image"
+    ],
+    "productRoleFocus": [
+      "main",
+      "hero"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-AW-6A",
+    "fiscalYear": 2026,
+    "seasonCode": "AW",
+    "waveCode": "6A",
+    "categoryId": "靴类",
+    "categoryName": "靴类",
+    "categoryL3": "雪地靴",
+    "sourceCategoryNames": [
+      "保暖"
+    ],
+    "plannedStyleCount": 18,
+    "plannedSkuCount": 54,
+    "salesShare": 0.5,
+    "plannedSalesAmount": 3100000,
+    "plannedOtbBudget": 2550000,
+    "averageDepth": 920,
+    "sellThroughTarget": 0.84,
+    "priceBandFocus": [
+      "profit",
+      "image"
+    ],
+    "productRoleFocus": [
+      "hero",
+      "main"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-AW-6A",
+    "fiscalYear": 2026,
+    "seasonCode": "AW",
+    "waveCode": "6A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "篮球"
+    ],
+    "plannedStyleCount": 18,
+    "plannedSkuCount": 54,
+    "salesShare": 0.5,
+    "plannedSalesAmount": 3100000,
+    "plannedOtbBudget": 2550000,
+    "averageDepth": 920,
+    "sellThroughTarget": 0.84,
+    "priceBandFocus": [
+      "profit",
+      "image"
+    ],
+    "productRoleFocus": [
+      "hero",
+      "main"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-AW-6B",
+    "fiscalYear": 2026,
+    "seasonCode": "AW",
+    "waveCode": "6B",
+    "categoryId": "靴类",
+    "categoryName": "靴类",
+    "categoryL3": "雪地靴",
+    "sourceCategoryNames": [
+      "保暖"
+    ],
+    "plannedStyleCount": 12,
+    "plannedSkuCount": 24,
+    "salesShare": 0.5,
+    "plannedSalesAmount": 1550000,
+    "plannedOtbBudget": 925000,
+    "averageDepth": 650,
+    "sellThroughTarget": 0.8,
+    "priceBandFocus": [
+      "entry",
+      "volume"
+    ],
+    "productRoleFocus": [
+      "repeat",
+      "clearance"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  },
+  {
+    "waveKey": "2026-AW-6B",
+    "fiscalYear": 2026,
+    "seasonCode": "AW",
+    "waveCode": "6B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "休闲"
+    ],
+    "plannedStyleCount": 12,
+    "plannedSkuCount": 24,
+    "salesShare": 0.5,
+    "plannedSalesAmount": 1550000,
+    "plannedOtbBudget": 925000,
+    "averageDepth": 650,
+    "sellThroughTarget": 0.8,
+    "priceBandFocus": [
+      "entry",
+      "volume"
+    ],
+    "productRoleFocus": [
+      "repeat",
+      "clearance"
+    ],
+    "owner": "商品企划",
+    "version": "plan_2026_v1"
+  }
+]

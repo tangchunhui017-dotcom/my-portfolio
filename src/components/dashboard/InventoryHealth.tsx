@@ -1,205 +1,168 @@
 'use client';
+/**
+ * src/components/dashboard/InventoryHealth.tsx  V2
+ * 库存健康诊断与动作台 — 鞋类商品企划专用
+ * 页面顺序：KPI总览 → 行动队列 → 四象限 → WOS分布 → 风险明细表 → 尺码/渠道 → 生命周期 → 联动说明
+ */
+import { useState } from 'react';
+import invDataRaw from '../../../data/planning/inventory_health_plan.json';
+import InvKpiBar from '@/components/inventory/InvKpiBar';
+import InvActionQueue from '@/components/inventory/InvActionQueue';
+import InvQuadrant from '@/components/inventory/InvQuadrant';
+import InvWosDistribution from '@/components/inventory/InvWosDistribution';
+import InvRiskTable from '@/components/inventory/InvRiskTable';
+import InvSizeChannel from '@/components/inventory/InvSizeChannel';
+import InvLifecycle from '@/components/inventory/InvLifecycle';
+import { fmtCny, type StyleRecord } from '@/utils/inventoryHealth';
 
-import type { DashboardLifecycleLabel } from '@/config/dashboardLifecycle';
+type InvData = typeof invDataRaw;
+const invData = invDataRaw as InvData;
+const styles = invData.styles as StyleRecord[];
 
-type SkuWosItem = {
-    skuId: string;
-    name: string;
-    category: string;
-    wos: number;
-    onHandUnits: number;
-    sellThrough: number;
-    lifecycle: DashboardLifecycleLabel | '-';
-    msrp: number;
-};
-
-interface InventoryHealthProps {
-    skuWosData: SkuWosItem[];
-}
-
-// WOS 分桶定义
-const WOS_BUCKETS = [
-    { key: 'stockout', label: '< 4 周', desc: '断货风险', min: 0, max: 4, color: '#ef4444', bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', badge: '🔴' },
-    { key: 'tight', label: '4–6 周', desc: '库存偏紧', min: 4, max: 6, color: '#f97316', bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', badge: '🟠' },
-    { key: 'healthy', label: '6–8 周', desc: '健康区间', min: 6, max: 8, color: '#22c55e', bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', badge: '🟢' },
-    { key: 'high', label: '8–12 周', desc: '库存偏高', min: 8, max: 12, color: '#eab308', bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-700', badge: '🟡' },
-    { key: 'overstock', label: '> 12 周', desc: '积压风险', min: 12, max: Infinity, color: '#8b5cf6', bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700', badge: '🔴' },
+// 锚点列表
+const SECTIONS = [
+    { anchor: 'inv-kpi', label: 'KPI 总览' },
+    { anchor: 'inv-actions', label: '行动队列' },
+    { anchor: 'inv-quadrant', label: '四象限' },
+    { anchor: 'inv-wos', label: 'WOS 分布' },
+    { anchor: 'inv-risk', label: '风险明细' },
+    { anchor: 'inv-size', label: '尺码/渠道' },
+    { anchor: 'inv-lifecycle', label: '生命周期' },
+    { anchor: 'inv-linkage', label: '模块联动' },
 ];
 
-function getBucket(wos: number) {
-    return WOS_BUCKETS.find(b => wos >= b.min && wos < b.max) ?? WOS_BUCKETS[4];
+function SectionHeader({ anchor, title, sub }: { anchor: string; title: string; sub?: string }) {
+    return (
+        <div id={anchor} className="border-b border-slate-100 pb-3">
+            <h2 className="text-sm font-bold text-slate-800">{title}</h2>
+            {sub && <p className="text-[11px] text-slate-400 mt-0.5">{sub}</p>}
+        </div>
+    );
 }
 
-export default function InventoryHealth({ skuWosData }: InventoryHealthProps) {
-    if (!skuWosData || skuWosData.length === 0) {
-        return (
-            <div className="flex items-center justify-center h-40 text-slate-400">
-                <div className="text-center">
-                    <div className="text-4xl mb-2">📦</div>
-                    <div>无库存数据</div>
-                </div>
-            </div>
-        );
-    }
+export default function InventoryHealth() {
+    const [activeAnchor, setActiveAnchor] = useState('inv-kpi');
+    const clearanceMarginLoss = styles
+        .filter(s => ['overstock', 'high'].includes(s.riskType))
+        .reduce((sum, s) => sum + Math.min(0, s.financialImpact), 0);
+    const plannedCashRecovery = Math.round(invData.summary.overstockAmount * 0.66 / 10000) * 10000;
+    const financeCards = [
+        { l: '断货机会损失', v: fmtCny(invData.summary.stockoutOpportunityLoss), tone: 'negative', note: '可避免损失' },
+        { l: '积压占用现金', v: fmtCny(invData.summary.overstockAmount), tone: 'negative', note: '积压库存金额' },
+        { l: '预计清货毛利损失', v: fmtCny(clearanceMarginLoss), tone: 'negative', note: '折扣侵蚀' },
+        { l: '清货后现金回收', v: `+${fmtCny(plannedCashRecovery)}`, tone: 'positive', note: '按清货方案估算' },
+    ];
 
-    // 分桶统计
-    const bucketCounts = WOS_BUCKETS.map(b => ({
-        ...b,
-        skus: skuWosData.filter(s => s.wos >= b.min && s.wos < b.max),
-    }));
-    const totalSkus = skuWosData.length;
-    const maxCount = Math.max(...bucketCounts.map(b => b.skus.length), 1);
-
-    // 需关注列表
-    const stockoutRisk = [...skuWosData].filter(s => s.wos < 4).sort((a, b) => a.wos - b.wos).slice(0, 8);
-    const overstockRisk = [...skuWosData].filter(s => s.wos > 12 && s.wos < 90).sort((a, b) => b.wos - a.wos).slice(0, 8);
-
-    // 整体健康判断
-    const healthyPct = bucketCounts.find(b => b.key === 'healthy')!.skus.length / totalSkus;
-    const riskPct = (bucketCounts.find(b => b.key === 'stockout')!.skus.length + bucketCounts.find(b => b.key === 'overstock')!.skus.length) / totalSkus;
-    const healthStatus = riskPct > 0.3 ? 'danger' : riskPct > 0.15 ? 'warn' : 'good';
-
-    const statusConfig = {
-        good: { label: '库存结构健康', badge: '✅', accentBar: 'bg-emerald-500', headerBg: 'bg-gradient-to-r from-emerald-50 to-white', border: 'border-emerald-200', badgeBg: 'bg-emerald-100 text-emerald-800 border-emerald-300' },
-        warn: { label: '结构偏差，需关注', badge: '⚠️', accentBar: 'bg-amber-500', headerBg: 'bg-gradient-to-r from-amber-50 to-white', border: 'border-amber-200', badgeBg: 'bg-amber-100 text-amber-800 border-amber-300' },
-        danger: { label: '结构失衡，立即处置', badge: '🚨', accentBar: 'bg-red-500', headerBg: 'bg-gradient-to-r from-red-50 to-white', border: 'border-red-200', badgeBg: 'bg-red-100 text-red-800 border-red-300' },
+    // IntersectionObserver 锚点高亮
+    // (仅客户端，简单实现)
+    const scrollTo = (anchor: string) => {
+        setActiveAnchor(anchor);
+        document.getElementById(anchor)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
-    const sc = statusConfig[healthStatus];
 
     return (
-        <div className={`rounded-2xl border ${sc.border} overflow-hidden shadow-sm`}>
-            <div className="flex">
-                {/* 左侧竖条 */}
-                <div className={`w-1.5 shrink-0 ${sc.accentBar}`} />
-
-                <div className="flex-1">
-                    {/* 头部 */}
-                    <div className={`${sc.headerBg} px-5 pt-5 pb-4 flex items-center justify-between`}>
-                        <div className="flex items-center gap-3">
-                            <span className="text-3xl leading-none">📦</span>
-                            <div>
-                                <h2 className="text-lg font-bold text-slate-900 leading-tight">库存健康分布</h2>
-                                <p className="text-xs text-slate-400 mt-0.5">WOS 分布 · 断货 / 积压风险识别 · 共 {totalSkus} 个在库 SKU</p>
-                            </div>
-                        </div>
-                        <span className={`text-sm font-bold px-3 py-1 rounded-full border ${sc.badgeBg}`}>
-                            {sc.badge} {sc.label}
-                        </span>
-                    </div>
-
-                    <div className="px-5 py-4 bg-white">
-                        {/* WOS 分布横向条形图 */}
-                        <div className="mb-6">
-                            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">WOS 分布</h3>
-                            <div className="space-y-2.5">
-                                {bucketCounts.map(bucket => {
-                                    const pct = bucket.skus.length / totalSkus * 100;
-                                    const barWidth = bucket.skus.length / maxCount * 100;
-                                    return (
-                                        <div key={bucket.key} className="flex items-center gap-3">
-                                            {/* 标签 */}
-                                            <div className="w-20 shrink-0 text-right">
-                                                <span className="text-xs font-medium text-slate-600">{bucket.label}</span>
-                                            </div>
-                                            {/* 条形 */}
-                                            <div className="flex-1 bg-slate-100 rounded-full h-5 relative overflow-hidden">
-                                                <div
-                                                    className="h-full rounded-full transition-all duration-500 flex items-center justify-end pr-2"
-                                                    style={{ width: `${Math.max(barWidth, 2)}%`, backgroundColor: bucket.color }}
-                                                >
-                                                    {bucket.skus.length > 0 && (
-                                                        <span className="text-[10px] font-bold text-white">{bucket.skus.length}</span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            {/* 占比 + 描述 */}
-                                            <div className="w-28 shrink-0 flex items-center gap-1.5">
-                                                <span className="text-xs font-semibold text-slate-700">{pct.toFixed(0)}%</span>
-                                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${bucket.bg} ${bucket.text} border ${bucket.border}`}>
-                                                    {bucket.desc}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
-                            {/* 图例注释 */}
-                            <div className="mt-3 text-xs text-slate-400 flex flex-wrap gap-3">
-                                <span>🟢 6-8 周 = 健康区间</span>
-                                <span>目标：健康区间 SKU 占比 &gt; 50%</span>
-                                <span>当前健康占比：<strong className="text-slate-700">{(healthyPct * 100).toFixed(0)}%</strong></span>
-                            </div>
-                        </div>
-
-                        {/* 风险 SKU 双列表 */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* 断货风险 */}
-                            <div className={`rounded-xl border border-red-200 bg-red-50 p-4`}>
-                                <h4 className="text-xs font-bold text-red-700 uppercase tracking-wide mb-3 flex items-center gap-1.5">
-                                    <span>🔴</span> 断货风险（WOS &lt; 4 周）
-                                    <span className="ml-auto bg-red-100 text-red-800 border border-red-300 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                        {stockoutRisk.length} 款
-                                    </span>
-                                </h4>
-                                {stockoutRisk.length === 0 ? (
-                                    <p className="text-xs text-red-400 text-center py-2">✅ 暂无断货风险</p>
-                                ) : (
-                                    <div className="space-y-2">
-                                        {stockoutRisk.map(sku => (
-                                            <div key={sku.skuId} className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-red-100">
-                                                <div className="min-w-0 flex-1">
-                                                    <p className="text-xs font-semibold text-slate-800 truncate">{sku.name}</p>
-                                                    <p className="text-[10px] text-slate-400">{sku.category} · {sku.lifecycle} · ¥{sku.msrp}</p>
-                                                </div>
-                                                <div className="text-right ml-3 shrink-0">
-                                                    <p className="text-sm font-bold text-red-600">{sku.wos}W</p>
-                                                    <p className="text-[10px] text-slate-400">{sku.onHandUnits} 双</p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* 积压风险 */}
-                            <div className={`rounded-xl border border-purple-200 bg-purple-50 p-4`}>
-                                <h4 className="text-xs font-bold text-purple-700 uppercase tracking-wide mb-3 flex items-center gap-1.5">
-                                    <span>🟣</span> 积压风险（WOS &gt; 12 周）
-                                    <span className="ml-auto bg-purple-100 text-purple-800 border border-purple-300 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                        {overstockRisk.length} 款
-                                    </span>
-                                </h4>
-                                {overstockRisk.length === 0 ? (
-                                    <p className="text-xs text-purple-400 text-center py-2">✅ 暂无积压风险</p>
-                                ) : (
-                                    <div className="space-y-2">
-                                        {overstockRisk.map(sku => (
-                                            <div key={sku.skuId} className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-purple-100">
-                                                <div className="min-w-0 flex-1">
-                                                    <p className="text-xs font-semibold text-slate-800 truncate">{sku.name}</p>
-                                                    <p className="text-[10px] text-slate-400">{sku.category} · {sku.lifecycle} · ¥{sku.msrp}</p>
-                                                </div>
-                                                <div className="text-right ml-3 shrink-0">
-                                                    <p className="text-sm font-bold text-purple-600">{sku.wos}W</p>
-                                                    <p className="text-[10px] text-slate-400">{sku.onHandUnits} 双</p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 底部说明 */}
-                    <div className="bg-slate-50 px-5 py-2.5 border-t border-slate-100 text-xs text-slate-400 flex flex-wrap gap-4">
-                        <span>WOS = 期末库存 / 周均销量（单款口径）</span>
-                        <span>数据基准：最新记录周</span>
-                        <span className="ml-auto">风险阈值：断货 &lt;4W · 积压 &gt;12W</span>
-                    </div>
+        <div className="space-y-6">
+            {/* 顶部导航 */}
+            <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm py-2 border-b border-slate-100 -mx-1 px-1">
+                <div className="flex gap-1 flex-wrap">
+                    {SECTIONS.map(s => (
+                        <button key={s.anchor} onClick={() => scrollTo(s.anchor)}
+                            className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${
+                                activeAnchor === s.anchor
+                                    ? 'bg-sky-500 text-white shadow-sm'
+                                    : 'bg-white border border-slate-200 text-slate-500 hover:border-sky-300 hover:text-sky-600'
+                            }`}>
+                            {s.label}
+                        </button>
+                    ))}
                 </div>
             </div>
+
+            {/* S1: KPI 总览 */}
+            <section className="space-y-3">
+                <SectionHeader anchor="inv-kpi" title="库存健康总览 KPI"
+                    sub="库存金额 / 可售双数 / 整体WOS / 健康占比 / 机会损失 / 积压金额 / 补货&清货款数" />
+                <InvKpiBar summary={invData.summary} styles={styles} />
+            </section>
+
+            {/* S2: 今日行动队列 */}
+            <section className="space-y-3">
+                <SectionHeader anchor="inv-actions" title="今日优先处理行动队列"
+                    sub="按影响金额排序 · 含负责人/截止时间/联动去向 · 可按风险类型筛选" />
+                <InvActionQueue items={invData.actionQueue} />
+            </section>
+
+            {/* S3: 库存四象限 */}
+            <section className="space-y-3">
+                <SectionHeader anchor="inv-quadrant" title="库存四象限诊断"
+                    sub="高销缺货(补) / 高销充足(保) / 低销积压(清) / 低销正常(观) — 精准匹配动作" />
+                <InvQuadrant styles={styles} />
+            </section>
+
+            {/* S4: WOS 分布 */}
+            <section className="space-y-3">
+                <SectionHeader anchor="inv-wos" title="WOS 分布"
+                    sub="基于重点监控款式样本，支持 SKU款数 / 可售双数 / 库存金额 三种口径切换" />
+                <InvWosDistribution styles={styles} />
+            </section>
+
+            {/* S5: 断货/积压风险明细表 */}
+            <section className="space-y-3">
+                <SectionHeader anchor="inv-risk" title="断货 / 积压风险明细表"
+                    sub="重点风险款明细 · 断货按机会损失排序 · 积压按库存金额排序 · 含品类/波段/渠道/尺码断码 · 可筛选" />
+                <InvRiskTable styles={styles} />
+            </section>
+
+            {/* S6: 尺码健康 + 渠道分布 */}
+            <section className="space-y-3">
+                <SectionHeader anchor="inv-size" title="尺码健康与渠道/区域分布"
+                    sub="核心码覆盖率 / 断码率 / 边缘码积压率 | 各渠道库存健康/断货/积压占比" />
+                <InvSizeChannel sizeHealth={invData.sizeHealth} channelDistribution={invData.channelDistribution} />
+            </section>
+
+            {/* S7: 波段生命周期 */}
+            <section className="space-y-3">
+                <SectionHeader anchor="inv-lifecycle" title="波段生命周期库存复盘"
+                    sub="不同生命周期用不同WOS阈值 · 商品企划反写建议 · 下季加深/减量/尺码曲线修正" />
+                <InvLifecycle lifecycleDistribution={invData.lifecycleDistribution} />
+            </section>
+
+            {/* S8: 模块联动说明 */}
+            <section className="space-y-3">
+                <SectionHeader anchor="inv-linkage" title="与其他模块联动"
+                    sub="库存健康反向影响 OTB / 销售预测 / 现金流 / 损益 / 品类运营" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {[
+                        { icon: '📦', title: 'OTB 预算', desc: '断货款→紧急追单，积压款→控单/停补，反写下期采购预算', color: 'border-sky-100 bg-sky-50/40' },
+                        { icon: '📈', title: '销售预测', desc: '用实际销速/断码率/售罄率修正预测模型，防止过预测/欠预测', color: 'border-emerald-100 bg-emerald-50/40' },
+                        { icon: '💰', title: '现金流', desc: '积压库存占用现金，清货回款释放现金，影响每月现金缺口', color: 'border-amber-100 bg-amber-50/40' },
+                        { icon: '📊', title: '损益(P&L)', desc: '清货折扣侵蚀毛利，断货机会损失影响净收入，库存跌价影响营业利润', color: 'border-rose-100 bg-rose-50/40' },
+                        { icon: '🗂️', title: '品类运营', desc: '按品类识别结构性过深/过浅，输出下季买量建议和尺码曲线修正', color: 'border-violet-100 bg-violet-50/40' },
+                        { icon: '📋', title: '年度总控', desc: '输出库存周转次数、售罄率、断码率、清货率等年度经营指标', color: 'border-slate-100 bg-slate-50/40' },
+                    ].map(l => (
+                        <div key={l.title} className={`rounded-xl border p-4 ${l.color}`}>
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="text-lg">{l.icon}</span>
+                                <span className="text-xs font-bold text-slate-800">{l.title}</span>
+                            </div>
+                            <p className="text-[11px] text-slate-500">{l.desc}</p>
+                        </div>
+                    ))}
+                </div>
+                {/* 财务影响摘要 */}
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+                    <div className="text-xs font-bold text-slate-700 mb-3">💹 财务影响摘要</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[11px]">
+                        {financeCards.map(k => (
+                            <div key={k.l} className={`rounded-xl border px-3 py-2.5 ${k.tone === 'positive' ? 'border-emerald-100 bg-emerald-50' : 'border-rose-100 bg-rose-50'}`}>
+                                <div className="text-slate-400 mb-1">{k.l}</div>
+                                <div className={`font-bold text-sm ${k.tone === 'positive' ? 'text-emerald-700' : 'text-rose-700'}`}>{k.v}</div>
+                                <div className="text-slate-400 text-[10px] mt-0.5">{k.note}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
         </div>
     );
 }

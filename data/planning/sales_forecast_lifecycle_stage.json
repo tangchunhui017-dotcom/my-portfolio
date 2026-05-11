@@ -1,0 +1,129 @@
+{
+  "_comment": "商品生命周期阶段贡献（新品/延续/翻单/清货）",
+  "overall": {
+    "newStyle": 0.35,
+    "carryover": 0.4,
+    "replenishment": 0.15,
+    "clearance": 0.1
+  },
+  "byChannel": [
+    {
+      "channel": "physical",
+      "newStyle": 0.32,
+      "carryover": 0.42,
+      "replenishment": 0.16,
+      "clearance": 0.1
+    },
+    {
+      "channel": "ecommerce",
+      "newStyle": 0.38,
+      "carryover": 0.38,
+      "replenishment": 0.14,
+      "clearance": 0.1
+    },
+    {
+      "channel": "new_store",
+      "newStyle": 0.45,
+      "carryover": 0.38,
+      "replenishment": 0.12,
+      "clearance": 0.05
+    }
+  ],
+  "byMonth": [
+    {
+      "month": 1,
+      "newStyle": 0.15,
+      "carryover": 0.5,
+      "replenishment": 0.18,
+      "clearance": 0.17
+    },
+    {
+      "month": 2,
+      "newStyle": 0.2,
+      "carryover": 0.48,
+      "replenishment": 0.18,
+      "clearance": 0.14
+    },
+    {
+      "month": 3,
+      "newStyle": 0.42,
+      "carryover": 0.38,
+      "replenishment": 0.12,
+      "clearance": 0.08
+    },
+    {
+      "month": 4,
+      "newStyle": 0.48,
+      "carryover": 0.35,
+      "replenishment": 0.12,
+      "clearance": 0.05
+    },
+    {
+      "month": 5,
+      "newStyle": 0.45,
+      "carryover": 0.36,
+      "replenishment": 0.13,
+      "clearance": 0.06
+    },
+    {
+      "month": 6,
+      "newStyle": 0.38,
+      "carryover": 0.4,
+      "replenishment": 0.14,
+      "clearance": 0.08
+    },
+    {
+      "month": 7,
+      "newStyle": 0.35,
+      "carryover": 0.42,
+      "replenishment": 0.15,
+      "clearance": 0.08
+    },
+    {
+      "month": 8,
+      "newStyle": 0.3,
+      "carryover": 0.42,
+      "replenishment": 0.15,
+      "clearance": 0.13
+    },
+    {
+      "month": 9,
+      "newStyle": 0.4,
+      "carryover": 0.38,
+      "replenishment": 0.14,
+      "clearance": 0.08
+    },
+    {
+      "month": 10,
+      "newStyle": 0.45,
+      "carryover": 0.35,
+      "replenishment": 0.12,
+      "clearance": 0.08
+    },
+    {
+      "month": 11,
+      "newStyle": 0.42,
+      "carryover": 0.38,
+      "replenishment": 0.12,
+      "clearance": 0.08
+    },
+    {
+      "month": 12,
+      "newStyle": 0.28,
+      "carryover": 0.38,
+      "replenishment": 0.14,
+      "clearance": 0.2
+    }
+  ],
+  "healthBenchmark": {
+    "newStyleTarget": {
+      "min": 0.3,
+      "max": 0.45
+    },
+    "carryoverTarget": {
+      "min": 0.35,
+      "max": 0.45
+    },
+    "clearanceAlert": 0.15
+  }
+}

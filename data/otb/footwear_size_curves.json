@@ -1,0 +1,90 @@
+[
+  {
+    "type": "mens_sport",
+    "label": "男款运动",
+    "sizes": [
+      { "size": "36", "weight": 0.02, "tier": "edge" },
+      { "size": "37", "weight": 0.05, "tier": "edge" },
+      { "size": "38", "weight": 0.10, "tier": "core" },
+      { "size": "39", "weight": 0.17, "tier": "core" },
+      { "size": "40", "weight": 0.20, "tier": "core" },
+      { "size": "41", "weight": 0.19, "tier": "core" },
+      { "size": "42", "weight": 0.14, "tier": "core" },
+      { "size": "43", "weight": 0.08, "tier": "extended" },
+      { "size": "44", "weight": 0.04, "tier": "edge" },
+      { "size": "45", "weight": 0.01, "tier": "edge" }
+    ],
+    "coreRange": ["38", "39", "40", "41", "42"],
+    "edgeRange": ["36", "37", "44", "45"],
+    "corePctTarget": 0.80,
+    "edgePctWarning": 0.25
+  },
+  {
+    "type": "mens_formal",
+    "label": "男款正装",
+    "sizes": [
+      { "size": "38", "weight": 0.03, "tier": "edge" },
+      { "size": "39", "weight": 0.10, "tier": "core" },
+      { "size": "40", "weight": 0.20, "tier": "core" },
+      { "size": "41", "weight": 0.25, "tier": "core" },
+      { "size": "42", "weight": 0.22, "tier": "core" },
+      { "size": "43", "weight": 0.12, "tier": "extended" },
+      { "size": "44", "weight": 0.06, "tier": "edge" },
+      { "size": "45", "weight": 0.02, "tier": "edge" }
+    ],
+    "coreRange": ["39", "40", "41", "42"],
+    "edgeRange": ["38", "44", "45"],
+    "corePctTarget": 0.77,
+    "edgePctWarning": 0.25
+  },
+  {
+    "type": "womens_sport",
+    "label": "女款运动",
+    "sizes": [
+      { "size": "35", "weight": 0.05, "tier": "edge" },
+      { "size": "36", "weight": 0.15, "tier": "core" },
+      { "size": "37", "weight": 0.25, "tier": "core" },
+      { "size": "38", "weight": 0.25, "tier": "core" },
+      { "size": "39", "weight": 0.18, "tier": "core" },
+      { "size": "40", "weight": 0.09, "tier": "extended" },
+      { "size": "41", "weight": 0.03, "tier": "edge" }
+    ],
+    "coreRange": ["36", "37", "38", "39"],
+    "edgeRange": ["35", "41"],
+    "corePctTarget": 0.83,
+    "edgePctWarning": 0.25
+  },
+  {
+    "type": "womens_sandal",
+    "label": "女款凉拖",
+    "sizes": [
+      { "size": "35", "weight": 0.08, "tier": "edge" },
+      { "size": "36", "weight": 0.20, "tier": "core" },
+      { "size": "37", "weight": 0.28, "tier": "core" },
+      { "size": "38", "weight": 0.24, "tier": "core" },
+      { "size": "39", "weight": 0.14, "tier": "extended" },
+      { "size": "40", "weight": 0.06, "tier": "edge" }
+    ],
+    "coreRange": ["36", "37", "38"],
+    "edgeRange": ["35", "40"],
+    "corePctTarget": 0.72,
+    "edgePctWarning": 0.25
+  },
+  {
+    "type": "kids",
+    "label": "童款",
+    "sizes": [
+      { "size": "26", "weight": 0.05, "tier": "edge" },
+      { "size": "28", "weight": 0.12, "tier": "core" },
+      { "size": "30", "weight": 0.18, "tier": "core" },
+      { "size": "32", "weight": 0.22, "tier": "core" },
+      { "size": "34", "weight": 0.20, "tier": "core" },
+      { "size": "36", "weight": 0.15, "tier": "extended" },
+      { "size": "38", "weight": 0.08, "tier": "edge" }
+    ],
+    "coreRange": ["28", "30", "32", "34"],
+    "edgeRange": ["26", "38"],
+    "corePctTarget": 0.72,
+    "edgePctWarning": 0.30
+  }
+]

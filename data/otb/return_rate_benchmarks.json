@@ -1,0 +1,11 @@
+[
+  { "channel": "ecom_sport",    "label": "电商-运动",    "returnRatePct": 0.25, "notes": "尺码问题是主因，鞋类电商退货率显著高于服装" },
+  { "channel": "ecom_formal",   "label": "电商-正装",    "returnRatePct": 0.15, "notes": "正装鞋型较固定，退货率略低" },
+  { "channel": "ecom_sandal",   "label": "电商-凉拖",    "returnRatePct": 0.10, "notes": "凉拖码数相对宽松，退货率最低" },
+  { "channel": "ecom_boot",     "label": "电商-靴类",    "returnRatePct": 0.20, "notes": "靴类试穿限制多，退货率高" },
+  { "channel": "retail_sport",  "label": "实体-运动",    "returnRatePct": 0.05, "notes": "线下可试穿，退货率极低" },
+  { "channel": "retail_formal", "label": "实体-正装",    "returnRatePct": 0.03, "notes": "正装鞋实体退货率最低" },
+  { "channel": "retail_sandal", "label": "实体-凉拖",    "returnRatePct": 0.04, "notes": "" },
+  { "channel": "retail_boot",   "label": "实体-靴类",    "returnRatePct": 0.06, "notes": "" },
+  { "channel": "wholesale",     "label": "批发/代理",    "returnRatePct": 0.03, "notes": "批发渠道以合同约定为准，实际退货率低" }
+]

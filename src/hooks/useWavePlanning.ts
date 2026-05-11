@@ -6,6 +6,7 @@ import { matchesDashboardSkuCategoryFilters, type DashboardFilters } from '@/hoo
 import { resolveFootwearCategory } from '@/config/categoryMapping';
 import { resolveDashboardLifecycleLabel } from '@/config/dashboardLifecycle';
 import { matchesPriceBandFilter } from '@/config/priceBand';
+import { getWavePlanningRecordsFromMaster } from '@/utils/wavePlanMaster';
 
 interface WavePlanRecord {
     id: string;
@@ -259,6 +260,28 @@ function normalizeWaveCode(wave: string | undefined) {
     return `W${Number(match[0])}`;
 }
 
+function mergeWavePlanRecords(masterRows: WavePlanRecord[], remoteRows: WavePlanRecord[]): WavePlanRecord[] {
+    const byKey = new Map<string, WavePlanRecord>();
+    masterRows.forEach((row) => {
+        byKey.set(`${row.season}__${normalizeWaveCode(row.wave)}`, row);
+    });
+    remoteRows.forEach((row) => {
+        byKey.set(`${row.season}__${normalizeWaveCode(row.wave)}`, row);
+    });
+    return [...byKey.values()];
+}
+
+function resolveQuarterFromWave(wave: string | undefined) {
+    const match = wave?.match(/\d+/);
+    if (!match) return null;
+    const waveNo = Number(match[0]);
+    if (!Number.isFinite(waveNo)) return null;
+    if (waveNo <= 3) return 'Q1';
+    if (waveNo <= 6) return 'Q2';
+    if (waveNo <= 9) return 'Q3';
+    return 'Q4';
+}
+
 function normalizeCategory(
     categoryName: string | undefined,
     categoryId: string | undefined,
@@ -310,7 +333,12 @@ function matchesWavePlanningTimeFilters(filters: DashboardFilters | undefined, r
 function matchesWavePlanningPlanFilters(filters: DashboardFilters | undefined, wave: WavePlanRecord) {
     if (!filters) return true;
     if (filters.season_year !== 'all' && !String(wave.season).startsWith(String(filters.season_year))) return false;
-    if (filters.season !== 'all' && !String(wave.season).toUpperCase().endsWith(String(filters.season).toUpperCase())) return false;
+    if (filters.season !== 'all') {
+        const quarter = resolveQuarterFromWave(wave.wave);
+        const seasonText = String(wave.season).toUpperCase();
+        const selectedSeason = String(filters.season).toUpperCase();
+        if (quarter !== selectedSeason && !seasonText.endsWith(selectedSeason)) return false;
+    }
     if (filters.wave !== 'all' && normalizeWaveCode(wave.wave) !== normalizeWaveCode(filters.wave)) return false;
     return true;
 }
@@ -383,16 +411,42 @@ function evaluateWaveTempStatus(
 export function useWavePlanning(filters?: DashboardFilters) {
     const { data: wavePlanData, isLoading: l1 } = useDimWavePlan();
     const { data: dimSkuData, isLoading: l2 } = useDimSku();
+    const selectedSeasonYearFilter = filters?.season_year;
+    const masterWavePlanState = useMemo(() => {
+        const requestedRows = getWavePlanningRecordsFromMaster(selectedSeasonYearFilter).map((row) => row as WavePlanRecord);
+        const allRows = getWavePlanningRecordsFromMaster().map((row) => row as WavePlanRecord);
+        const useYearFallback = Boolean(
+            selectedSeasonYearFilter !== undefined &&
+            selectedSeasonYearFilter !== 'all' &&
+            requestedRows.length === 0 &&
+            allRows.length > 0,
+        );
+        const fallbackYear = useYearFallback
+            ? String(allRows[0]?.season ?? '').match(/\d{4}/)?.[0]
+            : undefined;
+
+        return {
+            rows: useYearFallback ? allRows : requestedRows,
+            useYearFallback,
+            fallbackYear,
+        };
+    }, [selectedSeasonYearFilter]);
     const selectedYear = filters
-        ? (filters.season_year !== 'all' ? String(filters.season_year) : undefined)
+        ? (selectedSeasonYearFilter !== 'all' ? String(selectedSeasonYearFilter) : undefined)
         : '2025';
-    const { data: factSalesData, isLoading: l3 } = useFactSales(selectedYear);
+    const factSalesYear = masterWavePlanState.useYearFallback ? undefined : selectedYear;
+    const { data: factSalesData, isLoading: l3 } = useFactSales(factSalesYear);
     const { data: factInventoryData, isLoading: l4 } = useFactInventory();
     const { data: factPlanData, isLoading: l5 } = useFactPlan();
     const { data: dimChannelData } = useDimChannel();
 
     const isLoading = l1 || l2 || l3 || l4 || l5;
-    const wavePlan = useMemo(() => (wavePlanData ?? []) as WavePlanRecord[], [wavePlanData]);
+    const wavePlan = useMemo(
+        () => masterWavePlanState.rows.length > 0
+            ? masterWavePlanState.rows
+            : mergeWavePlanRecords([], (wavePlanData ?? []) as WavePlanRecord[]),
+        [masterWavePlanState.rows, wavePlanData],
+    );
     const dimSku = useMemo(() => (dimSkuData ?? []) as DimSkuRecord[], [dimSkuData]);
     const factSales = useMemo(() => (factSalesData ?? []) as FactSalesRecord[], [factSalesData]);
     const factInventory = useMemo(() => (factInventoryData ?? []) as FactInventoryRecord[], [factInventoryData]);
@@ -410,19 +464,31 @@ export function useWavePlanning(filters?: DashboardFilters) {
             channelMap.set(channel.channel_id, channel);
         });
 
-        const scopedDimSku = dimSku.filter((sku) => matchesWavePlanningSkuFilters(filters, sku));
+        const planningFilters = masterWavePlanState.useYearFallback && filters
+            ? { ...filters, season_year: 'all' as const }
+            : filters;
+        const planScopeFilters = planningFilters ? { ...planningFilters, wave: 'all' as const } : undefined;
+        const planScopeWaves = [...wavePlan]
+            .filter((wave) => matchesWavePlanningPlanFilters(planScopeFilters, wave))
+            .sort((a, b) => parseDateMs(a.launch_date) - parseDateMs(b.launch_date));
+        const requestedWave = planningFilters && planningFilters.wave !== 'all' ? normalizeWaveCode(String(planningFilters.wave)) : '';
+        const requestedWaveWaves = requestedWave
+            ? planScopeWaves.filter((wave) => normalizeWaveCode(wave.wave) === requestedWave)
+            : planScopeWaves;
+        const waveFilterFallback = Boolean(requestedWave && requestedWaveWaves.length === 0 && planScopeWaves.length > 0);
+        const effectiveFilters = waveFilterFallback && planningFilters ? { ...planningFilters, wave: 'all' as const } : planningFilters;
+
+        const scopedDimSku = dimSku.filter((sku) => matchesWavePlanningSkuFilters(effectiveFilters, sku));
         const scopedSkuIds = new Set(scopedDimSku.map((sku) => sku.sku_id));
         const scopedFactSales = factSales.filter((row) => {
             const sku = skuMap.get(row.sku_id);
-            if (!sku || !matchesWavePlanningSkuFilters(filters, sku)) return false;
-            if (!matchesWavePlanningChannelFilters(filters, channelMap.get(row.channel_id || ''))) return false;
-            return matchesWavePlanningTimeFilters(filters, row);
+            if (!sku || !matchesWavePlanningSkuFilters(effectiveFilters, sku)) return false;
+            if (!matchesWavePlanningChannelFilters(effectiveFilters, channelMap.get(row.channel_id || ''))) return false;
+            return matchesWavePlanningTimeFilters(effectiveFilters, row);
         });
         const scopedFactInventory = factInventory.filter((row) => scopedSkuIds.has(row.sku_id));
 
-        const orderedWaves = [...wavePlan]
-            .filter((wave) => matchesWavePlanningPlanFilters(filters, wave))
-            .sort((a, b) => parseDateMs(a.launch_date) - parseDateMs(b.launch_date));
+        const orderedWaves = waveFilterFallback ? planScopeWaves : requestedWaveWaves;
 
         const salesBySku = new Map<string, SkuSalesAgg>();
         scopedFactSales.forEach((row) => {
@@ -609,7 +675,7 @@ export function useWavePlanning(filters?: DashboardFilters) {
                 theme: wave.theme,
                 temp_zone: wave.temp_zone || '全国',
                 sku_plan: wave.sku_plan || 0,
-                sku_actual: filters ? waveSkus.length : (wave.sku_actual || 0),
+                sku_actual: effectiveFilters ? waveSkus.length : (wave.sku_actual || 0),
                 new_ratio: wave.new_ratio || 0,
                 old_ratio: wave.old_ratio || 0,
                 actual_units: actualUnits,
@@ -689,7 +755,13 @@ export function useWavePlanning(filters?: DashboardFilters) {
 
         const salesYears = Array.from(new Set(scopedFactSales.map((row) => row.season_year).filter(Boolean))).sort();
         const planYears = Array.from(new Set(factPlan.map((row) => String(row.year)))).sort();
-        const dataScopeHint = `样本口径：fact_sales ${salesYears.join('/')}；fact_plan ${planYears.join('/')}。跨年比较仅用于演示。`;
+        const yearFallbackHint = masterWavePlanState.useYearFallback && filters
+            ? `；当前筛选年份 ${filters.season_year} 暂无统一企划主数据，已回退展示 ${masterWavePlanState.fallbackYear ?? '现有'} 企划年`
+            : '';
+        const waveFallbackHint = waveFilterFallback && planningFilters
+            ? `；当前筛选波段 ${planningFilters.wave} 暂无企划记录，已回退展示当前年份/季节全部波段`
+            : '';
+        const dataScopeHint = `样本口径：fact_sales ${salesYears.join('/')}；fact_plan ${planYears.join('/')}${yearFallbackHint}${waveFallbackHint}。跨年比较仅用于演示。`;
 
         return {
             waveSummaries,
@@ -701,7 +773,7 @@ export function useWavePlanning(filters?: DashboardFilters) {
             defaultRegion,
             dataScopeHint,
         };
-    }, [wavePlan, dimSku, dimChannel, factSales, factInventory, factPlan, filters]);
+    }, [wavePlan, dimSku, dimChannel, factSales, factInventory, factPlan, filters, masterWavePlanState]);
 
     return {
         waveSummaries: result?.waveSummaries ?? [],

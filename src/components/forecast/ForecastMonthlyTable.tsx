@@ -3,10 +3,27 @@
  * src/components/forecast/ForecastMonthlyTable.tsx
  */
 import { useGlobalConfig } from '@/context/GlobalConfigContext';
-import type { ForecastResult } from '@/hooks/useForecast';
+import type { ForecastResult, ForecastChannel } from '@/hooks/useForecast';
+import seasonalRaw from '../../../data/planning/sales_forecast_seasonal_index.json';
+import lifecycleRaw from '../../../data/planning/sales_forecast_lifecycle_stage.json';
+
+type SeasonalData = Record<string, number[] | unknown> & {
+    physical: number[]; ecommerce: number[]; new_store: number[]; anomalyThreshold: number;
+};
+type LifecycleMonth = { month: number; newStyle: number; carryover: number; replenishment: number; clearance: number };
+const seasonalIdx = seasonalRaw as unknown as SeasonalData;
+const lifecycleByMonth = (lifecycleRaw as { byMonth: LifecycleMonth[] }).byMonth;
+
+// 鞋类专属基准（每个渠道的尺码完整率 / 连带率参考值）
+const FOOTWEAR_BENCHMARK: Record<ForecastChannel, { sizeCoverage: number; pairsPerOrder: number }> = {
+    physical: { sizeCoverage: 0.915, pairsPerOrder: 1.82 },
+    ecommerce: { sizeCoverage: 0.88, pairsPerOrder: 1.45 },
+    new_store: { sizeCoverage: 0.88, pairsPerOrder: 1.70 },
+};
 
 interface Props {
     result: ForecastResult;
+    channel?: ForecastChannel;
 }
 
 function fmt(v: number) {
@@ -15,6 +32,21 @@ function fmt(v: number) {
 function pct(v: number | undefined) {
     if (v === undefined) return '—';
     return `${(v * 100).toFixed(1)}%`;
+}
+
+function LifecycleBar({ m }: { m: LifecycleMonth }) {
+    const segs = [
+        { v: m.newStyle, c: 'bg-sky-500', label: `新${(m.newStyle * 100).toFixed(0)}%` },
+        { v: m.carryover, c: 'bg-slate-400', label: `延${(m.carryover * 100).toFixed(0)}%` },
+        { v: m.replenishment, c: 'bg-amber-400', label: `翻${(m.replenishment * 100).toFixed(0)}%` },
+        { v: m.clearance, c: 'bg-rose-400', label: `清${(m.clearance * 100).toFixed(0)}%` },
+    ];
+    const tip = segs.map(s => s.label).join(' · ');
+    return (
+        <div className="flex h-2 w-16 rounded-full overflow-hidden bg-slate-100" title={tip}>
+            {segs.map((s, i) => <div key={i} className={s.c} style={{ width: `${s.v * 100}%` }} />)}
+        </div>
+    );
 }
 
 function NewStoreMonthlyTable({ result }: { result: ForecastResult }) {
@@ -88,10 +120,14 @@ function NewStoreMonthlyTable({ result }: { result: ForecastResult }) {
     );
 }
 
-export default function ForecastMonthlyTable({ result }: Props) {
+export default function ForecastMonthlyTable({ result, channel: channelProp }: Props) {
     const { config, updateMonthlyGrowthRate } = useGlobalConfig();
     const years = result.monthly[0]?.history ? Object.keys(result.monthly[0].history).sort() : [];
     const showDriverCol = result.method !== 'growth_based';
+    const channel: ForecastChannel = channelProp ?? result.channel ?? 'physical';
+    const seasonal = seasonalIdx[channel] as number[] | undefined ?? [];
+    const benchmark = FOOTWEAR_BENCHMARK[channel];
+    const anomalyThreshold = seasonalIdx.anomalyThreshold ?? 0.15;
 
     if (result.channel === 'new_store') {
         return <NewStoreMonthlyTable result={result} />;
@@ -112,6 +148,10 @@ export default function ForecastMonthlyTable({ result }: Props) {
                         {showDriverCol && <th className="px-3 py-2 text-right">驱动预测</th>}
                         <th className="px-3 py-2 text-right font-semibold text-slate-700">最终预测</th>
                         <th className="px-3 py-2 text-right">YoY</th>
+                        <th className="px-3 py-2 text-right text-amber-600" title="鞋类月度销售季节系数（1.0=年均）">季节系数</th>
+                        <th className="px-3 py-2 text-right text-sky-600" title="预测期内核心尺码段可售比例">尺码完整率</th>
+                        <th className="px-3 py-2 text-right text-violet-600" title="预测期每单平均买双数">连带率</th>
+                        <th className="px-3 py-2 text-right">生命周期</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -132,6 +172,17 @@ export default function ForecastMonthlyTable({ result }: Props) {
                             : result.channel === 'ecommerce' && result.ecommerceDriverRows?.[i]
                             ? result.ecommerceDriverRows[i].netSales
                             : m.forecastRevenue;
+
+                        const seasonCoef = seasonal[i] ?? 1;
+                        const expectedFromSeason = (m.weightedBase ?? m.baseRevenue) * seasonCoef;
+                        const seasonDeviation = expectedFromSeason > 0 ? (m.forecastRevenue - expectedFromSeason) / expectedFromSeason : 0;
+                        const isSeasonAnomaly = Math.abs(seasonDeviation) > anomalyThreshold;
+                        // 鞋类专属预测值：以渠道基准为锚，按月度规模微调（旺季略降、淡季略升）
+                        const monthlyScale = (m.weightedBase ?? m.baseRevenue) > 0
+                            ? m.forecastRevenue / (m.weightedBase ?? m.baseRevenue) : 1;
+                        const sizeCoverage = Math.max(0.7, Math.min(1, benchmark.sizeCoverage * (2 - Math.max(0.8, Math.min(1.4, seasonCoef)) / 1.1)));
+                        const pairsPerOrder = benchmark.pairsPerOrder * (0.95 + (monthlyScale - 1) * 0.1);
+                        const lifecycle = lifecycleByMonth[i];
 
                         return (
                             <tr key={m.month} className="border-b border-slate-50 hover:bg-slate-50/60">
@@ -166,6 +217,17 @@ export default function ForecastMonthlyTable({ result }: Props) {
                                 <td className={`px-3 py-2 text-right text-xs ${(m.yoyVsLastYear ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                                     {pct(m.yoyVsLastYear)}
                                 </td>
+                                <td className={`px-3 py-2 text-right text-xs ${isSeasonAnomaly ? 'text-rose-600 font-semibold' : 'text-slate-500'}`}
+                                    title={isSeasonAnomaly ? `偏离季节系数 ${(seasonDeviation * 100).toFixed(1)}%` : '季节基准内'}>
+                                    {seasonCoef.toFixed(2)}{isSeasonAnomaly && ' ⚠'}
+                                </td>
+                                <td className={`px-3 py-2 text-right text-xs ${sizeCoverage < 0.85 ? 'text-amber-600' : 'text-sky-600'}`}>
+                                    {pct(sizeCoverage)}
+                                </td>
+                                <td className="px-3 py-2 text-right text-xs text-violet-600">
+                                    {pairsPerOrder.toFixed(2)}
+                                </td>
+                                <td className="px-3 py-2"><div className="flex justify-end"><LifecycleBar m={lifecycle} /></div></td>
                             </tr>
                         );
                     })}

@@ -1,0 +1,1157 @@
+[
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-1A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "休闲",
+      "训练"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 5,
+    "targetEndingInventoryUnits": 2500,
+    "maxWos": 9,
+    "minWos": 3,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-1A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "休闲",
+      "训练"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 5,
+    "targetEndingInventoryUnits": 1590,
+    "maxWos": 9,
+    "minWos": 3,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-1A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "休闲",
+      "训练"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 5,
+    "targetEndingInventoryUnits": 455,
+    "maxWos": 9,
+    "minWos": 3,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-1B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "休闲"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 6,
+    "targetEndingInventoryUnits": 2688,
+    "maxWos": 10,
+    "minWos": 4,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-1B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "休闲"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 6,
+    "targetEndingInventoryUnits": 1710,
+    "maxWos": 10,
+    "minWos": 4,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-1B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "休闲"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 6,
+    "targetEndingInventoryUnits": 486,
+    "maxWos": 10,
+    "minWos": 4,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-2A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "休闲"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 5264,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-2A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "休闲"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 3346,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-2A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "休闲"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 959,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-2B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "篮球"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 5817,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-2B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "篮球"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 3703,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-2B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "篮球"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 1057,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-3A",
+    "categoryId": "凉拖鞋",
+    "categoryName": "凉拖鞋",
+    "categoryL3": "凉鞋",
+    "sourceCategoryNames": [
+      "凉拖"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 3500,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-3A",
+    "categoryId": "凉拖鞋",
+    "categoryName": "凉拖鞋",
+    "categoryL3": "凉鞋",
+    "sourceCategoryNames": [
+      "凉拖"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 2226,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-3A",
+    "categoryId": "凉拖鞋",
+    "categoryName": "凉拖鞋",
+    "categoryL3": "凉鞋",
+    "sourceCategoryNames": [
+      "凉拖"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 637,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-3A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "轻量跑步"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 3500,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-3A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "轻量跑步"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 2226,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-3A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "轻量跑步"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 637,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-3B",
+    "categoryId": "凉拖鞋",
+    "categoryName": "凉拖鞋",
+    "categoryL3": "凉鞋",
+    "sourceCategoryNames": [
+      "凉拖"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 2772,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "翻单后滚动清理尾货",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-3B",
+    "categoryId": "凉拖鞋",
+    "categoryName": "凉拖鞋",
+    "categoryL3": "凉鞋",
+    "sourceCategoryNames": [
+      "凉拖"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 1764,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "翻单后滚动清理尾货",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-3B",
+    "categoryId": "凉拖鞋",
+    "categoryName": "凉拖鞋",
+    "categoryL3": "凉鞋",
+    "sourceCategoryNames": [
+      "凉拖"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 504,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "翻单后滚动清理尾货",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-3B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "休闲"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 2772,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "翻单后滚动清理尾货",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-3B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "休闲"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 1764,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "翻单后滚动清理尾货",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-SS-3B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "休闲"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 504,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "翻单后滚动清理尾货",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-4A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "德训鞋",
+    "sourceCategoryNames": [
+      "训练"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 6,
+    "targetEndingInventoryUnits": 1248,
+    "maxWos": 10,
+    "minWos": 4,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-4A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "德训鞋",
+    "sourceCategoryNames": [
+      "训练"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 6,
+    "targetEndingInventoryUnits": 792,
+    "maxWos": 10,
+    "minWos": 4,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-4A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "德训鞋",
+    "sourceCategoryNames": [
+      "训练"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 6,
+    "targetEndingInventoryUnits": 228,
+    "maxWos": 10,
+    "minWos": 4,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-4A",
+    "categoryId": "户外鞋",
+    "categoryName": "户外鞋",
+    "categoryL3": "潮流机能",
+    "sourceCategoryNames": [
+      "户外"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 6,
+    "targetEndingInventoryUnits": 1248,
+    "maxWos": 10,
+    "minWos": 4,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-4A",
+    "categoryId": "户外鞋",
+    "categoryName": "户外鞋",
+    "categoryL3": "潮流机能",
+    "sourceCategoryNames": [
+      "户外"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 6,
+    "targetEndingInventoryUnits": 792,
+    "maxWos": 10,
+    "minWos": 4,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-4A",
+    "categoryId": "户外鞋",
+    "categoryName": "户外鞋",
+    "categoryL3": "潮流机能",
+    "sourceCategoryNames": [
+      "户外"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 6,
+    "targetEndingInventoryUnits": 228,
+    "maxWos": 10,
+    "minWos": 4,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-4B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "休闲"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 4592,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-4B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "休闲"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 2919,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-4B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步",
+      "休闲"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 833,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-5A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 2576,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-5A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 1638,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-5A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "阿甘鞋",
+    "sourceCategoryNames": [
+      "跑步"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 469,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-5A",
+    "categoryId": "户外鞋",
+    "categoryName": "户外鞋",
+    "categoryL3": "潮流机能",
+    "sourceCategoryNames": [
+      "户外"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 2576,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-5A",
+    "categoryId": "户外鞋",
+    "categoryName": "户外鞋",
+    "categoryL3": "潮流机能",
+    "sourceCategoryNames": [
+      "户外"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 1638,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-5A",
+    "categoryId": "户外鞋",
+    "categoryName": "户外鞋",
+    "categoryL3": "潮流机能",
+    "sourceCategoryNames": [
+      "户外"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 469,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-5B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "篮球"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 2408,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-5B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "篮球"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 1533,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-5B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "篮球"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 441,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-5B",
+    "categoryId": "户外鞋",
+    "categoryName": "户外鞋",
+    "categoryL3": "潮流机能",
+    "sourceCategoryNames": [
+      "户外"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 2408,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-5B",
+    "categoryId": "户外鞋",
+    "categoryName": "户外鞋",
+    "categoryL3": "潮流机能",
+    "sourceCategoryNames": [
+      "户外"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 1533,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-5B",
+    "categoryId": "户外鞋",
+    "categoryName": "户外鞋",
+    "categoryL3": "潮流机能",
+    "sourceCategoryNames": [
+      "户外"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 441,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-6A",
+    "categoryId": "靴类",
+    "categoryName": "靴类",
+    "categoryL3": "雪地靴",
+    "sourceCategoryNames": [
+      "保暖"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 2870,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-6A",
+    "categoryId": "靴类",
+    "categoryName": "靴类",
+    "categoryL3": "雪地靴",
+    "sourceCategoryNames": [
+      "保暖"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 1827,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-6A",
+    "categoryId": "靴类",
+    "categoryName": "靴类",
+    "categoryL3": "雪地靴",
+    "sourceCategoryNames": [
+      "保暖"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 525,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-6A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "篮球"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 2870,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-6A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "篮球"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 1827,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-6A",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "篮球"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 7,
+    "targetEndingInventoryUnits": 525,
+    "maxWos": 11,
+    "minWos": 5,
+    "clearanceAction": "常规监控",
+    "replenishmentAction": "主推款优先补货",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-6B",
+    "categoryId": "靴类",
+    "categoryName": "靴类",
+    "categoryL3": "雪地靴",
+    "sourceCategoryNames": [
+      "保暖"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 4,
+    "targetEndingInventoryUnits": 1292,
+    "maxWos": 8,
+    "minWos": 3,
+    "clearanceAction": "清尾控深",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-6B",
+    "categoryId": "靴类",
+    "categoryName": "靴类",
+    "categoryL3": "雪地靴",
+    "sourceCategoryNames": [
+      "保暖"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 4,
+    "targetEndingInventoryUnits": 824,
+    "maxWos": 8,
+    "minWos": 3,
+    "clearanceAction": "清尾控深",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-6B",
+    "categoryId": "靴类",
+    "categoryName": "靴类",
+    "categoryL3": "雪地靴",
+    "sourceCategoryNames": [
+      "保暖"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 4,
+    "targetEndingInventoryUnits": 236,
+    "maxWos": 8,
+    "minWos": 3,
+    "clearanceAction": "清尾控深",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-6B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "休闲"
+    ],
+    "channelId": "physical",
+    "channelName": "实体门店",
+    "targetWos": 4,
+    "targetEndingInventoryUnits": 1292,
+    "maxWos": 8,
+    "minWos": 3,
+    "clearanceAction": "清尾控深",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-6B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "休闲"
+    ],
+    "channelId": "ecommerce",
+    "channelName": "电商",
+    "targetWos": 4,
+    "targetEndingInventoryUnits": 824,
+    "maxWos": 8,
+    "minWos": 3,
+    "clearanceAction": "清尾控深",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  },
+  {
+    "targetVersion": "inventory_2026_v1",
+    "fiscalYear": 2026,
+    "waveKey": "2026-AW-6B",
+    "categoryId": "休闲/街头",
+    "categoryName": "休闲/街头",
+    "categoryL3": "板鞋",
+    "sourceCategoryNames": [
+      "休闲"
+    ],
+    "channelId": "franchise",
+    "channelName": "加盟/分销",
+    "targetWos": 4,
+    "targetEndingInventoryUnits": 236,
+    "maxWos": 8,
+    "minWos": 3,
+    "clearanceAction": "清尾控深",
+    "replenishmentAction": "按周观察",
+    "owner": "库存计划"
+  }
+]

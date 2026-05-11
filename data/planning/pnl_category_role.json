@@ -1,0 +1,77 @@
+{
+  "meta": {
+    "year": "2025"
+  },
+  "categories": [
+    {
+      "key": "running",
+      "label": "跑步鞋",
+      "role": "主推",
+      "roleDesc": "主力销量担当，核心资源投入",
+      "newRatio": 0.42,
+      "inventoryTurnover": 5.2,
+      "sizeCompletionRate": 0.89,
+      "lyGrowth": 0.12
+    },
+    {
+      "key": "casual_sport",
+      "label": "休闲运动",
+      "role": "主推",
+      "roleDesc": "大众基础款，引流+走量",
+      "newRatio": 0.35,
+      "inventoryTurnover": 4.8,
+      "sizeCompletionRate": 0.92,
+      "lyGrowth": 0.08
+    },
+    {
+      "key": "training",
+      "label": "训练鞋",
+      "role": "形象",
+      "roleDesc": "专业形象款，高毛利但量小",
+      "newRatio": 0.58,
+      "inventoryTurnover": 3.1,
+      "sizeCompletionRate": 0.82,
+      "lyGrowth": 0.25
+    },
+    {
+      "key": "outdoor",
+      "label": "户外越野",
+      "role": "补位",
+      "roleDesc": "差异化场景，补充SKU宽度",
+      "newRatio": 0.48,
+      "inventoryTurnover": 3.8,
+      "sizeCompletionRate": 0.78,
+      "lyGrowth": 0.32
+    },
+    {
+      "key": "slippers",
+      "label": "凉拖鞋",
+      "role": "主推",
+      "roleDesc": "夏季爆款，毛利最高",
+      "newRatio": 0.3,
+      "inventoryTurnover": 6.8,
+      "sizeCompletionRate": 0.95,
+      "lyGrowth": 0.18
+    },
+    {
+      "key": "boots",
+      "label": "靴子",
+      "role": "补位",
+      "roleDesc": "冬季补充，季节性强",
+      "newRatio": 0.22,
+      "inventoryTurnover": 2.9,
+      "sizeCompletionRate": 0.72,
+      "lyGrowth": -0.05
+    },
+    {
+      "key": "clearance",
+      "label": "清货池",
+      "role": "清尾",
+      "roleDesc": "消化库存，控制损失",
+      "newRatio": 0,
+      "inventoryTurnover": 8.2,
+      "sizeCompletionRate": 0.45,
+      "lyGrowth": -0.2
+    }
+  ]
+}

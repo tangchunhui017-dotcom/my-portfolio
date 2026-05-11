@@ -21,7 +21,7 @@ import {
     getSeasonColorClasses,
     type SeasonCalendar,
 } from '@/utils/seasonCalendar';
-import type { CompareMode } from '@/hooks/useDashboardFilter';
+import type { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
 import WaveDecisionSummary from './wave/WaveDecisionSummary';
 import WaveRiskActionPanel from './wave/WaveRiskActionPanel';
 import WaveOutputBridgePanel from './wave/WaveOutputBridgePanel';
@@ -53,6 +53,7 @@ interface Props {
     annualOtbBudget: number;
     isLocked?: boolean;
     compareMode?: CompareMode;
+    filters?: DashboardFilters;
     priceStructure?: OTBPriceStructureOutput | null;
     onJumpToTab?: (tab: 'price' | 'category' | 'execution') => void;
 }
@@ -86,6 +87,7 @@ type ExtendedWaveInput = WaveOTBInput & {
 type EditableWaveField = keyof ExtendedWaveInput;
 
 type WaveDisplayRow = WaveOTBRow & {
+    sourceIndex: number;
     waveRole: WaveRow['waveRole'];
     seasonId: string;
     phaseLabel: string;
@@ -122,6 +124,32 @@ function resolveWavePhaseLabel(daysToLaunch: number) {
     if (daysToLaunch >= 0) return '临近上市';
     if (daysToLaunch > -60) return '销售中';
     return '已过季';
+}
+
+function normalizeWaveFilterCode(wave: string | undefined) {
+    const raw = String(wave || '').trim().toUpperCase();
+    const numeric = raw.match(/\d+/)?.[0];
+    return numeric ? `W${Number(numeric)}` : raw;
+}
+
+function resolveQuarterFromLaunchMonth(month: number) {
+    return `Q${Math.max(1, Math.min(4, Math.ceil(month / 3)))}`;
+}
+
+function matchesWaveDisplayFilters(
+    filters: DashboardFilters | undefined,
+    row: Pick<WaveDisplayRow, 'launchDate' | 'launchMonth' | 'season' | 'wave'>,
+) {
+    if (!filters) return true;
+    if (filters.season_year !== 'all' && String(row.launchDate?.slice(0, 4)) !== String(filters.season_year)) return false;
+    if (filters.season !== 'all') {
+        const selectedSeason = String(filters.season).toUpperCase();
+        const rowSeason = String(row.season).toUpperCase();
+        const rowQuarter = resolveQuarterFromLaunchMonth(row.launchMonth);
+        if (selectedSeason !== rowSeason && selectedSeason !== rowQuarter) return false;
+    }
+    if (filters.wave !== 'all' && normalizeWaveFilterCode(row.wave) !== normalizeWaveFilterCode(String(filters.wave))) return false;
+    return true;
 }
 
 function ratioTone(value: number | null, active: boolean) {
@@ -196,6 +224,9 @@ function WavePlanningTable({
 
     return (
         <div className="rounded-lg border border-slate-100 overflow-hidden">
+            <div className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-[11px] text-slate-500">
+                款数、色数、SKU、品类与角色为「波段企划」输入的只读参考；本表负责预算金额、OTB占用、预算差异与采购风险。
+            </div>
             <div className="overflow-x-auto">
                 <table className="w-full min-w-[1200px] text-xs">
                     <thead>
@@ -206,16 +237,16 @@ function WavePlanningTable({
                             <th className="sticky left-[140px] z-20 bg-slate-50 py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap min-w-[100px]">上市日期</th>
                             <th className="sticky left-[240px] z-20 bg-slate-50 py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap min-w-[70px] border-r border-slate-200">距上市</th>
                             {/* 其余主列 */}
-                            <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">货品角色</th>
-                            <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">主推品类</th>
+                            <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">企划角色</th>
+                            <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">企划品类</th>
                             <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">销售占比</th>
                             <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">预测销售</th>
                             {showVsPlan && <th className={`py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap ${compareMode === 'plan' ? 'bg-sky-50' : ''}`}>vs计划</th>}
                             {showYoy   && <th className={`py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap ${compareMode === 'yoy'  ? 'bg-sky-50' : ''}`}>YoY</th>}
                             {showMom   && <th className={`py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap ${compareMode === 'mom'  ? 'bg-sky-50' : ''}`}>MoM</th>}
-                            <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">款数</th>
-                            <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">色数</th>
-                            <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">SKU</th>
+                            <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">企划款数</th>
+                            <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">企划色数</th>
+                            <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">企划SKU</th>
                             <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">均深</th>
                             <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">OTB预算</th>
                             <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">预算差异</th>
@@ -238,7 +269,7 @@ function WavePlanningTable({
                         </tr>
                     </thead>
                     <tbody>
-                        {rows.map((row, idx) => {
+                        {rows.map((row) => {
                             const isHighlightPlan = compareMode === 'plan';
                             const isHighlightYoy = compareMode === 'yoy';
                             const isHighlightMom = compareMode === 'mom';
@@ -267,24 +298,24 @@ function WavePlanningTable({
                                     {/* 其余主列 */}
                                     <td className="py-2 px-2 text-right text-slate-600">{row.waveRole ? WAVE_ROLES[row.waveRole] : '--'}</td>
                                     <td className="py-2 px-2 text-right">
-                                        <WaveTextInput value={row.mainCategory ?? ''} onChange={v => updateWave(idx, 'mainCategory', v)} disabled={isLocked} width="w-20" />
+                                        <WaveTextInput value={row.mainCategory ?? ''} onChange={v => updateWave(row.sourceIndex, 'mainCategory', v)} disabled={isLocked} width="w-20" />
                                     </td>
                                     <td className="py-2 px-2 text-right">
-                                        <WaveNumberInput value={parseFloat((row.salesRatio * 100).toFixed(1))} step={0.5} onChange={v => updateWave(idx, 'salesRatio', v / 100)} disabled={isLocked} width="w-14" />
+                                        <WaveNumberInput value={parseFloat((row.salesRatio * 100).toFixed(1))} step={0.5} onChange={v => updateWave(row.sourceIndex, 'salesRatio', v / 100)} disabled={isLocked} width="w-14" />
                                     </td>
                                     <td className="py-2 px-2 text-right font-medium">{fc(row.forecastSalesAmount)}</td>
                                     {showVsPlan && <td className={`py-2 px-2 text-right ${ratioTone(row.vsPlanRate, isHighlightPlan)}`}>{formatSignedPctValue(row.vsPlanRate)}</td>}
                                     {showYoy   && <td className={`py-2 px-2 text-right ${ratioTone(row.yoyRate, isHighlightYoy)}`}>{formatSignedPctValue(row.yoyRate)}</td>}
                                     {showMom   && <td className={`py-2 px-2 text-right ${ratioTone(row.momRate, isHighlightMom)}`}>{formatSignedPctValue(row.momRate)}</td>}
                                     <td className="py-2 px-2 text-right">
-                                        <WaveNumberInput value={safeNumber(row.plannedStyleCount) ?? 0} onChange={v => updateWave(idx, 'plannedStyleCount', Math.max(0, Math.round(v)))} width="w-12" disabled={isLocked} />
+                                        <WaveNumberInput value={safeNumber(row.plannedStyleCount) ?? 0} onChange={v => updateWave(row.sourceIndex, 'plannedStyleCount', Math.max(0, Math.round(v)))} width="w-12" disabled={isLocked} />
                                     </td>
                                     <td className="py-2 px-2 text-right">
-                                        <WaveNumberInput value={row.targetColorCount} onChange={v => updateWave(idx, 'targetColorCount', Math.max(1, Math.round(v)))} width="w-12" disabled={isLocked} />
+                                        <WaveNumberInput value={row.targetColorCount} onChange={v => updateWave(row.sourceIndex, 'targetColorCount', Math.max(1, Math.round(v)))} width="w-12" disabled={isLocked} />
                                     </td>
                                     <td className="py-2 px-2 text-right font-medium text-slate-700">{row.targetSkuCount}</td>
                                     <td className="py-2 px-2 text-right">
-                                        <WaveNumberInput value={safeNumber(row.averageDepth) ?? 0} step={10} onChange={v => updateWave(idx, 'averageDepth', Math.max(0, Math.round(v)))} width="w-14" disabled={isLocked} />
+                                        <WaveNumberInput value={safeNumber(row.averageDepth) ?? 0} step={10} onChange={v => updateWave(row.sourceIndex, 'averageDepth', Math.max(0, Math.round(v)))} width="w-14" disabled={isLocked} />
                                     </td>
                                     <td className="py-2 px-2 text-right font-semibold text-sky-700">{fc(row.forecastOtbBudget)}</td>
                                     <td className={`py-2 px-2 text-right font-medium ${row.otbDiff > 0 ? 'text-rose-600' : row.otbDiff < 0 ? 'text-emerald-600' : 'text-slate-500'}`}>{fc(row.otbDiff)}</td>
@@ -318,7 +349,7 @@ function WavePlanningTable({
                                         <td className="py-2 px-2 text-right bg-purple-50/30">{formatPct(row.repeatOrderRatio)}</td>
                                         <td className="py-2 px-2 text-right bg-purple-50/30">{formatPct(row.carryoverRatio)}</td>
                                         <td className="py-2 px-2 text-right bg-purple-50/30">
-                                            <WaveNumberInput value={parseFloat(((row.sellThroughTarget ?? 0.75) * 100).toFixed(1))} onChange={v => updateWave(idx, 'sellThroughTarget', v / 100)} width="w-12" disabled={isLocked} />
+                                            <WaveNumberInput value={parseFloat(((row.sellThroughTarget ?? 0.75) * 100).toFixed(1))} onChange={v => updateWave(row.sourceIndex, 'sellThroughTarget', v / 100)} width="w-12" disabled={isLocked} />
                                         </td>
                                         <td className="py-2 px-2 text-right text-slate-600 bg-purple-50/30">{MONTH_LABELS[row.arrivalMonth ?? 1]}</td>
                                         <td className="py-2 px-2 text-right bg-purple-50/30">{formatPct(row.arrivalRateTarget)}</td>
@@ -410,7 +441,7 @@ function SeasonCardsEnhanced({
                                 </span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-slate-600">波段/款/SKU</span>
+                                <span className="text-slate-600">波段/企划款/SKU</span>
                                 <span className="font-semibold">{seasonWaves.length} / {styleCount} / {skuCount}</span>
                             </div>
                             <div className="flex justify-between">
@@ -725,6 +756,7 @@ export default function WaveOTBPlanningPanel({
     annualOtbBudget,
     isLocked = false,
     compareMode = 'none',
+    filters,
     priceStructure,
     onJumpToTab,
 }: Props) {
@@ -746,8 +778,10 @@ export default function WaveOTBPlanningPanel({
     const fc = (value: number | null | undefined) => formatCurrency(value, currencyUnit);
 
     const displayRows = useMemo<WaveDisplayRow[]>(() => {
-        return rows.map((row) => {
-            const source = waves.find(w => w.id === row.id) as ExtendedWaveInput | undefined;
+        return rows.map((row, rowIndex) => {
+            const matchedIndex = waves.findIndex(w => w.id === row.id);
+            const sourceIndex = matchedIndex >= 0 ? matchedIndex : rowIndex;
+            const source = waves[sourceIndex] as ExtendedWaveInput | undefined;
             const seasonId = resolveWaveSeasonId(row);
             const daysToLaunch = Math.floor((new Date(row.launchDate).getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
             const forecastSalesAmount = safeNumber(source?.forecastSalesAmount) ?? row.plannedSalesAmount;
@@ -761,6 +795,7 @@ export default function WaveOTBPlanningPanel({
 
             return {
                 ...row,
+                sourceIndex,
                 waveRole: source?.waveRole ?? 'main_sales',
                 seasonId,
                 phaseLabel: resolveWavePhaseLabel(daysToLaunch),
@@ -787,8 +822,37 @@ export default function WaveOTBPlanningPanel({
     }, [rows, today, waves]);
 
     // 转换为波段拆解工具所需的格式
+    const displayScope = useMemo(() => {
+        const hasRowsForSelectedYear = !filters ||
+            filters.season_year === 'all' ||
+            displayRows.some(row => String(row.launchDate?.slice(0, 4)) === String(filters.season_year));
+        const effectiveFilters = !hasRowsForSelectedYear && filters
+            ? { ...filters, season_year: 'all' as const }
+            : filters;
+        const planScopeFilters = effectiveFilters ? { ...effectiveFilters, wave: 'all' as const } : undefined;
+        const planScopeRows = displayRows.filter(row => matchesWaveDisplayFilters(planScopeFilters, row));
+        const requestedRows = effectiveFilters?.wave && effectiveFilters.wave !== 'all'
+            ? planScopeRows.filter(row => matchesWaveDisplayFilters(effectiveFilters, row))
+            : planScopeRows;
+        const waveFallback = Boolean(
+            effectiveFilters?.wave &&
+            effectiveFilters.wave !== 'all' &&
+            requestedRows.length === 0 &&
+            planScopeRows.length > 0,
+        );
+
+        return {
+            rows: waveFallback ? planScopeRows : requestedRows,
+            yearFallback: Boolean(filters && filters.season_year !== 'all' && !hasRowsForSelectedYear),
+            waveFallback,
+            fallbackYear: displayRows[0]?.launchDate?.slice(0, 4),
+        };
+    }, [displayRows, filters]);
+
+    const scopedDisplayRows = displayScope.rows;
+
     const waveRowsForDiagnostics = useMemo<WaveRow[]>(() => {
-        return displayRows.map(row => ({
+        return scopedDisplayRows.map(row => ({
             waveId: row.id,
             waveName: row.wave,
             season: row.seasonId,
@@ -815,7 +879,7 @@ export default function WaveOTBPlanningPanel({
             orderDeadline: row.orderDeadline,
             warehouseDeadline: row.warehouseDeadline,
         }));
-    }, [displayRows]);
+    }, [scopedDisplayRows]);
 
     const waveContext = useMemo<WaveContext>(() => ({
         annualSalesTarget: ssSeasonSalesTarget + awSeasonSalesTarget,
@@ -873,8 +937,8 @@ export default function WaveOTBPlanningPanel({
 
     // 销售占比合计（用于验证提示）
     const totalSalesRatio = useMemo(
-        () => (waves as ExtendedWaveInput[]).reduce((s, w) => s + ((w.salesRatio ?? 0)), 0),
-        [waves],
+        () => scopedDisplayRows.reduce((s, row) => s + (row.salesRatio ?? 0), 0),
+        [scopedDisplayRows],
     );
 
     const annualSalesTarget = ssSeasonSalesTarget + awSeasonSalesTarget;
@@ -928,7 +992,7 @@ export default function WaveOTBPlanningPanel({
             <SeasonCardsEnhanced
                 seasons={seasons}
                 seasonSalesTargets={seasonSalesTargets}
-                waves={displayRows}
+                waves={scopedDisplayRows}
                 riskByWave={riskByWave}
                 actionByWave={actionByWave}
                 currencyUnit={currencyUnit}
@@ -936,7 +1000,7 @@ export default function WaveOTBPlanningPanel({
 
             {/* 2a. 波段时间轴甘特图 */}
             <WaveTimelineGantt
-                waves={displayRows}
+                waves={scopedDisplayRows}
                 currentDate={today}
                 currencyUnit={currencyUnit}
             />
@@ -944,7 +1008,7 @@ export default function WaveOTBPlanningPanel({
             {/* 2b. 偏差矩阵 + 已上市复盘 并排 */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
                 <SalesOtbDeviationMatrix
-                    waves={displayRows}
+                    waves={scopedDisplayRows}
                     currencyUnit={currencyUnit}
                 />
                 <ClosedWaveAchievementCards
@@ -1004,7 +1068,7 @@ export default function WaveOTBPlanningPanel({
                     </p>
                 )}
                 <WavePlanningTable
-                    rows={displayRows}
+                    rows={scopedDisplayRows}
                     riskByWave={riskByWave}
                     actionByWave={actionByWave}
                     healthScores={healthScores}

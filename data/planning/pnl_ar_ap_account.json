@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "year": "2025"
+  },
+  "arChannels": [
+    {
+      "channel": "physical",
+      "label": "实体店（商场）",
+      "arBalance": 180000,
+      "paymentTermDays": 38,
+      "overdueAmount": 25000,
+      "overdueRate": 0.139,
+      "note": "商场账期约30-45天，部分超期"
+    },
+    {
+      "channel": "ecommerce",
+      "label": "电商平台",
+      "arBalance": 68000,
+      "paymentTermDays": 12,
+      "overdueAmount": 0,
+      "overdueRate": 0,
+      "note": "电商平台账期7-15天，打款规律"
+    },
+    {
+      "channel": "new_store",
+      "label": "新店（直营）",
+      "arBalance": 32000,
+      "paymentTermDays": 7,
+      "overdueAmount": 0,
+      "overdueRate": 0,
+      "note": "直营店当日入账"
+    }
+  ],
+  "apSummary": {
+    "totalAp": 650000,
+    "supplierAvgTermDays": 42,
+    "overdueAp": 0,
+    "urgentPaymentNextMonth": 380000
+  },
+  "dsoTrend": [
+    {
+      "period": "Q1",
+      "dso": 22
+    },
+    {
+      "period": "Q2",
+      "dso": 19
+    },
+    {
+      "period": "Q3",
+      "dso": 17
+    },
+    {
+      "period": "Q4",
+      "dso": 15
+    }
+  ]
+}

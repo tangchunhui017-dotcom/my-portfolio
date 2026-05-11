@@ -1,0 +1,119 @@
+{
+  "_comment": "折扣侵蚀分析 — 正价/活动/清货/优惠券/退货/库存跌价六维度",
+  "scenario": "base",
+  "fiscalYear": "2026",
+  "version": "v1.0",
+  "sourceSystem": "损益引擎",
+  "updatedAt": "2026-05-11",
+  "summary": {
+    "tagPriceSales": 168000000,
+    "actualNetRevenue": 121800000,
+    "totalErosion": 46200000,
+    "erosionRate": 0.275,
+    "grossMarginWithoutErosion": 0.535,
+    "actualGrossMargin": 0.49,
+    "marginErosionBps": 450,
+    "clearanceErosionRate": 0.038,
+    "fullPriceShareActual": 0.6,
+    "fullPriceShareTarget": 0.65,
+    "riskLevel": "medium"
+  },
+  "erosionBreakdown": [
+    {
+      "type": "full_price",
+      "label": "正价销售",
+      "salesAmount": 73080000,
+      "salesShare": 0.6,
+      "tagAmount": 81200000,
+      "discountDepth": 0.9,
+      "grossMarginRate": 0.53,
+      "grossProfit": 38732400,
+      "isErosion": false,
+      "verdict": "正价占比达标，需维持折扣纪律"
+    },
+    {
+      "type": "promotional",
+      "label": "活动折扣",
+      "salesAmount": 34104000,
+      "salesShare": 0.28,
+      "tagAmount": 50155882,
+      "discountDepth": 0.68,
+      "grossMarginRate": 0.41,
+      "grossProfit": 13982640,
+      "markdownLoss": 16051882,
+      "erosionOnGrossMargin": 0.014,
+      "isErosion": true,
+      "verdict": "活动折扣在可控范围，双11/618高折扣需预算对冲"
+    },
+    {
+      "type": "clearance",
+      "label": "清货折扣",
+      "salesAmount": 14616000,
+      "salesShare": 0.12,
+      "tagAmount": 34800000,
+      "discountDepth": 0.42,
+      "grossMarginRate": 0.15,
+      "grossProfit": 2192400,
+      "markdownLoss": 20184000,
+      "erosionOnGrossMargin": 0.038,
+      "isErosion": true,
+      "verdict": "清货折扣侵蚀超3.5%，接近警戒线"
+    },
+    {
+      "type": "coupon_member",
+      "label": "优惠券/会员券",
+      "salesAmount": 0,
+      "erosionAmount": 2436000,
+      "erosionRate": 0.02,
+      "isErosion": true,
+      "verdict": "会员优惠成本占净收入2%，合理范围"
+    },
+    {
+      "type": "return_loss",
+      "label": "退货损失（含处理成本）",
+      "salesAmount": 0,
+      "erosionAmount": 4872000,
+      "erosionRate": 0.04,
+      "isErosion": true,
+      "verdict": "电商退货率13.7%是主要侵蚀源"
+    },
+    {
+      "type": "inventory_impairment",
+      "label": "库存跌价/清货减值",
+      "salesAmount": 0,
+      "erosionAmount": 4263000,
+      "erosionRate": 0.035,
+      "isErosion": true,
+      "verdict": "库龄超270天库存比例偏高，需加速消化"
+    }
+  ],
+  "actionPlan": [
+    {
+      "priority": 1,
+      "issue": "清货折扣超警戒线",
+      "action": "减少下季清货款比例，建立OTB联动控货机制",
+      "owner": "商品运营",
+      "deadline": "2026-Q3"
+    },
+    {
+      "priority": 2,
+      "issue": "电商退货率高",
+      "action": "优化商详页面，提升尺码推荐准确率，降退货率目标10%",
+      "owner": "电商运营",
+      "deadline": "2026-Q2"
+    },
+    {
+      "priority": 3,
+      "issue": "正价占比低于目标65%",
+      "action": "控制促销频次，提升新品正价期销售，延迟打折时点",
+      "owner": "品牌销售",
+      "deadline": "持续"
+    }
+  ],
+  "benchmark": {
+    "clearanceErosionWarning": 0.03,
+    "clearanceErosionDanger": 0.05,
+    "fullPriceTargetShare": 0.65,
+    "returnRateTarget": 0.1
+  }
+}

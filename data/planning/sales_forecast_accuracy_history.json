@@ -1,0 +1,181 @@
+{
+  "_comment": "预测准确率历史 — 按渠道/月份/品类",
+  "channels": {
+    "physical": {
+      "quarters": [
+        {
+          "period": "2025-Q1",
+          "predicted": 28500000,
+          "actual": 26800000,
+          "accuracy": 0.94,
+          "deviation": -0.06
+        },
+        {
+          "period": "2025-Q2",
+          "predicted": 32000000,
+          "actual": 35200000,
+          "accuracy": 0.909,
+          "deviation": 0.1
+        },
+        {
+          "period": "2025-Q3",
+          "predicted": 41000000,
+          "actual": 38900000,
+          "accuracy": 0.949,
+          "deviation": -0.051
+        },
+        {
+          "period": "2025-Q4",
+          "predicted": 38500000,
+          "actual": 41200000,
+          "accuracy": 0.934,
+          "deviation": 0.07
+        }
+      ],
+      "topDeviations": [
+        {
+          "dimension": "6月凉鞋",
+          "deviation": -0.12,
+          "direction": "偏低",
+          "reason": "气温偏高3℃导致凉鞋提前旺销",
+          "suggestion": "调高6月凉鞋系数+0.08"
+        },
+        {
+          "dimension": "华南 PB3 价格带",
+          "deviation": 0.08,
+          "direction": "偏高",
+          "reason": "竞品促销力度加大，抢占份额",
+          "suggestion": "下调华南PB3增长率3-5%"
+        },
+        {
+          "dimension": "11月棉鞋",
+          "deviation": -0.09,
+          "direction": "偏低",
+          "reason": "气温偏暖延迟了棉鞋采购节奏",
+          "suggestion": "气温联动模型加入滞后系数"
+        }
+      ],
+      "overallAccuracy": 0.933,
+      "trend": "improving"
+    },
+    "ecommerce": {
+      "quarters": [
+        {
+          "period": "2025-Q1",
+          "predicted": 18200000,
+          "actual": 17100000,
+          "accuracy": 0.939,
+          "deviation": -0.061
+        },
+        {
+          "period": "2025-Q2",
+          "predicted": 22500000,
+          "actual": 24800000,
+          "accuracy": 0.907,
+          "deviation": 0.102
+        },
+        {
+          "period": "2025-Q3",
+          "predicted": 29000000,
+          "actual": 26300000,
+          "accuracy": 0.907,
+          "deviation": -0.093
+        },
+        {
+          "period": "2025-Q4",
+          "predicted": 35000000,
+          "actual": 38500000,
+          "accuracy": 0.909,
+          "deviation": 0.1
+        }
+      ],
+      "topDeviations": [
+        {
+          "dimension": "抖音渠道",
+          "deviation": -0.15,
+          "direction": "偏低",
+          "reason": "抖音算法更新带来流量意外增长",
+          "suggestion": "上调抖音渠道预测占比至32%"
+        },
+        {
+          "dimension": "618大促",
+          "deviation": 0.11,
+          "direction": "偏高",
+          "reason": "消费疲软，大促ROI下滑",
+          "suggestion": "618预算ROI假设从3.8降至3.2"
+        },
+        {
+          "dimension": "双11退款率",
+          "deviation": -0.08,
+          "direction": "偏高实际退款",
+          "reason": "7日无理由退货执行更严格",
+          "suggestion": "双11退款率假设上调至32%"
+        }
+      ],
+      "overallAccuracy": 0.916,
+      "trend": "stable"
+    },
+    "new_store": {
+      "quarters": [
+        {
+          "period": "2025-Q1",
+          "predicted": 3200000,
+          "actual": 2800000,
+          "accuracy": 0.875,
+          "deviation": -0.125
+        },
+        {
+          "period": "2025-Q2",
+          "predicted": 4500000,
+          "actual": 5100000,
+          "accuracy": 0.882,
+          "deviation": 0.133
+        },
+        {
+          "period": "2025-Q3",
+          "predicted": 6800000,
+          "actual": 6200000,
+          "accuracy": 0.912,
+          "deviation": -0.088
+        },
+        {
+          "period": "2025-Q4",
+          "predicted": 8200000,
+          "actual": 8900000,
+          "accuracy": 0.921,
+          "deviation": 0.085
+        }
+      ],
+      "topDeviations": [
+        {
+          "dimension": "首铺爬坡速度",
+          "deviation": -0.18,
+          "direction": "偏高预测",
+          "reason": "首铺尺码完整率仅88%，损失爬坡动能",
+          "suggestion": "爬坡模型加入尺码完整率修正因子"
+        },
+        {
+          "dimension": "新店会员获取",
+          "deviation": 0.12,
+          "direction": "偏低预测",
+          "reason": "品牌活动带来会员注册超预期",
+          "suggestion": "开业活动会员转化率假设上调"
+        },
+        {
+          "dimension": "奥莱门店",
+          "deviation": -0.1,
+          "direction": "偏高预测",
+          "reason": "客流受周边竞品奥莱分流",
+          "suggestion": "奥莱店爬坡系数下调0.85倍"
+        }
+      ],
+      "overallAccuracy": 0.898,
+      "trend": "improving"
+    }
+  },
+  "healthBenchmark": {
+    "good": 0.93,
+    "warning": 0.88,
+    "critical": 0.8
+  }
+}

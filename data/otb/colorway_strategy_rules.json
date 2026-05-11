@@ -1,0 +1,18 @@
+{
+  "rules": {
+    "basicColorPctMin": 0.40,
+    "heroColorPctMin": 0.30,
+    "heroColorPctMax": 0.50,
+    "limitedColorPctMax": 0.20
+  },
+  "colorTiers": [
+    { "tier": "basic",   "label": "基础色", "examples": ["黑", "白", "灰", "棕", "藏蓝"], "targetPct": 0.45 },
+    { "tier": "hero",    "label": "主推色", "examples": ["米白", "浅棕", "卡其", "松石绿"], "targetPct": 0.40 },
+    { "tier": "limited", "label": "限量色", "examples": ["橘红", "荧光黄", "渐变色"], "targetPct": 0.15 }
+  ],
+  "categoryOverrides": {
+    "凉鞋":   { "basicColorPctMin": 0.30, "heroColorPctMin": 0.40 },
+    "运动鞋": { "basicColorPctMin": 0.35, "heroColorPctMin": 0.35 },
+    "靴类":   { "basicColorPctMin": 0.50, "heroColorPctMin": 0.30 }
+  }
+}

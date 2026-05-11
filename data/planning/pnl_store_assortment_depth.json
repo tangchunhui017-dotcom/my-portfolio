@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "year": "2025"
+  },
+  "storeTypes": [
+    {
+      "key": "mall_flagship",
+      "label": "商场旗舰店",
+      "initialSkuCount": 120,
+      "avgDepthPerSku": 6,
+      "monthlyReorderFreq": 2.5,
+      "newRatio": 0.4,
+      "continuationRatio": 0.35,
+      "reorderRatio": 0.15,
+      "clearanceRatio": 0.1,
+      "sizeRange": "男鞋36-44/女鞋35-40全段",
+      "sizeCompletion": 0.92,
+      "monthlySkuSales": 7.2,
+      "sizeStockoutPerMonth": 2.1,
+      "replenishmentCycle": 14,
+      "endSeasonClearanceRate": 0.08,
+      "otbSuggestion": "每月按实销周转动态补货，季末清仓率目标<10%，主推款尺码保持全段"
+    },
+    {
+      "key": "mall_standard",
+      "label": "商场标准店",
+      "initialSkuCount": 72,
+      "avgDepthPerSku": 5,
+      "monthlyReorderFreq": 2,
+      "newRatio": 0.38,
+      "continuationRatio": 0.38,
+      "reorderRatio": 0.16,
+      "clearanceRatio": 0.08,
+      "sizeRange": "男鞋37-43/女鞋36-40精简段",
+      "sizeCompletion": 0.88,
+      "monthlySkuSales": 6.1,
+      "sizeStockoutPerMonth": 3.5,
+      "replenishmentCycle": 21,
+      "endSeasonClearanceRate": 0.12,
+      "otbSuggestion": "精简尺码段，重点备主力码，断码>3次/月触发补货预警"
+    },
+    {
+      "key": "street",
+      "label": "街铺",
+      "initialSkuCount": 45,
+      "avgDepthPerSku": 4,
+      "monthlyReorderFreq": 1.5,
+      "newRatio": 0.35,
+      "continuationRatio": 0.42,
+      "reorderRatio": 0.18,
+      "clearanceRatio": 0.05,
+      "sizeRange": "主力尺码38-42(男)/37-40(女)",
+      "sizeCompletion": 0.82,
+      "monthlySkuSales": 4.8,
+      "sizeStockoutPerMonth": 5.2,
+      "replenishmentCycle": 28,
+      "endSeasonClearanceRate": 0.18,
+      "otbSuggestion": "控制SKU宽度，深度集中主力款，尽量减少清尾压力"
+    }
+  ]
+}

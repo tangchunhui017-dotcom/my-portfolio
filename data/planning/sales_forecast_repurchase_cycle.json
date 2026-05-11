@@ -1,0 +1,59 @@
+{
+  "_comment": "复购周期（天）及贡献占比",
+  "byCategory": [
+    {
+      "categoryId": "running",
+      "categoryLabel": "运动跑步",
+      "avgCycleDays": 180,
+      "repurchaseContribution": 0.42,
+      "wearFrequency": "高频",
+      "priceElasticity": "低"
+    },
+    {
+      "categoryId": "casual",
+      "categoryLabel": "休闲板鞋",
+      "avgCycleDays": 240,
+      "repurchaseContribution": 0.38,
+      "wearFrequency": "中频",
+      "priceElasticity": "中"
+    },
+    {
+      "categoryId": "sandals",
+      "categoryLabel": "凉鞋拖鞋",
+      "avgCycleDays": 365,
+      "repurchaseContribution": 0.18,
+      "wearFrequency": "季节",
+      "priceElasticity": "高"
+    },
+    {
+      "categoryId": "boots",
+      "categoryLabel": "棉鞋短靴",
+      "avgCycleDays": 420,
+      "repurchaseContribution": 0.22,
+      "wearFrequency": "低频",
+      "priceElasticity": "中"
+    }
+  ],
+  "byChannel": [
+    {
+      "channel": "physical",
+      "avgCycleDays": 210,
+      "repurchaseContribution": 0.35
+    },
+    {
+      "channel": "ecommerce",
+      "avgCycleDays": 165,
+      "repurchaseContribution": 0.28
+    },
+    {
+      "channel": "new_store",
+      "avgCycleDays": 280,
+      "repurchaseContribution": 0.15
+    }
+  ],
+  "healthBenchmark": {
+    "goodCycle": 180,
+    "warningCycle": 300,
+    "repurchaseContributionTarget": 0.3
+  }
+}

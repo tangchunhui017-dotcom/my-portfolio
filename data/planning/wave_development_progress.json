@@ -1,0 +1,850 @@
+[
+  {
+    "waveKey": "2026-SS-1A",
+    "tasks": [
+      {
+        "taskType": "brief",
+        "label": "企划确认",
+        "deadline": "2025-07-28",
+        "status": "done",
+        "progress": 100,
+        "owner": "商品企划"
+      },
+      {
+        "taskType": "design",
+        "label": "设计稿",
+        "deadline": "2025-08-27",
+        "status": "done",
+        "progress": 100,
+        "owner": "设计"
+      },
+      {
+        "taskType": "sample",
+        "label": "样品评审",
+        "deadline": "2025-09-16",
+        "status": "done",
+        "progress": 100,
+        "owner": "商品企划/设计"
+      },
+      {
+        "taskType": "cost",
+        "label": "成本核价",
+        "deadline": "2025-10-01",
+        "status": "done",
+        "progress": 100,
+        "owner": "采购"
+      },
+      {
+        "taskType": "order",
+        "label": "下单截止",
+        "deadline": "2025-10-21",
+        "status": "done",
+        "progress": 100,
+        "owner": "采购"
+      },
+      {
+        "taskType": "warehouse",
+        "label": "入仓截止",
+        "deadline": "2025-12-21",
+        "status": "done",
+        "progress": 100,
+        "owner": "物流"
+      },
+      {
+        "taskType": "launch",
+        "label": "上市日",
+        "deadline": "2026-01-05",
+        "status": "done",
+        "progress": 100,
+        "owner": "运营"
+      },
+      {
+        "taskType": "review",
+        "label": "复盘日",
+        "deadline": "2026-02-03",
+        "status": "done",
+        "progress": 100,
+        "owner": "商品企划"
+      }
+    ]
+  },
+  {
+    "waveKey": "2026-SS-1B",
+    "tasks": [
+      {
+        "taskType": "brief",
+        "label": "企划确认",
+        "deadline": "2025-09-07",
+        "status": "done",
+        "progress": 100,
+        "owner": "商品企划"
+      },
+      {
+        "taskType": "design",
+        "label": "设计稿",
+        "deadline": "2025-10-07",
+        "status": "done",
+        "progress": 100,
+        "owner": "设计"
+      },
+      {
+        "taskType": "sample",
+        "label": "样品评审",
+        "deadline": "2025-10-27",
+        "status": "done",
+        "progress": 100,
+        "owner": "商品企划/设计"
+      },
+      {
+        "taskType": "cost",
+        "label": "成本核价",
+        "deadline": "2025-11-11",
+        "status": "done",
+        "progress": 100,
+        "owner": "采购"
+      },
+      {
+        "taskType": "order",
+        "label": "下单截止",
+        "deadline": "2025-12-02",
+        "status": "done",
+        "progress": 100,
+        "owner": "采购"
+      },
+      {
+        "taskType": "warehouse",
+        "label": "入仓截止",
+        "deadline": "2026-01-31",
+        "status": "done",
+        "progress": 100,
+        "owner": "物流"
+      },
+      {
+        "taskType": "launch",
+        "label": "上市日",
+        "deadline": "2026-02-15",
+        "status": "done",
+        "progress": 100,
+        "owner": "运营"
+      },
+      {
+        "taskType": "review",
+        "label": "复盘日",
+        "deadline": "2026-03-16",
+        "status": "done",
+        "progress": 100,
+        "owner": "商品企划"
+      }
+    ]
+  },
+  {
+    "waveKey": "2026-SS-2A",
+    "tasks": [
+      {
+        "taskType": "brief",
+        "label": "企划确认",
+        "deadline": "2025-09-25",
+        "status": "done",
+        "progress": 100,
+        "owner": "商品企划"
+      },
+      {
+        "taskType": "design",
+        "label": "设计稿",
+        "deadline": "2025-10-25",
+        "status": "done",
+        "progress": 100,
+        "owner": "设计"
+      },
+      {
+        "taskType": "sample",
+        "label": "样品评审",
+        "deadline": "2025-11-14",
+        "status": "done",
+        "progress": 100,
+        "owner": "商品企划/设计"
+      },
+      {
+        "taskType": "cost",
+        "label": "成本核价",
+        "deadline": "2025-11-29",
+        "status": "done",
+        "progress": 100,
+        "owner": "采购"
+      },
+      {
+        "taskType": "order",
+        "label": "下单截止",
+        "deadline": "2025-12-19",
+        "status": "done",
+        "progress": 100,
+        "owner": "采购"
+      },
+      {
+        "taskType": "warehouse",
+        "label": "入仓截止",
+        "deadline": "2026-02-17",
+        "status": "done",
+        "progress": 100,
+        "owner": "物流"
+      },
+      {
+        "taskType": "launch",
+        "label": "上市日",
+        "deadline": "2026-03-05",
+        "status": "done",
+        "progress": 100,
+        "owner": "运营"
+      },
+      {
+        "taskType": "review",
+        "label": "复盘日",
+        "deadline": "2026-04-03",
+        "status": "done",
+        "progress": 100,
+        "owner": "商品企划"
+      }
+    ]
+  },
+  {
+    "waveKey": "2026-SS-2B",
+    "tasks": [
+      {
+        "taskType": "brief",
+        "label": "企划确认",
+        "deadline": "2025-10-26",
+        "status": "done",
+        "progress": 100,
+        "owner": "商品企划"
+      },
+      {
+        "taskType": "design",
+        "label": "设计稿",
+        "deadline": "2025-11-25",
+        "status": "done",
+        "progress": 100,
+        "owner": "设计"
+      },
+      {
+        "taskType": "sample",
+        "label": "样品评审",
+        "deadline": "2025-12-15",
+        "status": "done",
+        "progress": 100,
+        "owner": "商品企划/设计"
+      },
+      {
+        "taskType": "cost",
+        "label": "成本核价",
+        "deadline": "2025-12-30",
+        "status": "done",
+        "progress": 100,
+        "owner": "采购"
+      },
+      {
+        "taskType": "order",
+        "label": "下单截止",
+        "deadline": "2026-01-19",
+        "status": "done",
+        "progress": 100,
+        "owner": "采购"
+      },
+      {
+        "taskType": "warehouse",
+        "label": "入仓截止",
+        "deadline": "2026-03-20",
+        "status": "done",
+        "progress": 100,
+        "owner": "物流"
+      },
+      {
+        "taskType": "launch",
+        "label": "上市日",
+        "deadline": "2026-04-05",
+        "status": "done",
+        "progress": 100,
+        "owner": "运营"
+      },
+      {
+        "taskType": "review",
+        "label": "复盘日",
+        "deadline": "2026-05-04",
+        "status": "done",
+        "progress": 100,
+        "owner": "商品企划"
+      }
+    ]
+  },
+  {
+    "waveKey": "2026-SS-3A",
+    "tasks": [
+      {
+        "taskType": "brief",
+        "label": "企划确认",
+        "deadline": "2025-11-25",
+        "status": "done",
+        "progress": 100,
+        "owner": "商品企划"
+      },
+      {
+        "taskType": "design",
+        "label": "设计稿",
+        "deadline": "2025-12-25",
+        "status": "done",
+        "progress": 100,
+        "owner": "设计"
+      },
+      {
+        "taskType": "sample",
+        "label": "样品评审",
+        "deadline": "2026-01-14",
+        "status": "done",
+        "progress": 100,
+        "owner": "商品企划/设计"
+      },
+      {
+        "taskType": "cost",
+        "label": "成本核价",
+        "deadline": "2026-01-29",
+        "status": "done",
+        "progress": 100,
+        "owner": "采购"
+      },
+      {
+        "taskType": "order",
+        "label": "下单截止",
+        "deadline": "2026-02-18",
+        "status": "done",
+        "progress": 100,
+        "owner": "采购"
+      },
+      {
+        "taskType": "warehouse",
+        "label": "入仓截止",
+        "deadline": "2026-04-19",
+        "status": "done",
+        "progress": 100,
+        "owner": "物流"
+      },
+      {
+        "taskType": "launch",
+        "label": "上市日",
+        "deadline": "2026-05-05",
+        "status": "done",
+        "progress": 100,
+        "owner": "运营"
+      },
+      {
+        "taskType": "review",
+        "label": "复盘日",
+        "deadline": "2026-06-03",
+        "status": "in_progress",
+        "progress": 60,
+        "owner": "商品企划"
+      }
+    ]
+  },
+  {
+    "waveKey": "2026-SS-3B",
+    "tasks": [
+      {
+        "taskType": "brief",
+        "label": "企划确认",
+        "deadline": "2025-12-26",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "商品企划",
+        "riskNote": "截止日2025-12-26，距业务日期2026-05-11还有-136天，需跟进企划确认进度"
+      },
+      {
+        "taskType": "design",
+        "label": "设计稿",
+        "deadline": "2026-01-25",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "设计",
+        "riskNote": "截止日2026-01-25，距业务日期2026-05-11还有-106天，需跟进设计稿进度"
+      },
+      {
+        "taskType": "sample",
+        "label": "样品评审",
+        "deadline": "2026-02-14",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "商品企划/设计",
+        "riskNote": "截止日2026-02-14，距业务日期2026-05-11还有-86天，需跟进样品评审进度"
+      },
+      {
+        "taskType": "cost",
+        "label": "成本核价",
+        "deadline": "2026-03-01",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "采购",
+        "riskNote": "截止日2026-03-01，距业务日期2026-05-11还有-71天，需跟进成本核价进度"
+      },
+      {
+        "taskType": "order",
+        "label": "下单截止",
+        "deadline": "2026-03-21",
+        "status": "at_risk",
+        "progress": 30,
+        "owner": "采购",
+        "riskNote": "截止日2026-03-21，距业务日期2026-05-11还有-51天，需跟进下单截止进度"
+      },
+      {
+        "taskType": "warehouse",
+        "label": "入仓截止",
+        "deadline": "2026-05-20",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "物流",
+        "riskNote": "截止日2026-05-20，距业务日期2026-05-11还有9天，需跟进入仓截止进度"
+      },
+      {
+        "taskType": "launch",
+        "label": "上市日",
+        "deadline": "2026-06-05",
+        "status": "in_progress",
+        "progress": 60,
+        "owner": "运营"
+      },
+      {
+        "taskType": "review",
+        "label": "复盘日",
+        "deadline": "2026-07-04",
+        "status": "pending",
+        "progress": 0,
+        "owner": "商品企划"
+      }
+    ]
+  },
+  {
+    "waveKey": "2026-AW-4A",
+    "tasks": [
+      {
+        "taskType": "brief",
+        "label": "企划确认",
+        "deadline": "2026-01-25",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "商品企划",
+        "riskNote": "截止日2026-01-25，距业务日期2026-05-11还有-106天，需跟进企划确认进度"
+      },
+      {
+        "taskType": "design",
+        "label": "设计稿",
+        "deadline": "2026-02-24",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "设计",
+        "riskNote": "截止日2026-02-24，距业务日期2026-05-11还有-76天，需跟进设计稿进度"
+      },
+      {
+        "taskType": "sample",
+        "label": "样品评审",
+        "deadline": "2026-03-16",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "商品企划/设计",
+        "riskNote": "截止日2026-03-16，距业务日期2026-05-11还有-56天，需跟进样品评审进度"
+      },
+      {
+        "taskType": "cost",
+        "label": "成本核价",
+        "deadline": "2026-03-31",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "采购",
+        "riskNote": "截止日2026-03-31，距业务日期2026-05-11还有-41天，需跟进成本核价进度"
+      },
+      {
+        "taskType": "order",
+        "label": "下单截止",
+        "deadline": "2026-04-21",
+        "status": "at_risk",
+        "progress": 30,
+        "owner": "采购",
+        "riskNote": "截止日2026-04-21，距业务日期2026-05-11还有-20天，需跟进下单截止进度"
+      },
+      {
+        "taskType": "warehouse",
+        "label": "入仓截止",
+        "deadline": "2026-06-20",
+        "status": "in_progress",
+        "progress": 60,
+        "owner": "物流"
+      },
+      {
+        "taskType": "launch",
+        "label": "上市日",
+        "deadline": "2026-07-05",
+        "status": "pending",
+        "progress": 0,
+        "owner": "运营"
+      },
+      {
+        "taskType": "review",
+        "label": "复盘日",
+        "deadline": "2026-08-03",
+        "status": "pending",
+        "progress": 0,
+        "owner": "商品企划"
+      }
+    ]
+  },
+  {
+    "waveKey": "2026-AW-4B",
+    "tasks": [
+      {
+        "taskType": "brief",
+        "label": "企划确认",
+        "deadline": "2026-02-25",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "商品企划",
+        "riskNote": "截止日2026-02-25，距业务日期2026-05-11还有-75天，需跟进企划确认进度"
+      },
+      {
+        "taskType": "design",
+        "label": "设计稿",
+        "deadline": "2026-03-27",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "设计",
+        "riskNote": "截止日2026-03-27，距业务日期2026-05-11还有-45天，需跟进设计稿进度"
+      },
+      {
+        "taskType": "sample",
+        "label": "样品评审",
+        "deadline": "2026-04-16",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "商品企划/设计",
+        "riskNote": "截止日2026-04-16，距业务日期2026-05-11还有-25天，需跟进样品评审进度"
+      },
+      {
+        "taskType": "cost",
+        "label": "成本核价",
+        "deadline": "2026-05-01",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "采购",
+        "riskNote": "截止日2026-05-01，距业务日期2026-05-11还有-10天，需跟进成本核价进度"
+      },
+      {
+        "taskType": "order",
+        "label": "下单截止",
+        "deadline": "2026-05-21",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "采购",
+        "riskNote": "截止日2026-05-21，距业务日期2026-05-11还有10天，需跟进下单截止进度"
+      },
+      {
+        "taskType": "warehouse",
+        "label": "入仓截止",
+        "deadline": "2026-07-20",
+        "status": "pending",
+        "progress": 0,
+        "owner": "物流"
+      },
+      {
+        "taskType": "launch",
+        "label": "上市日",
+        "deadline": "2026-08-05",
+        "status": "pending",
+        "progress": 0,
+        "owner": "运营"
+      },
+      {
+        "taskType": "review",
+        "label": "复盘日",
+        "deadline": "2026-09-03",
+        "status": "pending",
+        "progress": 0,
+        "owner": "商品企划"
+      }
+    ]
+  },
+  {
+    "waveKey": "2026-AW-5A",
+    "tasks": [
+      {
+        "taskType": "brief",
+        "label": "企划确认",
+        "deadline": "2026-03-28",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "商品企划",
+        "riskNote": "截止日2026-03-28，距业务日期2026-05-11还有-44天，需跟进企划确认进度"
+      },
+      {
+        "taskType": "design",
+        "label": "设计稿",
+        "deadline": "2026-04-27",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "设计",
+        "riskNote": "截止日2026-04-27，距业务日期2026-05-11还有-14天，需跟进设计稿进度"
+      },
+      {
+        "taskType": "sample",
+        "label": "样品评审",
+        "deadline": "2026-05-17",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "商品企划/设计",
+        "riskNote": "截止日2026-05-17，距业务日期2026-05-11还有6天，需跟进样品评审进度"
+      },
+      {
+        "taskType": "cost",
+        "label": "成本核价",
+        "deadline": "2026-06-01",
+        "status": "in_progress",
+        "progress": 60,
+        "owner": "采购"
+      },
+      {
+        "taskType": "order",
+        "label": "下单截止",
+        "deadline": "2026-06-21",
+        "status": "in_progress",
+        "progress": 60,
+        "owner": "采购"
+      },
+      {
+        "taskType": "warehouse",
+        "label": "入仓截止",
+        "deadline": "2026-08-20",
+        "status": "pending",
+        "progress": 0,
+        "owner": "物流"
+      },
+      {
+        "taskType": "launch",
+        "label": "上市日",
+        "deadline": "2026-09-05",
+        "status": "pending",
+        "progress": 0,
+        "owner": "运营"
+      },
+      {
+        "taskType": "review",
+        "label": "复盘日",
+        "deadline": "2026-10-04",
+        "status": "pending",
+        "progress": 0,
+        "owner": "商品企划"
+      }
+    ]
+  },
+  {
+    "waveKey": "2026-AW-5B",
+    "tasks": [
+      {
+        "taskType": "brief",
+        "label": "企划确认",
+        "deadline": "2026-04-27",
+        "status": "at_risk",
+        "progress": 60,
+        "owner": "商品企划",
+        "riskNote": "截止日2026-04-27，距业务日期2026-05-11还有-14天，需跟进企划确认进度"
+      },
+      {
+        "taskType": "design",
+        "label": "设计稿",
+        "deadline": "2026-05-27",
+        "status": "in_progress",
+        "progress": 60,
+        "owner": "设计"
+      },
+      {
+        "taskType": "sample",
+        "label": "样品评审",
+        "deadline": "2026-06-16",
+        "status": "in_progress",
+        "progress": 60,
+        "owner": "商品企划/设计"
+      },
+      {
+        "taskType": "cost",
+        "label": "成本核价",
+        "deadline": "2026-07-01",
+        "status": "pending",
+        "progress": 0,
+        "owner": "采购"
+      },
+      {
+        "taskType": "order",
+        "label": "下单截止",
+        "deadline": "2026-07-21",
+        "status": "pending",
+        "progress": 0,
+        "owner": "采购"
+      },
+      {
+        "taskType": "warehouse",
+        "label": "入仓截止",
+        "deadline": "2026-09-19",
+        "status": "pending",
+        "progress": 0,
+        "owner": "物流"
+      },
+      {
+        "taskType": "launch",
+        "label": "上市日",
+        "deadline": "2026-10-05",
+        "status": "pending",
+        "progress": 0,
+        "owner": "运营"
+      },
+      {
+        "taskType": "review",
+        "label": "复盘日",
+        "deadline": "2026-11-03",
+        "status": "pending",
+        "progress": 0,
+        "owner": "商品企划"
+      }
+    ]
+  },
+  {
+    "waveKey": "2026-AW-6A",
+    "tasks": [
+      {
+        "taskType": "brief",
+        "label": "企划确认",
+        "deadline": "2026-05-28",
+        "status": "in_progress",
+        "progress": 60,
+        "owner": "商品企划"
+      },
+      {
+        "taskType": "design",
+        "label": "设计稿",
+        "deadline": "2026-06-27",
+        "status": "pending",
+        "progress": 0,
+        "owner": "设计"
+      },
+      {
+        "taskType": "sample",
+        "label": "样品评审",
+        "deadline": "2026-07-17",
+        "status": "pending",
+        "progress": 0,
+        "owner": "商品企划/设计"
+      },
+      {
+        "taskType": "cost",
+        "label": "成本核价",
+        "deadline": "2026-08-01",
+        "status": "pending",
+        "progress": 0,
+        "owner": "采购"
+      },
+      {
+        "taskType": "order",
+        "label": "下单截止",
+        "deadline": "2026-08-21",
+        "status": "pending",
+        "progress": 0,
+        "owner": "采购"
+      },
+      {
+        "taskType": "warehouse",
+        "label": "入仓截止",
+        "deadline": "2026-10-20",
+        "status": "pending",
+        "progress": 0,
+        "owner": "物流"
+      },
+      {
+        "taskType": "launch",
+        "label": "上市日",
+        "deadline": "2026-11-05",
+        "status": "pending",
+        "progress": 0,
+        "owner": "运营"
+      },
+      {
+        "taskType": "review",
+        "label": "复盘日",
+        "deadline": "2026-12-04",
+        "status": "pending",
+        "progress": 0,
+        "owner": "商品企划"
+      }
+    ]
+  },
+  {
+    "waveKey": "2026-AW-6B",
+    "tasks": [
+      {
+        "taskType": "brief",
+        "label": "企划确认",
+        "deadline": "2026-06-27",
+        "status": "pending",
+        "progress": 0,
+        "owner": "商品企划"
+      },
+      {
+        "taskType": "design",
+        "label": "设计稿",
+        "deadline": "2026-07-27",
+        "status": "pending",
+        "progress": 0,
+        "owner": "设计"
+      },
+      {
+        "taskType": "sample",
+        "label": "样品评审",
+        "deadline": "2026-08-16",
+        "status": "pending",
+        "progress": 0,
+        "owner": "商品企划/设计"
+      },
+      {
+        "taskType": "cost",
+        "label": "成本核价",
+        "deadline": "2026-08-31",
+        "status": "pending",
+        "progress": 0,
+        "owner": "采购"
+      },
+      {
+        "taskType": "order",
+        "label": "下单截止",
+        "deadline": "2026-09-21",
+        "status": "pending",
+        "progress": 0,
+        "owner": "采购"
+      },
+      {
+        "taskType": "warehouse",
+        "label": "入仓截止",
+        "deadline": "2026-11-20",
+        "status": "pending",
+        "progress": 0,
+        "owner": "物流"
+      },
+      {
+        "taskType": "launch",
+        "label": "上市日",
+        "deadline": "2026-12-05",
+        "status": "pending",
+        "progress": 0,
+        "owner": "运营"
+      },
+      {
+        "taskType": "review",
+        "label": "复盘日",
+        "deadline": "2027-01-03",
+        "status": "pending",
+        "progress": 0,
+        "owner": "商品企划"
+      }
+    ]
+  }
+]

@@ -19,7 +19,7 @@ import {
 } from '@/utils/otbExecutionTracking';
 import type { OTBPriceStructureOutput } from './OTBPriceStructurePanel';
 import defaultData from '../../../../data/otb/otb_execution_tracking.json';
-import wavePlanRaw from '../../../../data/otb/wave_otb_plan.json';
+import { WAVE_PLAN_MASTER } from '@/utils/wavePlanMaster';
 
 interface Props {
     currencyUnit:       CurrencyUnit;
@@ -191,7 +191,7 @@ export default function OTBExecutionTrackingPanel({
     const ledgerRef = useRef<HTMLDivElement>(null);
 
     const wavePlans = useMemo(() => (
-        (wavePlanRaw as WavePlanRecord[])
+        (WAVE_PLAN_MASTER as WavePlanRecord[])
             .slice()
             .sort((a, b) => a.launchMonth - b.launchMonth || a.launchDate.localeCompare(b.launchDate))
     ), []);
@@ -669,7 +669,7 @@ export default function OTBExecutionTrackingPanel({
                         </table>
                     </div>
                     <p className="text-[10px] text-slate-400 px-4 py-2 bg-slate-50/40 border-t border-slate-100">
-                        颜色判定：实际值 ≥ 目标 → 绿；≥ 目标 × 85% → 黄；&lt; 目标 × 85% → 红。"·" 表示该品类在此波段无计划，"—" 表示尚无数据。
+                        颜色判定：实际值 ≥ 目标 → 绿；≥ 目标 × 85% → 黄；&lt; 目标 × 85% → 红。&quot;·&quot; 表示该品类在此波段无计划，&quot;—&quot; 表示尚无数据。
                     </p>
                 </div>
             </section>

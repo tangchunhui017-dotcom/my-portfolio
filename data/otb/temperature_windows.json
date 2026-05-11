@@ -1,0 +1,92 @@
+[
+  {
+    "category": "凉鞋",
+    "label": "凉鞋 / 凉拖",
+    "tempMin": 22,
+    "tempMax": 38,
+    "peakTempMin": 26,
+    "peakTempMax": 34,
+    "launchAdvanceWeeks": 3,
+    "notes": "气温升至 22℃ 前 3 周开始铺货；低于 18℃ 售罄极难"
+  },
+  {
+    "category": "凉拖",
+    "label": "凉鞋 / 凉拖",
+    "tempMin": 22,
+    "tempMax": 38,
+    "peakTempMin": 26,
+    "peakTempMax": 34,
+    "launchAdvanceWeeks": 3,
+    "notes": "同凉鞋"
+  },
+  {
+    "category": "靴类",
+    "label": "靴 / 短靴 / 长靴",
+    "tempMin": -10,
+    "tempMax": 12,
+    "peakTempMin": -5,
+    "peakTempMax": 8,
+    "launchAdvanceWeeks": 5,
+    "notes": "气温降至 12℃ 前 4-6 周铺货；春季回暖后滞销加速"
+  },
+  {
+    "category": "雪地靴",
+    "label": "雪地靴 / 棉鞋",
+    "tempMin": -15,
+    "tempMax": 5,
+    "peakTempMin": -10,
+    "peakTempMax": 0,
+    "launchAdvanceWeeks": 6,
+    "notes": "北方市场比南方早 4-6 周进入销售窗口"
+  },
+  {
+    "category": "棉鞋",
+    "label": "雪地靴 / 棉鞋",
+    "tempMin": -15,
+    "tempMax": 5,
+    "peakTempMin": -10,
+    "peakTempMax": 0,
+    "launchAdvanceWeeks": 6,
+    "notes": "同雪地靴"
+  },
+  {
+    "category": "运动鞋",
+    "label": "运动 / 跑步 / 篮球",
+    "tempMin": 5,
+    "tempMax": 35,
+    "peakTempMin": 15,
+    "peakTempMax": 28,
+    "launchAdvanceWeeks": 2,
+    "notes": "全季候产品，但极端高温 / 严寒对销售有轻微影响"
+  },
+  {
+    "category": "板鞋",
+    "label": "板鞋 / 街头",
+    "tempMin": 10,
+    "tempMax": 30,
+    "peakTempMin": 15,
+    "peakTempMax": 25,
+    "launchAdvanceWeeks": 2,
+    "notes": "春秋季节性强，夏季极热时销售放缓"
+  },
+  {
+    "category": "户外鞋",
+    "label": "户外 / 登山 / 徒步",
+    "tempMin": 8,
+    "tempMax": 28,
+    "peakTempMin": 12,
+    "peakTempMax": 25,
+    "launchAdvanceWeeks": 4,
+    "notes": "节假日前 3-5 周铺货；黄金周/五一是销售高峰"
+  },
+  {
+    "category": "休闲鞋",
+    "label": "休闲 / 通勤",
+    "tempMin": 8,
+    "tempMax": 32,
+    "peakTempMin": 15,
+    "peakTempMax": 28,
+    "launchAdvanceWeeks": 2,
+    "notes": "全年可销售，春秋两季销售峰值"
+  }
+]

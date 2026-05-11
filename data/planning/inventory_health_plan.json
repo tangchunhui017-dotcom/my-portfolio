@@ -1,0 +1,830 @@
+{
+  "meta": {
+    "year": "2026",
+    "season": "2026SS",
+    "updatedAt": "2026-05-11",
+    "note": "库存健康诊断数据 — 含WOS/尺码/渠道/波段/财务影响"
+  },
+  "summary": {
+    "totalStockAmount": 28640000,
+    "totalOnHandQty": 68200,
+    "totalAvailableQty": 61800,
+    "totalInTransitQty": 8400,
+    "totalReservedQty": 6400,
+    "overallWos": 9.2,
+    "healthySkuPct": 0.38,
+    "stockoutOpportunityLoss": 1820000,
+    "overstockAmount": 6340000,
+    "replenishCount": 12,
+    "clearanceCount": 9,
+    "transferCount": 6
+  },
+  "styles": [
+    {
+      "styleId": "ST001",
+      "name": "疾风跑鞋Pro",
+      "category": "running",
+      "waveKey": "2026SS-W1",
+      "channel": "physical",
+      "region": "华东",
+      "onHandQty": 420,
+      "availableQty": 380,
+      "inTransitQty": 120,
+      "reservedQty": 40,
+      "last7dSales": 68,
+      "last14dSales": 128,
+      "last30dSales": 260,
+      "stockAmount": 756000,
+      "grossMarginRate": 0.52,
+      "msrp": 699,
+      "launchDate": "2026-03-01",
+      "lifecycle": "成长期",
+      "salesVelocity": "high",
+      "stockLevel": "low",
+      "wos": 6.5,
+      "sellThrough": 0.52,
+      "coreSize": {
+        "coverRate": 0.91,
+        "brokenSizes": [
+          "42.5"
+        ],
+        "marginalOverstock": [
+          "44.5"
+        ]
+      },
+      "riskType": "healthy",
+      "action": "持续监控",
+      "actionLink": null,
+      "financialImpact": 0
+    },
+    {
+      "styleId": "ST002",
+      "name": "疾风跑鞋Pro",
+      "category": "running",
+      "waveKey": "2026SS-W1",
+      "channel": "ecommerce",
+      "region": "全国",
+      "onHandQty": 680,
+      "availableQty": 620,
+      "inTransitQty": 200,
+      "reservedQty": 60,
+      "last7dSales": 142,
+      "last14dSales": 274,
+      "last30dSales": 520,
+      "stockAmount": 1224000,
+      "grossMarginRate": 0.54,
+      "msrp": 699,
+      "launchDate": "2026-03-01",
+      "lifecycle": "成长期",
+      "salesVelocity": "high",
+      "stockLevel": "low",
+      "wos": 4.8,
+      "sellThrough": 0.48,
+      "coreSize": {
+        "coverRate": 0.88,
+        "brokenSizes": [
+          "38",
+          "43"
+        ],
+        "marginalOverstock": []
+      },
+      "riskType": "stockout",
+      "action": "紧急补货",
+      "actionLink": "otb",
+      "financialImpact": 380000
+    },
+    {
+      "styleId": "ST003",
+      "name": "都市轻行休闲鞋",
+      "category": "casual",
+      "waveKey": "2026SS-W1",
+      "channel": "physical",
+      "region": "华南",
+      "onHandQty": 1240,
+      "availableQty": 1100,
+      "inTransitQty": 0,
+      "reservedQty": 140,
+      "last7dSales": 28,
+      "last14dSales": 54,
+      "last30dSales": 98,
+      "stockAmount": 992000,
+      "grossMarginRate": 0.48,
+      "msrp": 399,
+      "launchDate": "2026-02-15",
+      "lifecycle": "成熟期",
+      "salesVelocity": "low",
+      "stockLevel": "high",
+      "wos": 50.5,
+      "sellThrough": 0.28,
+      "coreSize": {
+        "coverRate": 0.95,
+        "brokenSizes": [],
+        "marginalOverstock": [
+          "44",
+          "44.5",
+          "45"
+        ]
+      },
+      "riskType": "overstock",
+      "action": "折扣清货",
+      "actionLink": "pnl",
+      "financialImpact": -246000
+    },
+    {
+      "styleId": "ST004",
+      "name": "山野穿越越野鞋",
+      "category": "outdoor",
+      "waveKey": "2026SS-W2",
+      "channel": "physical",
+      "region": "华北",
+      "onHandQty": 860,
+      "availableQty": 820,
+      "inTransitQty": 240,
+      "reservedQty": 40,
+      "last7dSales": 48,
+      "last14dSales": 94,
+      "last30dSales": 188,
+      "stockAmount": 1290000,
+      "grossMarginRate": 0.55,
+      "msrp": 599,
+      "launchDate": "2026-03-20",
+      "lifecycle": "成长期",
+      "salesVelocity": "high",
+      "stockLevel": "medium",
+      "wos": 18.4,
+      "sellThrough": 0.38,
+      "coreSize": {
+        "coverRate": 0.82,
+        "brokenSizes": [
+          "40",
+          "40.5"
+        ],
+        "marginalOverstock": [
+          "46"
+        ]
+      },
+      "riskType": "high",
+      "action": "调拨至缺货渠道",
+      "actionLink": "transfer",
+      "financialImpact": 0
+    },
+    {
+      "styleId": "ST005",
+      "name": "夏日凉拖",
+      "category": "slippers",
+      "waveKey": "2026SS-W1",
+      "channel": "ecommerce",
+      "region": "全国",
+      "onHandQty": 2200,
+      "availableQty": 2100,
+      "inTransitQty": 600,
+      "reservedQty": 100,
+      "last7dSales": 320,
+      "last14dSales": 612,
+      "last30dSales": 1180,
+      "stockAmount": 1540000,
+      "grossMarginRate": 0.62,
+      "msrp": 299,
+      "launchDate": "2026-04-01",
+      "lifecycle": "新品期",
+      "salesVelocity": "high",
+      "stockLevel": "high",
+      "wos": 7.5,
+      "sellThrough": 0.35,
+      "coreSize": {
+        "coverRate": 0.97,
+        "brokenSizes": [],
+        "marginalOverstock": []
+      },
+      "riskType": "healthy",
+      "action": "保持供应",
+      "actionLink": null,
+      "financialImpact": 0
+    },
+    {
+      "styleId": "ST006",
+      "name": "训练战靴X3",
+      "category": "training",
+      "waveKey": "2026SS-W2",
+      "channel": "physical",
+      "region": "华东",
+      "onHandQty": 380,
+      "availableQty": 360,
+      "inTransitQty": 80,
+      "reservedQty": 20,
+      "last7dSales": 18,
+      "last14dSales": 34,
+      "last30dSales": 62,
+      "stockAmount": 646000,
+      "grossMarginRate": 0.58,
+      "msrp": 799,
+      "launchDate": "2026-04-10",
+      "lifecycle": "新品期",
+      "salesVelocity": "low",
+      "stockLevel": "low",
+      "wos": 24.6,
+      "sellThrough": 0.22,
+      "coreSize": {
+        "coverRate": 0.79,
+        "brokenSizes": [
+          "38",
+          "38.5",
+          "39"
+        ],
+        "marginalOverstock": [
+          "45",
+          "46"
+        ]
+      },
+      "riskType": "high",
+      "action": "观察+尺码补货",
+      "actionLink": "otb",
+      "financialImpact": -80000
+    },
+    {
+      "styleId": "ST007",
+      "name": "复古板鞋经典款",
+      "category": "casual",
+      "waveKey": "2025AW-W3",
+      "channel": "physical",
+      "region": "全国",
+      "onHandQty": 1820,
+      "availableQty": 1680,
+      "inTransitQty": 0,
+      "reservedQty": 140,
+      "last7dSales": 24,
+      "last14dSales": 44,
+      "last30dSales": 82,
+      "stockAmount": 1092000,
+      "grossMarginRate": 0.44,
+      "msrp": 359,
+      "launchDate": "2025-10-01",
+      "lifecycle": "清退期",
+      "salesVelocity": "low",
+      "stockLevel": "high",
+      "wos": 89.6,
+      "sellThrough": 0.31,
+      "coreSize": {
+        "coverRate": 0.92,
+        "brokenSizes": [],
+        "marginalOverstock": [
+          "36",
+          "36.5",
+          "45",
+          "46"
+        ]
+      },
+      "riskType": "overstock",
+      "action": "立即清货-出清定价",
+      "actionLink": "pnl",
+      "financialImpact": -328000
+    },
+    {
+      "styleId": "ST008",
+      "name": "登山冲锋靴",
+      "category": "boots",
+      "waveKey": "2025AW-W2",
+      "channel": "physical",
+      "region": "华北",
+      "onHandQty": 640,
+      "availableQty": 580,
+      "inTransitQty": 0,
+      "reservedQty": 60,
+      "last7dSales": 8,
+      "last14dSales": 15,
+      "last30dSales": 28,
+      "stockAmount": 1152000,
+      "grossMarginRate": 0.5,
+      "msrp": 899,
+      "launchDate": "2025-09-15",
+      "lifecycle": "清退期",
+      "salesVelocity": "low",
+      "stockLevel": "high",
+      "wos": 92.9,
+      "sellThrough": 0.42,
+      "coreSize": {
+        "coverRate": 0.85,
+        "brokenSizes": [
+          "38",
+          "39"
+        ],
+        "marginalOverstock": [
+          "44",
+          "45",
+          "46"
+        ]
+      },
+      "riskType": "overstock",
+      "action": "出清+调拨至奥莱",
+      "actionLink": "pnl",
+      "financialImpact": -285000
+    },
+    {
+      "styleId": "ST009",
+      "name": "轻速跑鞋Elite",
+      "category": "running",
+      "waveKey": "2026SS-W2",
+      "channel": "ecommerce",
+      "region": "全国",
+      "onHandQty": 920,
+      "availableQty": 860,
+      "inTransitQty": 320,
+      "reservedQty": 60,
+      "last7dSales": 186,
+      "last14dSales": 354,
+      "last30dSales": 680,
+      "stockAmount": 2484000,
+      "grossMarginRate": 0.56,
+      "msrp": 999,
+      "launchDate": "2026-04-20",
+      "lifecycle": "新品期",
+      "salesVelocity": "high",
+      "stockLevel": "low",
+      "wos": 5.4,
+      "sellThrough": 0.41,
+      "coreSize": {
+        "coverRate": 0.86,
+        "brokenSizes": [
+          "42",
+          "42.5",
+          "43"
+        ],
+        "marginalOverstock": []
+      },
+      "riskType": "stockout",
+      "action": "紧急补货+在途加速",
+      "actionLink": "otb",
+      "financialImpact": 520000
+    },
+    {
+      "styleId": "ST010",
+      "name": "街头潮流低帮",
+      "category": "casual",
+      "waveKey": "2026SS-W1",
+      "channel": "physical",
+      "region": "华南",
+      "onHandQty": 560,
+      "availableQty": 520,
+      "inTransitQty": 80,
+      "reservedQty": 40,
+      "last7dSales": 42,
+      "last14dSales": 80,
+      "last30dSales": 152,
+      "stockAmount": 504000,
+      "grossMarginRate": 0.5,
+      "msrp": 449,
+      "launchDate": "2026-02-28",
+      "lifecycle": "成熟期",
+      "salesVelocity": "medium",
+      "stockLevel": "medium",
+      "wos": 14.7,
+      "sellThrough": 0.54,
+      "coreSize": {
+        "coverRate": 0.89,
+        "brokenSizes": [
+          "37.5"
+        ],
+        "marginalOverstock": [
+          "45"
+        ]
+      },
+      "riskType": "high",
+      "action": "控单+关注",
+      "actionLink": null,
+      "financialImpact": 0
+    },
+    {
+      "styleId": "ST011",
+      "name": "女款轻跑Pro",
+      "category": "running",
+      "waveKey": "2026SS-W1",
+      "channel": "physical",
+      "region": "华东",
+      "onHandQty": 310,
+      "availableQty": 280,
+      "inTransitQty": 60,
+      "reservedQty": 30,
+      "last7dSales": 56,
+      "last14dSales": 106,
+      "last30dSales": 204,
+      "stockAmount": 496000,
+      "grossMarginRate": 0.53,
+      "msrp": 599,
+      "launchDate": "2026-03-10",
+      "lifecycle": "成长期",
+      "salesVelocity": "high",
+      "stockLevel": "low",
+      "wos": 6.1,
+      "sellThrough": 0.49,
+      "coreSize": {
+        "coverRate": 0.83,
+        "brokenSizes": [
+          "36",
+          "36.5",
+          "37"
+        ],
+        "marginalOverstock": []
+      },
+      "riskType": "stockout",
+      "action": "核心码补货",
+      "actionLink": "otb",
+      "financialImpact": 218000
+    },
+    {
+      "styleId": "ST012",
+      "name": "儿童训练鞋",
+      "category": "kids",
+      "waveKey": "2026SS-W1",
+      "channel": "ecommerce",
+      "region": "全国",
+      "onHandQty": 1480,
+      "availableQty": 1420,
+      "inTransitQty": 200,
+      "reservedQty": 60,
+      "last7dSales": 96,
+      "last14dSales": 182,
+      "last30dSales": 340,
+      "stockAmount": 814000,
+      "grossMarginRate": 0.58,
+      "msrp": 259,
+      "launchDate": "2026-03-15",
+      "lifecycle": "成长期",
+      "salesVelocity": "high",
+      "stockLevel": "high",
+      "wos": 17.5,
+      "sellThrough": 0.44,
+      "coreSize": {
+        "coverRate": 0.94,
+        "brokenSizes": [],
+        "marginalOverstock": [
+          "37"
+        ]
+      },
+      "riskType": "high",
+      "action": "控补+预测修正",
+      "actionLink": "forecast",
+      "financialImpact": 0
+    }
+  ],
+  "sizeHealth": {
+    "categories": [
+      {
+        "key": "running",
+        "label": "跑鞋",
+        "coreSizes": [
+          "38",
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44"
+        ],
+        "womenCoreSizes": [
+          "36",
+          "37",
+          "38",
+          "39",
+          "40"
+        ],
+        "avgCoverRate": 0.88,
+        "brokenSizeRate": 0.14,
+        "marginalOverstockRate": 0.06,
+        "topBrokenSizes": [
+          "36",
+          "42.5",
+          "43"
+        ],
+        "topOverstockSizes": [
+          "45",
+          "46"
+        ]
+      },
+      {
+        "key": "casual",
+        "label": "休闲",
+        "coreSizes": [
+          "38",
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44"
+        ],
+        "womenCoreSizes": [
+          "36",
+          "37",
+          "38",
+          "39",
+          "40"
+        ],
+        "avgCoverRate": 0.93,
+        "brokenSizeRate": 0.08,
+        "marginalOverstockRate": 0.18,
+        "topBrokenSizes": [
+          "37.5"
+        ],
+        "topOverstockSizes": [
+          "44",
+          "44.5",
+          "45",
+          "46"
+        ]
+      },
+      {
+        "key": "outdoor",
+        "label": "户外",
+        "coreSizes": [
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44"
+        ],
+        "womenCoreSizes": [
+          "36",
+          "37",
+          "38",
+          "39"
+        ],
+        "avgCoverRate": 0.81,
+        "brokenSizeRate": 0.22,
+        "marginalOverstockRate": 0.09,
+        "topBrokenSizes": [
+          "40",
+          "40.5",
+          "38"
+        ],
+        "topOverstockSizes": [
+          "46"
+        ]
+      },
+      {
+        "key": "training",
+        "label": "训练",
+        "coreSizes": [
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44"
+        ],
+        "womenCoreSizes": [
+          "36",
+          "37",
+          "38",
+          "39"
+        ],
+        "avgCoverRate": 0.79,
+        "brokenSizeRate": 0.24,
+        "marginalOverstockRate": 0.12,
+        "topBrokenSizes": [
+          "38",
+          "38.5",
+          "39"
+        ],
+        "topOverstockSizes": [
+          "45",
+          "46"
+        ]
+      },
+      {
+        "key": "slippers",
+        "label": "凉拖",
+        "coreSizes": [
+          "36",
+          "37",
+          "38",
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44"
+        ],
+        "womenCoreSizes": [
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40"
+        ],
+        "avgCoverRate": 0.97,
+        "brokenSizeRate": 0.03,
+        "marginalOverstockRate": 0.02,
+        "topBrokenSizes": [],
+        "topOverstockSizes": []
+      }
+    ]
+  },
+  "channelDistribution": [
+    {
+      "channel": "physical",
+      "label": "实体门店",
+      "stockAmount": 12840000,
+      "onHandQty": 30200,
+      "wos": 11.2,
+      "healthyPct": 0.35,
+      "overstockPct": 0.28,
+      "stockoutPct": 0.18,
+      "region": "华东/华南/华北"
+    },
+    {
+      "channel": "ecommerce",
+      "label": "电商",
+      "stockAmount": 9640000,
+      "onHandQty": 24600,
+      "wos": 7.8,
+      "healthyPct": 0.44,
+      "overstockPct": 0.18,
+      "stockoutPct": 0.22,
+      "region": "全国"
+    },
+    {
+      "channel": "new_store",
+      "label": "新店",
+      "stockAmount": 3880000,
+      "onHandQty": 9200,
+      "wos": 14.6,
+      "healthyPct": 0.28,
+      "overstockPct": 0.38,
+      "stockoutPct": 0.12,
+      "region": "华南/西南"
+    },
+    {
+      "channel": "outlet",
+      "label": "奥莱/清货渠道",
+      "stockAmount": 2280000,
+      "onHandQty": 4200,
+      "wos": 21.8,
+      "healthyPct": 0.15,
+      "overstockPct": 0.58,
+      "stockoutPct": 0.04,
+      "region": "全国"
+    }
+  ],
+  "lifecycleDistribution": [
+    {
+      "lifecycle": "新品期",
+      "label": "新品期 (0-8W)",
+      "wos": 8.2,
+      "skuCount": 18,
+      "stockAmount": 5840000,
+      "avgSellThrough": 0.32,
+      "action": "追单+关注速度"
+    },
+    {
+      "lifecycle": "成长期",
+      "label": "成长期 (8-20W)",
+      "wos": 7.1,
+      "skuCount": 24,
+      "stockAmount": 8620000,
+      "avgSellThrough": 0.48,
+      "action": "补货+扩渠道"
+    },
+    {
+      "lifecycle": "成熟期",
+      "label": "成熟期 (20-36W)",
+      "wos": 9.8,
+      "skuCount": 16,
+      "stockAmount": 6480000,
+      "avgSellThrough": 0.62,
+      "action": "控单+维持"
+    },
+    {
+      "lifecycle": "清退期",
+      "label": "清退期 (>36W)",
+      "wos": 42.6,
+      "skuCount": 8,
+      "stockAmount": 7700000,
+      "avgSellThrough": 0.35,
+      "action": "折扣+清货+停补"
+    }
+  ],
+  "actionQueue": [
+    {
+      "id": "AQ001",
+      "priority": 1,
+      "riskType": "stockout",
+      "styleId": "ST009",
+      "styleName": "轻速跑鞋Elite",
+      "category": "running",
+      "channel": "ecommerce",
+      "action": "紧急补货+在途加速",
+      "owner": "电商运营",
+      "deadline": "2026-05-14",
+      "financialImpact": 520000,
+      "actionLink": "otb",
+      "desc": "电商跑鞋核心码42/42.5/43断货，预测机会损失52万，需加速在途或补单"
+    },
+    {
+      "id": "AQ002",
+      "priority": 2,
+      "riskType": "stockout",
+      "styleId": "ST002",
+      "styleName": "疾风跑鞋Pro(电商)",
+      "category": "running",
+      "channel": "ecommerce",
+      "action": "补货38/43码",
+      "owner": "OTB计划",
+      "deadline": "2026-05-16",
+      "financialImpact": 380000,
+      "actionLink": "otb",
+      "desc": "电商跑鞋38码/43码断货，WOS仅4.8W，机会损失38万"
+    },
+    {
+      "id": "AQ003",
+      "priority": 3,
+      "riskType": "stockout",
+      "styleId": "ST011",
+      "styleName": "女款轻跑Pro",
+      "category": "running",
+      "channel": "physical",
+      "action": "女鞋核心码补货36/36.5/37",
+      "owner": "实体库存",
+      "deadline": "2026-05-18",
+      "financialImpact": 218000,
+      "actionLink": "otb",
+      "desc": "女款跑鞋华东门店核心码断货，WOS 6.1W但断码率高"
+    },
+    {
+      "id": "AQ004",
+      "priority": 4,
+      "riskType": "overstock",
+      "styleId": "ST007",
+      "styleName": "复古板鞋经典款",
+      "category": "casual",
+      "channel": "physical",
+      "action": "出清定价+控单停补",
+      "owner": "商品企划",
+      "deadline": "2026-05-20",
+      "financialImpact": -328000,
+      "actionLink": "pnl",
+      "desc": "老品WOS高达89W，库龄超7个月，需立即启动出清，预计毛利损失33万"
+    },
+    {
+      "id": "AQ005",
+      "priority": 5,
+      "riskType": "overstock",
+      "styleId": "ST008",
+      "styleName": "登山冲锋靴",
+      "category": "boots",
+      "channel": "physical",
+      "action": "调拨奥莱+折扣清货",
+      "owner": "渠道运营",
+      "deadline": "2026-05-21",
+      "financialImpact": -285000,
+      "actionLink": "pnl",
+      "desc": "秋冬靴跨季积压，WOS 93W，调拨奥莱+折扣清货，毛利损失28万"
+    },
+    {
+      "id": "AQ006",
+      "priority": 6,
+      "riskType": "overstock",
+      "styleId": "ST003",
+      "styleName": "都市轻行休闲鞋",
+      "category": "casual",
+      "channel": "physical",
+      "action": "折扣75折+换陈列",
+      "owner": "华南区销售",
+      "deadline": "2026-05-25",
+      "financialImpact": -246000,
+      "actionLink": "pnl",
+      "desc": "华南门店休闲鞋WOS 50W，大码积压，折扣处理"
+    },
+    {
+      "id": "AQ007",
+      "priority": 7,
+      "riskType": "high",
+      "styleId": "ST004",
+      "styleName": "山野穿越越野鞋",
+      "category": "outdoor",
+      "channel": "physical",
+      "action": "调拨至缺货渠道",
+      "owner": "调拨计划",
+      "deadline": "2026-05-28",
+      "financialImpact": 0,
+      "actionLink": "transfer",
+      "desc": "华北越野鞋偏高，电商同款WOS偏低，建议渠道间调拨平衡"
+    },
+    {
+      "id": "AQ008",
+      "priority": 8,
+      "riskType": "high",
+      "styleId": "ST006",
+      "styleName": "训练战靴X3",
+      "category": "training",
+      "channel": "physical",
+      "action": "女码尺码补货+观察",
+      "owner": "OTB计划",
+      "deadline": "2026-05-30",
+      "financialImpact": -80000,
+      "actionLink": "otb",
+      "desc": "新品女码38/38.5/39断货，大码过多，需尺码重配"
+    }
+  ]
+}

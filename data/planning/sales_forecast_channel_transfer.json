@@ -1,0 +1,52 @@
+{
+  "_comment": "三渠道客流转移率（实体→电商 / 电商→实体 / 新店引流）",
+  "physicalToOnline": {
+    "rate": 0.22,
+    "mechanism": "门店扫码入会后线上复购",
+    "avgOrderValue": 385,
+    "repurchaseCycle": 95,
+    "monthlyTransferVolume": 18500
+  },
+  "onlineToOffline": {
+    "rate": 0.08,
+    "mechanism": "线上种草→门店试穿购买（O2O路径）",
+    "avgOrderValue": 520,
+    "conversionLift": 0.15,
+    "monthlyTransferVolume": 6200
+  },
+  "newStoreHaloEffect": {
+    "onlineGrowthRadius": "3km商圈",
+    "onlineSalesLift": 0.12,
+    "brandAwarenessLift": 0.18,
+    "peakPeriod": "开业前后2周"
+  },
+  "priceArbitrageRisk": {
+    "physicalVsOnlinePriceGap": 0.08,
+    "riskLevel": "中",
+    "affectedCategories": [
+      "PB2 ¥200-300",
+      "PB3 ¥300-500"
+    ],
+    "riskDescription": "电商折扣力度强于实体，导致部分消费者选择线上购买，建议实体专供款比例>25%"
+  },
+  "monthlyTransferFlow": [
+    {
+      "month": "2026-01",
+      "physToOnline": 16000,
+      "onlineToPhys": 5200,
+      "netOnlineGain": 10800
+    },
+    {
+      "month": "2026-06",
+      "physToOnline": 14000,
+      "onlineToPhys": 4500,
+      "netOnlineGain": 9500
+    },
+    {
+      "month": "2026-11",
+      "physToOnline": 25000,
+      "onlineToPhys": 8500,
+      "netOnlineGain": 16500
+    }
+  ]
+}

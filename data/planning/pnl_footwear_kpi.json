@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "year": "2025"
+  },
+  "inventoryTurnover": {
+    "actual": 4.2,
+    "target": 5,
+    "lastYear": 3.9,
+    "healthMin": 3,
+    "healthMax": 6,
+    "unit": "次/年",
+    "verdict": "偏低，建议提升补货频次"
+  },
+  "newProductContribution": {
+    "actual": 0.38,
+    "target": 0.4,
+    "lastYear": 0.35,
+    "healthMin": 0.35,
+    "healthMax": 0.45,
+    "unit": "%",
+    "verdict": "健康范围内"
+  },
+  "weightedSellThrough": {
+    "actual": 0.76,
+    "target": 0.82,
+    "lastYear": 0.79,
+    "healthMin": 0.8,
+    "healthMax": 0.95,
+    "unit": "%",
+    "verdict": "低于目标，清货压力大"
+  },
+  "ccc": {
+    "dso": 18,
+    "dio": 95,
+    "dpo": 42,
+    "ccc": 71,
+    "target": 60,
+    "lastYear": 78,
+    "unit": "天",
+    "verdict": "同比改善，仍高于目标"
+  },
+  "sizeCompletionRate": {
+    "actual": 0.84,
+    "target": 0.9,
+    "lastYear": 0.82,
+    "healthMin": 0.88,
+    "unit": "%",
+    "verdict": "断码问题存在，核心尺码(37-41)完整率需提升"
+  },
+  "attachRate": {
+    "actual": 1.38,
+    "target": 1.5,
+    "lastYear": 1.32,
+    "healthMin": 1.3,
+    "unit": "件/单",
+    "verdict": "连带率有提升空间"
+  }
+}
