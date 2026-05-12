@@ -102,7 +102,7 @@ export default function WaveDecisionSummary({
             check(w.warehouseDeadline);
         }
         return count;
-    }, [lifecycle.current, currentDate]);
+    }, [lifecycle, currentDate]);
 
     // 最近上市波段
     const nearestWave = useMemo(() => {
@@ -112,7 +112,7 @@ export default function WaveDecisionSummary({
                 days: Math.floor((new Date(w.launchDate).getTime() - currentDate.getTime()) / 86400000),
             }))
             .sort((a, b) => a.days - b.days)[0] ?? null;
-    }, [lifecycle.current, currentDate]);
+    }, [lifecycle, currentDate]);
 
     const fc = (v: number) => formatCurrency(v, currencyUnit);
 

@@ -1,0 +1,78 @@
+{
+  "_comment": "损益视角对4个上游模块发反馈信号：otb/planning/forecast/category",
+  "updatedAt": "2026-05-11",
+  "signals": [
+    {
+      "id": "PNL_FB_001",
+      "targetModule": "otb",
+      "priority": "P0",
+      "title": "毛利率低于预算 2pp → 建议 OTB 向高毛利品类倾斜",
+      "detail": "当前综合毛利率 49%，低于预算 51%。建议下季 OTB 中运动品类占比从 30% 提至 35%，清货款占比从 18% 降至 12%。",
+      "impact": "预计毛利率提升 1.5pp，增加净利润 ¥183万",
+      "status": "open"
+    },
+    {
+      "id": "PNL_FB_002",
+      "targetModule": "otb",
+      "priority": "P1",
+      "title": "经销渠道贡献利润率仅 12% → 缩减低效经销商 OTB",
+      "detail": "经销渠道净收入 ¥1,500万但贡献利润率仅 12%，低于直营 22pp。建议下季减少对低效经销商的供货预算 20%。",
+      "impact": "改善贡献利润率约 2pp",
+      "status": "open"
+    },
+    {
+      "id": "PNL_FB_003",
+      "targetModule": "planning",
+      "priority": "P1",
+      "title": "AW24 渠道贡献利润为负 → AW25 缩减低毛利波段 30%",
+      "detail": "AW24 秋冬波段净利润率为 -2.1%，主因清货折扣损失扩大。建议 AW25 波段企划中削减低毛利款式数量 30%，聚焦靴类高利润款。",
+      "impact": "预计 AW25 波段净利率提升至 4%+",
+      "status": "open"
+    },
+    {
+      "id": "PNL_FB_004",
+      "targetModule": "planning",
+      "priority": "P2",
+      "title": "春夏毛利率低于秋冬 5pp → SS26 波段需加强高毛利款占比",
+      "detail": "春夏 47% vs 秋冬 52%，春夏波段毛利率偏低主要来自凉鞋折扣压力。建议 SS26 波段减少凉鞋新款，增加运动休闲款比例。",
+      "impact": "春夏毛利率可提升 1-2pp",
+      "status": "open"
+    },
+    {
+      "id": "PNL_FB_005",
+      "targetModule": "forecast",
+      "priority": "P1",
+      "title": "实际净收入 vs 预测差 -5% → 销售预测置信度需重新评估",
+      "detail": "YTD 实际净收入 ¥1.218亿，vs 预测 ¥1.28亿，偏差 -4.8%。电商渠道贡献了 60% 的负差。建议重新校准电商渠道预测模型。",
+      "impact": "提升下半年预测准确率 5-8pp",
+      "status": "open"
+    },
+    {
+      "id": "PNL_FB_006",
+      "targetModule": "forecast",
+      "priority": "P2",
+      "title": "季节性 P&L 差异大 → 销售预测需加入季节调整系数",
+      "detail": "春夏净利率 5.2% vs 秋冬 9.0%，差异 3.8pp。当前销售预测未充分体现季节性差异，需引入温度敏感系数。",
+      "impact": "预测偏差可降低 3pp",
+      "status": "open"
+    },
+    {
+      "id": "PNL_FB_007",
+      "targetModule": "category",
+      "priority": "P0",
+      "title": "凉鞋类贡献利润率仅 8% → 下季减少 SKU 数+提价 5%",
+      "detail": "凉鞋在春夏贡献 32% 销售额但贡献利润率仅 8%，远低于运动休闲（24%）。建议下季凉鞋 SKU 从 62 款减至 45 款，提高定价 5%。",
+      "impact": "预计提升凉鞋品类贡献利润率至 14%+",
+      "status": "open"
+    },
+    {
+      "id": "PNL_FB_008",
+      "targetModule": "category",
+      "priority": "P1",
+      "title": "80/20 验证：长尾 80% SKU 仅贡献 18% 利润 → 聚焦核心款",
+      "detail": "Top 20% SKU 贡献 82% 利润，建议品类运营围绕核心 48 款 SKU 深度运营，长尾款设退出机制。",
+      "impact": "提升整体贡献利润率 2-3pp",
+      "status": "open"
+    }
+  ]
+}

@@ -9,6 +9,7 @@
 import { useState } from 'react';
 import StoreComparisonMatrix from './StoreComparisonMatrix';
 import StoreSandbox from './StoreSandbox';
+import StoreDcfModel from './StoreDcfModel';
 import assortmentRaw from '../../../data/planning/pnl_store_assortment_depth.json';
 
 type Assortment = typeof assortmentRaw;
@@ -85,6 +86,18 @@ export default function StoreModelPanel({ onNavigateToBrand }: {
                         切回"品牌年度 P&L"标签可在预算偏差模块看到联动。
                     </div>
                 )}
+            </section>
+
+            {/* S16 单店长期投资回报模型（DCF）— V11 新增 */}
+            <section id="store-dcf">
+                <div className="border-b border-slate-100 pb-3 mb-4">
+                    <div className="flex items-center gap-2">
+                        <h2 className="text-sm font-bold text-slate-800">S16 · 长期投资回报模型（DCF）</h2>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-600 font-medium">V11 新增</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-0.5">5年现金流贴现 · NPV / IRR / 回收期 · 折现率 & 永续增长率可调 · 三种店型对比</p>
+                </div>
+                <StoreDcfModel />
             </section>
         </div>
     );

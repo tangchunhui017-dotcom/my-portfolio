@@ -33,7 +33,8 @@ interface WaveMasterRecord {
     launchDate: string; plannedStyleCount: number; targetColorCount: number;
     targetSkuCount: number; averageDepth: number; newProductRatio: number;
     repeatOrderRatio: number; carryoverRatio: number; sellThroughTarget: number;
-    planSalesAmount: number; salesRatio: number; planOtbBudget: number;
+    planSalesAmount: number; lySalesAmount?: number; momSalesAmount?: number;
+    salesRatio: number; planOtbBudget: number;
     orderDeadline: string; warehouseDeadline: string; mainCategoryList: string[];
     priceBandFocus: string[]; productRoleFocus: string[]; arrivalSuggestion: string;
     status: string; promotion: string;
@@ -58,7 +59,9 @@ interface WavePlanningPanelProps {
     defaultView?: string; lockView?: boolean; compareMode?: CompareMode;
     filters?: DashboardFilters; onJumpToChannel?: () => void;
     onJumpToOtb?: () => void; onJumpToSkuRisk?: () => void;
-    onJumpToExecution?: () => void;
+    onJumpToExecution?: () => void; onJumpToForecast?: () => void;
+    onJumpToInventory?: () => void; onJumpToCashflow?: () => void;
+    onJumpToProfitLoss?: () => void; onJumpToCategory?: () => void;
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -1089,6 +1092,803 @@ function TemperatureWindowChart({ stackRows, regionTempRows, regionSeriesMap, re
     );
 }
 
+// ── WAVE DECISION KPI STRIP ───────────────────────────────────────────────────
+
+type KpiStatus = 'healthy'|'opportunity'|'warning'|'danger'|'observe'|'neutral';
+
+const KPI_SC: Record<KpiStatus, { bg:string; text:string; dot:string }> = {
+    healthy:     { bg:'border-emerald-200 bg-emerald-50', text:'text-emerald-700', dot:'bg-emerald-500' },
+    opportunity: { bg:'border-sky-200 bg-sky-50',         text:'text-sky-700',     dot:'bg-sky-500'     },
+    warning:     { bg:'border-amber-200 bg-amber-50',     text:'text-amber-700',   dot:'bg-amber-500'   },
+    danger:      { bg:'border-rose-200 bg-rose-50',       text:'text-rose-700',    dot:'bg-rose-500'    },
+    observe:     { bg:'border-violet-200 bg-violet-50',   text:'text-violet-700',  dot:'bg-violet-500'  },
+    neutral:     { bg:'border-slate-200 bg-slate-50',     text:'text-slate-600',   dot:'bg-slate-400'   },
+};
+
+interface WaveKpiCard {
+    label: string; value: string; gap?: string; trend?: string; status: KpiStatus; sub?: string;
+}
+
+function deriveWaveKpis(wave: WaveSummary, master: WaveMasterRecord|undefined, devProgressMap: Map<string,WaveDevProgress>, today: Date): WaveKpiCard[] {
+    const salesTarget = master?.planSalesAmount ?? 0;
+    const forecastSales = salesTarget > 0 ? salesTarget * (0.85 + wave.new_ratio * 0.1) : 0;
+    const salesGap = forecastSales - salesTarget;
+    const otbBudget = master?.planOtbBudget ?? 0;
+    const otbUsed = otbBudget * 0.85;
+    const otbRemaining = otbBudget - otbUsed;
+    const plannedSkus = master?.targetSkuCount ?? wave.sku_plan;
+    const confirmedSkus = wave.sku_actual;
+    const daysLeft = daysTo(wave.launch_date, today);
+    const devData = devProgressMap.get(wave.id);
+    const tasks = devData?.tasks ?? [];
+    const doneTasks = tasks.filter(t => t.status === 'done').length;
+    const readinessPct = tasks.length > 0 ? Math.round((doneTasks / tasks.length) * 100) : (daysLeft > 60 ? 45 : 72);
+    const landingRate = safeDiv(confirmedSkus, plannedSkus);
+    const riskSt: KpiStatus = (daysLeft < 14 && landingRate < 0.8) || readinessPct < 50 ? 'danger'
+        : (daysLeft < 30 && landingRate < 0.9) ? 'warning'
+        : readinessPct > 90 ? 'healthy' : 'observe';
+    const fmtM = (v: number) => v > 0 ? `¥${(v/10000).toFixed(0)}万` : '--';
+    return [
+        { label:'波段销售目标', value:fmtM(salesTarget), trend: master?.lySalesAmount ? `LY ${fmtM(master.lySalesAmount)}` : undefined, status:salesTarget>0?'healthy':'neutral' },
+        { label:'预测销售额',   value:fmtM(forecastSales), gap:salesGap<0?`缺口 ${fmtM(Math.abs(salesGap))}`:undefined, status:salesGap>=0?'healthy':salesGap>-salesTarget*0.1?'warning':'danger', sub:salesTarget>0?`达成率 ${fmt(safeDiv(forecastSales,salesTarget))}`:undefined },
+        { label:'波段OTB预算', value:fmtM(otbBudget), trend:otbBudget>0?`余额 ${fmtM(otbRemaining)}`:undefined, status:otbBudget>0?'healthy':'neutral' },
+        { label:'已占用OTB',   value:fmtM(otbUsed), gap:`剩余 ${fmtM(otbRemaining)}`, status:otbRemaining<0?'danger':otbRemaining<otbBudget*0.1?'warning':'healthy', sub:otbBudget>0?`使用率 ${fmt(safeDiv(otbUsed,otbBudget))}`:undefined },
+        { label:'计划SKU数',   value:String(plannedSkus), trend:master?`${master.plannedStyleCount}款×${master.targetColorCount}色`:undefined, status:plannedSkus>0?'healthy':'neutral' },
+        { label:'已确认SKU数', value:String(confirmedSkus), gap:`未确认 ${Math.max(0,plannedSkus-confirmedSkus)}`, status:landingRate>0.9?'healthy':landingRate>0.75?'warning':'danger', sub:plannedSkus>0?`落地率 ${fmt(landingRate)}`:undefined },
+        { label:'上市准备度',  value:`${readinessPct}%`, gap:`差距 ${100-readinessPct}%`, status:readinessPct>=90?'healthy':readinessPct>=70?'warning':'danger', sub:tasks.filter(t=>t.status==='at_risk').length>0?`⚠ ${tasks.filter(t=>t.status==='at_risk').length} 阻塞项`:undefined },
+        { label:'风险等级',    value:riskSt==='danger'?'高风险':riskSt==='warning'?'预警':riskSt==='observe'?'观察':'健康', gap:daysLeft>=0?`距上市 ${daysLeft}天`:`已上市 ${Math.abs(daysLeft)}天`, status:riskSt, sub:riskSt==='danger'?'需立即处理':riskSt==='warning'?'关注进展':undefined },
+    ];
+}
+
+function WaveDecisionKpis({ wave, master, devProgressMap, today }: {
+    wave: WaveSummary; master: WaveMasterRecord|undefined;
+    devProgressMap: Map<string,WaveDevProgress>; today: Date;
+}) {
+    const kpis = useMemo(() => deriveWaveKpis(wave, master, devProgressMap, today), [wave, master, devProgressMap, today]);
+    return (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div className="flex items-center justify-between mb-4">
+                <div>
+                    <h3 className="text-sm font-bold text-slate-900">波段决策总览</h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">8项核心指标 · 绿=健康 蓝=机会 橙=预警 红=高风险 紫=观察</p>
+                </div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {kpis.map(kpi => {
+                    const sc = KPI_SC[kpi.status];
+                    return (
+                        <div key={kpi.label} className={`rounded-xl border px-4 py-3 ${sc.bg}`}>
+                            <div className="flex items-center gap-1.5 mb-1.5">
+                                <span className={`w-2 h-2 rounded-full shrink-0 ${sc.dot}`} />
+                                <span className="text-[10px] text-slate-500 font-medium leading-tight">{kpi.label}</span>
+                            </div>
+                            <div className={`text-lg font-bold leading-tight ${sc.text}`}>{kpi.value}</div>
+                            {kpi.gap && <div className={`text-[10px] mt-1 font-medium ${sc.text}`}>{kpi.gap}</div>}
+                            {kpi.sub && <div className="text-[10px] text-slate-400 mt-0.5">{kpi.sub}</div>}
+                            {kpi.trend && <div className="text-[10px] text-slate-400 mt-0.5">{kpi.trend}</div>}
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+// ── WAVE POSITIONING PANEL ────────────────────────────────────────────────────
+
+const WAVE_POS_MAP: Record<string, { label:string; color:string }> = {
+    traffic:    { label:'新品引爆',  color:'bg-sky-100 text-sky-800 border-sky-200'       },
+    testing:    { label:'测试新品',  color:'bg-violet-100 text-violet-800 border-violet-200' },
+    main_sales: { label:'销售承接',  color:'bg-emerald-100 text-emerald-800 border-emerald-200' },
+    repeat:     { label:'补货加深',  color:'bg-amber-100 text-amber-800 border-amber-200'  },
+    clearance:  { label:'清货过渡',  color:'bg-rose-100 text-rose-800 border-rose-200'     },
+    image:      { label:'形象曝光',  color:'bg-indigo-100 text-indigo-800 border-indigo-200' },
+};
+
+function WavePositioningPanel({ master, brief }: {
+    master: WaveMasterRecord|undefined; brief: WaveBriefRecord|undefined;
+}) {
+    const wavePos = WAVE_POS_MAP[master?.waveRole ?? ''] ?? { label: master?.waveRoleLabel ?? '--', color:'bg-slate-100 text-slate-700 border-slate-200' };
+    const fields = [
+        { icon:'🎯', label:'波段定位',   value:wavePos.label,      tag:wavePos.color },
+        { icon:'👟', label:'目标消费者', value:brief?.targetAudience ?? '--' },
+        { icon:'🏃', label:'使用场景',   value:brief?.consumerScene ?? '--' },
+        { icon:'🏪', label:'渠道重点',   value:brief?.channelFocus ?? '--' },
+        { icon:'📦', label:'商品任务',   value:`计划 ${master?.targetSkuCount??'--'} SKU / ${master?.plannedStyleCount??'--'} 款 · 主推：${(master?.mainCategoryList??[]).join('/')||'--'}` },
+        { icon:'🎨', label:'设计关键词', value:brief?.designTheme ?? '--' },
+        { icon:'💴', label:'价格策略',   value:(master?.priceBandFocus??[]).map(p=>PRICE_BAND_LABEL[p]??p).join(' → ') || '--' },
+        { icon:'📊', label:'销售任务',   value:master ? `目标 ${formatMoneyCny(master.planSalesAmount)} · 售罄 ${fmt(master.sellThroughTarget)}` : '--' },
+        { icon:'💹', label:'毛利策略',   value:master ? `OTB ${formatMoneyCny(master.planOtbBudget)} · 销售占比 ${fmt(master.salesRatio)}` : '--' },
+    ];
+    return (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div className="flex items-center gap-2 mb-4">
+                <h3 className="text-sm font-bold text-slate-900">波段定位</h3>
+                {master?.waveRole && (
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${wavePos.color}`}>{wavePos.label}</span>
+                )}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-0">
+                {fields.map(f => (
+                    <div key={f.label} className="flex items-start gap-2 py-2 border-b border-slate-50 last:border-0">
+                        <span className="text-sm shrink-0">{f.icon}</span>
+                        <span className="text-[11px] text-slate-400 shrink-0 w-20">{f.label}</span>
+                        {f.tag
+                            ? <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${f.tag}`}>{f.value}</span>
+                            : <span className="text-[11px] font-medium text-slate-800 leading-snug">{f.value}</span>
+                        }
+                    </div>
+                ))}
+            </div>
+            {brief?.planningNotes && (
+                <div className="mt-3 rounded-xl bg-amber-50 border border-amber-100 px-4 py-2.5 text-[11px] text-amber-800">
+                    <span className="font-semibold">企划备注：</span>{brief.planningNotes}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ── DESIGN DIRECTION BOARD ────────────────────────────────────────────────────
+
+interface DesignCard {
+    theme:string; shoeType:string; colorStory:string; material:string;
+    functionBenefit:string; scene:string; skuTarget:number; budgetShare:string;
+    salesTarget:string; risk?:string;
+}
+
+function deriveDesignCards(brief: WaveBriefRecord|undefined, master: WaveMasterRecord|undefined): DesignCard[] {
+    if (!brief || !master) return [];
+    const totalSkus = master.targetSkuCount ?? 30;
+    const totalSales = master.planSalesAmount ?? 0;
+    const cats = master.mainCategoryList ?? ['休闲'];
+    const roles = master.productRoleFocus ?? ['main', 'basic'];
+    const cards: DesignCard[] = [];
+    if (roles.includes('hero') || roles.includes('main')) {
+        cards.push({
+            theme: brief.designTheme + ' · 主推方向',
+            shoeType: cats[0]?.includes('跑') ? '轻量跑鞋' : cats[0]?.includes('篮') ? '篮球鞋' : '城市休闲鞋',
+            colorStory: brief.colorStrategy, material: brief.materialFocus,
+            functionBenefit: '轻量 · 透气 · 耐磨 · 日常百搭',
+            scene: brief.consumerScene,
+            skuTarget: Math.round(totalSkus * 0.4), budgetShare: '40%',
+            salesTarget: formatMoneyCny(totalSales * 0.45),
+            risk: '核心SKU，确认颜色和尺码深度',
+        });
+    }
+    cards.push({
+        theme: brief.designTheme + ' · 走量方向',
+        shoeType: cats[0]?.includes('跑') ? '慢跑鞋' : '基础休闲鞋',
+        colorStory: '黑白灰经典色 + 1-2个季节色', material: '经济型编织网布 + TPR底',
+        functionBenefit: '性价比高 · 耐穿 · 基础款', scene: '日常通勤/日常穿着',
+        skuTarget: Math.round(totalSkus * 0.35), budgetShare: '35%',
+        salesTarget: formatMoneyCny(totalSales * 0.30),
+    });
+    if (roles.includes('test') || roles.includes('image')) {
+        cards.push({
+            theme: brief.designTheme + ' · 形象/测试方向',
+            shoeType: cats[0]?.includes('跑') ? '竞速跑鞋' : '设计师款',
+            colorStory: '跳色 / 印花 / 限量色', material: brief.materialFocus + ' · 高端',
+            functionBenefit: '品牌形象 · 拍照出片 · 话题性', scene: '时尚穿搭/社媒传播',
+            skuTarget: Math.round(totalSkus * 0.15), budgetShare: '15%',
+            salesTarget: formatMoneyCny(totalSales * 0.15),
+            risk: '测试款，控制深度，快反备货',
+        });
+    }
+    cards.push({
+        theme: '承接/补货方向',
+        shoeType: '上季延续款 / 翻单款',
+        colorStory: '延续畅销色', material: '同款材质',
+        functionBenefit: '稳定销售 · 降低风险', scene: '补货维护',
+        skuTarget: Math.round(totalSkus * 0.10), budgetShare: '10%',
+        salesTarget: formatMoneyCny(totalSales * 0.10),
+    });
+    return cards.slice(0, 5);
+}
+
+function DesignDirectionBoard({ brief, master }: { brief: WaveBriefRecord|undefined; master: WaveMasterRecord|undefined }) {
+    const cards = useMemo(() => deriveDesignCards(brief, master), [brief, master]);
+    const [expanded, setExpanded] = useState(false);
+    if (!brief) return (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <SectionTitle title="设计方向板" sub="设计主题 · 鞋型 · 颜色 · 材质 · 功能卖点" />
+            <p className="text-xs text-slate-400 text-center py-4">暂无设计方向数据</p>
+        </div>
+    );
+    return (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div className="flex items-center justify-between mb-4">
+                <div>
+                    <h3 className="text-sm font-bold text-slate-900">设计方向板</h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">{cards.length} 个设计方向 · 主题/鞋型/颜色/材质/功能卖点</p>
+                </div>
+                <button onClick={() => setExpanded(v => !v)} className="text-[11px] text-slate-500 hover:text-slate-700 border border-slate-200 px-2.5 py-1 rounded-lg">
+                    {expanded ? '收起' : '展开详情'}
+                </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                <div className="rounded-xl bg-sky-50 border border-sky-100 p-3.5">
+                    <div className="text-[10px] font-bold text-sky-600 uppercase mb-1.5">设计主题</div>
+                    <div className="text-sm font-bold text-sky-800">{brief.designTheme}</div>
+                    {brief.marketingMoment && <div className="text-[10px] text-sky-600 mt-1">节点：{brief.marketingMoment}</div>}
+                </div>
+                <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3.5">
+                    <div className="text-[10px] font-bold text-emerald-600 uppercase mb-1.5">颜色故事</div>
+                    <div className="text-[12px] font-medium text-emerald-800">{brief.colorStrategy}</div>
+                </div>
+                <div className="rounded-xl bg-violet-50 border border-violet-100 p-3.5">
+                    <div className="text-[10px] font-bold text-violet-600 uppercase mb-1.5">材质方向</div>
+                    <div className="text-[12px] font-medium text-violet-800">{brief.materialFocus}</div>
+                    <div className="text-[10px] text-violet-600 mt-1">核心尺码：{brief.coreSizeRange}</div>
+                </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                {(expanded ? cards : cards.slice(0, 4)).map((card, i) => (
+                    <div key={i} className="rounded-xl border border-slate-200 bg-slate-50 p-3.5">
+                        <div className="text-[10px] font-bold text-slate-700 mb-2 leading-tight">{card.theme}</div>
+                        <div className="space-y-1 text-[10px]">
+                            {[['鞋型', card.shoeType], ['配色', card.colorStory], ['材质', card.material], ['功能', card.functionBenefit]].map(([l,v]) => (
+                                <div key={l} className="flex gap-1.5">
+                                    <span className="text-slate-400 w-8 shrink-0">{l}</span>
+                                    <span className="text-slate-700">{v}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-2 pt-2 border-t border-slate-200 flex justify-between text-[10px] text-slate-500">
+                            <span>{card.skuTarget} SKU</span><span>预算 {card.budgetShare}</span>
+                        </div>
+                        <div className="text-[10px] text-slate-500 mt-0.5">目标销售 {card.salesTarget}</div>
+                        {card.risk && <div className="mt-1.5 text-[10px] text-amber-600 bg-amber-50 rounded px-1.5 py-0.5">⚠ {card.risk}</div>}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+// ── SKU ROLE MIX PANEL ────────────────────────────────────────────────────────
+
+const SKU_ROLE_CONFIGS = [
+    { role:'hero',      en:'Hero',      zh:'主推款',   pct:0.15, bar:'bg-sky-500',     badge:'bg-sky-100 text-sky-800 border-sky-200',         desc:'品牌形象·主要推广·高曝光',      gm:0.55, action:'确认主推款颜色+深度' },
+    { role:'core',      en:'Core',      zh:'核心款',   pct:0.30, bar:'bg-blue-500',    badge:'bg-blue-100 text-blue-800 border-blue-200',       desc:'主要销售贡献·全渠道铺货',        gm:0.48, action:'全渠道铺货，确保尺码完整' },
+    { role:'volume',    en:'Volume',    zh:'走量款',   pct:0.25, bar:'bg-emerald-500', badge:'bg-emerald-100 text-emerald-800 border-emerald-200', desc:'大众价位·走量·稳定上架',        gm:0.42, action:'维持计划，追踪售罄率' },
+    { role:'image',     en:'Image',     zh:'形象款',   pct:0.05, bar:'bg-violet-500',  badge:'bg-violet-100 text-violet-800 border-violet-200', desc:'高端形象·拉升品牌调性',          gm:0.58, action:'控制数量，重点渠道上架' },
+    { role:'entry',     en:'Entry',     zh:'引流款',   pct:0.10, bar:'bg-amber-500',   badge:'bg-amber-100 text-amber-800 border-amber-200',   desc:'低价引流·拉新·促连带',           gm:0.35, action:'确认价格点，加强门店陈列' },
+    { role:'premium',   en:'Premium',   zh:'高毛利款', pct:0.05, bar:'bg-indigo-500',  badge:'bg-indigo-100 text-indigo-800 border-indigo-200', desc:'高毛利率·利润贡献·精选渠道',    gm:0.62, action:'精选渠道，控制折扣深度' },
+    { role:'test',      en:'Test',      zh:'测试款',   pct:0.05, bar:'bg-slate-400',   badge:'bg-slate-100 text-slate-700 border-slate-200',   desc:'小批量验证·快反准备·控制风险',   gm:0.45, action:'控制深度，准备快反方案' },
+    { role:'clearance', en:'Clearance', zh:'清货款',   pct:0.05, bar:'bg-rose-400',    badge:'bg-rose-100 text-rose-800 border-rose-200',      desc:'承接尾货·促清货·改善库龄',       gm:0.32, action:'设置折扣档位，快速清货' },
+] as const;
+
+function SkuRoleMixPanel({ master, wave }: { master: WaveMasterRecord|undefined; wave: WaveSummary }) {
+    const roles = useMemo(() => {
+        const totalSkus = master?.targetSkuCount ?? wave.sku_plan ?? 40;
+        const totalSales = master?.planSalesAmount ?? 0;
+        const productRoles = master?.productRoleFocus ?? ['main', 'basic'];
+        return SKU_ROLE_CONFIGS.map(rc => {
+            let mult = 1;
+            if ((rc.role==='hero'||rc.role==='core') && (productRoles.includes('hero')||productRoles.includes('main'))) mult = 1.3;
+            if (rc.role==='test' && productRoles.includes('test')) mult = 1.5;
+            if (rc.role==='clearance' && productRoles.includes('clearance')) mult = 2;
+            if (rc.role==='volume' && productRoles.includes('basic')) mult = 1.3;
+            const pct = rc.pct * mult;
+            const skuCount = Math.max(1, Math.round(totalSkus * pct));
+            const riskSt: KpiStatus = rc.role==='clearance'?'warning':rc.role==='test'?'observe':'healthy';
+            return { ...rc, skuCount, pct, salesTarget: totalSales * pct, riskSt };
+        });
+    }, [master, wave]);
+    const totalSkus = roles.reduce((s,r) => s+r.skuCount, 0);
+    return (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div className="flex items-center justify-between mb-4">
+                <div>
+                    <h3 className="text-sm font-bold text-slate-900">SKU角色结构</h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Hero / Core / Volume / Image / Entry / Premium / Test / Clearance</p>
+                </div>
+                <span className="text-[11px] text-slate-500 border border-slate-200 px-2.5 py-1 rounded-lg">合计约 {totalSkus} SKU</span>
+            </div>
+            <div className="flex rounded-full overflow-hidden h-2.5 mb-4 gap-0.5">
+                {roles.map(r => r.skuCount > 0 && (
+                    <div key={r.role} style={{width:`${(r.skuCount/totalSkus)*100}%`}} className={`${r.bar}`} title={`${r.zh}: ${r.skuCount}`} />
+                ))}
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                {roles.map(r => {
+                    const sc = KPI_SC[r.riskSt];
+                    return (
+                        <div key={r.role} className={`rounded-xl border px-3 py-3 ${sc.bg}`}>
+                            <div className="flex items-center gap-1.5 mb-1">
+                                <span className={`w-2 h-2 rounded-full shrink-0 ${r.bar}`} />
+                                <span className={`text-[10px] font-bold border px-1.5 py-0.5 rounded ${r.badge}`}>{r.en}</span>
+                                <span className="text-[10px] text-slate-600">{r.zh}</span>
+                            </div>
+                            <div className={`text-base font-bold ${sc.text}`}>{r.skuCount} <span className="text-[10px] font-normal text-slate-400">SKU</span></div>
+                            <div className="text-[10px] text-slate-500 mt-0.5">{fmt(r.skuCount/totalSkus)} · GM {fmt(r.gm)}</div>
+                            <div className="text-[10px] text-slate-400 mt-0.5 leading-tight">{r.desc}</div>
+                            <div className="mt-1.5 text-[10px] text-sky-600 font-medium leading-snug">→ {r.action}</div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+// ── FORECAST OTB FIT PANEL ────────────────────────────────────────────────────
+
+type ForecastStatus = '预算充足'|'预算紧张'|'预算超配'|'预测不足'|'需要重算';
+
+function ForecastOtbFitPanel({ wave, master, onJumpToOtb, onJumpToForecast }: {
+    wave: WaveSummary; master: WaveMasterRecord|undefined;
+    onJumpToOtb?: ()=>void; onJumpToForecast?: ()=>void;
+}) {
+    const data = useMemo(() => {
+        const salesTarget = master?.planSalesAmount ?? 0;
+        const forecastSales = salesTarget > 0 ? salesTarget * 0.92 : 0;
+        const forecastUnits = master ? Math.round(master.targetSkuCount * master.averageDepth * 0.92) : 0;
+        const salesGap = forecastSales - salesTarget;
+        const otbBudget = master?.planOtbBudget ?? 0;
+        const otbUsed = otbBudget * 0.85;
+        const otbRemaining = otbBudget - otbUsed;
+        const otbFitsSkuPlan = otbRemaining > 0 && otbBudget >= salesTarget * 0.65;
+        let status: ForecastStatus = '需要重算';
+        if (master) {
+            if (salesGap < -salesTarget*0.15) status = '预测不足';
+            else if (otbRemaining < 0) status = '预算超配';
+            else if (otbRemaining < otbBudget*0.1) status = '预算紧张';
+            else status = '预算充足';
+        }
+        const statusSt: KpiStatus = status==='预算充足'?'healthy':status==='预算紧张'?'warning':status==='需要重算'?'observe':'danger';
+        const adjustments = status==='预算紧张'
+            ? ['建议减少 5-8 个低优先级 SKU', '考虑调整入门价位比例', '优先确认 Hero/Core 款预算']
+            : status==='预算超配'
+            ? ['当前 OTB 超出合理范围', '建议冻结 Test 类 SKU 预算', '回收超配预算至下一波段']
+            : status==='预测不足'
+            ? ['销售预测低于目标 15%+', '建议重新评估上市节奏', '考虑加强营销支持力度']
+            : ['当前预算与预测基本匹配', '维持计划，关注落地率', '可适当储备 5% 机动预算'];
+        return { salesTarget, forecastSales, forecastUnits, salesGap, otbBudget, otbUsed, otbRemaining, otbFitsSkuPlan, status, statusSt, adjustments };
+    }, [wave, master]);
+    const sc = KPI_SC[data.statusSt];
+    const metrics = [
+        { label:'波段销售目标', value:formatMoneyCny(data.salesTarget), warn:false },
+        { label:'预测销售额',   value:formatMoneyCny(data.forecastSales), warn:data.salesGap<0, emphasis:true },
+        { label:'预测销量',     value:`${data.forecastUnits.toLocaleString()} 双`, warn:false },
+        { label:'销售缺口',     value:data.salesGap>=0?`+${formatMoneyCny(data.salesGap)}`:formatMoneyCny(data.salesGap), warn:data.salesGap<0, emphasis:true },
+        { label:'波段OTB预算',  value:formatMoneyCny(data.otbBudget), warn:false },
+        { label:'已占用OTB',    value:formatMoneyCny(data.otbUsed), warn:false },
+        { label:'剩余OTB',      value:formatMoneyCny(data.otbRemaining), warn:data.otbRemaining<0, emphasis:true },
+        { label:'OTB支撑SKU',   value:data.otbFitsSkuPlan?'✓ 支撑':'✗ 不支撑', warn:!data.otbFitsSkuPlan, emphasis:true },
+    ];
+    return (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div className="flex items-start justify-between mb-4 flex-wrap gap-2">
+                <div>
+                    <h3 className="text-sm font-bold text-slate-900">销售预测与OTB匹配</h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">预测销售 × OTB预算 · 判断波段是否可以推进</p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className={`px-3 py-1 rounded-full border text-[11px] font-bold ${sc.bg} ${sc.text}`}>{data.status}</span>
+                    {onJumpToOtb && <button onClick={onJumpToOtb} className="text-[11px] text-sky-600 hover:underline">→ OTB预算</button>}
+                    {onJumpToForecast && <button onClick={onJumpToForecast} className="text-[11px] text-sky-600 hover:underline">→ 销售预测</button>}
+                </div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4">
+                {metrics.map(m => (
+                    <div key={m.label} className={`rounded-xl border px-3 py-2.5 ${m.warn?'border-rose-200 bg-rose-50':'border-slate-100 bg-slate-50'}`}>
+                        <div className="text-[10px] text-slate-400 mb-1">{m.label}</div>
+                        <div className={`text-sm font-bold leading-tight ${m.warn?'text-rose-700':m.emphasis?'text-slate-900':'text-slate-700'}`}>{m.value}</div>
+                    </div>
+                ))}
+            </div>
+            <div className={`rounded-xl border p-3.5 ${sc.bg}`}>
+                <div className={`text-[11px] font-bold mb-2 ${sc.text}`}>判断与建议</div>
+                <div className="space-y-1">
+                    {data.adjustments.map((a, i) => (
+                        <div key={i} className={`text-[11px] ${sc.text} flex items-start gap-1.5`}>
+                            <span className="shrink-0 mt-0.5">{i===0?'→':'·'}</span><span>{a}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ── INVENTORY CONFLICT PANEL ──────────────────────────────────────────────────
+
+interface ConflictCheck { id:string; type:string; title:string; description:string; riskSt:KpiStatus; action:string; value?:string; }
+
+function InventoryConflictPanel({ wave, allWaves, master, onJumpToInventory }: {
+    wave: WaveSummary; allWaves: WaveSummary[]; master: WaveMasterRecord|undefined; onJumpToInventory?: ()=>void;
+}) {
+    const conflicts = useMemo((): ConflictCheck[] => {
+        const sorted = [...allWaves].sort((a,b)=>new Date(a.launch_date).getTime()-new Date(b.launch_date).getTime());
+        const idx = sorted.findIndex(w=>w.id===wave.id);
+        const prev = idx>0?sorted[idx-1]:null;
+        const next = idx<sorted.length-1?sorted[idx+1]:null;
+        const checks: ConflictCheck[] = [];
+        if (prev) {
+            const days = Math.floor((new Date(wave.launch_date).getTime()-new Date(prev.launch_date).getTime())/86400000);
+            checks.push({ id:'prev', type:'上一波库存', title:`${prev.season.replace(/^\d{4}-/,'')}-${prev.wave} 库存情况`, description:`上波距今 ${days}天 · 落地率 ${fmt(safeDiv(prev.sku_actual,prev.sku_plan))}`, riskSt:days<45?'warning':'healthy', action:days<45?'加快上一波清货节奏':'上一波库存状态健康', value:`WOS ${Math.round(days/7)}周` });
+        }
+        if (next) {
+            const days = Math.floor((new Date(next.launch_date).getTime()-new Date(wave.launch_date).getTime())/86400000);
+            checks.push({ id:'next', type:'下一波冲突', title:`下波 ${next.season.replace(/^\d{4}-/,'')}-${next.wave} 上市节奏`, description:`距下一波上市 ${days}天`, riskSt:days<30?'danger':days<45?'warning':'healthy', action:days<30?'上市节奏偏紧，建议提前清货预案':'下一波档期充裕', value:`间隔 ${Math.round(days/7)}周` });
+        }
+        const markdownRisk = wave.new_ratio < 0.5;
+        checks.push({ id:'markdown', type:'折扣风险', title:'尾货折扣压力', description:`新品占比 ${fmt(wave.new_ratio)} · ${markdownRisk?'新品占比偏低，清货压力大':'新品结构健康'}`, riskSt:markdownRisk?'warning':'healthy', action:markdownRisk?'增加新品比例或制定清货定价方案':'折扣风险可控', value:`新品 ${fmt(wave.new_ratio)}` });
+        checks.push({ id:'size', type:'尺码风险', title:'核心尺码断档风险', description:master?`计划 ${master.targetSkuCount} SKU · 深度 ${master.averageDepth} 双/款`:'暂无尺码深度计划', riskSt:!master?'neutral':master.averageDepth<300?'warning':'healthy', action:!master?'请制定尺码深度计划':master.averageDepth<300?'建议提高核心尺码深度至 300+ 双/款':'尺码深度规划合理', value:master?`${master.averageDepth}双/款`:'--' });
+        const launchMonth = new Date(wave.launch_date).getMonth()+1;
+        const isPromo = [1,5,6,10,11,12].includes(launchMonth);
+        checks.push({ id:'promo', type:'大促冲突', title:isPromo?'⚠ 大促月份上市':'上市节奏正常', description:`上市月份：${launchMonth}月 · ${isPromo?'大促期间注意渠道资源分配':'非大促月份，可聚焦正价销售'}`, riskSt:isPromo?'observe':'healthy', action:isPromo?'协调大促与新品上市资源':'可正常按计划上市', value:`${launchMonth}月` });
+        return checks;
+    }, [wave, allWaves, master]);
+    const highRiskCount = conflicts.filter(c=>c.riskSt==='danger'||c.riskSt==='warning').length;
+    return (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <div>
+                    <h3 className="text-sm font-bold text-slate-900">库存与前后波段冲突</h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">上一波库存 · 下一波节奏 · 折扣风险 · 尺码断档 · 大促冲突</p>
+                </div>
+                <div className="flex items-center gap-2">
+                    {highRiskCount>0 && <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold">{highRiskCount} 个风险项</span>}
+                    {onJumpToInventory && <button onClick={onJumpToInventory} className="text-[11px] text-sky-600 hover:underline">→ 库存健康</button>}
+                </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+                {conflicts.map(c => {
+                    const sc = KPI_SC[c.riskSt];
+                    return (
+                        <div key={c.id} className={`rounded-xl border p-3.5 ${sc.bg}`}>
+                            <div className="flex items-center gap-1.5 mb-2">
+                                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${sc.dot}`} />
+                                <span className={`text-[10px] font-semibold ${sc.text}`}>{c.type}</span>
+                                {c.value && <span className="ml-auto text-[10px] text-slate-400">{c.value}</span>}
+                            </div>
+                            <div className={`text-[11px] font-bold leading-snug mb-1 ${sc.text}`}>{c.title}</div>
+                            <div className="text-[11px] text-slate-600 leading-snug mb-2">{c.description}</div>
+                            <div className={`text-[10px] font-medium ${sc.text}`}>→ {c.action}</div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+// ── LAUNCH READINESS PANEL ────────────────────────────────────────────────────
+
+const READINESS_GATES = [
+    { id:'brief',       label:'设计确认',     owner:'设计部门' },
+    { id:'sample',      label:'样品确认',     owner:'商品企划' },
+    { id:'costing',     label:'成本确认',     owner:'采购部门' },
+    { id:'pricing',     label:'价格确认',     owner:'商品企划' },
+    { id:'sku',         label:'SKU确认',      owner:'商品企划' },
+    { id:'otb',         label:'OTB确认',      owner:'财务部门' },
+    { id:'channel',     label:'渠道确认',     owner:'销售部门' },
+    { id:'material',    label:'物料确认',     owner:'市场部门' },
+    { id:'shoot',       label:'拍摄确认',     owner:'市场部门' },
+    { id:'launch_date', label:'上市日期确认', owner:'商品企划' },
+] as const;
+
+const RDY_SC = {
+    done:        { bar:'bg-emerald-500', badge:'bg-emerald-50 text-emerald-700 border-emerald-200', icon:'✓' },
+    in_progress: { bar:'bg-sky-500',     badge:'bg-sky-50 text-sky-700 border-sky-200',             icon:'↻' },
+    at_risk:     { bar:'bg-rose-500',    badge:'bg-rose-50 text-rose-700 border-rose-200',          icon:'⚠' },
+    pending:     { bar:'bg-slate-300',   badge:'bg-slate-50 text-slate-500 border-slate-200',       icon:'○' },
+};
+
+function LaunchReadinessPanel({ waveKey, devProgressMap, wave, today, onJumpToExecution }: {
+    waveKey: string; devProgressMap: Map<string,WaveDevProgress>; wave: WaveSummary; today: Date; onJumpToExecution?: ()=>void;
+}) {
+    const devData = devProgressMap.get(waveKey);
+    const rawTasks = devData?.tasks ?? [];
+    const daysLeft = daysTo(wave.launch_date, today);
+    const items = READINESS_GATES.map(gate => {
+        const task = rawTasks.find(t => t.taskType === gate.id);
+        if (task) return { ...gate, deadline: task.deadline, status: task.status, progress: task.progress, riskNote: task.riskNote };
+        const autoStatus: DevTask['status'] = daysLeft > 90 ? 'pending' : daysLeft > 45 ? 'in_progress' : daysLeft > 14 ? 'at_risk' : 'pending';
+        return { ...gate, deadline: undefined as string|undefined, status: autoStatus, progress: daysLeft > 90 ? 0 : daysLeft > 45 ? 40 : 20, riskNote: undefined as string|undefined };
+    });
+    const doneCount = items.filter(i => i.status === 'done').length;
+    const blockedItems = items.filter(i => i.status === 'at_risk');
+    const readinessPct = Math.round((doneCount / items.length) * 100);
+    const overallSt: KpiStatus = blockedItems.length > 2 ? 'danger' : blockedItems.length > 0 ? 'warning' : readinessPct >= 90 ? 'healthy' : 'observe';
+    const sc = KPI_SC[overallSt];
+    return (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div className="flex items-start justify-between mb-4 flex-wrap gap-2">
+                <div>
+                    <h3 className="text-sm font-bold text-slate-900">上市准备度</h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">{doneCount}/{items.length} 项完成 {blockedItems.length>0?`· ${blockedItems.length} 个阻塞项`:''} · 准备度 {readinessPct}%</p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className={`text-xl font-bold ${sc.text}`}>{readinessPct}%</span>
+                    {onJumpToExecution && <button onClick={onJumpToExecution} className="text-[11px] text-sky-600 hover:underline">→ 执行看板</button>}
+                </div>
+            </div>
+            <div className="h-2 rounded-full bg-slate-100 overflow-hidden mb-4">
+                <div className={`h-full rounded-full ${readinessPct>=90?'bg-emerald-500':readinessPct>=70?'bg-amber-500':'bg-rose-500'}`} style={{width:`${readinessPct}%`}} />
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-4">
+                {items.map(item => {
+                    const stCfg = RDY_SC[item.status];
+                    const daysToDeadline = item.deadline ? daysTo(item.deadline, today) : null;
+                    return (
+                        <div key={item.id} className={`rounded-xl border px-2.5 py-2.5 text-[10px] ${stCfg.badge}`}>
+                            <div className="flex items-center gap-1 mb-1">
+                                <span className="font-bold">{stCfg.icon}</span>
+                                <span className="font-semibold truncate">{item.label}</span>
+                            </div>
+                            <div className="text-[9px] opacity-70 mb-1">{item.owner}</div>
+                            {item.deadline && <div className="text-[9px] opacity-70">{item.deadline.slice(5).replace('-','/')}</div>}
+                            {daysToDeadline !== null && daysToDeadline < 0 && item.status !== 'done' && (
+                                <div className="text-[9px] text-rose-600 font-medium">逾期{Math.abs(daysToDeadline)}天</div>
+                            )}
+                            <div className="mt-1 h-1 rounded-full bg-white/60 overflow-hidden">
+                                <div className={`h-full rounded-full ${stCfg.bar}`} style={{width:`${item.progress}%`}} />
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+            {blockedItems.length > 0 && (
+                <div className="rounded-xl bg-rose-50 border border-rose-100 p-3">
+                    <div className="text-[11px] font-bold text-rose-700 mb-2">⚠ 阻塞项 — 需立即处理</div>
+                    <div className="space-y-1">
+                        {blockedItems.map(b => (
+                            <div key={b.id} className="text-[11px] text-rose-700 flex items-start gap-2">
+                                <span className="shrink-0">·</span>
+                                <span><strong>{b.label}</strong>{b.riskNote ? ` — ${b.riskNote}` : ''}<span className="text-slate-500 ml-1">（{b.owner}）</span></span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ── WAVE ACTION CENTER ────────────────────────────────────────────────────────
+
+interface WaveActionItem {
+    id:string; priority:'P0'|'P1'|'P2'; object:string; riskTag:string;
+    reason:string; action:string; salesImpact:string;
+    otbImpact?:string; inventoryImpact?:string;
+    actionType:string; status:'建议中'|'待审批'|'执行中'|'已完成'|'已关闭';
+}
+
+function deriveWaveActions(wave: WaveSummary, master: WaveMasterRecord|undefined, today: Date): WaveActionItem[] {
+    const acts: WaveActionItem[] = [];
+    const daysLeft = daysTo(wave.launch_date, today);
+    const salesTarget = master?.planSalesAmount ?? 0;
+    const landingRate = safeDiv(wave.sku_actual, wave.sku_plan);
+    const otbBudget = master?.planOtbBudget ?? 0;
+    if (wave.sku_plan > 0 && landingRate < 0.8 && daysLeft < 60 && daysLeft > 0) {
+        acts.push({ id:'sku-land', priority:'P0', object:'波段SKU', riskTag:'SKU落地率不足', reason:`落地率 ${fmt(landingRate)}，距上市 ${daysLeft}天仍有 ${wave.sku_plan-wave.sku_actual} 款未确认`, action:'立即追踪未落地款式，冻结低优先级SKU，确保 Hero/Core 款全部到位', salesImpact:`-${formatMoneyCny(salesTarget*(0.8-landingRate))}`, otbImpact:`节省 ${formatMoneyCny(otbBudget*(0.8-landingRate))}`, actionType:'冻结低优先级SKU', status:'建议中' });
+    }
+    if (otbBudget === 0 && salesTarget > 0) {
+        acts.push({ id:'otb-miss', priority:'P0', object:'OTB预算', riskTag:'预算未生成', reason:`销售目标 ${formatMoneyCny(salesTarget)}，但 OTB 预算未生成`, action:'立即生成 OTB 预算并提交审批', salesImpact:'可能影响采购下单', otbImpact:`缺口约 ${formatMoneyCny(salesTarget*0.72)}`, actionType:'重新提交OTB审批', status:'建议中' });
+    }
+    if (wave.new_ratio < 0.5) {
+        acts.push({ id:'new-ratio', priority:'P1', object:'品类结构', riskTag:'新品占比偏低', reason:`新品占比 ${fmt(wave.new_ratio)} 低于 50%，清货压力大`, action:'增加新品款数或调整翻单/延续款比例', salesImpact:`新品提升贡献约 ${formatMoneyCny(salesTarget*0.05)}`, inventoryImpact:'降低尾货积压风险', actionType:'增加主推款', status:'建议中' });
+    }
+    if (daysLeft > 0 && daysLeft < 14) {
+        acts.push({ id:'urgent', priority:'P0', object:'上市节点', riskTag:'临近上市', reason:`距上市仅 ${daysLeft} 天，需确认所有准备事项`, action:'检查物料、渠道铺货、价格确认、SKU入仓状态', salesImpact:'延期上市影响首周销售', actionType:'提前上市', status:'待审批' });
+    }
+    if (salesTarget > 0 && salesTarget * 0.92 < salesTarget * 0.85) {
+        acts.push({ id:'forecast-gap', priority:'P1', object:'销售预测', riskTag:'预测不足', reason:`预测销售额低于目标 ${fmt((salesTarget-salesTarget*0.92)/salesTarget)}`, action:'重新评估波段上市策略，加强营销投入或调整渠道首发', salesImpact:`缺口约 ${formatMoneyCny(salesTarget*0.08)}`, actionType:'调整渠道首发', status:'建议中' });
+    }
+    if (master && master.averageDepth < 300) {
+        acts.push({ id:'size-depth', priority:'P1', object:'尺码结构', riskTag:'尺码深度不足', reason:`平均深度 ${master.averageDepth} 双/款，低于建议值 300 双/款`, action:'加深核心尺码备货，重点补充 38-42 码', salesImpact:'断码损失预计 3-5%', inventoryImpact:'提升售罄率', actionType:'加深核心尺码', status:'建议中' });
+    }
+    if (wave.otb_budget === 0 && salesTarget > 0) {
+        acts.push({ id:'sync', priority:'P2', object:'下游联动', riskTag:'同步待确认', reason:'销售预测和库存计划尚未推送至 OTB 和销售预测模块', action:'推送波段企划数据至 OTB 预算和销售预测', salesImpact:'确保采购和预算对齐', actionType:'重新提交OTB审批', status:'建议中' });
+    }
+    return acts.slice(0, 8);
+}
+
+function WaveActionCenter({ wave, master, today, onJumpToOtb, onJumpToForecast, onJumpToInventory }: {
+    wave: WaveSummary; master: WaveMasterRecord|undefined; today: Date;
+    onJumpToOtb?: ()=>void; onJumpToForecast?: ()=>void; onJumpToInventory?: ()=>void;
+}) {
+    const actions = useMemo(() => deriveWaveActions(wave, master, today), [wave, master, today]);
+    const p0 = actions.filter(a=>a.priority==='P0');
+    const p1 = actions.filter(a=>a.priority==='P1');
+    const p2 = actions.filter(a=>a.priority==='P2');
+    if (!actions.length) return (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <SectionTitle title="波段行动中心" sub="最高优先级建议 · 自动生成" />
+            <div className="text-xs text-emerald-600 py-4 text-center">✓ 当前波段无待处理行动项</div>
+        </div>
+    );
+    const handleJump = (a: WaveActionItem) => {
+        if (a.riskTag.includes('OTB') || a.actionType.includes('OTB')) onJumpToOtb?.();
+        else if (a.riskTag.includes('预测')) onJumpToForecast?.();
+        else if (a.riskTag.includes('库存') || a.riskTag.includes('尺码')) onJumpToInventory?.();
+    };
+    return (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <div>
+                    <h3 className="text-sm font-bold text-slate-900">波段行动中心</h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">{actions.length} 条建议 · P0 立即 · P1 本周 · P2 观察</p>
+                </div>
+                <div className="flex items-center gap-1.5 text-[10px]">
+                    {p0.length>0 && <span className="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full font-medium">P0 × {p0.length}</span>}
+                    {p1.length>0 && <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">P1 × {p1.length}</span>}
+                    {p2.length>0 && <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">P2 × {p2.length}</span>}
+                </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {actions.map(a => {
+                    const bg = a.priority==='P0'?'border-rose-200 bg-rose-50':a.priority==='P1'?'border-amber-200 bg-amber-50':'border-slate-200 bg-slate-50';
+                    const tx = a.priority==='P0'?'text-rose-700':a.priority==='P1'?'text-amber-700':'text-slate-600';
+                    const pb = a.priority==='P0'?'bg-rose-500 text-white':a.priority==='P1'?'bg-amber-500 text-white':'bg-slate-300 text-slate-700';
+                    const rb = a.priority==='P0'?'border-rose-300 bg-rose-100 text-rose-700':'border-amber-200 bg-amber-100 text-amber-700';
+                    return (
+                        <div key={a.id} className={`rounded-xl border p-3.5 ${bg}`}>
+                            <div className="flex items-start gap-2 mb-2">
+                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 mt-0.5 ${pb}`}>{a.priority}</span>
+                                <div className="flex-1 flex items-center gap-1.5 flex-wrap">
+                                    <span className={`text-[10px] font-semibold ${tx}`}>{a.object}</span>
+                                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full border ${rb}`}>{a.riskTag}</span>
+                                    <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">{a.status}</span>
+                                </div>
+                            </div>
+                            <div className={`text-[11px] ${tx} mb-1.5 leading-snug`}>{a.reason}</div>
+                            <div className="text-[11px] text-slate-700 font-medium mb-2">→ {a.action}</div>
+                            <div className="flex flex-wrap gap-2 text-[10px] text-slate-500">
+                                {a.salesImpact && <span>销售：{a.salesImpact}</span>}
+                                {a.otbImpact && <span>OTB：{a.otbImpact}</span>}
+                                {a.inventoryImpact && <span>库存：{a.inventoryImpact}</span>}
+                            </div>
+                            <button onClick={() => handleJump(a)} className="mt-2 text-[10px] text-sky-600 hover:underline">→ 查看关联模块</button>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+// ── SKU LINE LIST ─────────────────────────────────────────────────────────────
+
+function WaveSkuLineList({ wave }: { wave: WaveSummary }) {
+    const [open, setOpen] = useState(false);
+    const [showAll, setShowAll] = useState(false);
+    const [filter, setFilter] = useState<'hero'|'risk'|'opportunity'|'pending'>('hero');
+    const [search, setSearch] = useState('');
+    const [sortBy, setSortBy] = useState<'forecast_sales'|'suggested_depth'|'forecast_units'>('forecast_sales');
+    const [sortAsc, setSortAsc] = useState(false);
+    const filtered = useMemo(() => {
+        let rows = wave.drill_rows.filter(r => {
+            if (showAll) return true;
+            const role = resolvePlanningRole(r.suggestion);
+            if (filter==='hero') return role==='Hero/Core';
+            if (filter==='risk') return role==='Clearance' || r.suggestion?.includes('⚠') || r.suggestion?.includes('风险');
+            if (filter==='opportunity') return r.suggestion?.includes('补货') || r.suggestion?.includes('加深');
+            if (filter==='pending') return role==='Test' || !r.suggestion;
+            return true;
+        });
+        if (search) rows = rows.filter(r => r.style_id.toLowerCase().includes(search.toLowerCase()) || r.category.toLowerCase().includes(search.toLowerCase()));
+        return [...rows].sort((a,b) => {
+            const av = (a as unknown as Record<string,number>)[sortBy] ?? 0;
+            const bv = (b as unknown as Record<string,number>)[sortBy] ?? 0;
+            return sortAsc ? av-bv : bv-av;
+        });
+    }, [wave, filter, search, sortBy, sortAsc, showAll]);
+    const counts = {
+        hero: wave.drill_rows.filter(r=>resolvePlanningRole(r.suggestion)==='Hero/Core').length,
+        risk: wave.drill_rows.filter(r=>resolvePlanningRole(r.suggestion)==='Clearance').length,
+        opportunity: wave.drill_rows.filter(r=>r.suggestion?.includes('补货')||r.suggestion?.includes('加深')).length,
+        pending: wave.drill_rows.filter(r=>resolvePlanningRole(r.suggestion)==='Test').length,
+    };
+    const toggleSort = useCallback((col: typeof sortBy) => {
+        if (sortBy===col) setSortAsc(v=>!v); else { setSortBy(col); setSortAsc(false); }
+    }, [sortBy]);
+    return (
+        <CollapsibleSection title={`款式明细表（${wave.drill_rows.length} 款）`} subtitle="默认主推/高风险 · 含搜索/排序 · 点击查看全部" open={open} onToggle={() => setOpen(v=>!v)}>
+            <div className="px-5 py-3 border-b border-slate-50 flex flex-wrap items-center gap-2">
+                <input placeholder="搜索款号/品类…" value={search} onChange={e=>setSearch(e.target.value)} className="text-[11px] border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-700 w-40 focus:outline-none focus:border-sky-400" />
+                {!showAll && ([
+                    { key:'hero', label:`主推款(${counts.hero})` },
+                    { key:'risk', label:`高风险(${counts.risk})` },
+                    { key:'opportunity', label:`高机会(${counts.opportunity})` },
+                    { key:'pending', label:`待确认(${counts.pending})` },
+                ] as const).map(f => (
+                    <button key={f.key} onClick={() => setFilter(f.key)} className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${filter===f.key?'bg-slate-800 text-white border-slate-800':'text-slate-500 border-slate-200 hover:border-slate-400'}`}>{f.label}</button>
+                ))}
+                <button onClick={() => setShowAll(v=>!v)} className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ml-auto ${showAll?'bg-sky-700 text-white border-sky-700':'text-sky-600 border-sky-200 hover:border-sky-400'}`}>{showAll?'收起精选':`查看全部(${wave.drill_rows.length})`}</button>
+            </div>
+            {!wave.drill_rows.length ? <div className="px-5 py-6 text-[11px] text-slate-400 text-center">暂无款式数据</div> : (
+                <div className="overflow-x-auto">
+                    <table className="min-w-full text-xs">
+                        <thead className="bg-slate-50">
+                            <tr>
+                                {[{l:'款号',col:null,a:'left'},{l:'品类',col:null,a:'left'},{l:'SKU角色',col:null,a:'left'},{l:'价格带',col:null,a:'left'},{l:'建议深度',col:'suggested_depth' as const,a:'right'},{l:'预估销量',col:'forecast_units' as const,a:'right'},{l:'预估销额',col:'forecast_sales' as const,a:'right'},{l:'目标毛利',col:null,a:'right'},{l:'上市状态',col:null,a:'center'},{l:'风险',col:null,a:'center'},{l:'建议动作',col:null,a:'left'}].map(h => (
+                                    <th key={h.l} className={`py-2 px-3 font-medium text-slate-500 whitespace-nowrap ${h.a==='right'?'text-right':h.a==='center'?'text-center':'text-left'} ${h.col?'cursor-pointer hover:text-slate-700':''}`} onClick={h.col?()=>toggleSort(h.col!):undefined}>{h.l}{h.col&&sortBy===h.col?(sortAsc?' ↑':' ↓'):''}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filtered.map((row, i) => {
+                                const role = resolvePlanningRole(row.suggestion);
+                                const estGm = row.price_band==='image'?0.58:row.price_band==='profit'?0.48:row.price_band==='volume'?0.42:0.35;
+                                const riskC = role==='Clearance'?'text-rose-600 bg-rose-50':role==='Test'?'text-amber-600 bg-amber-50':'text-emerald-600 bg-emerald-50';
+                                const stBadge = role==='Hero/Core'?'bg-sky-100 text-sky-700':role==='Clearance'?'bg-rose-100 text-rose-700':'bg-slate-100 text-slate-600';
+                                return (
+                                    <tr key={`${wave.id}-${row.style_id}-${i}`} className="border-t border-slate-50 hover:bg-slate-50">
+                                        <td className="py-2 px-3 text-slate-700 font-mono text-[11px]">{row.style_id}</td>
+                                        <td className="py-2 px-3 text-slate-700">{row.category}</td>
+                                        <td className="py-2 px-3"><span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${stBadge}`}>{role}</span></td>
+                                        <td className="py-2 px-3 text-slate-600">{row.price_band}</td>
+                                        <td className="py-2 px-3 text-right text-slate-700">{row.suggested_depth}</td>
+                                        <td className="py-2 px-3 text-right text-slate-700">{row.forecast_units.toLocaleString()}</td>
+                                        <td className="py-2 px-3 text-right text-slate-700">{formatMoneyCny(row.forecast_sales)}</td>
+                                        <td className="py-2 px-3 text-right text-slate-600">{fmt(estGm)}</td>
+                                        <td className="py-2 px-3 text-center"><span className={`text-[9px] px-1.5 py-0.5 rounded-full ${role==='Hero/Core'?'bg-sky-50 text-sky-600':'bg-slate-50 text-slate-400'}`}>{role==='Hero/Core'?'待上市':'企划中'}</span></td>
+                                        <td className="py-2 px-3 text-center"><span className={`text-[9px] px-1.5 py-0.5 rounded-full ${riskC}`}>{role==='Clearance'?'高风险':role==='Test'?'观察':'正常'}</span></td>
+                                        <td className="py-2 px-3 text-slate-600 text-[11px]">{row.suggestion}</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                    {!filtered.length && <div className="py-6 text-center text-[11px] text-slate-400">无匹配款式</div>}
+                </div>
+            )}
+        </CollapsibleSection>
+    );
+}
+
+// ── RELATED MODULE LINKS ──────────────────────────────────────────────────────
+
+function RelatedModuleLinks({ wave, master, onJumpToOtb, onJumpToForecast, onJumpToInventory, onJumpToCashflow, onJumpToProfitLoss, onJumpToChannel, onJumpToCategory }: {
+    wave: WaveSummary; master: WaveMasterRecord|undefined;
+    onJumpToOtb?: ()=>void; onJumpToForecast?: ()=>void; onJumpToInventory?: ()=>void;
+    onJumpToCashflow?: ()=>void; onJumpToProfitLoss?: ()=>void; onJumpToChannel?: ()=>void;
+    onJumpToCategory?: ()=>void;
+}) {
+    const cats = (master?.mainCategoryList ?? Object.keys(wave.category_mix)).join(' + ') || '--';
+    const modules = [
+        { key:'otb',       icon:'💰', title:'OTB预算',   clr:'bg-sky-50 border-sky-200 hover:bg-sky-100',         tc:'text-sky-700',     relation:'查看波段预算、剩余可买、预算风险', dp:[{l:'波段',v:waveLabel(wave)},{l:'计划SKU',v:String(master?.targetSkuCount??wave.sku_plan)},{l:'OTB预算',v:master?formatMoneyCny(master.planOtbBudget):'--'},{l:'预算状态',v:wave.otb_budget>0?'已同步':'⚠ 未生成'}], onClick:onJumpToOtb },
+        { key:'forecast',  icon:'📈', title:'销售预测',   clr:'bg-emerald-50 border-emerald-200 hover:bg-emerald-100', tc:'text-emerald-700', relation:'查看波段预测销售、预测缺口和高风险SKU', dp:[{l:'上市月份',v:fmtDate(wave.launch_date).slice(0,7)},{l:'主推品类',v:cats},{l:'计划销售',v:master?formatMoneyCny(master.planSalesAmount):'--'},{l:'目标售罄',v:master?fmt(master.sellThroughTarget):'--'}], onClick:onJumpToForecast },
+        { key:'inventory', icon:'📦', title:'库存健康',   clr:'bg-violet-50 border-violet-200 hover:bg-violet-100',  tc:'text-violet-700',  relation:'查看上一波库存、WOS、库龄、尺码风险', dp:[{l:'新品占比',v:fmt(wave.new_ratio)},{l:'翻单占比',v:master?fmt(master.repeatOrderRatio):'--'},{l:'延续占比',v:master?fmt(master.carryoverRatio):'--'},{l:'售罄目标',v:master?fmt(master.sellThroughTarget):'--'}], onClick:onJumpToInventory },
+        { key:'category',  icon:'📋', title:'品类运营',   clr:'bg-teal-50 border-teal-200 hover:bg-teal-100',       tc:'text-teal-700',    relation:'查看品类结构、款宽款深、价格带结构', dp:[{l:'主推品类',v:cats},{l:'款数',v:String(master?.plannedStyleCount??'--')},{l:'价格带',v:(master?.priceBandFocus??[]).map(p=>PRICE_BAND_LABEL[p]??p).join('/')},{l:'建议动作',v:(master?.productRoleFocus??[]).map(r=>PRODUCT_ROLE_LABEL[r]??r).join('+')||'--'}], onClick:onJumpToCategory },
+        { key:'pnl',       icon:'💹', title:'损益',       clr:'bg-amber-50 border-amber-200 hover:bg-amber-100',    tc:'text-amber-700',   relation:'查看波段毛利、折扣风险和利润贡献', dp:[{l:'计划销售',v:master?formatMoneyCny(master.planSalesAmount):'--'},{l:'OTB预算',v:master?formatMoneyCny(master.planOtbBudget):'--'},{l:'目标毛利',v:wave.avg_gm_rate>0?fmt(wave.avg_gm_rate):'--'},{l:'销售占比',v:master?fmt(master.salesRatio):'--'}], onClick:onJumpToProfitLoss },
+        { key:'cashflow',  icon:'💧', title:'现金流',     clr:'bg-cyan-50 border-cyan-200 hover:bg-cyan-100',       tc:'text-cyan-700',    relation:'查看采购付款压力和现金安全线', dp:[{l:'采购预算',v:master?formatMoneyCny(master.planOtbBudget):'--'},{l:'下单截止',v:master?fmtDate(master.orderDeadline):'--'},{l:'入仓截止',v:master?fmtDate(master.warehouseDeadline):'--'},{l:'到货建议',v:(master?.arrivalSuggestion??'--').slice(0,18)}], onClick:onJumpToCashflow },
+        { key:'channel',   icon:'🏪', title:'区域&门店',  clr:'bg-rose-50 border-rose-200 hover:bg-rose-100',       tc:'text-rose-700',    relation:'查看渠道铺货、门店首发和新店需求', dp:[{l:'上市日期',v:fmtDate(wave.launch_date)},{l:'铺货SKU',v:String(master?.targetSkuCount??'--')},{l:'价格带',v:(master?.priceBandFocus??[]).map(p=>PRICE_BAND_LABEL[p]??p).join('/')},{l:'波段角色',v:master?.waveRoleLabel??'--'}], onClick:onJumpToChannel },
+    ];
+    return (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div className="mb-4">
+                <h3 className="text-sm font-bold text-slate-900">跨模块联动入口</h3>
+                <p className="text-[11px] text-slate-400 mt-0.5">波段企划 → OTB预算 / 销售预测 / 库存健康 / 品类运营 / 损益 / 现金流 / 区域&门店</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+                {modules.map(m => (
+                    <div key={m.key} onClick={m.onClick} className={`rounded-xl border p-3.5 transition-colors ${m.clr} ${m.onClick?'cursor-pointer':'opacity-75'}`}>
+                        <div className="flex items-center justify-between mb-2">
+                            <div className={`text-[11px] font-bold ${m.tc}`}>{m.icon} {m.title}</div>
+                            {m.onClick && <span className={`text-[10px] ${m.tc}`}>→</span>}
+                        </div>
+                        <div className={`text-[10px] mb-2 ${m.tc} opacity-80`}>{m.relation}</div>
+                        <div className="space-y-0.5">
+                            {m.dp.map(dp => (
+                                <div key={dp.l} className="flex justify-between text-[10px]">
+                                    <span className="text-slate-400 shrink-0">{dp.l}</span>
+                                    <span className="font-medium text-slate-600 text-right ml-2 max-w-[110px] truncate" title={dp.v}>{dp.v}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 // ── L3-⑦ Annual Sales vs OTB ─────────────────────────────────────────────────
 
 function AnnualSalesVsOtb({ waveSummaries, masterMap }: {
@@ -1350,7 +2150,7 @@ function StyleDetails({ wave }: { wave: WaveSummary }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-export default function WavePlanningPanel({ compareMode='none', filters, onJumpToOtb, onJumpToSkuRisk, onJumpToExecution }: WavePlanningPanelProps) {
+export default function WavePlanningPanel({ compareMode='none', filters, onJumpToOtb, onJumpToSkuRisk, onJumpToExecution, onJumpToForecast, onJumpToInventory, onJumpToCashflow, onJumpToProfitLoss, onJumpToChannel, onJumpToCategory }: WavePlanningPanelProps) {
     void compareMode; void onJumpToSkuRisk;
 
     const planningFilters = useMemo(()=>filters?{ ...filters, wave:'all' as const }:filters, [filters]);
@@ -1384,6 +2184,7 @@ export default function WavePlanningPanel({ compareMode='none', filters, onJumpT
 
     const [selectedWaveId, setSelectedWaveId] = useState('');
     const [matrixView, setMatrixView] = useState<MatrixView>('category_price');
+    const [annualChartOpen, setAnnualChartOpen] = useState(false);
 
     const autoWaveId = useMemo(()=>getAutoWaveId(waveSummaries, today), [waveSummaries, today]);
     const effectiveWaveId = useMemo(()=>waveSummaries.some(w=>w.id===selectedWaveId)?selectedWaveId:(autoWaveId||waveSummaries[0]?.id||''), [selectedWaveId, autoWaveId, waveSummaries]);
@@ -1464,30 +2265,54 @@ export default function WavePlanningPanel({ compareMode='none', filters, onJumpT
     return (
         <div className="space-y-4 pb-16">
 
-            {/* ── L1 决策层 ── */}
+            {/* 1. Page Header */}
             <PageHeader activeWave={activeWave} autoWaveId={autoWaveId} riskActions={generalRisks} footwearRisks={footwearRisks} onJumpToOtb={onJumpToOtb} />
+
+            {/* 2. Wave Decision Summary — 8 KPI cards */}
+            <WaveDecisionKpis wave={activeWave} master={activeMaster} devProgressMap={devProgressMap} today={today} />
+
+            {/* 3. Wave Timeline */}
             <WaveTimeline waves={waveSummaries} masterMap={masterMap} activeId={effectiveWaveId} autoId={autoWaveId} today={today} onSelect={setSelectedWaveId} />
-            <DecisionSummaryV7 wave={activeWave} master={activeMaster} today={today} decisions={decisions} onJumpToOtb={onJumpToOtb} />
-            <FootwearRiskBoard generalRisks={generalRisks} footwearRisks={footwearRisks} onJumpToExecution={onJumpToExecution} />
 
-            {/* ── L2 验证层 ── */}
-            <PlanningBriefV7 brief={activeBrief} master={activeMaster} />
-            <SkuStructureV7 wave={activeWave} master={activeMaster} brief={activeBrief} sizeCurves={sizeCurves} returnRates={returnRates} />
+            {/* 4. Wave Positioning */}
+            <WavePositioningPanel master={activeMaster} brief={activeBrief} />
+
+            {/* 5. Design Direction Board */}
+            <DesignDirectionBoard brief={activeBrief} master={activeMaster} />
+
+            {/* 6. SKU Role Mix */}
+            <SkuRoleMixPanel master={activeMaster} wave={activeWave} />
+
+            {/* 7. Category / Price / Size Architecture */}
             <CategoryMatrix wave={activeWave} view={matrixView} onViewChange={setMatrixView} />
-            <DevProgressGate waveKey={activeWave.id} devProgressMap={devProgressMap} onJumpToExecution={onJumpToExecution} />
-            {stackRows.length>0 && (
-                <TemperatureWindowChart
-                    stackRows={stackRows} regionTempRows={regionTempRows}
-                    regionSeriesMap={regionSeriesMap} regionOptions={regionOptions}
-                    tempWindows={tempWindows} mainCategories={mainCategories}
-                />
-            )}
+            <SkuStructureV7 wave={activeWave} master={activeMaster} brief={activeBrief} sizeCurves={sizeCurves} returnRates={returnRates} />
 
-            {/* ── L3 钻取层 ── */}
+            {/* 8. Sales Forecast & OTB Fit */}
+            <ForecastOtbFitPanel wave={activeWave} master={activeMaster} onJumpToOtb={onJumpToOtb} onJumpToForecast={onJumpToForecast} />
+
+            {/* 9. Inventory & Previous Wave Conflict */}
+            <InventoryConflictPanel wave={activeWave} allWaves={waveSummaries} master={activeMaster} onJumpToInventory={onJumpToInventory} />
+
+            {/* 10. Launch Readiness */}
+            <LaunchReadinessPanel waveKey={activeWave.id} devProgressMap={devProgressMap} wave={activeWave} today={today} onJumpToExecution={onJumpToExecution} />
+
+            {/* 11. Wave Action Center */}
+            <WaveActionCenter wave={activeWave} master={activeMaster} today={today} onJumpToOtb={onJumpToOtb} onJumpToForecast={onJumpToForecast} onJumpToInventory={onJumpToInventory} />
+
+            {/* 12. SKU Line List */}
+            <WaveSkuLineList wave={activeWave} />
+
+            {/* 13. Related Module Links */}
+            <RelatedModuleLinks wave={activeWave} master={activeMaster} onJumpToOtb={onJumpToOtb} onJumpToForecast={onJumpToForecast} onJumpToInventory={onJumpToInventory} onJumpToCashflow={onJumpToCashflow} onJumpToProfitLoss={onJumpToProfitLoss} onJumpToChannel={onJumpToChannel} onJumpToCategory={onJumpToCategory} />
+
+            {/* Optional: Annual chart + Temperature window + Launch Calendar (collapsed context) */}
+            {stackRows.length > 0 && (
+                <TemperatureWindowChart stackRows={stackRows} regionTempRows={regionTempRows} regionSeriesMap={regionSeriesMap} regionOptions={regionOptions} tempWindows={tempWindows} mainCategories={mainCategories} />
+            )}
+            <CollapsibleSection title="全年波段 销售 vs OTB 概览" subtitle="年度对比图" open={annualChartOpen} onToggle={() => setAnnualChartOpen(v => !v)}>
+                <div className="p-5"><AnnualSalesVsOtb waveSummaries={waveSummaries} masterMap={masterMap} /></div>
+            </CollapsibleSection>
             <LaunchCalendar wavesByQ={wavesByQ} masterMap={masterMap} today={today} activeId={effectiveWaveId} onSelect={setSelectedWaveId} />
-            <AnnualSalesVsOtb waveSummaries={waveSummaries} masterMap={masterMap} />
-            <OutputToDownstream wave={activeWave} master={activeMaster} />
-            <StyleDetails wave={activeWave} />
 
         </div>
     );

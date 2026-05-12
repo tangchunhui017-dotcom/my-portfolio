@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "updatedAt": "2026-05-11"
+  },
+  "channels": [
+    {
+      "key": "direct",
+      "label": "直营",
+      "inventoryAmount": 8200000,
+      "wos": 7.8,
+      "sellThroughRate": 0.62,
+      "riskPct": 0.22
+    },
+    {
+      "key": "franchise",
+      "label": "加盟",
+      "inventoryAmount": 9400000,
+      "wos": 11.2,
+      "sellThroughRate": 0.48,
+      "riskPct": 0.38
+    },
+    {
+      "key": "wholesale",
+      "label": "经销",
+      "inventoryAmount": 6800000,
+      "wos": 9.6,
+      "sellThroughRate": 0.52,
+      "riskPct": 0.31
+    },
+    {
+      "key": "ecommerce",
+      "label": "电商",
+      "inventoryAmount": 4240000,
+      "wos": 6.4,
+      "sellThroughRate": 0.71,
+      "riskPct": 0.14
+    }
+  ]
+}

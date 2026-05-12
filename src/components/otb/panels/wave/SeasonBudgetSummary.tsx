@@ -4,7 +4,7 @@
  * 季节预算分配汇总 — SS/AW 汇总、结构诊断、占比检查
  */
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { formatCurrency, safeNumber, safeDiv } from '@/utils/otbCalculations';
 import type { WaveRow } from '@/utils/otbWavePlanning';
 import type { CurrencyUnit } from '@/utils/otbCalculations';
@@ -26,6 +26,36 @@ interface SeasonData {
   otbBudget: number;
   otbPercent: number;
   waveCount: number;
+}
+
+function SeasonCard({ data, currencyUnit }: { data: SeasonData; currencyUnit: CurrencyUnit }) {
+  const textColor = data.season === 'spring' ? 'text-green-700' :
+                    data.season === 'summer' ? 'text-blue-700' :
+                    data.season === 'autumn' ? 'text-orange-700' : 'text-red-700';
+
+  return (
+    <div className={`rounded-lg border ${data.color} p-3 flex flex-col gap-2`}>
+      <div className={`text-sm font-bold ${textColor}`}>{data.seasonLabel}</div>
+      <div className="space-y-1 text-xs">
+        <div className="flex justify-between">
+          <span className="text-slate-600">销售目标</span>
+          <span className="font-semibold">{formatCurrency(data.salesTarget, currencyUnit)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-slate-600">占比</span>
+          <span className="font-semibold">{data.salesPercent.toFixed(1)}%</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-slate-600">OTB</span>
+          <span className="font-semibold">{formatCurrency(data.otbBudget, currencyUnit)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-slate-600">波段数</span>
+          <span className="font-semibold">{data.waveCount}</span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function SeasonBudgetSummary({
@@ -120,36 +150,6 @@ export default function SeasonBudgetSummary({
     return results;
   }, [seasonData, annualSalesTarget, ssData, awData]);
 
-  const SeasonCard: React.FC<{ data: SeasonData }> = ({ data }) => {
-    const textColor = data.season === 'spring' ? 'text-green-700' :
-                      data.season === 'summer' ? 'text-blue-700' :
-                      data.season === 'autumn' ? 'text-orange-700' : 'text-red-700';
-
-    return (
-      <div className={`rounded-lg border ${data.color} p-3 flex flex-col gap-2`}>
-        <div className={`text-sm font-bold ${textColor}`}>{data.seasonLabel}</div>
-        <div className="space-y-1 text-xs">
-          <div className="flex justify-between">
-            <span className="text-slate-600">销售目标</span>
-            <span className="font-semibold">{formatCurrency(data.salesTarget, currencyUnit)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-slate-600">占比</span>
-            <span className="font-semibold">{data.salesPercent.toFixed(1)}%</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-slate-600">OTB</span>
-            <span className="font-semibold">{formatCurrency(data.otbBudget, currencyUnit)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-slate-600">波段数</span>
-            <span className="font-semibold">{data.waveCount}</span>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-4">
       <div className="text-sm font-semibold text-slate-700">季节预算分配</div>
@@ -203,10 +203,10 @@ export default function SeasonBudgetSummary({
 
       {/* 四季卡片 */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <SeasonCard data={seasonData.spring} />
-        <SeasonCard data={seasonData.summer} />
-        <SeasonCard data={seasonData.autumn} />
-        <SeasonCard data={seasonData.winter} />
+        <SeasonCard data={seasonData.spring} currencyUnit={currencyUnit} />
+        <SeasonCard data={seasonData.summer} currencyUnit={currencyUnit} />
+        <SeasonCard data={seasonData.autumn} currencyUnit={currencyUnit} />
+        <SeasonCard data={seasonData.winter} currencyUnit={currencyUnit} />
       </div>
 
       {/* 诊断信息 */}

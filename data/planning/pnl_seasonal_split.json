@@ -1,0 +1,109 @@
+{
+  "_comment": "S5b 季节性P&L拆分：春夏(3-8月) vs 秋冬(9-2月)",
+  "updatedAt": "2026-05-11",
+  "springSummer": {
+    "label": "春夏（3-8月）",
+    "months": "3月-8月",
+    "netRevenue": 63300000,
+    "grossProfit": 29726000,
+    "grossMarginRate": 0.47,
+    "totalOpex": 25320000,
+    "ebit": 4406000,
+    "ebitRate": 0.0696,
+    "netProfit": 3305000,
+    "netProfitRate": 0.0522,
+    "topCategories": [
+      {
+        "key": "sandal",
+        "label": "凉鞋",
+        "salesShare": 0.32,
+        "grossMarginRate": 0.44,
+        "contributionProfitRate": 0.12
+      },
+      {
+        "key": "sneaker",
+        "label": "运动休闲",
+        "salesShare": 0.28,
+        "grossMarginRate": 0.53,
+        "contributionProfitRate": 0.24
+      },
+      {
+        "key": "casual",
+        "label": "板鞋",
+        "salesShare": 0.24,
+        "grossMarginRate": 0.48,
+        "contributionProfitRate": 0.19
+      },
+      {
+        "key": "sport",
+        "label": "功能运动",
+        "salesShare": 0.16,
+        "grossMarginRate": 0.52,
+        "contributionProfitRate": 0.22
+      }
+    ]
+  },
+  "autumnWinter": {
+    "label": "秋冬（9-2月）",
+    "months": "9月-次年2月",
+    "netRevenue": 58500000,
+    "grossProfit": 30420000,
+    "grossMarginRate": 0.52,
+    "totalOpex": 23400000,
+    "ebit": 7020000,
+    "ebitRate": 0.12,
+    "netProfit": 5265000,
+    "netProfitRate": 0.09,
+    "topCategories": [
+      {
+        "key": "boot",
+        "label": "短靴/马丁靴",
+        "salesShare": 0.3,
+        "grossMarginRate": 0.56,
+        "contributionProfitRate": 0.28
+      },
+      {
+        "key": "cottonShoe",
+        "label": "棉鞋",
+        "salesShare": 0.25,
+        "grossMarginRate": 0.5,
+        "contributionProfitRate": 0.22
+      },
+      {
+        "key": "sneaker",
+        "label": "运动休闲",
+        "salesShare": 0.27,
+        "grossMarginRate": 0.53,
+        "contributionProfitRate": 0.24
+      },
+      {
+        "key": "leather",
+        "label": "正装皮鞋",
+        "salesShare": 0.18,
+        "grossMarginRate": 0.48,
+        "contributionProfitRate": 0.18
+      }
+    ]
+  },
+  "attribution": {
+    "grossMarginGap": 0.05,
+    "gapExplanation": "秋冬毛利率高于春夏5pp，主要来源：",
+    "factors": [
+      {
+        "factor": "品类结构差异",
+        "impact": 0.028,
+        "desc": "秋冬靴类/棉鞋毛利率高于春夏凉鞋"
+      },
+      {
+        "factor": "折扣率差异",
+        "impact": 0.012,
+        "desc": "秋冬折扣率较低（24% vs 28%）"
+      },
+      {
+        "factor": "定价策略",
+        "impact": 0.01,
+        "desc": "秋冬新品上市溢价明显"
+      }
+    ]
+  }
+}

@@ -1,7 +1,6 @@
-import { sql } from '@/lib/db';
 import { NextResponse } from 'next/server';
-
-export const runtime = 'edge';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -9,16 +8,12 @@ export async function GET(request: Request) {
     const season = searchParams.get('season');
     const wave = searchParams.get('wave');
 
-    let rows;
-    if (year && year !== 'all') {
-        rows = await sql`
-            SELECT * FROM fact_sales
-            WHERE season_year = ${year}
-            ${season && season !== 'all' ? sql`AND season = ${season}` : sql``}
-            ${wave && wave !== 'all' ? sql`AND wave = ${wave}` : sql``}
-        `;
-    } else {
-        rows = await sql`SELECT * FROM fact_sales`;
-    }
+    const filePath = path.join(process.cwd(), 'data', 'dashboard', 'fact_sales.json');
+    const raw = await fs.readFile(filePath, 'utf-8');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let rows: any[] = JSON.parse(raw);
+    if (year && year !== 'all') rows = rows.filter((r) => String(r.season_year) === year);
+    if (season && season !== 'all') rows = rows.filter((r) => r.season === season);
+    if (wave && wave !== 'all') rows = rows.filter((r) => r.wave === wave);
     return NextResponse.json(rows);
 }

@@ -21,6 +21,7 @@ import { resolveBusinessThreshold } from '@/utils/merchMetricResolver';
 import AnnualOTBDecisionSummary from './annual/AnnualOTBDecisionSummary';
 import AnnualOTBDownstreamStatus from './annual/AnnualOTBDownstreamStatus';
 import AnnualOTBGapAttribution from './annual/AnnualOTBGapAttribution';
+import OtbFormulaBreakdown from '../OtbFormulaBreakdown';
 import defaultData from '../../../../data/otb/otb_assumptions.json';
 
 interface Props {
@@ -261,6 +262,16 @@ export default function AnnualOTBControlPanel({
                 <span className="text-sky-400">·</span>
                 <span>新品占比 {formatPct(annualNewProductRatio)}</span>
             </div>
+
+            {/* OTB 核心公式参考卡 */}
+            <OtbFormulaBreakdown
+                values={{
+                    plannedSales: inputs.annualSalesTarget,
+                    otbBudget: inputs.approvedBudget,
+                    currencyUnit: currencyUnit,
+                }}
+                expanded={false}
+            />
 
             <AnnualOTBDecisionSummary
                 result={result}
@@ -604,6 +615,46 @@ export default function AnnualOTBControlPanel({
                 hasUnsavedChanges={hasUnsavedChanges}
                 onJumpToTab={onJumpToTab}
             />
+
+            {/* Action Center */}
+            {diagnoses.length > 0 && (
+                <div className="rounded-xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+                    <div className="flex items-center gap-2 px-5 py-3 border-b border-slate-100 bg-slate-50">
+                        <span className="text-sm font-semibold text-slate-700">年度 Action Center</span>
+                        <span className="text-[11px] text-slate-400">· {diagnoses.filter(d => d.level === 'danger').length} 紧急 / {diagnoses.filter(d => d.level === 'warn').length} 预警</span>
+                    </div>
+                    <div className="px-5 py-3 space-y-2">
+                        {diagnoses.map((d, i) => (
+                            <div key={i} className={`flex items-start gap-3 rounded-lg border px-3 py-2.5 text-xs ${
+                                d.level === 'danger'
+                                    ? 'border-rose-200 bg-rose-50 text-rose-800'
+                                    : 'border-amber-200 bg-amber-50 text-amber-800'
+                            }`}>
+                                <span className="shrink-0 font-bold">{d.level === 'danger' ? '✗' : '⚠'}</span>
+                                <span className="flex-1">{d.message}</span>
+                                {d.message.includes('追加预算') && onJumpToTab && (
+                                    <button type="button" onClick={() => onJumpToTab('wave')}
+                                        className="shrink-0 rounded px-2 py-0.5 text-[10px] border border-rose-300 bg-white text-rose-700 hover:bg-rose-50">
+                                        → 波段重分配
+                                    </button>
+                                )}
+                                {d.message.includes('清货') && onJumpToTab && (
+                                    <button type="button" onClick={() => onJumpToTab('execution')}
+                                        className="shrink-0 rounded px-2 py-0.5 text-[10px] border border-amber-300 bg-white text-amber-700 hover:bg-amber-50">
+                                        → 执行跟踪
+                                    </button>
+                                )}
+                                {d.message.includes('售罄') && onJumpToTab && (
+                                    <button type="button" onClick={() => onJumpToTab('price')}
+                                        className="shrink-0 rounded px-2 py-0.5 text-[10px] border border-amber-300 bg-white text-amber-700 hover:bg-amber-50">
+                                        → 价格&结构
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Sensitivity analysis (collapsible) */}
             <div className="bg-white rounded-xl border border-slate-100 shadow-sm">

@@ -1,0 +1,65 @@
+{
+  "actions": [
+    {
+      "id": "CAT-ACT-001",
+      "priority": "P0",
+      "category": "运动跑步",
+      "issue": "核心品类销售动量下滑 -8%，影响整体销售目标",
+      "cause": "贡献占比 22%，动量 -8%，规模损失约 128 万",
+      "action": "评估渠道配货，启动促销推动去化，减少下季同类 SKU 投入",
+      "impactAmount": 1280000,
+      "status": "pending",
+      "modules": ["库存健康", "OTB预算"],
+      "createdAt": "2026-05-08"
+    },
+    {
+      "id": "CAT-ACT-002",
+      "priority": "P0",
+      "category": "棉鞋",
+      "issue": "售罄率 18%，库存积压风险高",
+      "cause": "动销不足导致库存占压，集中折扣将损伤毛利",
+      "action": "加强流量扶持，向高动销渠道调拨，考虑限时折扣去化",
+      "impactAmount": 960000,
+      "status": "in-progress",
+      "assignee": "张伟",
+      "modules": ["库存健康", "损益"],
+      "createdAt": "2026-05-06"
+    },
+    {
+      "id": "CAT-ACT-003",
+      "priority": "P1",
+      "category": "全品类",
+      "issue": "SKU 利用率 63%，长尾 SKU 占用企划资源",
+      "cause": "长尾 SKU 贡献极低，拉低整体单 SKU 产出效率",
+      "action": "砍长尾 SKU，聚焦核心楦型和主力价格带，减少无效上新",
+      "impactAmount": 450000,
+      "status": "done",
+      "assignee": "李芳",
+      "modules": ["波段企划", "OTB预算"],
+      "createdAt": "2026-05-01",
+      "completedAt": "2026-05-10"
+    },
+    {
+      "id": "CAT-ACT-004",
+      "priority": "P1",
+      "category": "板鞋",
+      "issue": "潜力品类动量强但贡献占比低，存在放量机会",
+      "cause": "动量 +12%，贡献仅 8%，尚未充分放量",
+      "action": "增加 SKU 宽度，加大渠道铺货深度，追加 OTB 预算",
+      "impactAmount": 680000,
+      "status": "transferred",
+      "assignee": "王磊",
+      "transferredTo": "OTB预算模块",
+      "modules": ["OTB预算", "波段企划"],
+      "createdAt": "2026-05-03",
+      "transferredAt": "2026-05-09"
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "pending": 1,
+    "inProgress": 1,
+    "done": 1,
+    "transferred": 1
+  }
+}

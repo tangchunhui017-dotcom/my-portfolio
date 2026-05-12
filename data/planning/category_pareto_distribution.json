@@ -1,0 +1,28 @@
+{
+  "skuParetoPoints": [
+    { "cumulativeSkuPct": 0.05, "cumulativeSalesPct": 0.22 },
+    { "cumulativeSkuPct": 0.10, "cumulativeSalesPct": 0.38 },
+    { "cumulativeSkuPct": 0.20, "cumulativeSalesPct": 0.58 },
+    { "cumulativeSkuPct": 0.30, "cumulativeSalesPct": 0.71 },
+    { "cumulativeSkuPct": 0.40, "cumulativeSalesPct": 0.81 },
+    { "cumulativeSkuPct": 0.50, "cumulativeSalesPct": 0.88 },
+    { "cumulativeSkuPct": 0.60, "cumulativeSalesPct": 0.93 },
+    { "cumulativeSkuPct": 0.70, "cumulativeSalesPct": 0.96 },
+    { "cumulativeSkuPct": 0.80, "cumulativeSalesPct": 0.98 },
+    { "cumulativeSkuPct": 0.90, "cumulativeSalesPct": 0.99 },
+    { "cumulativeSkuPct": 1.00, "cumulativeSalesPct": 1.00 }
+  ],
+  "top20PctSkuSalesShare": 0.58,
+  "coreSkuCount": 42,
+  "totalSkuCount": 210,
+  "longTailSkuCount": 89,
+  "longTailSalesShare": 0.04,
+  "longTailInventoryAmount": 3280000,
+  "suggestedCutSkus": [
+    { "skuId": "SKU-2024-C012", "category": "休闲皮鞋", "salesShare": 0.001, "stockAmount": 128000 },
+    { "skuId": "SKU-2024-C018", "category": "凉鞋",     "salesShare": 0.0008, "stockAmount": 92000 },
+    { "skuId": "SKU-2024-B007", "category": "棉鞋",     "salesShare": 0.0006, "stockAmount": 156000 },
+    { "skuId": "SKU-2024-A023", "category": "跑步鞋",   "salesShare": 0.0012, "stockAmount": 88000 },
+    { "skuId": "SKU-2023-D044", "category": "板鞋",     "salesShare": 0.0009, "stockAmount": 112000 }
+  ]
+}

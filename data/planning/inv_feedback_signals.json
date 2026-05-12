@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "updatedAt": "2026-05-11",
+    "generatedFrom": "库存健康V10"
+  },
+  "signals": [
+    {
+      "id": "SIG001",
+      "targetModule": "otb",
+      "priority": "P0",
+      "title": "凉鞋积压建议削减OTB",
+      "detail": "凉鞋SS24积压¥432万，建议SS25凉鞋OTB削减18%（约¥280万）",
+      "impact": "减少超买风险",
+      "status": "pending"
+    },
+    {
+      "id": "SIG002",
+      "targetModule": "forecast",
+      "priority": "P1",
+      "title": "预测准确率偏差",
+      "detail": "Q1实际售罄62% vs 预测78%，建议下季预测模型调低乐观偏差12%",
+      "impact": "提高预测准确率",
+      "status": "pending"
+    },
+    {
+      "id": "SIG003",
+      "targetModule": "wave",
+      "priority": "P1",
+      "title": "AW25-3B建议缩量",
+      "detail": "AW24-3B滞销¥210万，建议AW25-3B缩减30% SKU数量",
+      "impact": "防止波段积压重演",
+      "status": "pending"
+    },
+    {
+      "id": "SIG004",
+      "targetModule": "cashflow",
+      "priority": "P0",
+      "title": "清仓方案B释放现金",
+      "detail": "执行深度折扣方案可释放¥420万，可缓解6-7月现金缺口",
+      "impact": "改善现金流压力",
+      "status": "pending"
+    },
+    {
+      "id": "SIG005",
+      "targetModule": "pnl",
+      "priority": "P1",
+      "title": "库存跌价准备影响损益",
+      "detail": ">180天库存计提¥220万跌价，EBIT受损约0.6pp",
+      "impact": "损益风险提示",
+      "status": "pending"
+    },
+    {
+      "id": "SIG006",
+      "targetModule": "category",
+      "priority": "P2",
+      "title": "凉鞋核心尺码断码",
+      "detail": "凉鞋38-40码段断码，建议下季备货深度+5%，女38-40为重点",
+      "impact": "改善尺码满足率",
+      "status": "pending"
+    }
+  ]
+}

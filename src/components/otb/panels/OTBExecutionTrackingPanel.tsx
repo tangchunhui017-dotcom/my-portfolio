@@ -6,7 +6,7 @@
 import { useState, useMemo, useCallback, useRef, type ReactNode } from 'react';
 import {
     calcExecutionStatus, formatCurrency, formatPct,
-    type CurrencyUnit, type ExecutionTrackingInput, type ExecutionStatus,
+    type CurrencyUnit, type ExecutionTrackingInput, type ExecutionStatus, type ExecutionTrackingRow,
 } from '@/utils/otbCalculations';
 import {
     BUSINESS_DATE,
@@ -20,12 +20,22 @@ import {
 import type { OTBPriceStructureOutput } from './OTBPriceStructurePanel';
 import defaultData from '../../../../data/otb/otb_execution_tracking.json';
 import { WAVE_PLAN_MASTER } from '@/utils/wavePlanMaster';
+import type {
+    OtbAction,
+    OtbActionType,
+    OtbApprovalStatusValue,
+    OtbJumpHandler,
+    OtbNavigationContext,
+    PurchaseOrderTracking,
+} from '../types';
 
 interface Props {
     currencyUnit:       CurrencyUnit;
     priceStructure?:    OTBPriceStructureOutput | null;
     records?:           ExecutionTrackingInput[];
     onRecordsChange?:   (records: ExecutionTrackingInput[]) => void;
+    /** 跳转到其他子视图或主模块 */
+    onJumpToTab?:       OtbJumpHandler;
 }
 
 interface WavePlanRecord {
@@ -87,6 +97,26 @@ const STATUS_CONFIG: Record<ExecutionStatus, { bg: string; text: string }> = {
     '已到货':   { bg: 'bg-emerald-100',  text: 'text-emerald-700'},
     '偏差预警': { bg: 'bg-rose-100',     text: 'text-rose-700'   },
     '已关闭':   { bg: 'bg-slate-200',    text: 'text-slate-600'  },
+};
+
+const APPROVAL_STATUSES: OtbApprovalStatusValue[] = [
+    '草稿',
+    '待商品总监审批',
+    '待财务审批',
+    '已批准',
+    '已冻结',
+    '已驳回',
+    '已执行',
+];
+
+const APPROVAL_STATUS_STYLE: Record<OtbApprovalStatusValue, { bg: string; text: string }> = {
+    '草稿':         { bg: 'bg-slate-100',   text: 'text-slate-500' },
+    '待商品总监审批': { bg: 'bg-sky-100',     text: 'text-sky-700' },
+    '待财务审批':     { bg: 'bg-indigo-100',  text: 'text-indigo-700' },
+    '已批准':       { bg: 'bg-emerald-100', text: 'text-emerald-700' },
+    '已冻结':       { bg: 'bg-amber-100',   text: 'text-amber-700' },
+    '已驳回':       { bg: 'bg-rose-100',    text: 'text-rose-700' },
+    '已执行':       { bg: 'bg-slate-200',   text: 'text-slate-600' },
 };
 
 const PRICE_BAND_LABEL: Record<string, string> = {
@@ -173,8 +203,58 @@ function resolvePlanForRecord(record: ExecutionTrackingInput, plans: WavePlanRec
     return plans.find(plan => plan.season === record.season && plan.launchMonth === launchMonth) ?? null;
 }
 
+function resolveApprovalStatus(row: ExecutionTrackingRow): OtbApprovalStatusValue {
+    if (row.status === '未开始') return '草稿';
+    if (row.status === '计划中') return row.pricedStyleCount < row.developedStyleCount ? '待商品总监审批' : '待财务审批';
+    if (row.status === '已审批') return '已批准';
+    if (row.status === '已下单' || row.status === '已到货' || row.status === '已关闭') return '已执行';
+    if (row.status === '偏差预警') {
+        if (row.orderedAmount > row.plannedPurchaseAmount * 1.1) return '已冻结';
+        if (row.pricingRisk || row.costRiskMessage) return '待财务审批';
+        return '待商品总监审批';
+    }
+    return '草稿';
+}
+
+function resolveActionType(row: ExecutionTrackingRow, isOverbuy = false): OtbActionType {
+    if (isOverbuy) return '冻结OTB';
+    if (row.orderedAmount < row.plannedPurchaseAmount * 0.75 && row.daysToLaunch > 0) return '提前补货';
+    if (row.warehouseNodeRisk || row.arrivalRisk) return '延后下单';
+    if (row.orderNodeRisk) return '提交审批';
+    if (row.pricingRisk) return '调整价格带';
+    if (row.developmentGap) return '调整款深';
+    return '驳回重算';
+}
+
+function buildExecutionContext(
+    row: ExecutionTrackingRow,
+    targetModule: string,
+    overrides: Partial<OtbNavigationContext> = {},
+): OtbNavigationContext {
+    const forecastSales = row.plannedPurchaseAmount * 1.8;
+    return {
+        source: 'execution',
+        targetModule,
+        subject: `${row.season} ${row.wave} · ${row.categoryLabel}`,
+        category: row.categoryLabel,
+        waveId: `${row.season}-${row.wave}`,
+        waveName: `${row.season} ${row.wave}`,
+        otbBudget: row.plannedPurchaseAmount,
+        otbUsed: row.orderedAmount,
+        otbVariance: row.orderedAmount - row.plannedPurchaseAmount,
+        orderedAmount: row.orderedAmount,
+        deliveredAmount: row.arrivedAmount,
+        forecastSales,
+        forecastGap: forecastSales - row.orderedAmount,
+        grossMargin: row.actualGrossMargin,
+        riskLevel: row.milestoneRisks.length > 0 || row.orderRisk || row.arrivalRisk ? 'P0' : 'P1',
+        recommendedAction: resolveActionType(row, row.orderedAmount > row.plannedPurchaseAmount * 1.1),
+        ...overrides,
+    };
+}
+
 export default function OTBExecutionTrackingPanel({
-    currencyUnit, priceStructure, records: externalRecords, onRecordsChange,
+    currencyUnit, priceStructure, records: externalRecords, onRecordsChange, onJumpToTab,
 }: Props) {
     const [internalRecords, setInternalRecords] = useState<ExecutionTrackingInput[]>(
         () => defaultData as ExecutionTrackingInput[],
@@ -370,7 +450,6 @@ export default function OTBExecutionTrackingPanel({
         return { categories: Array.from(categorySet), cellMap };
     }, [allRows]);
 
-    const visibleActions = showAllActions ? actions : actions.slice(0, 6);
     const waveGroups = useMemo(() => (
         ['Q1', 'Q2', 'Q3', 'Q4'].map(quarter => ({
             quarter,
@@ -407,9 +486,229 @@ export default function OTBExecutionTrackingPanel({
         setTimeout(() => ledgerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
     };
 
+    const jumpToTab = useCallback((tab: string, context?: OtbNavigationContext) => {
+        onJumpToTab?.(tab, context);
+    }, [onJumpToTab]);
+
     const closedCount   = waves.filter(w => w.timeStatus === 'closed').length;
     const currentCount  = waves.filter(w => w.timeStatus === 'current').length;
     const planningCount = waves.filter(w => w.timeStatus === 'planning').length;
+
+    // ─── 执行漏斗 ───────────────────────────────────────────────────────────
+    const funnelSteps = useMemo(() => {
+        const nonPlanning = waves.filter(w => w.timeStatus !== 'planning');
+        const withOrder   = waves.filter(w => w.totalOA > 0);
+        const withArrival = waves.filter(w => w.totalAA > 0);
+        const closedWithST = closedSellThroughRows.length > 0 ? waves.filter(w => w.timeStatus === 'closed' && closedSellThroughRows.some(r => `${r.row.season}-${r.row.wave}` === w.key)) : [];
+        const approvedCount = allRows.filter(r => ['已审批', '已下单', '已到货', '已关闭'].includes(r.status as string)).length;
+        const totalRows = allRows.length;
+        return [
+            { label: '预算生成',   count: waves.length,         pct: 1,                                       color: 'bg-slate-400' },
+            { label: '预算审批',   count: approvedCount,        pct: totalRows > 0 ? approvedCount / totalRows : 0, color: 'bg-indigo-400' },
+            { label: '采购申请',   count: nonPlanning.length,   pct: waves.length > 0 ? nonPlanning.length / waves.length : 0, color: 'bg-sky-400' },
+            { label: 'PO下单',    count: withOrder.length,      pct: waves.length > 0 ? withOrder.length / waves.length : 0, color: 'bg-amber-400' },
+            { label: '供应商确认', count: withOrder.length,      pct: waves.length > 0 ? withOrder.length / waves.length : 0, color: 'bg-orange-400' },
+            { label: '在途',      count: withOrder.filter(w => w.totalAA < w.totalOA).length, pct: withOrder.length > 0 ? withOrder.filter(w => w.totalAA < w.totalOA).length / waves.length : 0, color: 'bg-violet-400' },
+            { label: '到货',      count: withArrival.length,    pct: waves.length > 0 ? withArrival.length / waves.length : 0, color: 'bg-teal-400' },
+            { label: '入库',      count: withArrival.length,    pct: waves.length > 0 ? withArrival.length / waves.length : 0, color: 'bg-emerald-400' },
+            { label: '销售验证',  count: closedWithST.length,  pct: closedCount > 0 ? closedWithST.length / closedCount : 0, color: 'bg-emerald-600' },
+        ];
+    }, [waves, allRows, closedSellThroughRows, closedCount]);
+
+    // ─── 审批状态分布 ────────────────────────────────────────────────────────
+    const approvalRows = useMemo(() => allRows.map(row => ({
+        row,
+        approvalStatus: resolveApprovalStatus(row),
+    })), [allRows]);
+
+    const approvalStatusGroups = useMemo(() => {
+        const counts: Record<OtbApprovalStatusValue, number> = {
+            '草稿': 0,
+            '待商品总监审批': 0,
+            '待财务审批': 0,
+            '已批准': 0,
+            '已冻结': 0,
+            '已驳回': 0,
+            '已执行': 0,
+        };
+        for (const item of approvalRows) counts[item.approvalStatus] += 1;
+        return APPROVAL_STATUSES.map(status => ({ status, count: counts[status] }));
+    }, [approvalRows]);
+
+    const purchaseOrders = useMemo<PurchaseOrderTracking[]>(() => allRows
+        .filter(row => row.orderedAmount > 0 || ['已审批', '已下单', '已到货', '已关闭', '偏差预警'].includes(row.status))
+        .map(row => {
+            const varianceAmount = row.orderedAmount - row.plannedPurchaseAmount;
+            const varianceRate = row.plannedPurchaseAmount > 0 ? varianceAmount / row.plannedPurchaseAmount : 0;
+            const alertType: PurchaseOrderTracking['alertType'] =
+                varianceRate > 0.1 ? '超买' : varianceRate < -0.25 ? '欠买' : undefined;
+            return {
+                poId: `PO-${row.season}-${row.wave}-${row.category}`,
+                styleId: `${row.season}-${row.wave}-${row.category}`,
+                category: row.categoryLabel,
+                waveId: `${row.season}-${row.wave}`,
+                channel: '全渠道',
+                otbBudget: row.plannedPurchaseAmount,
+                orderedAmount: row.orderedAmount,
+                deliveredAmount: row.arrivedAmount,
+                varianceAmount,
+                varianceRate,
+                forecastSales: row.plannedPurchaseAmount * 1.8,
+                recommendedAction: resolveActionType(row, alertType === '超买'),
+                alertType,
+                approvalStatus: resolveApprovalStatus(row),
+                executionStatus: row.status,
+                currencyUnit,
+            };
+        })
+        .sort((a, b) => Math.abs(b.varianceAmount) - Math.abs(a.varianceAmount))
+        .slice(0, 10), [allRows, currencyUnit]);
+
+    const deliveryRows = useMemo(() => purchaseOrders
+        .filter(po => po.orderedAmount > 0)
+        .map(po => ({
+            ...po,
+            inTransitAmount: Math.max(0, po.orderedAmount - po.deliveredAmount),
+            deliveryRate: po.orderedAmount > 0 ? po.deliveredAmount / po.orderedAmount : null,
+            inboundStatus: po.deliveredAmount >= po.orderedAmount
+                ? '已入库'
+                : po.deliveredAmount > 0
+                    ? '部分入库'
+                    : '待到货',
+        }))
+        .sort((a, b) => b.inTransitAmount - a.inTransitAmount)
+        .slice(0, 10), [purchaseOrders]);
+
+    // ─── 超买/欠买清单 ───────────────────────────────────────────────────────
+    const varianceRows = useMemo(() => {
+        return allRows
+            .filter(r => {
+                const timeStatus = resolveExecTimeStatus(r.launchDate, businessDate);
+                if (timeStatus === 'planning') return false;
+                const ppa = r.plannedPurchaseAmount;
+                if (!ppa || ppa <= 0) return false;
+                const oa = r.orderedAmount ?? 0;
+                const ratio = oa / ppa;
+                return ratio > 1.1 || ratio < 0.75;
+            })
+            .map(r => {
+                const ppa = r.plannedPurchaseAmount;
+                const oa  = r.orderedAmount ?? 0;
+                const variance = oa - ppa;
+                const varianceRate = ppa > 0 ? variance / ppa : 0;
+                const isOverbuy = variance > 0;
+                return { row: r, ppa, oa, variance, varianceRate, isOverbuy };
+            })
+            .sort((a, b) => Math.abs(b.variance) - Math.abs(a.variance));
+    }, [allRows, businessDate]);
+
+    const standardActions = useMemo<OtbAction[]>(() => {
+        const diagnosisActions: OtbAction[] = actions.map(action => {
+            const row = allRows.find(item => item.id === action.rowId);
+            const riskTag: OtbAction['riskTag'] =
+                action.issue.includes('毛利') ? '毛利风险' :
+                action.issue.includes('缺少') || action.issue.includes('滞后') ? '审批延迟' :
+                action.issue.includes('到货') ? '缺货' :
+                '积压';
+            const context: OtbNavigationContext = row
+                ? buildExecutionContext(row, 'execution', {
+                    riskTag,
+                    recommendedAction: row ? resolveActionType(row) : '驳回重算',
+                })
+                : {
+                    source: 'execution',
+                    targetModule: 'execution',
+                    subject: `${action.season} ${action.wave} · ${action.categoryLabel}`,
+                    category: action.categoryLabel,
+                    waveId: `${action.season}-${action.wave}`,
+                    otbBudget: action.impactAmount,
+                    riskTag,
+                    riskLevel: action.priority,
+                    recommendedAction: '提交审批',
+                };
+            return {
+                id: action.id,
+                subject: `${action.season} ${action.wave} · ${action.categoryLabel}`,
+                riskTag,
+                priority: action.priority,
+                reason: action.issue,
+                actionType: (context.recommendedAction as OtbActionType) ?? '提交审批',
+                description: action.action,
+                forecastInventoryImpact: action.impactAmount,
+                forecastCashImpact: action.impactAmount,
+                forecastMarginImpact: row?.actualGrossMargin !== undefined && row?.targetGrossMargin !== undefined
+                    ? (row.actualGrossMargin - row.targetGrossMargin) * row.plannedPurchaseAmount
+                    : undefined,
+                relatedModules: ['monthly', 'wave', 'cashflow'],
+                relatedModuleLinks: [
+                    { targetModule: 'monthly', label: '回月度滚动', context: { ...context, targetModule: 'monthly' } },
+                    { targetModule: 'wave', label: '回波段预算', context: { ...context, targetModule: 'wave' } },
+                    { targetModule: 'cashflow', label: '看现金影响', context: { ...context, targetModule: 'cashflow', cashGap: action.impactAmount } },
+                ],
+                actionStatus: action.priority === 'P0' ? '待处理' : '处理中',
+            };
+        });
+
+        const varianceActions: OtbAction[] = varianceRows.slice(0, 6).map(item => {
+            const context = buildExecutionContext(item.row, item.isOverbuy ? 'cashflow' : 'monthly', {
+                riskTag: item.isOverbuy ? '超买' : '欠买',
+                recommendedAction: item.isOverbuy ? '冻结OTB' : '提前补货',
+                cashGap: item.isOverbuy ? item.variance : Math.abs(item.variance),
+                freezeAmount: item.isOverbuy ? item.variance : 0,
+            });
+            return {
+                id: `${item.row.id}-variance-action`,
+                subject: `${item.row.season} ${item.row.wave} · ${item.row.categoryLabel}`,
+                riskTag: item.isOverbuy ? '超买' : '欠买',
+                priority: item.isOverbuy ? 'P0' : 'P1',
+                reason: item.isOverbuy
+                    ? `下单金额高于计划 ${Math.abs(item.varianceRate * 100).toFixed(1)}%`
+                    : `下单金额低于计划 ${Math.abs(item.varianceRate * 100).toFixed(1)}%`,
+                actionType: item.isOverbuy ? '冻结OTB' : '提前补货',
+                description: item.isOverbuy ? '冻结超出 OTB，复核是否挤占下一波段预算' : '核查缺口是否来自供应商或审批延迟，必要时提前补货',
+                forecastSalesImpact: item.isOverbuy ? 0 : Math.abs(item.variance) * 1.8,
+                forecastInventoryImpact: item.variance,
+                forecastCashImpact: item.variance,
+                relatedModules: item.isOverbuy ? ['cashflow', 'monthly'] : ['monthly', 'forecast'],
+                relatedModuleLinks: [
+                    { targetModule: item.isOverbuy ? 'cashflow' : 'monthly', label: item.isOverbuy ? '冻结现金' : '重算月度', context },
+                    { targetModule: 'execution', label: '看执行台账', context: { ...context, targetModule: 'execution' } },
+                ],
+                actionStatus: '待处理',
+            };
+        });
+
+        return [...varianceActions, ...diagnosisActions]
+            .sort((a, b) => {
+                const priorityOrder: Record<OtbAction['priority'], number> = { P0: 0, P1: 1, P2: 2 };
+                return priorityOrder[a.priority] - priorityOrder[b.priority]
+                    || Math.abs(b.forecastCashImpact ?? 0) - Math.abs(a.forecastCashImpact ?? 0);
+            });
+    }, [actions, allRows, varianceRows]);
+
+    const visibleStandardActions = showAllActions ? standardActions : standardActions.slice(0, 6);
+
+    const executionFeedbackContext = useMemo<OtbNavigationContext>(() => {
+        const anchorRow = allRows.find(row => row.milestoneRisks.length > 0 || row.orderRisk || row.arrivalRisk)
+            ?? allRows[0];
+        if (anchorRow) {
+            return buildExecutionContext(anchorRow, 'monthly', {
+                subject: '执行跟踪反馈重算',
+                otbUsed: summary.orderedAmount,
+                otbVariance: summary.orderedAmount - summary.plannedPurchaseAmount,
+                cashGap: Math.max(0, summary.orderedAmount - summary.plannedPurchaseAmount),
+                freezeAmount: Math.max(0, summary.orderedAmount - summary.plannedPurchaseAmount),
+            });
+        }
+        return {
+            source: 'execution',
+            targetModule: 'monthly',
+            subject: '执行跟踪反馈重算',
+            otbUsed: summary.orderedAmount,
+            otbVariance: summary.orderedAmount - summary.plannedPurchaseAmount,
+            recommendedAction: '驳回重算',
+        };
+    }, [allRows, summary.orderedAmount, summary.plannedPurchaseAmount]);
 
     return (
         <div className="space-y-4">
@@ -417,7 +716,7 @@ export default function OTBExecutionTrackingPanel({
             <div className="flex flex-wrap items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 px-4 py-2 text-xs text-slate-500">
                 <span className="font-semibold text-slate-700">采购执行与上市履约看板</span>
                 <Divider />
-                <span>业务日期 <strong className="text-slate-700">2026/05/09</strong></span>
+                <span>业务日期 <strong className="text-slate-700">{`${businessDate.getFullYear()}/${String(businessDate.getMonth() + 1).padStart(2, '0')}/${String(businessDate.getDate()).padStart(2, '0')}`}</strong></span>
                 <Divider />
                 <span>全年 <strong className="text-slate-700">{waves.length}</strong> 波段</span>
                 <span className="ml-auto inline-flex items-center gap-3">
@@ -494,30 +793,233 @@ export default function OTBExecutionTrackingPanel({
                 </div>
             )}
 
+            {/* OTB 执行漏斗 */}
+            <section>
+                <SectionHeader title="OTB 执行漏斗" subtitle="从预算生成到销售验证的全链路进度" />
+                <div className="mt-2 rounded-xl border border-slate-100 bg-white shadow-sm p-4 overflow-x-auto">
+                    <div className="flex items-end gap-1 min-w-max">
+                        {funnelSteps.map((step, i) => {
+                            const widthPct = Math.max(6, step.pct * 100);
+                            return (
+                                <div key={step.label} className="flex flex-col items-center gap-1" style={{ width: `${widthPct + 8}px`, minWidth: '52px' }}>
+                                    <span className="text-[10px] font-semibold text-slate-700">{step.count}</span>
+                                    <div
+                                        className={`w-full rounded-t ${step.color}`}
+                                        style={{ height: `${Math.max(8, step.pct * 80)}px` }}
+                                    />
+                                    <span className="text-[9px] text-slate-500 text-center whitespace-nowrap">{step.label}</span>
+                                    {i < funnelSteps.length - 1 && (
+                                        <span className="absolute text-slate-300 text-xs" style={{ marginLeft: `${widthPct + 10}px` }}>›</span>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <p className="text-[10px] text-slate-400 mt-3 border-t border-slate-100 pt-2">
+                        柱高与各阶段完成率成正比。供应商确认与到货数据来自执行台账，销售验证仅统计已上市且有售罄率数据的波段。
+                    </p>
+                </div>
+            </section>
+
+            {/* 审批状态分布 */}
+            <section>
+                <SectionHeader title="审批状态" subtitle="按真实 OTB 审批链路统计：商品总监、财务、冻结、驳回、执行" />
+                <div className="mt-2 rounded-xl border border-slate-100 bg-white shadow-sm px-4 py-3">
+                    <div className="flex flex-wrap gap-2">
+                        {approvalStatusGroups.map(({ status, count }) => {
+                            if (count === 0) return null;
+                            const cfg = APPROVAL_STATUS_STYLE[status] ?? { bg: 'bg-slate-100', text: 'text-slate-500' };
+                            return (
+                                <div key={status} className={`flex items-center gap-1.5 rounded-lg border border-transparent px-3 py-1.5 ${cfg.bg}`}>
+                                    <span className={`text-xs font-semibold ${cfg.text}`}>{status}</span>
+                                    <span className={`text-xs font-bold ${cfg.text}`}>{count}</span>
+                                </div>
+                            );
+                        })}
+                        {allRows.length === 0 && (
+                            <span className="text-xs text-slate-400">暂无台账记录</span>
+                        )}
+                    </div>
+                    <div className="mt-2 pt-2 border-t border-slate-50 text-[10px] text-slate-400 flex flex-wrap gap-3">
+                        <span>草稿 = 尚未提交审批</span>
+                        <span>待商品总监审批 = 款数/节点需商品确认</span>
+                        <span>待财务审批 = 现金、毛利或超预算需财务确认</span>
+                        <span>已冻结 = 超买或异常预算暂停执行</span>
+                        <span>已执行 = 已形成 PO、到货或完成复盘</span>
+                    </div>
+                </div>
+            </section>
+
+            {purchaseOrders.length > 0 && (
+                <section>
+                    <SectionHeader
+                        title="采购订单跟踪"
+                        subtitle={`${purchaseOrders.length} 条 PO / 预算记录 · 按偏差金额排序`}
+                    />
+                    <div className="mt-2 rounded-xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-max w-full text-xs">
+                                <thead>
+                                    <tr className="border-b border-slate-100 bg-slate-50 text-slate-400 text-[11px]">
+                                        <th className="py-2 px-3 text-left font-medium">PO</th>
+                                        <th className="py-2 px-3 text-left font-medium">波段/品类</th>
+                                        <th className="py-2 px-3 text-left font-medium">审批</th>
+                                        <th className="py-2 px-3 text-right font-medium">OTB预算</th>
+                                        <th className="py-2 px-3 text-right font-medium">已下单</th>
+                                        <th className="py-2 px-3 text-right font-medium">已到货</th>
+                                        <th className="py-2 px-3 text-right font-medium">偏差</th>
+                                        <th className="py-2 px-3 text-left font-medium">动作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {purchaseOrders.map(po => {
+                                        const cfg = APPROVAL_STATUS_STYLE[po.approvalStatus];
+                                        return (
+                                            <tr key={po.poId} className="border-b border-slate-50 hover:bg-slate-50/50">
+                                                <td className="py-2 px-3 font-semibold text-slate-700 whitespace-nowrap">{po.poId}</td>
+                                                <td className="py-2 px-3 text-slate-600 whitespace-nowrap">{po.waveId} · {po.category}</td>
+                                                <td className="py-2 px-3 whitespace-nowrap">
+                                                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.text}`}>
+                                                        {po.approvalStatus}
+                                                    </span>
+                                                </td>
+                                                <td className="py-2 px-3 text-right">{fc(po.otbBudget)}</td>
+                                                <td className="py-2 px-3 text-right text-sky-700">{fc(po.orderedAmount)}</td>
+                                                <td className="py-2 px-3 text-right text-emerald-700">{fc(po.deliveredAmount)}</td>
+                                                <td className={`py-2 px-3 text-right font-semibold ${
+                                                    po.varianceAmount > 0 ? 'text-rose-600' :
+                                                    po.varianceAmount < 0 ? 'text-amber-600' : 'text-slate-500'
+                                                }`}>
+                                                    {po.varianceAmount > 0 ? '+' : ''}{fc(po.varianceAmount)}
+                                                </td>
+                                                <td className="py-2 px-3 text-slate-500 whitespace-nowrap">
+                                                    {po.recommendedAction ?? '复核'}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {deliveryRows.length > 0 && (
+                <section>
+                    <SectionHeader
+                        title="到货 / 入库状态"
+                        subtitle="优先显示在途金额最高的 PO，帮助判断是否影响上市"
+                    />
+                    <div className="mt-2 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
+                        {deliveryRows.slice(0, 6).map(row => {
+                            const rate = row.deliveryRate;
+                            return (
+                                <div key={`${row.poId}-delivery`} className="rounded-lg border border-slate-100 bg-white p-3 text-xs shadow-sm">
+                                    <div className="flex items-baseline justify-between gap-2">
+                                        <span className="font-semibold text-slate-800">{row.waveId} · {row.category}</span>
+                                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                            row.inboundStatus === '已入库' ? 'bg-emerald-100 text-emerald-700' :
+                                            row.inboundStatus === '部分入库' ? 'bg-amber-100 text-amber-700' :
+                                            'bg-rose-100 text-rose-700'
+                                        }`}>
+                                            {row.inboundStatus}
+                                        </span>
+                                    </div>
+                                    <div className="mt-2 flex items-baseline gap-2">
+                                        <span className={`text-lg font-bold ${rateColorAgainst(rate, 0.85)}`}>{pct(rate)}</span>
+                                        <span className="text-[10px] text-slate-400">到货率</span>
+                                    </div>
+                                    <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                                        <div className={`h-full rounded-full ${progressFillColor(rate, 0.85)}`} style={{ width: `${Math.min(100, (rate ?? 0) * 100)}%` }} />
+                                    </div>
+                                    <div className="mt-2 flex justify-between text-[10px] text-slate-500">
+                                        <span>已到货 {fc(row.deliveredAmount)}</span>
+                                        <span>在途 {fc(row.inTransitAmount)}</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </section>
+            )}
+
+            {/* 超买/欠买清单 */}
+            {varianceRows.length > 0 && (
+                <section>
+                    <SectionHeader
+                        title="超买 / 欠买预警"
+                        subtitle={`${varianceRows.filter(r => r.isOverbuy).length} 条超买 · ${varianceRows.filter(r => !r.isOverbuy).length} 条欠买 · 偏差超 ±10%`}
+                    />
+                    <div className="mt-2 rounded-xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-max w-full text-xs">
+                                <thead>
+                                    <tr className="border-b border-slate-100 bg-slate-50 text-slate-400 text-[11px]">
+                                        <th className="py-2 px-3 text-left font-medium">波段</th>
+                                        <th className="py-2 px-3 text-left font-medium">品类</th>
+                                        <th className="py-2 px-3 text-left font-medium">类型</th>
+                                        <th className="py-2 px-3 text-right font-medium">计划采购</th>
+                                        <th className="py-2 px-3 text-right font-medium">已下单</th>
+                                        <th className="py-2 px-3 text-right font-medium">偏差金额</th>
+                                        <th className="py-2 px-3 text-right font-medium">偏差率</th>
+                                        <th className="py-2 px-3 text-left font-medium">建议</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {varianceRows.map(({ row, ppa, oa, variance, varianceRate, isOverbuy }) => (
+                                        <tr key={row.id} className={`border-b border-slate-50 ${isOverbuy ? 'bg-rose-50/40' : 'bg-amber-50/40'}`}>
+                                            <td className="py-2 px-3 font-medium text-slate-800 whitespace-nowrap">{row.season} {row.wave}</td>
+                                            <td className="py-2 px-3 text-slate-600 whitespace-nowrap">{row.categoryLabel}</td>
+                                            <td className="py-2 px-3">
+                                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isOverbuy ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'}`}>
+                                                    {isOverbuy ? '超买' : '欠买'}
+                                                </span>
+                                            </td>
+                                            <td className="py-2 px-3 text-right text-slate-600">{fc(ppa)}</td>
+                                            <td className="py-2 px-3 text-right text-slate-600">{fc(oa)}</td>
+                                            <td className={`py-2 px-3 text-right font-semibold ${isOverbuy ? 'text-rose-600' : 'text-amber-600'}`}>
+                                                {isOverbuy ? '+' : ''}{fc(variance)}
+                                            </td>
+                                            <td className={`py-2 px-3 text-right font-semibold ${isOverbuy ? 'text-rose-600' : 'text-amber-600'}`}>
+                                                {isOverbuy ? '+' : ''}{(varianceRate * 100).toFixed(1)}%
+                                            </td>
+                                            <td className="py-2 px-3 text-slate-500 whitespace-nowrap text-[11px]">
+                                                {isOverbuy ? '审查是否超配，建议冻结超出部分' : '核查订单缺口，视需求追加或锁定库存'}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            )}
+
             <section>
                 <SectionHeader
-                    title="风险行动队列"
-                    subtitle={actions.length > 0
-                        ? `${summary.p0Count} 紧急 · ${summary.p1Count} 重要 · ${actions.filter(a => a.priority === 'P2').length} 建议`
+                    title="执行 Action Center"
+                    subtitle={standardActions.length > 0
+                        ? `${standardActions.filter(a => a.priority === 'P0').length} 紧急 · ${standardActions.filter(a => a.priority === 'P1').length} 重要 · ${standardActions.filter(a => a.priority === 'P2').length} 建议`
                         : '无风险行动项'
                     }
                 />
-                {actions.length === 0 ? (
+                {standardActions.length === 0 ? (
                     <div className="mt-2 rounded-xl border border-emerald-100 bg-emerald-50 px-5 py-3 text-xs text-emerald-700">
                         ✓ 全部波段执行状态健康，暂无风险行动项
                     </div>
                 ) : (
                     <div className="mt-2 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
-                        {visibleActions.map(action => (
-                            <ActionCard key={action.id} action={action} fc={fc} />
+                        {visibleStandardActions.map(action => (
+                            <StandardActionCard key={action.id} action={action} fc={fc} onJumpToTab={jumpToTab} />
                         ))}
-                        {actions.length > 6 && (
+                        {standardActions.length > 6 && (
                             <button
                                 type="button"
                                 onClick={() => setShowAllActions(v => !v)}
                                 className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-4 text-xs text-slate-400 flex flex-col items-center justify-center gap-1 hover:bg-slate-100 transition-colors"
                             >
-                                <span className="text-xl font-bold text-slate-300">{showAllActions ? '−' : `+${actions.length - 6}`}</span>
+                                <span className="text-xl font-bold text-slate-300">{showAllActions ? '−' : `+${standardActions.length - 6}`}</span>
                                 <span>{showAllActions ? '收起行动项' : '查看全部行动项'}</span>
                             </button>
                         )}
@@ -677,7 +1179,7 @@ export default function OTBExecutionTrackingPanel({
             {closedSellThroughRows.length > 0 && (
                 <section>
                     <SectionHeader
-                        title="已上市波段售罄率复盘"
+                        title="销售验证反馈"
                         subtitle={`${closedSellThroughRows.length} 条品类记录 · 加权均值 ${avgSellThrough !== null ? pct(avgSellThrough) : '—'}`}
                     />
                     <div className="mt-2 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
@@ -722,6 +1224,33 @@ export default function OTBExecutionTrackingPanel({
                                     <div className="text-[10px] text-slate-500 mt-1.5">
                                         采购 {fc(row.plannedPurchaseAmount)} · 上市 {row.launchDate}
                                     </div>
+                                    {onJumpToTab && (
+                                        <div className="mt-2 flex flex-wrap gap-1.5">
+                                            <button
+                                                type="button"
+                                                onClick={() => jumpToTab('forecast', buildExecutionContext(row, 'forecast', {
+                                                    riskTag: rate >= target ? '缺货' : '积压',
+                                                    forecastSales: row.plannedPurchaseAmount * 1.8,
+                                                    forecastGap: (rate - target) * row.plannedPurchaseAmount,
+                                                    recommendedAction: rate >= target ? '提前补货' : '清理库存',
+                                                }))}
+                                                className="rounded-full border border-sky-200 bg-white px-2 py-0.5 text-[10px] font-medium text-sky-700 hover:bg-sky-50"
+                                            >
+                                                反馈销售预测
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => jumpToTab('inventory', buildExecutionContext(row, 'inventory', {
+                                                    riskTag: rate >= target ? '缺货' : '积压',
+                                                    inventoryRiskAmount: Math.max(0, target - rate) * row.plannedPurchaseAmount,
+                                                    recommendedAction: rate >= target ? '提前补货' : '清理库存',
+                                                }))}
+                                                className="rounded-full border border-emerald-200 bg-white px-2 py-0.5 text-[10px] font-medium text-emerald-700 hover:bg-emerald-50"
+                                            >
+                                                反馈库存健康
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}
@@ -916,6 +1445,50 @@ export default function OTBExecutionTrackingPanel({
 
             {helpOpen && <HelpModal onClose={() => setHelpOpen(false)} />}
 
+            {/* 执行闭环反馈入口 */}
+            {onJumpToTab && (
+                <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xs font-bold text-slate-700">执行闭环 · 快速跳转</span>
+                        <span className="text-[10px] text-slate-400">将执行结果反馈至对应模块，完成计划—执行—复盘闭环</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        <button
+                            type="button"
+                            onClick={() => jumpToTab('monthly', { ...executionFeedbackContext, targetModule: 'monthly', recommendedAction: '驳回重算' })}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs text-sky-700 hover:bg-sky-100 transition-colors"
+                        >
+                            <span>📆</span>
+                            <span>回月度滚动 — 调整剩余 OTB</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => jumpToTab('annual', { ...executionFeedbackContext, targetModule: 'annual', recommendedAction: '驳回重算' })}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 transition-colors"
+                        >
+                            <span>🎯</span>
+                            <span>回年度总控 — 复核年度预算</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => jumpToTab('cashflow', { ...executionFeedbackContext, targetModule: 'cashflow', purchasePayment: summary.orderedAmount, cashGap: Math.max(0, summary.orderedAmount - summary.arrivedAmount) })}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs text-emerald-700 hover:bg-emerald-100 transition-colors"
+                        >
+                            <span>💰</span>
+                            <span>查看现金流影响</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => jumpToTab('wave', { ...executionFeedbackContext, targetModule: 'wave', otbBudget: summary.plannedPurchaseAmount, otbUsed: summary.orderedAmount })}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs text-violet-700 hover:bg-violet-100 transition-colors"
+                        >
+                            <span>🌊</span>
+                            <span>回波段预算 — 重分配波段</span>
+                        </button>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }
@@ -992,7 +1565,11 @@ function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }
     );
 }
 
-function ActionCard({ action, fc }: { action: ExecDiagnosis; fc: (v: number) => string }) {
+function StandardActionCard({ action, fc, onJumpToTab }: {
+    action: OtbAction;
+    fc: (v: number) => string;
+    onJumpToTab: OtbJumpHandler;
+}) {
     return (
         <div className={`rounded-lg border p-3 text-xs ${PRIORITY_CARD[action.priority] ?? 'border-slate-200 bg-slate-50'}`}>
             <div className="flex items-start gap-2 mb-1.5">
@@ -1000,19 +1577,39 @@ function ActionCard({ action, fc }: { action: ExecDiagnosis; fc: (v: number) => 
                     {action.priority}
                 </span>
                 <span className="font-semibold text-slate-800 leading-snug text-[11px]">
-                    {action.season} {action.wave} · {action.categoryLabel}
-                    {action.productRoleName && <span className="ml-1 text-slate-500">· {action.productRoleName}</span>}
+                    {action.subject}
+                    <span className="ml-1 rounded-full bg-white/70 px-1.5 py-0.5 text-[9px] text-slate-500">{action.riskTag}</span>
                 </span>
             </div>
-            <p className="text-slate-600 leading-snug mb-1.5">{action.issue}</p>
-            {action.impactAmount > 0 && (
-                <p className="text-slate-500 text-[11px] mb-1">影响金额 <strong>{fc(action.impactAmount)}</strong> · 上市 {action.impactLaunchDate}</p>
+            <p className="text-slate-600 leading-snug mb-1">{action.reason}</p>
+            <p className="text-slate-500 text-[11px] mb-1.5">{action.description}</p>
+            {(action.forecastSalesImpact || action.forecastInventoryImpact || action.forecastCashImpact || action.forecastMarginImpact) && (
+                <div className="grid grid-cols-2 gap-1 text-[10px] text-slate-500 mb-1.5">
+                    {action.forecastSalesImpact !== undefined && <span>销售 {fc(action.forecastSalesImpact)}</span>}
+                    {action.forecastInventoryImpact !== undefined && <span>库存 {fc(action.forecastInventoryImpact)}</span>}
+                    {action.forecastCashImpact !== undefined && <span>现金 {fc(action.forecastCashImpact)}</span>}
+                    {action.forecastMarginImpact !== undefined && <span>毛利 {fc(action.forecastMarginImpact)}</span>}
+                </div>
             )}
             <div className="flex items-start gap-1 mt-1.5 pt-1.5 border-t border-black/5 text-[11px] text-slate-500">
                 <span className="font-medium text-slate-700 shrink-0">建议：</span>
-                <span>{action.action}</span>
+                <span>{action.actionType}</span>
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">责任：{action.owner}</div>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+                {action.relatedModuleLinks?.map(link => (
+                    <button
+                        key={`${action.id}-${link.targetModule}-${link.label}`}
+                        type="button"
+                        onClick={() => onJumpToTab(link.targetModule, link.context)}
+                        className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium text-slate-600 hover:border-sky-300 hover:text-sky-700"
+                    >
+                        {link.label}
+                    </button>
+                ))}
+                {action.actionStatus && (
+                    <span className="ml-auto text-[10px] text-slate-400">状态：{action.actionStatus}</span>
+                )}
+            </div>
         </div>
     );
 }

@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "updatedAt": "2026-05-11",
+    "businessDate": "2026-05-11"
+  },
+  "categories": [
+    {
+      "key": "sandal",
+      "label": "凉鞋",
+      "icon": "👡",
+      "deadline": "2026-08-31",
+      "daysLeft": 112,
+      "currentInventoryAmount": 4320000,
+      "estimatedSelloutAmount": 2800000,
+      "estimatedRiskAmount": 1520000,
+      "riskLevel": "high",
+      "note": "需在8月底前清货，缺口¥152万",
+      "suggestion": "建议立即启动7折促销，目标8月10日前去化70%"
+    },
+    {
+      "key": "cotton",
+      "label": "棉鞋",
+      "icon": "🥾",
+      "deadline": "2026-03-31",
+      "daysLeft": -41,
+      "currentInventoryAmount": 2180000,
+      "estimatedSelloutAmount": 0,
+      "estimatedRiskAmount": 2180000,
+      "riskLevel": "critical",
+      "note": "季末已过！剩余库存全部为风险库存",
+      "suggestion": "立即清仓，建议5折转奥莱/电商清货，回笼现金"
+    },
+    {
+      "key": "spring_casual",
+      "label": "春秋休闲",
+      "icon": "👟",
+      "deadline": "2026-09-30",
+      "daysLeft": 142,
+      "currentInventoryAmount": 6840000,
+      "estimatedSelloutAmount": 5200000,
+      "estimatedRiskAmount": 1640000,
+      "riskLevel": "medium",
+      "note": "春秋款时间充裕，但需关注断码",
+      "suggestion": "优先处理断码款补码，10月前保持WOS<8W"
+    },
+    {
+      "key": "all_season",
+      "label": "全季款",
+      "icon": "🔄",
+      "deadline": "2026-12-31",
+      "daysLeft": 234,
+      "currentInventoryAmount": 15300000,
+      "estimatedSelloutAmount": 13800000,
+      "estimatedRiskAmount": 1500000,
+      "riskLevel": "low",
+      "note": "全季款风险最低，按常规节奏管理",
+      "suggestion": "维持现有周转节奏，季末前保持WOS<10W"
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "_comment": "S0 决策摘要 1屏卡：健康/风险/决策三行×四列",
+  "updatedAt": "2026-05-11",
+  "health": [
+    {
+      "key": "netMargin",
+      "label": "净利率",
+      "value": 0.0599,
+      "format": "pct",
+      "status": "warning",
+      "target": 0.07,
+      "targetLabel": "目标 7%"
+    },
+    {
+      "key": "ebitRate",
+      "label": "EBIT率",
+      "value": 0.0799,
+      "format": "pct",
+      "status": "warning",
+      "target": 0.1,
+      "targetLabel": "目标 10%"
+    },
+    {
+      "key": "ccc",
+      "label": "现金转化周期",
+      "value": 48,
+      "format": "days",
+      "status": "warning",
+      "target": 35,
+      "targetLabel": "目标 35天"
+    },
+    {
+      "key": "healthScore",
+      "label": "P&L健康度",
+      "value": 58,
+      "format": "score",
+      "status": "warning",
+      "target": 75,
+      "targetLabel": "目标 75分"
+    }
+  ],
+  "risks": [
+    {
+      "id": "risk-001",
+      "title": "凉鞋积压预计损失",
+      "amount": 4300000,
+      "source": "库存健康",
+      "sourceModule": "inventory",
+      "priority": "P0",
+      "scrollAnchor": "pnl-cashflow"
+    },
+    {
+      "id": "risk-002",
+      "title": "净利率低于预算 2pp",
+      "amount": 1800000,
+      "source": "损益预算",
+      "sourceModule": "pnl-variance",
+      "priority": "P1",
+      "scrollAnchor": "pnl-variance"
+    },
+    {
+      "id": "risk-003",
+      "title": "电商渠道折扣侵蚀扩大",
+      "amount": 980000,
+      "source": "折扣分析",
+      "sourceModule": "pnl-discount",
+      "priority": "P1",
+      "scrollAnchor": "pnl-discount"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec-001",
+      "title": "是否启动深度清仓？",
+      "detail": "预计释放现金 ¥420万，净利影响 -¥88万",
+      "urgency": "本月",
+      "scrollAnchor": "pnl-breakeven",
+      "priority": "P0"
+    },
+    {
+      "id": "dec-002",
+      "title": "下季 OTB 是否向高毛利品类倾斜？",
+      "detail": "运动品类毛利率 54%，超品牌均值 5pp",
+      "urgency": "下月",
+      "scrollAnchor": "pnl-pareto",
+      "priority": "P1"
+    },
+    {
+      "id": "dec-003",
+      "title": "经销渠道是否缩减？",
+      "detail": "经销贡献利润率仅 12%，低于直营 22pp",
+      "urgency": "本季",
+      "scrollAnchor": "pnl-seasonal",
+      "priority": "P1"
+    }
+  ]
+}

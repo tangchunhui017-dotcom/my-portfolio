@@ -1,0 +1,20 @@
+{
+  "current": {
+    "quarter": "Q1 2026",
+    "salesContribution": 72,
+    "gmContribution": 68,
+    "turnoverEfficiency": 61,
+    "riskControl": 74,
+    "total": 70
+  },
+  "history": [
+    { "quarter": "Q2 2025", "total": 65, "salesContribution": 68, "gmContribution": 62, "turnoverEfficiency": 58, "riskControl": 72 },
+    { "quarter": "Q3 2025", "total": 68, "salesContribution": 70, "gmContribution": 65, "turnoverEfficiency": 60, "riskControl": 75 },
+    { "quarter": "Q4 2025", "total": 71, "salesContribution": 73, "gmContribution": 69, "turnoverEfficiency": 63, "riskControl": 77 },
+    { "quarter": "Q1 2026", "total": 70, "salesContribution": 72, "gmContribution": 68, "turnoverEfficiency": 61, "riskControl": 74 }
+  ],
+  "industryAvg": 66,
+  "grade": "B",
+  "weakDimensions": ["周转效率", "毛利贡献"],
+  "suggestion": "周转效率低于行业均值 5pp，建议压缩低效品类 SKU 数，聚焦高动销楦型；毛利贡献可通过减少折扣力度 + 提升定价策略改善。"
+}

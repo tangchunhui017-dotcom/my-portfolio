@@ -1,0 +1,75 @@
+{
+  "_comment": "S16 单店长期投资回报模型 DCF假设",
+  "updatedAt": "2026-05-11",
+  "discountRate": 0.1,
+  "terminalGrowthRate": 0.02,
+  "projectionYears": 5,
+  "storeTemplates": [
+    {
+      "key": "mall_flagship",
+      "label": "商场旗舰店",
+      "initialInvestment": 2800000,
+      "monthlyRevenue": [
+        880000,
+        920000,
+        960000,
+        980000,
+        1000000
+      ],
+      "grossMarginRate": 0.52,
+      "fixedCostsPerMonth": 520000,
+      "variableCostRate": 0.12,
+      "annualRevenueGrowthRate": [
+        0.15,
+        0.1,
+        0.08,
+        0.05,
+        0.03
+      ]
+    },
+    {
+      "key": "mall_standard",
+      "label": "商场标准店",
+      "initialInvestment": 1600000,
+      "monthlyRevenue": [
+        520000,
+        550000,
+        580000,
+        600000,
+        610000
+      ],
+      "grossMarginRate": 0.5,
+      "fixedCostsPerMonth": 280000,
+      "variableCostRate": 0.12,
+      "annualRevenueGrowthRate": [
+        0.12,
+        0.08,
+        0.06,
+        0.04,
+        0.03
+      ]
+    },
+    {
+      "key": "street",
+      "label": "街边店",
+      "initialInvestment": 800000,
+      "monthlyRevenue": [
+        280000,
+        300000,
+        315000,
+        325000,
+        330000
+      ],
+      "grossMarginRate": 0.48,
+      "fixedCostsPerMonth": 140000,
+      "variableCostRate": 0.1,
+      "annualRevenueGrowthRate": [
+        0.1,
+        0.07,
+        0.05,
+        0.03,
+        0.02
+      ]
+    }
+  ]
+}

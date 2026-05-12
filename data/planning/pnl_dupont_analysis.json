@@ -1,0 +1,97 @@
+{
+  "_comment": "S10 DuPont+ROE拆解：净利率×资产周转率×杠杆",
+  "updatedAt": "2026-05-11",
+  "current": {
+    "roe": 0.135,
+    "netMargin": 0.068,
+    "assetTurnover": 2.42,
+    "equityMultiplier": 0.82,
+    "netRevenue": 121800000,
+    "netProfit": 8282400,
+    "totalAssets": 50330000,
+    "totalEquity": 61378000
+  },
+  "netMarginBreakdown": {
+    "value": 0.068,
+    "revenueDrivers": [
+      {
+        "item": "净收入基数",
+        "impact": 0.068,
+        "desc": "实现净收入 ¥1.22亿"
+      }
+    ],
+    "costDrivers": [
+      {
+        "item": "COGS率",
+        "impact": -0.48,
+        "desc": "商品成本占收入 48%"
+      },
+      {
+        "item": "营销费用率",
+        "impact": -0.08,
+        "desc": "营销投放占收入 8%"
+      },
+      {
+        "item": "门店租金率",
+        "impact": -0.055,
+        "desc": "租金占收入 5.5%"
+      },
+      {
+        "item": "人工费用率",
+        "impact": -0.07,
+        "desc": "人工占收入 7%"
+      }
+    ]
+  },
+  "assetTurnoverBreakdown": {
+    "value": 2.42,
+    "inventoryTurnover": 4.2,
+    "receivableTurnover": 8.8,
+    "totalAssetTurnover": 2.42
+  },
+  "leverageBreakdown": {
+    "value": 0.82,
+    "currentRatio": 1.65,
+    "debtToEquity": 0.22,
+    "interestCoverage": 12.4
+  },
+  "industryBenchmark": [
+    {
+      "company": "安踏",
+      "roe": 0.22,
+      "netMargin": 0.12,
+      "assetTurnover": 1.83,
+      "leverage": 1,
+      "source": "2024年报",
+      "note": "多品牌战略，高杠杆"
+    },
+    {
+      "company": "特步",
+      "roe": 0.145,
+      "netMargin": 0.085,
+      "assetTurnover": 1.71,
+      "leverage": 1,
+      "source": "2024年报",
+      "note": "专注跑步，渠道稳健"
+    },
+    {
+      "company": "李宁",
+      "roe": 0.18,
+      "netMargin": 0.1,
+      "assetTurnover": 1.8,
+      "leverage": 1,
+      "source": "2024年报",
+      "note": "国潮溢价明显"
+    },
+    {
+      "company": "本品牌",
+      "roe": 0.135,
+      "netMargin": 0.068,
+      "assetTurnover": 2.42,
+      "leverage": 0.82,
+      "source": "2026 YTD",
+      "note": "资产周转率领先，利润率待提升"
+    }
+  ],
+  "insight": "本品牌资产周转率（2.42x）优于同行均值（1.78x），但净利率（6.8%）低于安踏（12%）和李宁（10%），提升净利率是核心杠杆。"
+}

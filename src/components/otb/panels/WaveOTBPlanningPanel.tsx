@@ -1080,6 +1080,73 @@ export default function WaveOTBPlanningPanel({
                 />
             </div>
 
+            {/* 3b. 波段预算 vs 企划对比 */}
+            {scopedDisplayRows.length > 0 && (
+                <div className="rounded-xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+                    <div className="flex items-center gap-2 px-5 py-3 border-b border-slate-100 bg-slate-50">
+                        <h3 className="text-sm font-semibold text-slate-700">波段预算 vs 企划计划对比</h3>
+                        <span className="text-[11px] text-slate-400">· OTB 预算能否支撑 SKU 结构目标</span>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-max w-full text-xs">
+                            <thead>
+                                <tr className="border-b border-slate-100 bg-slate-50 text-slate-400 text-[11px]">
+                                    <th className="py-2 px-3 text-left font-medium">波段</th>
+                                    <th className="py-2 px-3 text-right font-medium">计划SKU数</th>
+                                    <th className="py-2 px-3 text-right font-medium">计划色数</th>
+                                    <th className="py-2 px-3 text-right font-medium">计划OTB</th>
+                                    <th className="py-2 px-3 text-right font-medium">预测OTB</th>
+                                    <th className="py-2 px-3 text-right font-medium">OTB偏差</th>
+                                    <th className="py-2 px-3 text-right font-medium">每款均摊</th>
+                                    <th className="py-2 px-3 text-center font-medium">状态</th>
+                                    <th className="py-2 px-3 text-left font-medium">建议</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {scopedDisplayRows.map(row => {
+                                    const planOtb = row.planOtbBudget;
+                                    const forecastOtb = row.forecastOtbBudget;
+                                    const diff = forecastOtb - planOtb;
+                                    const diffRate = planOtb > 0 ? diff / planOtb : 0;
+                                    const skuCount = Math.max(1, row.targetSkuCount || row.plannedStyleCount || 1);
+                                    const perSku = forecastOtb > 0 ? forecastOtb / skuCount : 0;
+                                    const isOver = diffRate > 0.1;
+                                    const isUnder = diffRate < -0.1;
+                                    const suggestion = isOver
+                                        ? `超配 ${(diffRate * 100).toFixed(0)}%，建议减少 SKU 数或缩减款深`
+                                        : isUnder
+                                        ? `欠配 ${Math.abs(diffRate * 100).toFixed(0)}%，建议追加预算或削减 SKU 计划`
+                                        : '预算与企划基本匹配';
+                                    return (
+                                        <tr key={row.id} className={`border-b border-slate-50 ${isOver ? 'bg-rose-50/30' : isUnder ? 'bg-amber-50/30' : ''}`}>
+                                            <td className="py-2 px-3 font-medium text-slate-800 whitespace-nowrap">{row.season} {row.wave}</td>
+                                            <td className="py-2 px-3 text-right text-slate-600">{row.targetSkuCount || row.plannedStyleCount || '—'}</td>
+                                            <td className="py-2 px-3 text-right text-slate-600">{row.targetColorCount || '—'}</td>
+                                            <td className="py-2 px-3 text-right text-slate-500">{fc(planOtb)}</td>
+                                            <td className="py-2 px-3 text-right font-semibold text-sky-700">{fc(forecastOtb)}</td>
+                                            <td className={`py-2 px-3 text-right font-semibold ${isOver ? 'text-rose-600' : isUnder ? 'text-amber-600' : 'text-emerald-600'}`}>
+                                                {diff >= 0 ? '+' : ''}{fc(diff)} ({diff >= 0 ? '+' : ''}{(diffRate * 100).toFixed(0)}%)
+                                            </td>
+                                            <td className="py-2 px-3 text-right text-slate-500">{fc(perSku)}</td>
+                                            <td className="py-2 px-3 text-center">
+                                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
+                                                    isOver ? 'bg-rose-100 text-rose-700' :
+                                                    isUnder ? 'bg-amber-100 text-amber-700' :
+                                                    'bg-emerald-100 text-emerald-700'
+                                                }`}>
+                                                    {isOver ? '超配' : isUnder ? '欠配' : '匹配'}
+                                                </span>
+                                            </td>
+                                            <td className="py-2 px-3 text-[11px] text-slate-500 whitespace-nowrap">{suggestion}</td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
             {/* 4. 风险和动作 */}
             <WaveRiskActionPanel
                 waves={waveRowsForDiagnostics}

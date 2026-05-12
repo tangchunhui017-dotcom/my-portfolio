@@ -15,7 +15,7 @@ import {
     calcInitialAllocationDemand, calcCapacityCheck,
     diagnoseCategoryDepthRow, generateCategoryDepthInsights, resolveSeasonLabel, resolveWaveLifecycle,
     calcSeverityTier,
-    type CategoryDepthInsight, type DepthDiagnosis, type WaveLifecycle, type SeverityTier,
+    type CategoryDepthInsight, type DepthDiagnosis, type WaveLifecycle,
 } from '@/utils/otbCategoryDepth';
 import { calcSizeDepthDistribution, diagnoseSizeDistribution, type SizeGroup } from '@/utils/otbSizeDepth';
 import type { DashboardFilters } from '@/hooks/useDashboardFilter';
@@ -37,6 +37,8 @@ interface Props {
     filters?: DashboardFilters;
     priceStructure?: OTBPriceStructureOutput | null;
     isLocked?: boolean;
+    /** 跳转到其他子视图或主模块 */
+    onJumpToTab?: (tab: string) => void;
 }
 
 type DetailFilter   = 'all' | 'issues' | 'override' | 'main' | 'hero' | 'test' | 'margin' | 'capacity';
@@ -890,7 +892,7 @@ function ActionQueue({
 // ─── 主组件 ──────────────────────────────────────────────────────────────────
 
 export default function CategoryDepthPlanningPanel({
-    currencyUnit, ssSeasonSalesTarget, awSeasonSalesTarget, waves, filters, priceStructure, isLocked = false,
+    currencyUnit, ssSeasonSalesTarget, awSeasonSalesTarget, waves, filters, priceStructure, isLocked = false, onJumpToTab,
 }: Props) {
     const [detailFilter, setDetailFilter]     = useState<DetailFilter>('issues');
     const [showAllRows, setShowAllRows]       = useState(false);
@@ -1702,6 +1704,27 @@ export default function CategoryDepthPlanningPanel({
                 onApplyStyleCut={applyStyleCutForRow}
                 onRestoreSuggestion={resetToStructureSuggestion}
             />
+
+            {/* 跨模块联动跳转 */}
+            {onJumpToTab && (
+                <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+                    <p className="mb-2 text-xs font-bold text-slate-600">跨模块联动</p>
+                    <div className="flex flex-wrap gap-2">
+                        <button type="button" onClick={() => onJumpToTab('pricestructure')}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs text-sky-700 transition-colors hover:bg-sky-100">
+                            💲 价格&结构
+                        </button>
+                        <button type="button" onClick={() => onJumpToTab('wave')}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs text-violet-700 transition-colors hover:bg-violet-100">
+                            🌊 回波段预算
+                        </button>
+                        <button type="button" onClick={() => onJumpToTab('execution')}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs text-slate-700 transition-colors hover:bg-slate-200">
+                            ✅ 查执行跟踪
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Section 7 — 明细抽屉/折叠面板 */}
             <div className="rounded-xl border border-slate-100 bg-white shadow-sm overflow-hidden">

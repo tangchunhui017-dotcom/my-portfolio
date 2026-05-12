@@ -1,0 +1,49 @@
+{
+  "items": [
+    {
+      "category": "凉鞋",
+      "emoji": "🌞",
+      "type": "seasonal",
+      "deadlineDate": "2026-09-15",
+      "daysRemaining": 126,
+      "currentStock": 18420,
+      "weeklyVelocity": 1320,
+      "weeksToSell": 14,
+      "urgencyLevel": "normal",
+      "recommendation": "当前销售节奏健康，重点补充主力楦型库存，把握夏季销售高峰"
+    },
+    {
+      "category": "棉鞋/短靴",
+      "emoji": "❄️",
+      "type": "seasonal",
+      "deadlineDate": "2026-06-30",
+      "daysRemaining": 49,
+      "currentStock": 8640,
+      "weeklyVelocity": 620,
+      "weeksToSell": 13.9,
+      "urgencyLevel": "warning",
+      "recommendation": "春季库存仅余 7 周去化窗口，建议启动折扣促销或转移至奥莱渠道，防止留存至下季"
+    },
+    {
+      "category": "板鞋/休闲",
+      "emoji": "🌳",
+      "type": "perennial",
+      "currentStock": 24800,
+      "weeklyVelocity": 2100,
+      "weeksToSell": 11.8,
+      "urgencyLevel": "good",
+      "recommendation": "全季款持续运营，重点推进新品上市节奏，保持陈列新鲜度，控制老款库存水位"
+    },
+    {
+      "category": "运动/跑步",
+      "emoji": "🏃",
+      "type": "perennial",
+      "currentStock": 19200,
+      "weeklyVelocity": 1850,
+      "weeksToSell": 10.4,
+      "urgencyLevel": "good",
+      "recommendation": "运动品类增速强劲，把握跑步季热点营销机会，加大新品推广力度，重点补货 38-41 码"
+    }
+  ],
+  "weeklyHighlight": "本周应重点运营：棉鞋/短靴（距清货窗口仅 49 天，现有库存需 14 周去化，形势紧迫）"
+}

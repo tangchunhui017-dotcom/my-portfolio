@@ -1,168 +1,341 @@
 'use client';
 /**
- * src/components/dashboard/InventoryHealth.tsx  V2
- * 库存健康诊断与动作台 — 鞋类商品企划专用
- * 页面顺序：KPI总览 → 行动队列 → 四象限 → WOS分布 → 风险明细表 → 尺码/渠道 → 生命周期 → 联动说明
+ * src/components/dashboard/InventoryHealth.tsx  V10
+ * 鞋类品牌库存健康决策中心 — 14 Sections（四视角：财务/鞋类/产品/老板）
  */
-import { useState } from 'react';
-import invDataRaw from '../../../data/planning/inventory_health_plan.json';
-import InvKpiBar from '@/components/inventory/InvKpiBar';
-import InvActionQueue from '@/components/inventory/InvActionQueue';
-import InvQuadrant from '@/components/inventory/InvQuadrant';
-import InvWosDistribution from '@/components/inventory/InvWosDistribution';
-import InvRiskTable from '@/components/inventory/InvRiskTable';
-import InvSizeChannel from '@/components/inventory/InvSizeChannel';
-import InvLifecycle from '@/components/inventory/InvLifecycle';
-import { fmtCny, type StyleRecord } from '@/utils/inventoryHealth';
+import { useState, useEffect, useRef } from 'react';
+import invData    from '../../../data/planning/inventory_health_v2.json';
+import scoreData  from '../../../data/planning/inv_health_score_history.json';
+import actionLog  from '../../../data/planning/inv_action_log.json';
+import brokenData from '../../../data/planning/inv_broken_size_detail.json';
+import seasData   from '../../../data/planning/inv_seasonal_countdown.json';
+import fbData     from '../../../data/planning/inv_feedback_signals.json';
+import impairData from '../../../data/planning/inv_aging_impairment.json';
 
-type InvData = typeof invDataRaw;
-const invData = invDataRaw as InvData;
-const styles = invData.styles as StyleRecord[];
+import type {
+  InventoryAction,
+  InventoryRiskMatrixItem,
+  InventoryAgingItem,
+  RiskSkuItem,
+  WaveInventoryHealthItem,
+  FinancialImpactScenario,
+} from '@/types/inventoryHealthTypes';
+import { fmtK, pct } from '@/types/inventoryHealthTypes';
+import type {
+  InvHealthScoreHistory,
+  InvActionLog,
+  InvBrokenSizeDetail,
+  InvSeasonalData,
+  InvFeedbackSignals,
+  InvFeedbackSignal,
+} from '@/types/invHealthV10Types';
 
-// 锚点列表
-const SECTIONS = [
-    { anchor: 'inv-kpi', label: 'KPI 总览' },
-    { anchor: 'inv-actions', label: '行动队列' },
-    { anchor: 'inv-quadrant', label: '四象限' },
-    { anchor: 'inv-wos', label: 'WOS 分布' },
-    { anchor: 'inv-risk', label: '风险明细' },
-    { anchor: 'inv-size', label: '尺码/渠道' },
-    { anchor: 'inv-lifecycle', label: '生命周期' },
-    { anchor: 'inv-linkage', label: '模块联动' },
-];
+import InvHealthScoreCard      from '@/components/inventory/InvHealthScoreCard';
+import InvActionCenterEnhanced from '@/components/inventory/InvActionCenterEnhanced';
+import InvRiskMatrix           from '@/components/inventory/InvRiskMatrix';
+import InvSkuDrillDownModal    from '@/components/inventory/InvSkuDrillDownModal';
+import InvTopRiskSku           from '@/components/inventory/InvTopRiskSku';
+import InvBrokenSizeAnalysis   from '@/components/inventory/InvBrokenSizeAnalysis';
+import InvWosDistribution      from '@/components/inventory/InvWosDistribution';
+import InvAging                from '@/components/inventory/InvAging';
+import InvSizeHeatmap          from '@/components/inventory/InvSizeHeatmap';
+import InvWaveHealth           from '@/components/inventory/InvWaveHealth';
+import InvLifecycle            from '@/components/inventory/InvLifecycle';
+import InvSeasonalCountdown    from '@/components/inventory/InvSeasonalCountdown';
+import InvScenarioMixer        from '@/components/inventory/InvScenarioMixer';
+import InvFeedbackSignalCard   from '@/components/inventory/InvFeedbackSignalCard';
 
-function SectionHeader({ anchor, title, sub }: { anchor: string; title: string; sub?: string }) {
-    return (
-        <div id={anchor} className="border-b border-slate-100 pb-3">
-            <h2 className="text-sm font-bold text-slate-800">{title}</h2>
-            {sub && <p className="text-[11px] text-slate-400 mt-0.5">{sub}</p>}
-        </div>
-    );
+import { WOS_BUCKETS } from '@/utils/inventoryHealth';
+import type { WosBucketStat } from '@/utils/inventoryHealth';
+
+const data       = invData    as typeof invData;
+const scoreHist  = scoreData  as InvHealthScoreHistory;
+const actLog     = actionLog  as InvActionLog;
+const brokenSize = brokenData as InvBrokenSizeDetail;
+const seasonal   = seasData   as InvSeasonalData;
+const feedback   = fbData     as InvFeedbackSignals;
+
+interface Props {
+  onJumpToTab?: (tab: string) => void;
 }
 
-export default function InventoryHealth() {
-    const [activeAnchor, setActiveAnchor] = useState('inv-kpi');
-    const clearanceMarginLoss = styles
-        .filter(s => ['overstock', 'high'].includes(s.riskType))
-        .reduce((sum, s) => sum + Math.min(0, s.financialImpact), 0);
-    const plannedCashRecovery = Math.round(invData.summary.overstockAmount * 0.66 / 10000) * 10000;
-    const financeCards = [
-        { l: '断货机会损失', v: fmtCny(invData.summary.stockoutOpportunityLoss), tone: 'negative', note: '可避免损失' },
-        { l: '积压占用现金', v: fmtCny(invData.summary.overstockAmount), tone: 'negative', note: '积压库存金额' },
-        { l: '预计清货毛利损失', v: fmtCny(clearanceMarginLoss), tone: 'negative', note: '折扣侵蚀' },
-        { l: '清货后现金回收', v: `+${fmtCny(plannedCashRecovery)}`, tone: 'positive', note: '按清货方案估算' },
-    ];
+const SECTIONS = [
+  { anchor: 'inv-score',    label: '健康评分' },
+  { anchor: 'inv-kpis',     label: '总览' },
+  { anchor: 'inv-actions',  label: '行动中心' },
+  { anchor: 'inv-matrix',   label: '风险矩阵' },
+  { anchor: 'inv-risksku',  label: '风险SKU' },
+  { anchor: 'inv-broken',   label: '断码分析' },
+  { anchor: 'inv-wos',      label: 'WOS分布' },
+  { anchor: 'inv-aging',    label: '库龄' },
+  { anchor: 'inv-size',     label: '尺码热力图' },
+  { anchor: 'inv-wave',     label: '波段健康' },
+  { anchor: 'inv-lifecycle',label: '生命周期' },
+  { anchor: 'inv-seasonal', label: '季节倒计时' },
+  { anchor: 'inv-finance',  label: '方案推演' },
+  { anchor: 'inv-links',    label: '联动模块' },
+];
 
-    // IntersectionObserver 锚点高亮
-    // (仅客户端，简单实现)
-    const scrollTo = (anchor: string) => {
-        setActiveAnchor(anchor);
-        document.getElementById(anchor)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
+const RELATED_MODULES_WITH_SIGNALS = [
+  { id: 'otb',      label: 'OTB 预算',   desc: '基于风险库存调整OTB，防止超买', color: '#3b82f6' },
+  { id: 'forecast', label: '销售预测',   desc: '高风险SKU预测差异反映预测准确性', color: '#8b5cf6' },
+  { id: 'wave',     label: '波段企划',   desc: '积压波段影响下波段货架预算分配', color: '#0ea5e9' },
+  { id: 'cashflow', label: '现金流',     desc: '清仓方案直接影响现金回笼节奏', color: '#22c55e' },
+  { id: 'pnl',      label: '损益',       desc: 'Markdown损失影响季度毛利预算', color: '#f97316' },
+  { id: 'category', label: '品类运营',   desc: '断码与积压结构指导品类选款策略', color: '#ef4444' },
+];
 
-    return (
-        <div className="space-y-6">
-            {/* 顶部导航 */}
-            <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm py-2 border-b border-slate-100 -mx-1 px-1">
-                <div className="flex gap-1 flex-wrap">
-                    {SECTIONS.map(s => (
-                        <button key={s.anchor} onClick={() => scrollTo(s.anchor)}
-                            className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${
-                                activeAnchor === s.anchor
-                                    ? 'bg-sky-500 text-white shadow-sm'
-                                    : 'bg-white border border-slate-200 text-slate-500 hover:border-sky-300 hover:text-sky-600'
-                            }`}>
-                            {s.label}
-                        </button>
-                    ))}
-                </div>
-            </div>
+const KPI_CONFIGS = [
+  { key: 'totalInventoryCost',    label: '总库存成本',   format: fmtK, targetKey: '',                  colorFn: () => '' },
+  { key: 'totalInventoryRetail',  label: '总吊牌金额',   format: fmtK, targetKey: '',                  colorFn: () => '' },
+  { key: 'overallWos',            label: '整体WOS',      format: (v: number) => v + 'W', targetKey: 'overallWos',      colorFn: (v: number, t: number) => v > t + 2 ? '#ef4444' : v < t - 1 ? '#3b82f6' : '#22c55e' },
+  { key: 'healthySkuPct',         label: '健康SKU占比',  format: pct, targetKey: 'healthySkuPct',       colorFn: (v: number, t: number) => v < t - 0.1 ? '#ef4444' : v >= t ? '#22c55e' : '#f59e0b' },
+  { key: 'riskInventoryAmount',   label: '风险库存金额', format: fmtK, targetKey: '',                  colorFn: () => '#f97316' },
+  { key: 'brokenSizeSkuCount',    label: '断码SKU数',    format: (v: number) => String(v), targetKey: 'brokenSizeSkuCount', colorFn: (v: number, t: number) => v > t ? '#ef4444' : '#22c55e' },
+  { key: 'estimatedMarkdownLoss', label: '预计清仓损失', format: fmtK, targetKey: '',                  colorFn: () => '#ef4444' },
+  { key: 'estimatedCashRelease',  label: '预计现金回笼', format: fmtK, targetKey: '',                  colorFn: () => '#22c55e' },
+];
 
-            {/* S1: KPI 总览 */}
-            <section className="space-y-3">
-                <SectionHeader anchor="inv-kpi" title="库存健康总览 KPI"
-                    sub="库存金额 / 可售双数 / 整体WOS / 健康占比 / 机会损失 / 积压金额 / 补货&清货款数" />
-                <InvKpiBar summary={invData.summary} styles={styles} />
-            </section>
+export default function InventoryHealth({ onJumpToTab }: Props) {
+  const [activeAnchor, setActiveAnchor] = useState('inv-score');
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+  const [drillItem, setDrillItem] = useState<InventoryRiskMatrixItem | null>(null);
+  const kpis = data.kpis;
 
-            {/* S2: 今日行动队列 */}
-            <section className="space-y-3">
-                <SectionHeader anchor="inv-actions" title="今日优先处理行动队列"
-                    sub="按影响金额排序 · 含负责人/截止时间/联动去向 · 可按风险类型筛选" />
-                <InvActionQueue items={invData.actionQueue} />
-            </section>
+  // ── 数据适配 ──────────────────────────────────────────────────────────────
+  const wosBucketMap: Record<string, number> = { lt4: 0, '4to8': 1, '8to12': 2, '12to20': 3, gt20: 4 };
+  const wosPrecomputed: WosBucketStat[] = WOS_BUCKETS.map((bucket, i) => {
+    const src = data.wosDistribution.find(d => wosBucketMap[d.bucket] === i);
+    return { bucket, skuCount: src?.skuCount ?? 0, totalQty: 0, totalAmount: src?.inventoryCost ?? 0 };
+  });
 
-            {/* S3: 库存四象限 */}
-            <section className="space-y-3">
-                <SectionHeader anchor="inv-quadrant" title="库存四象限诊断"
-                    sub="高销缺货(补) / 高销充足(保) / 低销积压(清) / 低销正常(观) — 精准匹配动作" />
-                <InvQuadrant styles={styles} />
-            </section>
+  const lifecycleAdapted = data.lifecycleInventory.map(d => ({
+    lifecycle: d.label,
+    label: d.label,
+    wos: d.wos,
+    skuCount: d.skuCount,
+    stockAmount: d.inventoryCost,
+    avgSellThrough: d.sellThroughRate,
+    action: d.action,
+  }));
 
-            {/* S4: WOS 分布 */}
-            <section className="space-y-3">
-                <SectionHeader anchor="inv-wos" title="WOS 分布"
-                    sub="基于重点监控款式样本，支持 SKU款数 / 可售双数 / 库存金额 三种口径切换" />
-                <InvWosDistribution styles={styles} />
-            </section>
+  // 反馈信号映射
+  const signalMap: Record<string, InvFeedbackSignal> = Object.fromEntries(
+    feedback.signals.map(s => [s.targetModule, s])
+  );
+  const modulesWithSignals = RELATED_MODULES_WITH_SIGNALS.map(m => ({
+    ...m,
+    signal: signalMap[m.id],
+  }));
 
-            {/* S5: 断货/积压风险明细表 */}
-            <section className="space-y-3">
-                <SectionHeader anchor="inv-risk" title="断货 / 积压风险明细表"
-                    sub="重点风险款明细 · 断货按机会损失排序 · 积压按库存金额排序 · 含品类/波段/渠道/尺码断码 · 可筛选" />
-                <InvRiskTable styles={styles} />
-            </section>
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+    SECTIONS.forEach(({ anchor }) => {
+      const el = sectionRefs.current[anchor];
+      if (!el) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveAnchor(anchor); },
+        { threshold: 0.15 }
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+    return () => observers.forEach(o => o.disconnect());
+  }, []);
 
-            {/* S6: 尺码健康 + 渠道分布 */}
-            <section className="space-y-3">
-                <SectionHeader anchor="inv-size" title="尺码健康与渠道/区域分布"
-                    sub="核心码覆盖率 / 断码率 / 边缘码积压率 | 各渠道库存健康/断货/积压占比" />
-                <InvSizeChannel sizeHealth={invData.sizeHealth} channelDistribution={invData.channelDistribution} />
-            </section>
+  function scrollTo(anchor: string) {
+    sectionRefs.current[anchor]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
-            {/* S7: 波段生命周期 */}
-            <section className="space-y-3">
-                <SectionHeader anchor="inv-lifecycle" title="波段生命周期库存复盘"
-                    sub="不同生命周期用不同WOS阈值 · 商品企划反写建议 · 下季加深/减量/尺码曲线修正" />
-                <InvLifecycle lifecycleDistribution={invData.lifecycleDistribution} />
-            </section>
+  function handleNavigate(module: string) {
+    onJumpToTab?.(module);
+  }
 
-            {/* S8: 模块联动说明 */}
-            <section className="space-y-3">
-                <SectionHeader anchor="inv-linkage" title="与其他模块联动"
-                    sub="库存健康反向影响 OTB / 销售预测 / 现金流 / 损益 / 品类运营" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {[
-                        { icon: '📦', title: 'OTB 预算', desc: '断货款→紧急追单，积压款→控单/停补，反写下期采购预算', color: 'border-sky-100 bg-sky-50/40' },
-                        { icon: '📈', title: '销售预测', desc: '用实际销速/断码率/售罄率修正预测模型，防止过预测/欠预测', color: 'border-emerald-100 bg-emerald-50/40' },
-                        { icon: '💰', title: '现金流', desc: '积压库存占用现金，清货回款释放现金，影响每月现金缺口', color: 'border-amber-100 bg-amber-50/40' },
-                        { icon: '📊', title: '损益(P&L)', desc: '清货折扣侵蚀毛利，断货机会损失影响净收入，库存跌价影响营业利润', color: 'border-rose-100 bg-rose-50/40' },
-                        { icon: '🗂️', title: '品类运营', desc: '按品类识别结构性过深/过浅，输出下季买量建议和尺码曲线修正', color: 'border-violet-100 bg-violet-50/40' },
-                        { icon: '📋', title: '年度总控', desc: '输出库存周转次数、售罄率、断码率、清货率等年度经营指标', color: 'border-slate-100 bg-slate-50/40' },
-                    ].map(l => (
-                        <div key={l.title} className={`rounded-xl border p-4 ${l.color}`}>
-                            <div className="flex items-center gap-2 mb-2">
-                                <span className="text-lg">{l.icon}</span>
-                                <span className="text-xs font-bold text-slate-800">{l.title}</span>
-                            </div>
-                            <p className="text-[11px] text-slate-500">{l.desc}</p>
-                        </div>
-                    ))}
-                </div>
-                {/* 财务影响摘要 */}
-                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-                    <div className="text-xs font-bold text-slate-700 mb-3">💹 财务影响摘要</div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[11px]">
-                        {financeCards.map(k => (
-                            <div key={k.l} className={`rounded-xl border px-3 py-2.5 ${k.tone === 'positive' ? 'border-emerald-100 bg-emerald-50' : 'border-rose-100 bg-rose-50'}`}>
-                                <div className="text-slate-400 mb-1">{k.l}</div>
-                                <div className={`font-bold text-sm ${k.tone === 'positive' ? 'text-emerald-700' : 'text-rose-700'}`}>{k.v}</div>
-                                <div className="text-slate-400 text-[10px] mt-0.5">{k.note}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+  const vsLW = kpis.vsLastWeek as Record<string, number>;
+
+  return (
+    <div className="flex flex-col gap-0 min-h-screen bg-gray-50/50">
+      {/* 顶部锚点导航 */}
+      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 shadow-sm">
+        <div className="px-4 flex gap-0 overflow-x-auto scrollbar-hide">
+          {SECTIONS.map(s => (
+            <button key={s.anchor} onClick={() => scrollTo(s.anchor)}
+              className={"px-3.5 py-3.5 text-xs font-medium whitespace-nowrap border-b-2 transition-colors " +
+                (activeAnchor === s.anchor ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-800')}>
+              {s.label}
+            </button>
+          ))}
         </div>
-    );
+      </div>
+
+      <div className="flex-1 px-4 md:px-6 py-6 space-y-8 max-w-screen-2xl mx-auto w-full">
+
+        {/* S1: 健康度评分 + 周改善 */}
+        <section ref={el => { sectionRefs.current['inv-score'] = el; }} id="inv-score">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">L1 决策层 — 健康评分</h2>
+          <InvHealthScoreCard data={scoreHist} />
+        </section>
+
+        {/* S2: KPI 总览 + vsLW */}
+        <section ref={el => { sectionRefs.current['inv-kpis'] = el; }} id="inv-kpis">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">KPI 总览</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {KPI_CONFIGS.map(cfg => {
+              const raw = kpis[cfg.key as keyof typeof kpis];
+              const val = typeof raw === 'number' ? raw : 0;
+              const target = cfg.targetKey ? (kpis.targets as Record<string, number>)[cfg.targetKey] : 0;
+              const color = cfg.colorFn(val, target) || '#6b7280';
+              const chg = vsLW[cfg.key];
+              const isNegativeGood = ['overallWos', 'riskInventoryAmount', 'brokenSizeSkuCount', 'estimatedMarkdownLoss'].includes(cfg.key);
+              const chgGood = chg !== undefined ? (isNegativeGood ? chg < 0 : chg > 0) : true;
+              // 目标缺口判定（"越低越好"指标缺口 = 实际-目标 > 0 即超标）
+              let gapLabel: { text: string; cls: string } | null = null;
+              if (cfg.targetKey && target > 0 && typeof val === 'number') {
+                const delta = val - target;
+                const isOver = isNegativeGood ? delta > 0 : delta < 0;
+                if (Math.abs(delta) > target * 0.02) {
+                  gapLabel = {
+                    text: `vs目标 ${delta > 0 ? '+' : ''}${cfg.format(delta).replace(/^-/, '-')}`,
+                    cls: isOver ? 'bg-rose-50 text-rose-600 border-rose-200' : 'bg-emerald-50 text-emerald-600 border-emerald-200',
+                  };
+                }
+              }
+              return (
+                <div key={cfg.key} className="bg-white rounded-xl border border-gray-100 px-4 py-3.5 shadow-sm relative">
+                  {gapLabel && (
+                    <span className={`absolute top-2 right-2 text-[9px] px-1.5 py-0.5 rounded-full border font-medium whitespace-nowrap ${gapLabel.cls}`}>
+                      {gapLabel.text}
+                    </span>
+                  )}
+                  <div className="text-xs text-gray-400 mb-1">{cfg.label}</div>
+                  <div className="text-xl font-bold" style={{ color }}>{cfg.format(val)}</div>
+                  {cfg.targetKey && target > 0 && (
+                    <div className="text-xs text-gray-400 mt-0.5">目标 {cfg.format(target)}</div>
+                  )}
+                  {chg !== undefined && (
+                    <div className={"text-xs mt-0.5 flex items-center gap-0.5 " + (chgGood ? 'text-green-600' : 'text-red-500')}>
+                      <span>{chgGood ? '▼' : '▲'}</span>
+                      <span>LW {chg > 0 ? '+' : ''}{(chg * 100).toFixed(1)}%</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* S3: 行动中心闭环版 */}
+        <section ref={el => { sectionRefs.current['inv-actions'] = el; }} id="inv-actions">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">今日行动中心</h2>
+          <InvActionCenterEnhanced
+            actions={data.actions as InventoryAction[]}
+            actionLog={actLog}
+            onNavigate={handleNavigate}
+          />
+        </section>
+
+        {/* S4: 风险矩阵 + 钻取 */}
+        <section ref={el => { sectionRefs.current['inv-matrix'] = el; }} id="inv-matrix">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">L2 找问题 — 风险矩阵 <span className="text-[10px] font-normal text-gray-400 normal-case">（点击气泡查看SKU详情）</span></h2>
+          <div className="relative">
+            <InvRiskMatrix data={data.riskMatrix as InventoryRiskMatrixItem[]} onSelectItem={setDrillItem} />
+          </div>
+        </section>
+
+        {/* S5: 高风险SKU */}
+        <section ref={el => { sectionRefs.current['inv-risksku'] = el; }} id="inv-risksku">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">高风险 SKU 明细</h2>
+          <InvTopRiskSku data={data.topRiskSkus as RiskSkuItem[]} onNavigate={handleNavigate} />
+        </section>
+
+        {/* S6: 断码 vs 满码分析（鞋类专属新增） */}
+        <section ref={el => { sectionRefs.current['inv-broken'] = el; }} id="inv-broken">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">👟 断码 vs 满码分析</h2>
+          <InvBrokenSizeAnalysis data={brokenSize} />
+        </section>
+
+        {/* S7: WOS 分布 */}
+        <section ref={el => { sectionRefs.current['inv-wos'] = el; }} id="inv-wos">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">L3 懂问题 — WOS 分布</h2>
+          <InvWosDistribution styles={[]} precomputedStats={wosPrecomputed} />
+        </section>
+
+        {/* S8: 库龄 + 跌价准备 */}
+        <section ref={el => { sectionRefs.current['inv-aging'] = el; }} id="inv-aging">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">库存库龄 Aging</h2>
+          <InvAging data={data.agingBuckets as InventoryAgingItem[]} />
+          {/* 跌价准备附加说明 */}
+          <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+            <div className="text-xs font-semibold text-amber-800 mb-2">会计跌价准备（财务视角）</div>
+            <div className="grid grid-cols-3 gap-3 text-xs text-center">
+              {[
+                { label: '正常库存(0-90天)', rate: '0%', amount: 0, bg: 'bg-emerald-50' },
+                { label: '关注库存(91-180天)', rate: '30%', amount: (impairData as typeof impairData).calculation.watch.impairmentAmount, bg: 'bg-amber-100' },
+                { label: '高风险库存(>180天)', rate: '55%', amount: (impairData as typeof impairData).calculation.risk.impairmentAmount, bg: 'bg-red-50' },
+              ].map(r => (
+                <div key={r.label} className={"rounded-lg py-2 px-3 " + r.bg}>
+                  <div className="font-bold text-gray-800">{r.rate}</div>
+                  <div className="text-gray-500">{r.label}</div>
+                  {r.amount > 0 && <div className="text-red-600 font-semibold mt-0.5">计提 {fmtK(r.amount)}</div>}
+                </div>
+              ))}
+            </div>
+            <div className="mt-2 text-xs text-amber-700">
+              合计跌价计提 <b>{fmtK((impairData as typeof impairData).totalImpairment)}</b> · {(impairData as typeof impairData).pnlImpact.note}
+            </div>
+          </div>
+        </section>
+
+        {/* S9: 尺码核心段热力图（鞋类强化） */}
+        <section ref={el => { sectionRefs.current['inv-size'] = el; }} id="inv-size">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">核心尺码段热力图</h2>
+          <InvSizeHeatmap maleSizes={[]} femaleSizes={[]} />
+        </section>
+
+        {/* S10: 波段库存健康 */}
+        <section ref={el => { sectionRefs.current['inv-wave'] = el; }} id="inv-wave">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">波段库存健康</h2>
+          <InvWaveHealth data={data.waveHealth as WaveInventoryHealthItem[]} onNavigate={handleNavigate} />
+        </section>
+
+        {/* S11: 生命周期 */}
+        <section ref={el => { sectionRefs.current['inv-lifecycle'] = el; }} id="inv-lifecycle">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">生命周期库存</h2>
+          <InvLifecycle lifecycleDistribution={lifecycleAdapted as Parameters<typeof InvLifecycle>[0]['lifecycleDistribution']} />
+        </section>
+
+        {/* S12: 季节性必清倒计时（鞋类新增） */}
+        <section ref={el => { sectionRefs.current['inv-seasonal'] = el; }} id="inv-seasonal">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">🌡️ 季节性必清倒计时</h2>
+          <InvSeasonalCountdown data={seasonal} />
+        </section>
+
+        {/* S13: 方案推演（组合模式） */}
+        <section ref={el => { sectionRefs.current['inv-finance'] = el; }} id="inv-finance">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">L4 行动 — 方案推演</h2>
+          <InvScenarioMixer
+            data={data.financialScenarios as FinancialImpactScenario[]}
+            onApplyToOtb={() => handleNavigate('otb')}
+          />
+        </section>
+
+        {/* S14: 联动模块（可点击 + 反馈信号） */}
+        <section ref={el => { sectionRefs.current['inv-links'] = el; }} id="inv-links">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">联动模块</h2>
+          <InvFeedbackSignalCard
+            modules={modulesWithSignals}
+            onJumpToTab={handleNavigate}
+          />
+        </section>
+
+      </div>
+
+      {/* SKU钻取弹窗 */}
+      <InvSkuDrillDownModal
+        item={drillItem}
+        onClose={() => setDrillItem(null)}
+        onNavigate={handleNavigate}
+      />
+    </div>
+  );
 }

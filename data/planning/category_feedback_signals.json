@@ -1,0 +1,65 @@
+{
+  "generatedAt": "2026-05-12",
+  "signals": [
+    {
+      "id": "cat-fb-001",
+      "targetModule": "otb",
+      "priority": "P0",
+      "category": "凉鞋",
+      "finding": "凉鞋动销健康，当前 OTB 预算相对保守",
+      "recommendation": "SS26 凉鞋 OTB 建议上调 15%，把握夏季销售高峰",
+      "impactAmount": 2400000,
+      "source": "品类运营"
+    },
+    {
+      "id": "cat-fb-002",
+      "targetModule": "otb",
+      "priority": "P1",
+      "category": "棉鞋",
+      "finding": "棉鞋滞销，库存积压，需压缩下季 OTB",
+      "recommendation": "AW26 棉鞋 OTB 建议下调 20%，优先消化现有库存再追加",
+      "impactAmount": 1800000,
+      "source": "品类运营"
+    },
+    {
+      "id": "cat-fb-003",
+      "targetModule": "planning",
+      "priority": "P1",
+      "category": "板鞋",
+      "finding": "AW-3B 板鞋波段表现低于预期",
+      "recommendation": "AW26-3B 板鞋波段建议缩量 30%，将资源向运动品类倾斜",
+      "impactAmount": 960000,
+      "source": "品类运营"
+    },
+    {
+      "id": "cat-fb-004",
+      "targetModule": "forecast",
+      "priority": "P1",
+      "category": "运动/跑步",
+      "finding": "运动跑步实际销售连续 3 周超预测 +18%",
+      "recommendation": "下季运动跑步销售预测建议上调 15%，同步追加备货",
+      "impactAmount": 3200000,
+      "source": "品类运营"
+    },
+    {
+      "id": "cat-fb-005",
+      "targetModule": "profit-loss",
+      "priority": "P0",
+      "category": "棉鞋",
+      "finding": "棉鞋综合贡献利润率仅 7.2%，低于品类最低要求 15%",
+      "recommendation": "棉鞋建议减少 SKU 数 + 适当提价，或转移折扣渠道以止损",
+      "impactAmount": 1200000,
+      "source": "品类运营"
+    },
+    {
+      "id": "cat-fb-006",
+      "targetModule": "profit-loss",
+      "priority": "P1",
+      "category": "凉鞋",
+      "finding": "凉鞋清货折扣拉低整体毛利率 2.3pp",
+      "recommendation": "控制清货折扣力度，建议最低折扣不低于 7 折，保护毛利空间",
+      "impactAmount": 680000,
+      "source": "品类运营"
+    }
+  ]
+}

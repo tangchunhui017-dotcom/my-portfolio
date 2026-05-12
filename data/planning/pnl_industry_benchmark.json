@@ -1,0 +1,84 @@
+{
+  "_comment": "行业对标数据：安踏/特步/李宁/本品牌",
+  "updatedAt": "2026-05-11",
+  "source": "2024年报公开数据 + 本品牌YTD估算",
+  "kpiList": [
+    {
+      "key": "grossMarginRate",
+      "label": "毛利率",
+      "format": "pct"
+    },
+    {
+      "key": "netMargin",
+      "label": "净利率",
+      "format": "pct"
+    },
+    {
+      "key": "ebitRate",
+      "label": "EBIT率",
+      "format": "pct"
+    },
+    {
+      "key": "expenseRate",
+      "label": "费用率",
+      "format": "pct"
+    },
+    {
+      "key": "inventoryTurnover",
+      "label": "库存周转",
+      "format": "times"
+    },
+    {
+      "key": "roe",
+      "label": "ROE",
+      "format": "pct"
+    }
+  ],
+  "companies": [
+    {
+      "id": "anta",
+      "label": "安踏",
+      "color": "#3b82f6",
+      "grossMarginRate": 0.62,
+      "netMargin": 0.12,
+      "ebitRate": 0.15,
+      "expenseRate": 0.47,
+      "inventoryTurnover": 4.8,
+      "roe": 0.22
+    },
+    {
+      "id": "xtep",
+      "label": "特步",
+      "color": "#10b981",
+      "grossMarginRate": 0.44,
+      "netMargin": 0.085,
+      "ebitRate": 0.11,
+      "expenseRate": 0.355,
+      "inventoryTurnover": 5.2,
+      "roe": 0.145
+    },
+    {
+      "id": "lining",
+      "label": "李宁",
+      "color": "#f59e0b",
+      "grossMarginRate": 0.49,
+      "netMargin": 0.1,
+      "ebitRate": 0.13,
+      "expenseRate": 0.39,
+      "inventoryTurnover": 4.5,
+      "roe": 0.18
+    },
+    {
+      "id": "self",
+      "label": "本品牌",
+      "color": "#8b5cf6",
+      "isSelf": true,
+      "grossMarginRate": 0.49,
+      "netMargin": 0.068,
+      "ebitRate": 0.0799,
+      "expenseRate": 0.41,
+      "inventoryTurnover": 4.2,
+      "roe": 0.135
+    }
+  ]
+}

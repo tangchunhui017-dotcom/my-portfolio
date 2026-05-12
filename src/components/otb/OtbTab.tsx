@@ -1,10 +1,12 @@
 'use client';
 /**
  * src/components/otb/OtbTab.tsx
- * OTB 采购测算工作台 — V6.1
+ * 鞋类品牌商品企划采购预算决策工作台 — V7.0
  *
- * 子视图：年度总控 · 月度滚动 · 波段拆解（含季节上下文）
- *         价格&结构 · 品类/款深 · 渠道模型 · 执行跟踪 · 现金流 · 数据导入
+ * 子视图：年度总控 · 月度滚动 · 波段预算 · 品类&款深
+ *         价格&结构 · 渠道分配 · 执行跟踪 · 数据导入
+ *
+ * 页面顺序：annual → monthly → wave → category → pricestructure → channel → execution → import
  */
 import { useState, useCallback, useMemo } from 'react';
 import AnnualOTBControlPanel, { type FourSeasonTargets } from './panels/AnnualOTBControlPanel';
@@ -25,18 +27,19 @@ import type { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
 import { getWaveOtbInputs } from '@/utils/wavePlanMaster';
 import versionsRaw from '../../../data/otb/otb_versions.json';
 import annualOtbDefaults from '../../../data/otb/otb_assumptions.json';
+import type { OtbJumpHandler, OtbNavigationContext } from './types';
 
 type OtbSubView = 'annual' | 'monthly' | 'wave' | 'pricestructure' | 'category' | 'channel' | 'execution' | 'import';
 
 const SUB_VIEWS: { key: OtbSubView; label: string; icon: string }[] = [
-    { key: 'annual',    label: '年度总控',  icon: '🎯' },
-    { key: 'monthly',   label: '月度滚动',  icon: '📆' },
-    { key: 'wave',           label: '波段拆解',  icon: '🌊' },
+    { key: 'annual',         label: '年度总控',  icon: '🎯' },
+    { key: 'monthly',        label: '月度滚动',  icon: '📆' },
+    { key: 'wave',           label: '波段预算',  icon: '🌊' },
+    { key: 'category',       label: '品类&款深', icon: '📐' },
     { key: 'pricestructure', label: '价格&结构', icon: '🏷️' },
-    { key: 'category',       label: '品类/款深', icon: '📐' },
-    { key: 'channel',   label: '渠道模型',  icon: '🏪' },
-    { key: 'execution', label: '执行跟踪',  icon: '✅' },
-    { key: 'import',    label: '数据导入',  icon: '📥' },
+    { key: 'channel',        label: '渠道分配',  icon: '🏪' },
+    { key: 'execution',      label: '执行跟踪',  icon: '✅' },
+    { key: 'import',         label: '数据导入',  icon: '📥' },
 ];
 
 const SCENARIO_TARGET_FACTORS: Record<OTBLocalSettings['scenario'], number> = {
@@ -50,13 +53,16 @@ const SCENARIO_TARGET_FACTORS: Record<OTBLocalSettings['scenario'], number> = {
 interface OtbTabProps {
     filters: DashboardFilters;
     compareMode?: CompareMode;
+    /** 跳转到 Dashboard 其他主模块（cashflow / forecast / inventory / profit-loss 等） */
+    onJumpToTab?: OtbJumpHandler;
 }
 
-export default function OtbTab({ filters, compareMode = 'none' }: OtbTabProps) {
+export default function OtbTab({ filters, compareMode = 'none', onJumpToTab }: OtbTabProps) {
     const [subView, setSubView]     = useState<OtbSubView>('annual');
     const [settings, setSettings]   = useState<OTBLocalSettings>(DEFAULT_OTB_LOCAL_SETTINGS);
     const [waveInputs, setWaveInputs] = useState<WaveOTBInput[]>(() => getWaveOtbInputs());
     const [priceStructure, setPriceStructure] = useState<OTBPriceStructureOutput | null>(null);
+    const [lastNavigationContext, setLastNavigationContext] = useState<OtbNavigationContext | null>(null);
     const businessContext = useOtbBusinessContext(filters, settings);
 
     // 版本治理状态（提升至此，以便派生锁定信息）
@@ -134,11 +140,51 @@ export default function OtbTab({ filters, compareMode = 'none' }: OtbTabProps) {
         ...adjustedFourSeasonTargets,
     }), [adjustedFourSeasonTargets]);
 
+    /**
+     * OTB 内部跳转处理器
+     * - OTB 子视图键名（annual/monthly/wave/category/pricestructure/channel/execution）→ setSubView
+     * - 外部模块键名（cashflow/forecast/inventory/profit-loss 等）→ 向上冒泡给 Dashboard
+     */
+    const persistNavigationContext = useCallback((context: OtbNavigationContext | null) => {
+        const nextContext = context
+            ? { ...context, createdAt: context.createdAt ?? new Date().toISOString() }
+            : null;
+        setLastNavigationContext(nextContext);
+        if (typeof window === 'undefined') return;
+        try {
+            if (nextContext) {
+                sessionStorage.setItem('otb-navigation-context', JSON.stringify(nextContext));
+            } else {
+                sessionStorage.removeItem('otb-navigation-context');
+            }
+            window.dispatchEvent(new CustomEvent<OtbNavigationContext | null>('otb-navigation-context-change', {
+                detail: nextContext,
+            }));
+        } catch {
+            /* noop */
+        }
+    }, []);
+
+    const handleOtbJump = useCallback((tab: string, context?: OtbNavigationContext) => {
+        const otbSubViews: OtbSubView[] = ['annual', 'monthly', 'wave', 'category', 'pricestructure', 'channel', 'execution', 'import'];
+        const normalizedContext = context
+            ? { ...context, source: context.source ?? 'otb', targetModule: tab }
+            : null;
+        persistNavigationContext(normalizedContext);
+        // AnnualPanel 使用 'price' 代表价格结构子视图
+        if (tab === 'price') { setSubView('pricestructure'); return; }
+        if ((otbSubViews as string[]).includes(tab)) {
+            setSubView(tab as OtbSubView);
+        } else {
+            onJumpToTab?.(tab, normalizedContext ?? undefined);
+        }
+    }, [onJumpToTab, persistNavigationContext]);
+
     return (
         <div className="space-y-3">
             {/* 顶部标题与轻量级子导航 */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-3">
-                <h2 className="text-lg font-bold text-slate-800 tracking-tight">OTB 采购测算工作台</h2>
+                <h2 className="text-lg font-bold text-slate-800 tracking-tight">鞋类品牌商品企划采购预算决策工作台</h2>
                 <div className="flex items-center gap-4 mt-3 sm:mt-0 overflow-x-auto no-scrollbar">
                     {SUB_VIEWS.map(v => (
                         <button
@@ -169,6 +215,16 @@ export default function OtbTab({ filters, compareMode = 'none' }: OtbTabProps) {
                     localVersions={localVersions}
                     onVersionsChange={handleVersionsChange}
                 />
+                {lastNavigationContext && (
+                    <div className="flex flex-wrap items-center gap-2 bg-sky-50 px-5 py-2.5 text-xs text-sky-700 border-t border-sky-100">
+                        <span className="font-semibold">联动上下文</span>
+                        <span>{lastNavigationContext.subject ?? 'OTB 业务对象'}</span>
+                        {lastNavigationContext.waveId && <span>波段 {lastNavigationContext.waveId}</span>}
+                        {lastNavigationContext.category && <span>品类 {lastNavigationContext.category}</span>}
+                        {lastNavigationContext.recommendedAction && <span>建议 {lastNavigationContext.recommendedAction}</span>}
+                        <span className="text-sky-500">已写入 sessionStorage，目标模块可读取参数。</span>
+                    </div>
+                )}
                 {isOtbLocked && (
                     <div className="flex items-center gap-2 bg-rose-50 px-5 py-2.5 text-xs text-rose-700 border-t border-rose-100">
                         <span className="text-sm">🔒</span>
@@ -189,6 +245,7 @@ export default function OtbTab({ filters, compareMode = 'none' }: OtbTabProps) {
                     onComputedChange={handleComputedChange}
                     isLocked={isOtbLocked}
                     compareMode={compareMode}
+                    onJumpToTab={handleOtbJump}
                 />
             )}
             {subView === 'monthly' && (
@@ -198,6 +255,7 @@ export default function OtbTab({ filters, compareMode = 'none' }: OtbTabProps) {
                     isLocked={isOtbLocked}
                     versionStatus={currentVersion?.status}
                     versionName={currentVersion?.versionName}
+                    onJumpToTab={handleOtbJump}
                 />
             )}
             {subView === 'wave' && (
@@ -212,6 +270,7 @@ export default function OtbTab({ filters, compareMode = 'none' }: OtbTabProps) {
                     annualOtbBudget={adjustedAnnualApprovedBudget}
                     compareMode={compareMode}
                     filters={filters}
+                    onJumpToTab={handleOtbJump}
                 />
             )}
             {subView === 'pricestructure' && (
@@ -222,7 +281,10 @@ export default function OtbTab({ filters, compareMode = 'none' }: OtbTabProps) {
                     ssSeasonSalesTarget={adjustedSsSeasonTarget}
                     awSeasonSalesTarget={adjustedAwSeasonTarget}
                     waves={waveInputs}
-                    onStructureChange={setPriceStructure}                    isLocked={isOtbLocked}                />
+                    onStructureChange={setPriceStructure}
+                    isLocked={isOtbLocked}
+                    onJumpToTab={handleOtbJump}
+                />
             )}
             {subView === 'category' && (
                 <CategoryDepthPlanningPanel
@@ -233,10 +295,15 @@ export default function OtbTab({ filters, compareMode = 'none' }: OtbTabProps) {
                     filters={filters}
                     priceStructure={effectivePriceStructure}
                     isLocked={isOtbLocked}
+                    onJumpToTab={handleOtbJump}
                 />
             )}
             {subView === 'channel' && (
-                <ChannelEcommerceOTBPanel currencyUnit={currencyUnit} filters={filters} />
+                <ChannelEcommerceOTBPanel
+                    currencyUnit={currencyUnit}
+                    filters={filters}
+                    onJumpToTab={handleOtbJump}
+                />
             )}
             {subView === 'execution' && (
                 <OTBExecutionTrackingPanel
@@ -244,6 +311,7 @@ export default function OtbTab({ filters, compareMode = 'none' }: OtbTabProps) {
                     priceStructure={effectivePriceStructure}
                     records={executionRecords}
                     onRecordsChange={setExecutionRecords}
+                    onJumpToTab={handleOtbJump}
                 />
             )}
             {subView === 'import' && (

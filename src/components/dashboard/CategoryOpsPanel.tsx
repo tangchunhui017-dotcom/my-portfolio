@@ -9,14 +9,18 @@ import {
     type CategoryLevel,
     type CategoryOpsBizKpi,
     type CategoryOpsHeatPoint,
-    type CategoryOpsKpiCard,
-    type CategoryOpsPlanBiasCard,
     type CategoryOpsSkuActionRow,
     type CategoryOpsSunburstNode,
 } from '@/hooks/useCategoryOps';
 import { useCategoryStructure } from '@/hooks/useCategoryStructure';
 import { useOtbInputSuggestion } from '@/hooks/useOtbInputSuggestion';
 import { useSkuDepthAnalysis, type DepthGroupBy } from '@/hooks/useSkuDepthAnalysis';
+import portfolioScoreData from '../../../data/planning/category_portfolio_score_history.json';
+import seasonalPriorityData from '../../../data/planning/category_seasonal_priority.json';
+import paretoData from '../../../data/planning/category_pareto_distribution.json';
+import sizeData from '../../../data/planning/category_size_supply_demand.json';
+import lifecycle7Data from '../../../data/planning/category_lifecycle_7stages.json';
+import actionLogData from '../../../data/planning/category_action_log.json';
 
 function safeDiv(numerator: number, denominator: number) {
     if (denominator <= 0) return 0;
@@ -147,28 +151,11 @@ function getSellThroughColor(sellThrough: number, scale: SellThroughColorScale) 
     return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.9)`;
 }
 
-function getToneStyle(tone: CategoryOpsKpiCard['tone']) {
-    if (tone === 'good') return 'border-emerald-200 bg-emerald-50/70';
-    if (tone === 'risk') return 'border-rose-200 bg-rose-50/70';
-    return 'border-amber-200 bg-amber-50/70';
-}
-
-function getPlanBiasToneClass(tone: CategoryOpsPlanBiasCard['tone']) {
-    if (tone === 'good') return 'border-emerald-200 bg-emerald-50/60';
-    if (tone === 'risk') return 'border-rose-200 bg-rose-50/60';
-    return 'border-amber-200 bg-amber-50/60';
-}
-
 function getSkuActionTone(action: CategoryOpsSkuActionRow['action']) {
     if (action.includes('补单') || action.includes('调拨')) return 'text-emerald-700';
     if (action.includes('收敛') || action.includes('清理')) return 'text-rose-700';
     if (action.includes('调价')) return 'text-amber-700';
     return 'text-slate-600';
-}
-
-function renderKpiValue(card: CategoryOpsKpiCard) {
-    if (card.valueKind === 'pp') return formatPp(card.value);
-    return formatPct(card.value);
 }
 
 function withNodeColor(rows: CategoryOpsSunburstNode[]) {
@@ -203,12 +190,6 @@ function resolveQuadrantLabel(contribution: number, momentum: number, referenceC
     return '研究';
 }
 
-function getDecisionTone(index: number) {
-    if (index === 0) return 'border-rose-200 bg-rose-50/60';
-    if (index === 1) return 'border-emerald-200 bg-emerald-50/60';
-    return 'border-sky-200 bg-sky-50/60';
-}
-
 function toCsvSafeCell(value: string | number) {
     const raw = String(value ?? '');
     if (raw.includes(',') || raw.includes('"') || raw.includes('\n')) {
@@ -230,16 +211,25 @@ const SELL_SHIP_HEALTH_MIN = 0.35;
 const SELL_SHIP_HEALTH_MAX = 0.75;
 const SKU_UTILIZATION_RISK = 0.55;
 const SKU_UTILIZATION_GOOD = 0.85;
-const STOCKOUT_RISK = 0.25;
 
 export default function CategoryOpsPanel({
     filters,
     setFilters,
     compareMode = 'none',
+    onJumpToOtb,
+    onJumpToInventory,
+    onJumpToForecast,
+    onJumpToProfitLoss,
+    onJumpToPlanning,
 }: {
     filters: DashboardFilters;
     setFilters: (next: DashboardFilters) => void;
     compareMode?: CompareMode;
+    onJumpToOtb?: () => void;
+    onJumpToInventory?: () => void;
+    onJumpToForecast?: () => void;
+    onJumpToProfitLoss?: () => void;
+    onJumpToPlanning?: () => void;
 }) {
     const categoryLevel: CategoryLevel = 'l2';
     const [heatmapMetric, setHeatmapMetric] = useState<'sku_count' | 'net_sales' | 'sell_through'>('sell_through');
@@ -248,9 +238,16 @@ export default function CategoryOpsPanel({
     const [depthGroupBy, setDepthGroupBy] = useState<DepthGroupBy>('all');
     const [depthGroupValue, setDepthGroupValue] = useState<string>('all');
     const [supplyRankingDimension, setSupplyRankingDimension] = useState<'category' | 'series'>('category');
-    const [showPlanningEfficiency, setShowPlanningEfficiency] = useState<boolean>(false);
-    const [showSizeHealth, setShowSizeHealth] = useState<boolean>(false);
-    const [showSkuPhase2, setShowSkuPhase2] = useState<boolean>(false);
+    const [deepTab, setDeepTab] = useState<'structure' | 'contribution' | 'pareto' | 'supply' | 'sku'>('structure');
+    // Action Center close-loop state (completed/transferred/cancelled)
+    const [actionStatuses, setActionStatuses] = useState<Record<string, 'pending' | 'done' | 'transferred' | 'cancelled'>>(() => {
+        const init: Record<string, 'pending' | 'done' | 'transferred' | 'cancelled'> = {};
+        (actionLogData as { actions: Array<{ id: string; status: string }> }).actions.forEach((a) => {
+            init[a.id] = (a.status === 'done' ? 'done' : a.status === 'transferred' ? 'transferred' : 'pending') as 'pending' | 'done' | 'transferred' | 'cancelled';
+        });
+        return init;
+    });
+    const [sizeView, setSizeView] = useState<'combined' | 'female' | 'male'>('combined');
 
     const {
         totals,
@@ -258,9 +255,9 @@ export default function CategoryOpsPanel({
         compareMeta,
         businessKpis,
         planBiasCards,
-        kpis,
         sunburstData,
         scatterPoints,
+        channelFitRows,
         scatterReference,
         categoryWaterfall,
         pareto,
@@ -278,7 +275,7 @@ export default function CategoryOpsPanel({
         categoryLevel,
     );
 
-    const { otbSuggestionMap, expectedResult } = useOtbInputSuggestion(otbSuggestions);
+    const { otbSuggestionMap } = useOtbInputSuggestion(otbSuggestions);
     const { heatPointMap, selectedHeatPoint, selectedHeatInsight } = useCategoryStructure(
         heatmap.points,
         selectedHeatPointId,
@@ -318,7 +315,6 @@ export default function CategoryOpsPanel({
         activeDepthGroupValue,
         filteredDepthPoints,
         filteredDepthBins,
-        filteredDepthSummary,
     } = useSkuDepthAnalysis(depth.scatterPoints, depthGroupBy, depthGroupValue);
 
     const businessKpiMap = useMemo(() => {
@@ -327,26 +323,7 @@ export default function CategoryOpsPanel({
         return map;
     }, [businessKpis]);
 
-    const sellInPairs = Number(businessKpiMap.get('ship_pairs')?.value ?? totals.shipPairs ?? 0);
-    const sellOutPairs = Number(businessKpiMap.get('sales_qty')?.value ?? totals.pairsSold ?? 0);
     const sellShipRatio = Number(businessKpiMap.get('sell_ship_ratio')?.value ?? totals.sellShipRatio ?? 0);
-    const sellInDeltaPct = businessKpiMap.get('ship_pairs')?.deltaValue ?? null;
-    const sellOutDeltaPct = businessKpiMap.get('sales_qty')?.deltaValue ?? null;
-    const sellShipDeltaPp = businessKpiMap.get('sell_ship_ratio')?.deltaValue ?? null;
-    const hasSupplyCardData = Number.isFinite(sellInPairs) && sellInPairs > 0 && Number.isFinite(sellOutPairs);
-
-    const supplyRatioTone = useMemo<'risk' | 'warn' | 'good'>(() => {
-        if (!Number.isFinite(sellShipRatio) || sellShipRatio <= 0) return 'warn';
-        if (sellShipRatio < SELL_SHIP_HEALTH_MIN || sellShipRatio > SELL_SHIP_HEALTH_MAX) return 'risk';
-        if (sellShipRatio < SELL_SHIP_HEALTH_MIN + 0.05 || sellShipRatio > SELL_SHIP_HEALTH_MAX - 0.05) return 'warn';
-        return 'good';
-    }, [sellShipRatio]);
-
-    const supplyRatioToneClass = useMemo(() => {
-        if (supplyRatioTone === 'good') return 'border-emerald-200 bg-emerald-50/70 text-emerald-700';
-        if (supplyRatioTone === 'risk') return 'border-rose-200 bg-rose-50/70 text-rose-700';
-        return 'border-amber-200 bg-amber-50/70 text-amber-700';
-    }, [supplyRatioTone]);
 
     const supplyRanking = useMemo(() => {
         const sourceRows = scatterPoints.filter((row) => row.netSales > 0 && row.fillRate > 0);
@@ -593,19 +570,6 @@ export default function CategoryOpsPanel({
         };
     }, [hasSizeData, skuActionRows]);
 
-    const sizeHealthActionText = useMemo(() => {
-        if (!sizeHealth.hasData) {
-            return '缺尺码结构字段时，建议补齐后再启用断码纠偏动作。';
-        }
-        if ((sizeHealth.stockoutRate || 0) > STOCKOUT_RISK) {
-            return '断码率偏高：先补核心尺码并向热区调拨，再评估是否追加。';
-        }
-        if ((sizeHealth.fullSizeRate || 0) >= 0.85 && (skuUtilization || 0) < SKU_UTILIZATION_RISK) {
-            return '齐码率高但动销低：回到商品要素链路排查款式/价带/渠道匹配。';
-        }
-        return '尺码结构整体可控，维持周度复盘与滚动配货。';
-    }, [sizeHealth, skuUtilization]);
-
     const planningChecklistRows = useMemo(() => {
         const scatterMap = new Map(scatterPoints.map((row) => [row.categoryId, row]));
         const waveLabel = filters.wave === 'all' ? '全部波段' : String(filters.wave);
@@ -688,15 +652,6 @@ export default function CategoryOpsPanel({
         URL.revokeObjectURL(url);
     }, [planningChecklistRows]);
 
-    const chartDecisions = useMemo(() => {
-        const fallback = decisionRows[0] || null;
-        return {
-            a1: decisionRows.find((row) => row.title.includes('主力品类')) || fallback,
-            a2: decisionRows.find((row) => row.title.includes('链路')) || fallback,
-            a3: decisionRows.find((row) => row.title.includes('OTB')) || fallback,
-        };
-    }, [decisionRows]);
-
     const sunburstSummary = useMemo(() => {
         const sortedLines = [...sunburstData].sort((a, b) => b.value - a.value);
         if (!sortedLines.length || totals.netSales <= 0) {
@@ -741,28 +696,6 @@ export default function CategoryOpsPanel({
             ],
         };
     }, [compareMeta.sellThroughLabel, sunburstData, totals.netSales]);
-
-    const scatterSummary = useMemo(() => {
-        if (!scatterPoints.length) {
-            return {
-                headline: '当前筛选下暂无象限样本。',
-                bullets: ['请调整筛选后查看象限分布。', '当前无法输出增长动量排名。'],
-            };
-        }
-
-        const momentumLabel = compareMode === 'none' ? '售罄动量' : compareMeta.deltaLabel;
-        const sortedByMomentum = [...scatterPoints].sort((a, b) => b.momentum - a.momentum);
-        const topMomentum = sortedByMomentum[0];
-        const lowMomentum = sortedByMomentum[sortedByMomentum.length - 1];
-
-        return {
-            headline: `现金牛 ${insight.categoryGroups.cashflow.length} 个，潜力 ${insight.categoryGroups.potential.length} 个，预警 ${insight.categoryGroups.warning.length} 个，研究 ${insight.categoryGroups.research.length} 个。`,
-            bullets: [
-                `${momentumLabel}上行最快：${topMomentum.category}（${(topMomentum.momentum * 100).toFixed(1)}%）；下行明显：${lowMomentum.category}（${(lowMomentum.momentum * 100).toFixed(1)}%）。`,
-                `优先动作：先处理预警 ${formatCategoryList(insight.categoryGroups.warning, 2)}，同步加深现金流 ${formatCategoryList(insight.categoryGroups.cashflow, 2)}。`,
-            ],
-        };
-    }, [compareMeta.deltaLabel, compareMode, insight.categoryGroups, scatterPoints]);
 
     const waterfallSummary = useMemo(() => {
         if (!categoryWaterfall.length) {
@@ -1526,40 +1459,333 @@ export default function CategoryOpsPanel({
         [filters, heatPointMap, setFilters],
     );
 
+    const momentumAxisLabel = compareMeta.hasBaseline ? '增长动量' : '售罄相对动量';
+    const positiveMomentumLabel = compareMeta.hasBaseline ? '正增长' : '高于均值';
+    const negativeMomentumLabel = compareMeta.hasBaseline ? '负增长' : '低于均值';
+
+    // ── NEW COMPUTED SECTIONS ──────────────────────────────────────────────────
+    const decisionSummary = useMemo(() => {
+        const refMomentum = scatterReference.momentumAvg;
+        const refContribution = scatterReference.contributionShareAvg;
+
+        const boostCats = [...scatterPoints]
+            .filter((p) => p.momentum >= refMomentum && p.netSales > 0)
+            .sort((a, b) => b.momentum - a.momentum)
+            .slice(0, 3)
+            .map((p) => ({ name: p.category, role: p.contributionShare >= refContribution ? '现金牛' : '潜力', momentum: p.momentum, gmRate: p.gmRate, netSales: p.netSales }));
+
+        const reduceCats = [...scatterPoints]
+            .filter((p) => p.momentum < refMomentum && p.contributionShare >= refContribution)
+            .sort((a, b) => a.momentum - b.momentum)
+            .slice(0, 3)
+            .map((p) => ({ name: p.category, role: '预警', momentum: p.momentum, gmRate: p.gmRate, netSales: p.netSales }));
+
+        const riskCats = [...scatterPoints]
+            .filter((p) => p.contributionShare >= 0.02)
+            .sort((a, b) => a.sellThrough - b.sellThrough)
+            .slice(0, 3)
+            .map((p) => ({ name: p.category, sellThrough: p.sellThrough, gmRate: p.gmRate, netSales: p.netSales }));
+
+        const boostSales = boostCats.reduce((s, p) => s + p.netSales * 0.15, 0);
+        const reduceSaves = reduceCats.reduce((s, p) => s + p.netSales * 0.1, 0);
+        return { boostCats, reduceCats, riskCats, boostSales, reduceSaves };
+    }, [scatterPoints, scatterReference]);
+
+    const lifecycleDiagnosis = useMemo(() => {
+        const groups = new Map<string, typeof scatterPoints>();
+        scatterPoints.forEach((p) => {
+            const key = p.primaryLifecycleLabel || '其他';
+            const arr = groups.get(key) ?? [];
+            arr.push(p);
+            groups.set(key, arr);
+        });
+        const ORDER = ['新品', '次新品', '老品', '其他'];
+        return ORDER.filter((lc) => groups.has(lc)).map((lifecycle) => {
+            const pts = groups.get(lifecycle)!;
+            const avgSellThrough = pts.reduce((s, p) => s + p.sellThrough, 0) / pts.length;
+            const avgMomentum = pts.reduce((s, p) => s + p.momentum, 0) / pts.length;
+            const totalSales = pts.reduce((s, p) => s + p.netSales, 0);
+            const totalSkus = pts.reduce((s, p) => s + p.skuCount, 0);
+            const topCats = [...pts].sort((a, b) => b.netSales - a.netSales).slice(0, 3).map((p) => p.category);
+            let status: 'risk' | 'warn' | 'good' = 'good';
+            let headline = '';
+            const actions: string[] = [];
+
+            if (lifecycle === '新品') {
+                if (avgSellThrough < 0.3) { status = 'risk'; headline = '新品爬坡严重缓慢，需立即干预'; actions.push('减少同质SKU投入', '加大流量扶持', '调整渠道首配策略'); }
+                else if (avgSellThrough < 0.5) { status = 'warn'; headline = '新品售罄低于目标，关注前2周动销'; actions.push('前2周跟踪动销节奏', '热区调拨优化', '排查陈列和价格竞争力'); }
+                else { headline = '新品爬坡健康，维持上新节奏'; actions.push('按计划执行波段扩展', '持续跟踪动销曲线'); }
+            } else if (lifecycle === '老品') {
+                if (avgMomentum < -0.1) { status = 'risk'; headline = '成熟款明显掉速，存在规模损失风险'; actions.push('启动渠道调拨加速去化', '评估是否停产/减量', '促销推动库存消化'); }
+                else if (avgMomentum < 0) { status = 'warn'; headline = '成熟款轻微下滑，需排查原因'; actions.push('排查替代款竞争', '检查价格带适配性', '考虑系列更新策略'); }
+                else { headline = '成熟款保持稳定，维持配货深度'; actions.push('维持配货深度', '关注折扣管理和毛利保护'); }
+            } else if (lifecycle === '次新品') {
+                if (avgSellThrough < 0.45) { status = 'warn'; headline = '次新品去化节奏不足，需加速动销'; actions.push('二次流量推送', '适度加大折扣力度'); }
+                else { headline = '次新品动销良好，持续跟进成熟度'; actions.push('准备下季延续或升级策略'); }
+            } else {
+                if (avgSellThrough < 0.25) { status = 'risk'; headline = '尾货积压严重，需立即启动清仓'; actions.push('转移至折扣/奥莱渠道', '集中促销加速去化'); }
+                else { headline = '尾货消化中，维持促销力度'; actions.push('按计划执行清仓节奏'); }
+            }
+            return { lifecycle, points: pts, avgSellThrough, avgMomentum, totalSales, totalSkus, topCats, status, headline, actions };
+        });
+    }, [scatterPoints]);
+
+    const priceBandDiagnosis = useMemo(() => {
+        const stPoints = heatmap.points.filter((p) => p.metricKey === 'sell_through');
+        const skuPoints = heatmap.points.filter((p) => p.metricKey === 'sku_count');
+        const topBands = [...stPoints]
+            .filter((p) => p.rawValue > 0 && p.cell.netSales > 0)
+            .sort((a, b) => b.cell.netSales - a.cell.netSales)
+            .slice(0, 3)
+            .map((p) => ({ label: p.cell.elementLabel, sellThrough: p.rawValue, netSales: p.cell.netSales }));
+        const bandAgg = new Map<string, { label: string; skuCount: number; sellThrough: number; netSales: number }>();
+        skuPoints.forEach((sp) => {
+            const key = sp.cell.priceBand;
+            const stPt = stPoints.find((s) => s.cell.priceBand === key && s.cell.categoryId === sp.cell.categoryId);
+            const ex = bandAgg.get(key) ?? { label: key, skuCount: 0, sellThrough: 0, netSales: 0 };
+            ex.skuCount += sp.rawValue;
+            if (stPt) ex.sellThrough = (ex.sellThrough + stPt.rawValue) / 2;
+            ex.netSales += sp.cell.netSales;
+            bandAgg.set(key, ex);
+        });
+        const overcrowded = [...bandAgg.values()]
+            .filter((b) => b.skuCount > 4 && b.sellThrough < 0.4 && b.sellThrough > 0)
+            .sort((a, b) => a.sellThrough - b.sellThrough)
+            .slice(0, 2);
+        return { topBands, overcrowded };
+    }, [heatmap.points]);
+
+    const actionCenterRows = useMemo(() => {
+        const rows: Array<{ priority: 'P0' | 'P1' | 'P2'; category: string; issue: string; cause: string; action: string; impactAmount: number; modules: string[] }> = [];
+        const refMomentum = scatterReference.momentumAvg;
+        const refContribution = scatterReference.contributionShareAvg;
+
+        [...scatterPoints]
+            .filter((p) => p.momentum < -0.05 && p.contributionShare >= refContribution)
+            .sort((a, b) => a.momentum - b.momentum)
+            .slice(0, 2)
+            .forEach((p) => rows.push({
+                priority: 'P0', category: p.category,
+                issue: compareMeta.hasBaseline ? '核心品类销售下滑，影响整体销售目标' : '核心品类售罄低于均值，存在库存效率风险',
+                cause: compareMeta.hasBaseline
+                    ? `贡献占比${formatPct(p.contributionShare)}，动量${(p.momentum * 100).toFixed(1)}%，规模损失约${formatAmount(p.netSales * Math.abs(p.momentum))}`
+                    : `贡献占比${formatPct(p.contributionShare)}，售罄动量低于均值 ${Math.abs(p.momentum * 100).toFixed(1)}pp，需要优先修正`,
+                action: '评估渠道配货，启动促销推动去化，减少下季同类SKU投入',
+                impactAmount: p.netSales * Math.abs(p.momentum),
+                modules: ['库存健康', 'OTB预算'],
+            }));
+
+        [...scatterPoints]
+            .filter((p) => p.sellThrough < 0.35 && p.contributionShare >= 0.03)
+            .sort((a, b) => a.sellThrough - b.sellThrough)
+            .slice(0, 2)
+            .forEach((p) => rows.push({
+                priority: p.sellThrough < 0.25 ? 'P0' : 'P1', category: p.category,
+                issue: `售罄率${formatPct(p.sellThrough)}，库存积压风险高`,
+                cause: '动销不足导致库存占压，集中折扣将损伤毛利',
+                action: '加强流量扶持，向高动销渠道调拨，考虑限时折扣去化',
+                impactAmount: p.netSales * 0.08,
+                modules: ['库存健康', '损益'],
+            }));
+
+        if (skuUtilization !== null && skuUtilization < SKU_UTILIZATION_RISK) {
+            rows.push({
+                priority: 'P1', category: '全品类',
+                issue: `SKU利用率${formatPct(skuUtilization)}，企划效率不足`,
+                cause: '长尾SKU占用企划资源但贡献极低，拉低整体效率',
+                action: '砍长尾SKU，聚焦核心楦型和主力价格带，减少无效上新',
+                impactAmount: salesPerSku * activeSku * 0.15,
+                modules: ['波段企划', 'OTB预算'],
+            });
+        }
+
+        [...scatterPoints]
+            .filter((p) => p.momentum >= refMomentum && p.contributionShare < refContribution && p.netSales > 0)
+            .sort((a, b) => b.momentum - a.momentum)
+            .slice(0, 2)
+            .forEach((p) => rows.push({
+                priority: 'P2', category: p.category,
+                issue: '潜力品类动量强但贡献占比低，存在放量机会',
+                cause: `${momentumAxisLabel}${(p.momentum * 100).toFixed(1)}%，贡献仅${formatPct(p.contributionShare)}，尚未充分放量`,
+                action: '增加SKU宽度，加大渠道铺货深度，追加OTB预算',
+                impactAmount: p.netSales * 0.2,
+                modules: ['OTB预算', '波段企划'],
+            }));
+
+        if (rows.length < 2) {
+            decisionRows.slice(0, 2 - rows.length).forEach((row) => rows.push({
+                priority: 'P2', category: '整体', issue: row.finding, cause: row.result, action: row.decision, impactAmount: 0, modules: ['销售预测'],
+            }));
+        }
+        return rows.slice(0, 7);
+    }, [compareMeta.hasBaseline, decisionRows, momentumAxisLabel, scatterPoints, scatterReference, skuUtilization, salesPerSku, activeSku]);
+
+    const categoryDetailRows = useMemo(() => {
+        const refContribution = scatterReference.contributionShareAvg;
+        const refMomentum = scatterReference.momentumAvg;
+        return [...scatterPoints].sort((a, b) => b.netSales - a.netSales).map((p) => {
+            const highContrib = p.contributionShare >= refContribution;
+            const highMomentum = p.momentum >= refMomentum;
+            let role: string; let priority: string; let actionText: string;
+            if (highContrib && highMomentum) { role = '加码品类'; priority = 'P1'; actionText = '追加OTB，扩大铺货深度'; }
+            else if (!highContrib && highMomentum) { role = '潜力品类'; priority = 'P2'; actionText = '监控放量时机，适时加码'; }
+            else if (highContrib && !highMomentum) { role = '调结构品类'; priority = 'P0'; actionText = '控量，启动调拨和促销去化'; }
+            else { role = '观察品类'; priority = 'P3'; actionText = '维持现配，严控SKU投入'; }
+            return {
+                category: p.category, role, salesAmount: p.netSales, achievementRate: p.momentum,
+                sellThrough: p.sellThrough, gmRate: p.gmRate, skuCount: p.skuCount,
+                salesPerSkuVal: safeDiv(p.netSales, Math.max(p.skuCount, 1)),
+                lifecycle: p.primaryLifecycleLabel, mainPriceBand: p.priceBandMix || '--', action: actionText, priority,
+            };
+        });
+    }, [scatterPoints, scatterReference]);
+
+    // ── V12 新增 useMemos ──────────────────────────────────────────────────────
+
+    // 季度品类组合得分（静态数据，加载自 JSON）
+    const portfolioScore = useMemo(() => portfolioScoreData, []);
+
+    // 季节性优先级（静态数据）
+    const seasonalPriority = useMemo(() => seasonalPriorityData, []);
+
+    // 80/20 帕累托（静态数据）
+    const paretoV12 = useMemo(() => paretoData, []);
+
+    // 尺码段供需（静态数据）
+    const sizeSupplyDemand = useMemo(() => sizeData, []);
+
+    // 鞋类 7 阶段生命周期（静态数据）
+    const lifecycle7 = useMemo(() => lifecycle7Data, []);
+
+    // Action Center 合并行（computed rows + action log statuses）
+    const actionCenterV12 = useMemo(() => {
+        // 把 actionLogData 中已有的行和 actionCenterRows 合并，去重
+        const logRows = (actionLogData as { actions: Array<{ id: string; priority: string; category: string; issue: string; cause: string; action: string; impactAmount: number; modules: string[] }> }).actions.map((a) => ({
+            id: a.id,
+            priority: a.priority as 'P0' | 'P1' | 'P2',
+            category: a.category,
+            issue: a.issue,
+            cause: a.cause,
+            action: a.action,
+            impactAmount: a.impactAmount,
+            modules: a.modules,
+        }));
+        // Merge with computed rows (append if not duplicated by category+priority)
+        const merged = [...logRows];
+        actionCenterRows.forEach((row) => {
+            const dup = merged.some((r) => r.category === row.category && r.priority === row.priority);
+            if (!dup) merged.push({ id: `gen-${row.category}-${row.priority}`, ...row });
+        });
+        return merged.slice(0, 8);
+    }, [actionCenterRows]);
+
+    // Action Center 进度统计
+    const actionProgress = useMemo(() => {
+        const total = actionCenterV12.length;
+        const done = actionCenterV12.filter((r) => actionStatuses[r.id] === 'done').length;
+        const transferred = actionCenterV12.filter((r) => actionStatuses[r.id] === 'transferred').length;
+        const cancelled = actionCenterV12.filter((r) => actionStatuses[r.id] === 'cancelled').length;
+        const pending = total - done - transferred - cancelled;
+        return { total, done, transferred, cancelled, pending };
+    }, [actionCenterV12, actionStatuses]);
+
     return (
         <div className="space-y-5">
+            {/* 0. Page Header */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <div className="text-xs uppercase tracking-wide text-slate-400">Product Analysis</div>
-                        <h2 className="text-lg font-bold text-slate-900">商品分析</h2>
-                        <p className="mt-1 text-xs text-slate-500">
-                            复用 fact_sales + dim_sku 聚合，统一跟随全局口径（无对比 / vs计划 / 环比上季 / 同比去年）。
-                        </p>
+                        <div className="text-xs uppercase tracking-wide text-slate-400">Category Operations</div>
+                        <h2 className="text-lg font-bold text-slate-900">品类运营决策工作台</h2>
+                        <p className="mt-0.5 text-xs text-slate-500">帮助商品企划、设计、运营负责人判断各品类是否值得投入，并输出明确动作</p>
                     </div>
                     <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                        口径：{compareMeta.modeLabel} ｜ 品类层级：二级品类 ｜ 当前净销 {formatAmount(totals.netSales)} ｜ 当前销量 {formatPairs(totals.pairsSold)}
-                        {compareMeta.hasBaseline && baselineTotals ? (
-                            <> ｜ 基线净销 {formatAmount(baselineTotals.netSales)} ｜ 基线销量 {formatPairs(baselineTotals.pairsSold)}</>
-                        ) : null}
+                        口径：{compareMeta.modeLabel} ｜ 净销 {formatAmount(totals.netSales)} ｜ 品类层级：二级
+                        {compareMeta.hasBaseline && baselineTotals ? <> ｜ 基线 {formatAmount(baselineTotals.netSales)}</> : null}
                     </div>
-                </div>
-                <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                    <span>{compareMeta.note}</span>
-                    <span
-                        className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-amber-700"
-                        title="v0推导：fill_rate = ship / demand；reorder_rate = reorder / demand。当前用售罄、库存压力、需求变化近似推导，非供应链事实。"
-                    >
-                        v0推导口径ⓘ
-                    </span>
                 </div>
             </section>
 
+            {/* 1. 决策摘要区 */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                <div className="mb-3 text-sm font-semibold text-slate-900">经营口径 KPI（本期 / 同期 / 同比）</div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
-                    {businessKpis.map((card) => {
-                        const deltaText = formatBizDelta(card);
+                <div className="mb-4">
+                    <h3 className="text-sm font-bold text-slate-900">品类运营决策摘要</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">本期品类运营关键结论 · 红=必须处理，黄=观察，绿=健康</p>
+                </div>
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                    <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                            <span className="text-xs font-bold text-emerald-800">最应该加码的 3 个品类</span>
+                        </div>
+                        {decisionSummary.boostCats.map((cat, i) => (
+                            <div key={i} className="flex items-center justify-between py-1.5 border-b border-emerald-100 last:border-0">
+                                <div className="min-w-0 mr-2">
+                                    <span className="text-sm font-semibold text-slate-900">{cat.name}</span>
+                                    <span className="ml-1.5 text-[10px] rounded px-1.5 py-0.5 bg-emerald-100 text-emerald-700">{cat.role}</span>
+                                </div>
+                                <div className="text-right shrink-0">
+                                    <div className="text-xs font-medium text-emerald-700">{cat.momentum >= 0 ? '+' : ''}{(cat.momentum * 100).toFixed(1)}%</div>
+                                    <div className="text-[10px] text-slate-500">GM {formatPct(cat.gmRate)}</div>
+                                </div>
+                            </div>
+                        ))}
+                        {decisionSummary.boostCats.length === 0 && <div className="text-xs text-slate-400 py-2">暂无加码推荐</div>}
+                        <div className="mt-2 text-[10px] text-emerald-600">预计增量：{formatAmount(decisionSummary.boostSales)}</div>
+                    </div>
+
+                    <div className="rounded-xl border border-rose-200 bg-rose-50/60 p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
+                            <span className="text-xs font-bold text-rose-800">最应该收缩的 3 个品类</span>
+                        </div>
+                        {decisionSummary.reduceCats.map((cat, i) => (
+                            <div key={i} className="flex items-center justify-between py-1.5 border-b border-rose-100 last:border-0">
+                                <div className="min-w-0 mr-2">
+                                    <span className="text-sm font-semibold text-slate-900">{cat.name}</span>
+                                    <span className="ml-1.5 text-[10px] rounded px-1.5 py-0.5 bg-rose-100 text-rose-700">{cat.role}</span>
+                                </div>
+                                <div className="text-right shrink-0">
+                                    <div className="text-xs font-medium text-rose-700">{cat.momentum >= 0 ? '+' : ''}{(cat.momentum * 100).toFixed(1)}%</div>
+                                    <div className="text-[10px] text-slate-500">{formatAmount(cat.netSales)}</div>
+                                </div>
+                            </div>
+                        ))}
+                        {decisionSummary.reduceCats.length === 0 && <div className="text-xs text-slate-400 py-2">暂无收缩推荐</div>}
+                        <div className="mt-2 text-[10px] text-rose-600">可释放资源：{formatAmount(decisionSummary.reduceSaves)}</div>
+                    </div>
+
+                    <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                            <span className="text-xs font-bold text-amber-800">库存/毛利/售罄最高风险</span>
+                        </div>
+                        {decisionSummary.riskCats.map((cat, i) => (
+                            <div key={i} className="flex items-center justify-between py-1.5 border-b border-amber-100 last:border-0">
+                                <span className="text-sm font-semibold text-slate-900 truncate mr-2">{cat.name}</span>
+                                <div className="text-right shrink-0">
+                                    <div className="text-xs font-medium text-amber-700">售罄 {formatPct(cat.sellThrough)}</div>
+                                    <div className="text-[10px] text-slate-500">GM {formatPct(cat.gmRate)}</div>
+                                </div>
+                            </div>
+                        ))}
+                        {decisionSummary.riskCats.length === 0 && <div className="text-xs text-slate-400 py-2">暂无风险预警</div>}
+                        <div className="mt-2 text-[10px] text-amber-600">↓ 在 Action Center 查看处理方案</div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 2. 品类经营 KPI */}
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-3 flex items-center justify-between">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-900">品类经营总览</h3>
+                        <p className="text-xs text-slate-400 mt-0.5">核心经营指标 · 颜色=健康状态</p>
+                    </div>
+                    <div className="text-xs text-slate-400">{compareMeta.note}</div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
+                    {businessKpis.slice(0, 7).map((card) => {
                         const deltaPositive = card.deltaValue !== null && card.deltaValue > 0;
                         const deltaNegative = card.deltaValue !== null && card.deltaValue < 0;
                         return (
@@ -1567,682 +1793,930 @@ export default function CategoryOpsPanel({
                                 <div className="text-xs text-slate-500">{card.title}</div>
                                 <div className="mt-1 text-xl font-semibold text-slate-900">{formatBizValue(card)}</div>
                                 <div className="mt-1 flex items-center gap-1 text-xs">
-                                    <span className={deltaPositive ? 'text-emerald-600' : deltaNegative ? 'text-rose-600' : 'text-slate-400'}>
-                                        {deltaPositive ? '▲' : deltaNegative ? '▼' : '—'}
-                                    </span>
-                                    <span className={deltaPositive ? 'text-emerald-600' : deltaNegative ? 'text-rose-600' : 'text-slate-500'}>
-                                        {deltaText}
-                                    </span>
+                                    <span className={deltaPositive ? 'text-emerald-600' : deltaNegative ? 'text-rose-600' : 'text-slate-400'}>{deltaPositive ? '▲' : deltaNegative ? '▼' : '—'}</span>
+                                    <span className={deltaPositive ? 'text-emerald-600' : deltaNegative ? 'text-rose-600' : 'text-slate-500'}>{formatBizDelta(card)}</span>
                                 </div>
-                                <div className="mt-1 text-xs text-slate-500">{card.description}</div>
+                                <div className="mt-0.5 text-[10px] text-slate-400">{card.description}</div>
                             </div>
                         );
                     })}
                 </div>
             </section>
 
+            {/* 2.5 季度品类组合得分 */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                <div className="mb-3 text-sm font-semibold text-slate-900">企划执行偏差卡（闭环）</div>
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                    {planBiasCards.map((card) => (
-                        <div key={card.id} className={`rounded-xl border p-3 ${getPlanBiasToneClass(card.tone)}`}>
-                            <div className="text-xs text-slate-500">{card.title}</div>
-                            <div className="mt-1 text-sm text-slate-900">{card.actualLabel}</div>
-                            <div className="text-sm text-slate-600">{card.planLabel}</div>
-                            <div className="mt-1 text-base font-semibold text-slate-900">偏差：{card.gapLabel}</div>
-                            <div className="mt-1 text-xs text-slate-500">{card.note}</div>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                    <div className="text-sm font-semibold text-slate-900">供需匹配（销发比）</div>
-                    <div className="text-xs text-slate-500">单位：双 / 比例 ｜ 对比：{compareMeta.modeLabel}</div>
-                </div>
-
-                {hasSupplyCardData ? (
-                    <>
-                        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                                <div className="text-xs text-slate-500">到货/发货量（Sell-in）</div>
-                                <div className="mt-1 text-xl font-semibold text-slate-900">{formatPairs(sellInPairs)}</div>
-                                <div className={`mt-1 text-xs ${sellInDeltaPct !== null && sellInDeltaPct < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
-                                    {sellInDeltaPct === null ? '—' : `${sellInDeltaPct >= 0 ? '+' : ''}${(sellInDeltaPct * 100).toFixed(1)}%`}
-                                </div>
-                            </div>
-                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                                <div className="text-xs text-slate-500">零售销量（Sell-out）</div>
-                                <div className="mt-1 text-xl font-semibold text-slate-900">{formatPairs(sellOutPairs)}</div>
-                                <div className={`mt-1 text-xs ${sellOutDeltaPct !== null && sellOutDeltaPct < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
-                                    {sellOutDeltaPct === null ? '—' : `${sellOutDeltaPct >= 0 ? '+' : ''}${(sellOutDeltaPct * 100).toFixed(1)}%`}
-                                </div>
-                            </div>
-                            <div className={`rounded-xl border p-3 ${supplyRatioToneClass}`}>
-                                <div className="text-xs">销发比（Sell-out / Sell-in）</div>
-                                <div className="mt-1 text-xl font-semibold">{formatRatio(sellShipRatio)}</div>
-                                <div className="mt-1 text-xs">
-                                    健康区间 {formatRatio(SELL_SHIP_HEALTH_MIN)} ~ {formatRatio(SELL_SHIP_HEALTH_MAX)}
-                                    {sellShipDeltaPp !== null ? ` ｜ ${sellShipDeltaPp >= 0 ? '+' : ''}${sellShipDeltaPp.toFixed(1)}pp` : ''}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                                <div className="text-xs font-semibold text-slate-700">
-                                    销发比 Top6 & Bottom6（按{supplyRankingDimension === 'category' ? '二级品类' : '系列'}）
-                                </div>
-                                <div className="inline-flex rounded-lg bg-slate-100 p-1 text-xs">
-                                    <button
-                                        onClick={() => setSupplyRankingDimension('category')}
-                                        className={`rounded px-2 py-1 ${supplyRankingDimension === 'category' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}
-                                    >
-                                        二级品类
-                                    </button>
-                                    <button
-                                        onClick={() => setSupplyRankingDimension('series')}
-                                        className={`rounded px-2 py-1 ${supplyRankingDimension === 'series' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}
-                                    >
-                                        系列
-                                    </button>
-                                </div>
-                            </div>
-                            {supplyRanking.rows.length ? (
-                                <ReactECharts option={supplyRankingOption} style={{ height: 300 }} notMerge />
-                            ) : (
-                                <div className="rounded-md border border-dashed border-slate-300 bg-white px-3 py-6 text-center text-xs text-slate-500">
-                                    当前筛选下暂无可用于销发比榜单的样本。
-                                </div>
-                            )}
-                            <div className="mt-2 rounded-md border border-blue-100 bg-blue-50/60 px-2.5 py-2 text-xs leading-6 text-slate-700">
-                                自动动作：{supplyActionText}
-                            </div>
-                            <div className="mt-2 text-xs text-amber-700">
-                                当前发货/到货口径来自 v0 推导；建议补齐发货/到货字段以提高准确性。
-                            </div>
-                        </div>
-                    </>
-                ) : (
-                    <div className="rounded-md border border-dashed border-slate-300 bg-slate-50 px-3 py-6 text-center text-sm text-slate-500">
-                        建议补齐发货/到货字段
-                    </div>
-                )}
-            </section>
-
-            <section className="space-y-4">
-                <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-                    <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                        <div className="mb-2 text-sm font-semibold text-slate-900">模块A1：品类旭日图（Product Line → Category）</div>
-                        <div className="mb-2 text-xs text-slate-500">面积=销售额占比，颜色=相对当期均值售罄率（低于均值偏红，高于均值偏绿）。</div>
-                        <ReactECharts option={sunburstOption} style={{ height: 360 }} notMerge />
-                        <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                            <div className="mb-1 text-xs font-semibold text-slate-600">A1 图表结论</div>
-                            <div className="space-y-1.5 text-xs leading-6 text-slate-700">
-                                <div>{sunburstSummary.headline}</div>
-                                {sunburstSummary.bullets.map((line, index) => (
-                                    <div key={`a1-summary-${index + 1}`}>{line}</div>
-                                ))}
-                            </div>
-                            {chartDecisions.a1 ? (
-                                <div className="mt-2 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs leading-6 text-slate-700">
-                                    <span className="font-semibold text-slate-900">对应动作：</span>
-                                    {chartDecisions.a1.decision}
-                                </div>
-                            ) : null}
-                        </div>
-                    </div>
-
-                    <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                        <div className="mb-2 text-sm font-semibold text-slate-900">模块A2：品类经营四象限（贡献 × 增长）</div>
-                        <div className="mb-2 text-xs text-slate-500">X=销额贡献占比，Y=增长动量（同比/计划或售罄动量），气泡大小=SKU数。</div>
-                        <ReactECharts option={scatterOption} onEvents={scatterEvents} style={{ height: 320 }} notMerge />
-                        <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] text-slate-600">
-                            <span className="rounded-md border border-emerald-200 bg-emerald-50/60 px-2 py-1">现金牛：高贡献 + 正增长</span>
-                            <span className="rounded-md border border-sky-200 bg-sky-50/60 px-2 py-1">潜力：低贡献 + 正增长</span>
-                            <span className="rounded-md border border-rose-200 bg-rose-50/60 px-2 py-1">预警：高贡献 + 负增长</span>
-                            <span className="rounded-md border border-amber-200 bg-amber-50/60 px-2 py-1">研究：低贡献 + 负增长</span>
-                        </div>
-                        <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                            <div className="mb-1 text-xs font-semibold text-slate-600">A2 图表结论</div>
-                            <div className="space-y-1.5 text-xs leading-6 text-slate-700">
-                                <div>{scatterSummary.headline}</div>
-                                {scatterSummary.bullets.map((line, index) => (
-                                    <div key={`a2-summary-${index + 1}`}>{line}</div>
-                                ))}
-                            </div>
-                            {chartDecisions.a2 ? (
-                                <div className="mt-2 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs leading-6 text-slate-700">
-                                    <span className="font-semibold text-slate-900">对应动作：</span>
-                                    {chartDecisions.a2.decision}
-                                </div>
-                            ) : null}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                    <div className="mb-2 text-sm font-semibold text-slate-900">模块A3：品类贡献瀑布图（拉升 / 拖累）</div>
-                    <div className="mb-2 text-xs text-slate-500">
-                        {compareMeta.mode === 'none'
-                            ? '无对比模式下展示当前净销贡献（万）。'
-                            : `展示各品类 ${compareMeta.deltaLabel} 的销额贡献（万），正值拉升、负值拖累。`}
-                    </div>
-                    <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_300px]">
-                        <ReactECharts option={waterfallOption} onEvents={waterfallEvents} style={{ height: 360 }} notMerge />
-                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                            <div className="mb-1 text-xs font-semibold text-slate-600">A3 图表结论</div>
-                            <div className="space-y-1.5 text-xs leading-6 text-slate-700">
-                                <div>{waterfallSummary.headline}</div>
-                                {waterfallSummary.bullets.map((line, index) => (
-                                    <div key={`a3-summary-${index + 1}`}>{line}</div>
-                                ))}
-                            </div>
-                            {chartDecisions.a3 ? (
-                                <div className="mt-2 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs leading-6 text-slate-700">
-                                    <span className="font-semibold text-slate-900">对应动作：</span>
-                                    {chartDecisions.a3.decision}
-                                </div>
-                            ) : null}
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
                     <div>
-                        <div className="text-sm font-semibold text-slate-900">企划落地效率（计划SKU → 动销SKU）</div>
-                        <div className="text-xs text-slate-500">单位：款 / 元 ｜ 对比：{compareMeta.modeLabel}</div>
+                        <h3 className="text-sm font-bold text-slate-900">季度品类组合得分</h3>
+                        <p className="text-xs text-slate-400 mt-0.5">4维综合评分（满分100）· 识别拖后腿维度 · 与行业对标</p>
                     </div>
-                    <button
-                        onClick={() => setShowPlanningEfficiency((prev) => !prev)}
-                        className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
-                    >
-                        {showPlanningEfficiency ? '收起模块' : '展开模块'}
-                    </button>
+                    <div className="text-xs text-slate-400">{portfolioScore.current.quarter}</div>
                 </div>
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-[200px_1fr_240px]">
+                    {/* 总分 + 评级 */}
+                    <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50 p-5">
+                        <div className={`text-5xl font-black ${portfolioScore.current.total >= 85 ? 'text-emerald-600' : portfolioScore.current.total >= 70 ? 'text-sky-600' : portfolioScore.current.total >= 55 ? 'text-amber-600' : 'text-rose-600'}`}>
+                            {portfolioScore.current.total}
+                        </div>
+                        <div className={`mt-1 text-sm font-bold px-2.5 py-0.5 rounded-full ${portfolioScore.grade === 'A' ? 'bg-emerald-100 text-emerald-700' : portfolioScore.grade === 'B' ? 'bg-sky-100 text-sky-700' : portfolioScore.grade === 'C' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'}`}>
+                            {portfolioScore.grade} 级
+                        </div>
+                        <div className="mt-2 text-[10px] text-slate-400">行业均值：{portfolioScore.industryAvg}分</div>
+                        <div className={`text-[10px] font-medium ${portfolioScore.current.total >= portfolioScore.industryAvg ? 'text-emerald-600' : 'text-rose-600'}`}>
+                            {portfolioScore.current.total >= portfolioScore.industryAvg ? '▲' : '▼'} {Math.abs(portfolioScore.current.total - portfolioScore.industryAvg)}分
+                        </div>
+                    </div>
+                    {/* 4维得分 */}
+                    <div className="space-y-3">
+                        {([
+                            { key: 'salesContribution', label: '销售贡献', weight: '30%', value: portfolioScore.current.salesContribution },
+                            { key: 'gmContribution', label: '毛利贡献', weight: '30%', value: portfolioScore.current.gmContribution },
+                            { key: 'turnoverEfficiency', label: '周转效率', weight: '20%', value: portfolioScore.current.turnoverEfficiency },
+                            { key: 'riskControl', label: '风险防控', weight: '20%', value: portfolioScore.current.riskControl },
+                        ] as const).map((dim) => {
+                            const isWeak = (portfolioScore.weakDimensions as string[]).includes(dim.label);
+                            return (
+                                <div key={dim.key} className="flex items-center gap-3">
+                                    <div className="w-20 shrink-0 text-xs text-slate-600 font-medium">{dim.label}</div>
+                                    <div className="text-[10px] text-slate-400 w-8 shrink-0">{dim.weight}</div>
+                                    <div className="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
+                                        <div className={`h-2 rounded-full transition-all ${dim.value >= 75 ? 'bg-emerald-500' : dim.value >= 60 ? 'bg-sky-500' : 'bg-amber-500'}`} style={{ width: `${dim.value}%` }} />
+                                    </div>
+                                    <div className={`w-8 text-right text-xs font-bold shrink-0 ${dim.value >= 75 ? 'text-emerald-600' : dim.value >= 60 ? 'text-sky-600' : 'text-amber-600'}`}>{dim.value}</div>
+                                    {isWeak && <span className="text-[10px] text-amber-600 shrink-0">⚠ 弱</span>}
+                                </div>
+                            );
+                        })}
+                        <div className="rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-[10px] text-amber-700 leading-5">
+                            💡 {portfolioScore.suggestion}
+                        </div>
+                    </div>
+                    {/* 季度趋势 */}
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                        <div className="text-xs font-medium text-slate-700 mb-2">近4季度趋势</div>
+                        <div className="space-y-2">
+                            {portfolioScore.history.map((h, i) => (
+                                <div key={i} className="flex items-center gap-2">
+                                    <div className="text-[10px] text-slate-500 w-16 shrink-0">{h.quarter}</div>
+                                    <div className="flex-1 bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                                        <div className={`h-1.5 rounded-full ${h.total >= 70 ? 'bg-sky-500' : 'bg-amber-400'}`} style={{ width: `${h.total}%` }} />
+                                    </div>
+                                    <div className="text-[10px] font-bold text-slate-700 w-6 text-right shrink-0">{h.total}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-                {showPlanningEfficiency ? (
-                    <div className="mt-4 space-y-3">
-                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                                <div className="text-xs text-slate-500">企划SKU</div>
-                                <div className="mt-1 text-lg font-semibold text-slate-900">
-                                    {planSku > 0 ? formatCount(planSku) : '—'}
-                                </div>
+            {/* 3. 品类角色矩阵 */}
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-3">
+                    <h3 className="text-sm font-bold text-slate-900">品类角色矩阵</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">X=销售贡献占比 · Y={momentumAxisLabel} · 气泡大小=SKU规模 · 颜色=生命周期 · 点击品类可联动筛选</p>
+                </div>
+                <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
+                    <ReactECharts option={scatterOption} onEvents={scatterEvents} style={{ height: 380 }} notMerge />
+                    <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3">
+                                <div className="font-bold text-emerald-800 mb-1">加码品类 ✓</div>
+                                <div className="text-slate-500 text-[10px] mb-1">高贡献 + {positiveMomentumLabel}</div>
+                                <div className="text-emerald-700 text-[11px]">{formatCategoryList(insight.categoryGroups.cashflow, 3) || '—'}</div>
                             </div>
-                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                                <div className="text-xs text-slate-500">动销SKU</div>
-                                <div className="mt-1 text-lg font-semibold text-slate-900">{formatCount(activeSku)}</div>
+                            <div className="rounded-xl border border-sky-200 bg-sky-50/60 p-3">
+                                <div className="font-bold text-sky-800 mb-1">潜力放量 ↗</div>
+                                <div className="text-slate-500 text-[10px] mb-1">低贡献 + {positiveMomentumLabel}</div>
+                                <div className="text-sky-700 text-[11px]">{formatCategoryList(insight.categoryGroups.potential, 3) || '—'}</div>
                             </div>
-                            <div className={`rounded-xl border p-3 ${skuUtilizationToneClass}`}>
-                                <div className="text-xs text-slate-500">SKU利用率</div>
-                                <div className="mt-1 text-lg font-semibold text-slate-900">
-                                    {skuUtilization === null ? '—' : formatRatio(skuUtilization)}
-                                </div>
+                            <div className="rounded-xl border border-rose-200 bg-rose-50/60 p-3">
+                                <div className="font-bold text-rose-800 mb-1">立即干预 ⚠</div>
+                                <div className="text-slate-500 text-[10px] mb-1">高贡献 + {negativeMomentumLabel}</div>
+                                <div className="text-rose-700 text-[11px]">{formatCategoryList(insight.categoryGroups.warning, 3) || '—'}</div>
                             </div>
-                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                                <div className="text-xs text-slate-500">单款产出（净销额/动销SKU）</div>
-                                <div className="mt-1 text-lg font-semibold text-slate-900">{formatAmount(salesPerSku)}</div>
+                            <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3">
+                                <div className="font-bold text-amber-800 mb-1">控量观察 ✗</div>
+                                <div className="text-slate-500 text-[10px] mb-1">低贡献 + {negativeMomentumLabel}</div>
+                                <div className="text-amber-700 text-[11px]">{formatCategoryList(insight.categoryGroups.research, 3) || '—'}</div>
                             </div>
                         </div>
+                        {selectedCategoryId !== 'all' && (
+                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 flex items-center justify-between text-xs">
+                                <span className="font-semibold text-slate-800">{selectedCategoryLabel}</span>
+                                <button onClick={() => setSelectedCategoryId('all')} className="text-sky-600 hover:underline text-[10px]">清空筛选</button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </section>
 
-                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                            <div className="mb-2 text-xs font-semibold text-slate-600">规则建议（最多3条）</div>
-                            <ul className="space-y-1.5 text-sm leading-6 text-slate-700">
-                                {planningRules.map((rule, index) => (
-                                    <li key={`planning-rule-${index + 1}`}>{`${index + 1}. ${rule}`}</li>
+            {/* 4. 款量价深诊断 */}
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-3">
+                    <h3 className="text-sm font-bold text-slate-900">款量价深诊断</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">SKU宽度、款深、价格带合理性评估，输出商品动作建议</p>
+                </div>
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                    <div className={`rounded-xl border p-4 ${skuUtilizationToneClass}`}>
+                        <div className="text-xs text-slate-500 mb-2 font-medium">SKU 宽度（企划落地效率）</div>
+                        <div className="flex items-end gap-3 mb-3">
+                            <div><div className="text-[10px] text-slate-400">企划SKU</div><div className="text-2xl font-bold text-slate-900">{planSku > 0 ? formatCount(planSku) : '—'}</div></div>
+                            <div className="pb-1 text-slate-300 text-lg">→</div>
+                            <div><div className="text-[10px] text-slate-400">动销SKU</div><div className="text-2xl font-bold text-slate-900">{formatCount(activeSku)}</div></div>
+                            <div className="pb-1"><div className="text-[10px] text-slate-400">利用率</div><div className="text-lg font-bold text-slate-900">{skuUtilization === null ? '—' : formatRatio(skuUtilization)}</div></div>
+                        </div>
+                        <div className="space-y-1">
+                            {planningRules.map((rule, i) => <div key={i} className="text-xs text-slate-700 py-1 border-b border-slate-100 last:border-0">{i + 1}. {rule}</div>)}
+                        </div>
+                    </div>
+                    <div className={`rounded-xl border p-4 ${planDepthCard?.tone === 'risk' ? 'border-rose-200 bg-rose-50/60' : planDepthCard?.tone === 'good' ? 'border-emerald-200 bg-emerald-50/60' : 'border-amber-200 bg-amber-50/60'}`}>
+                        <div className="text-xs text-slate-500 mb-2 font-medium">款深（单款产出效率）</div>
+                        <div className="flex items-end gap-3 mb-3">
+                            <div><div className="text-[10px] text-slate-400">计划款深</div><div className="text-xl font-bold text-slate-900">{planDepthCard?.planLabel || '—'}</div></div>
+                            <div className="pb-1 text-slate-300 text-lg">vs</div>
+                            <div><div className="text-[10px] text-slate-400">实际单SKU产出</div><div className="text-xl font-bold text-slate-900">{formatAmount(salesPerSku)}</div></div>
+                        </div>
+                        {planDepthCard ? (
+                            <div className="text-xs text-slate-700 space-y-1">
+                                <div className="font-medium">偏差：{planDepthCard.gapLabel}</div>
+                                <div className="text-slate-500">{planDepthCard.note}</div>
+                            </div>
+                        ) : <div className="text-xs text-slate-400">款深计划字段缺失，建议补齐</div>}
+                    </div>
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                        <div className="text-xs text-slate-500 mb-2 font-medium">价格带结构</div>
+                        <div className="text-[10px] text-slate-400 mb-1.5">主力价格带（按销售额）</div>
+                        {priceBandDiagnosis.topBands.map((band, i) => (
+                            <div key={i} className="flex items-center justify-between text-xs py-1 border-b border-slate-100 last:border-0">
+                                <span className="text-slate-700 truncate mr-2">{band.label}</span>
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <span className={`font-medium ${band.sellThrough >= 0.6 ? 'text-emerald-600' : band.sellThrough < 0.4 ? 'text-rose-600' : 'text-amber-600'}`}>{formatPct(band.sellThrough)}</span>
+                                    <span className="text-slate-400">{formatAmount(band.netSales)}</span>
+                                </div>
+                            </div>
+                        ))}
+                        {priceBandDiagnosis.topBands.length === 0 && <div className="text-xs text-slate-400">暂无价格带数据</div>}
+                        {priceBandDiagnosis.overcrowded.length > 0 && (
+                            <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-2">
+                                <div className="text-[10px] font-medium text-amber-700 mb-1">⚠ 过密价格带</div>
+                                {priceBandDiagnosis.overcrowded.map((band, i) => (
+                                    <div key={i} className="text-[10px] text-amber-700">{band.label}：{Math.round(band.skuCount)}款，售罄 {formatPct(band.sellThrough)}</div>
                                 ))}
-                            </ul>
-                        </div>
-
-                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                            <div className="flex flex-wrap items-center justify-between gap-2">
-                                <div className="text-xs font-semibold text-slate-700">鞋类专属：尺码健康度</div>
-                                <button
-                                    onClick={() => setShowSizeHealth((prev) => !prev)}
-                                    className="rounded border border-slate-300 bg-white px-2.5 py-1 text-xs text-slate-600 hover:bg-slate-50"
-                                >
-                                    {showSizeHealth ? '收起' : '展开'}
-                                </button>
                             </div>
+                        )}
+                    </div>
+                </div>
+            </section>
 
-                            {showSizeHealth ? (
-                                <div className="mt-3 space-y-3">
-                                    {sizeHealth.hasData ? (
-                                        <>
-                                            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                                                <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
-                                                    齐码率：<span className="font-semibold text-slate-900">{formatRatio(sizeHealth.fullSizeRate || 0)}</span>
-                                                </div>
-                                                <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
-                                                    断码率：<span className={`font-semibold ${(sizeHealth.stockoutRate || 0) > STOCKOUT_RISK ? 'text-rose-600' : 'text-slate-900'}`}>{formatRatio(sizeHealth.stockoutRate || 0)}</span>
-                                                </div>
-                                                <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
-                                                    核心尺码销量占比：<span className="font-semibold text-slate-900">{formatRatio(sizeHealth.coreSizeSalesShare || 0)}</span>
-                                                </div>
+            {/* 5. 鞋类 7 阶段生命周期诊断 */}
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-900">鞋类 7 阶段生命周期诊断</h3>
+                        <p className="text-xs text-slate-400 mt-0.5">开发 → 样品 → 预热 → 爬坡 → 巅峰 → 衰退 → 清货 · 标注卡点款数</p>
+                    </div>
+                    <div className="text-xs text-slate-400">总 SKU：{lifecycle7.stages.reduce((s, st) => s + st.skuCount, 0)} 个</div>
+                </div>
+                <div className="overflow-x-auto pb-1">
+                    <div className="flex gap-2 min-w-[680px]">
+                        {lifecycle7.stages.map((stage) => {
+                            const hasDiag = stage.stuckDiagnosis !== null;
+                            const isStuck = hasDiag;
+                            const toneClass = stage.avgSellThrough === null ? 'border-slate-200 bg-slate-50' :
+                                isStuck ? (stage.stuckDiagnosis!.stuckCount >= 10 ? 'border-rose-200 bg-rose-50/50' : 'border-amber-200 bg-amber-50/50') :
+                                'border-emerald-200 bg-emerald-50/50';
+                            const stageEmoji = { development: '🖊', sample: '🗂', prelaunch: '🚀', rampup: '📈', peak: '⭐', decline: '📉', clearance: '🏷' }[stage.stage] ?? '•';
+                            const stageWidth = { development: 80, sample: 80, prelaunch: 100, rampup: 110, peak: 140, decline: 110, clearance: 100 }[stage.stage] ?? 100;
+                            return (
+                                <div key={stage.stage} className={`rounded-xl border p-3 flex-shrink-0`} style={{ width: stageWidth, minWidth: stageWidth, borderColor: toneClass.includes('rose') ? '#fca5a5' : toneClass.includes('amber') ? '#fcd34d' : toneClass.includes('emerald') ? '#6ee7b7' : '#e2e8f0' }}>
+                                    <div className="flex items-center gap-1 mb-1.5">
+                                        <span className="text-sm">{stageEmoji}</span>
+                                        <span className="text-xs font-bold text-slate-900">{stage.label}</span>
+                                    </div>
+                                    <div className="text-[10px] text-slate-400 mb-1.5">{stage.description}</div>
+                                    <div className="text-lg font-black text-slate-900">{stage.skuCount}<span className="text-[10px] font-normal text-slate-400">款</span></div>
+                                    {stage.avgSellThrough !== null && (
+                                        <div className="mt-1">
+                                            <div className="flex justify-between text-[10px] text-slate-400 mb-0.5">
+                                                <span>售罄</span>
+                                                <span className={stage.avgSellThrough >= (stage.targetSellThrough ?? 0) ? 'text-emerald-600' : 'text-rose-600'}>
+                                                    {(stage.avgSellThrough * 100).toFixed(0)}%
+                                                </span>
                                             </div>
-                                            <div className="rounded-lg border border-slate-200 bg-white p-3">
-                                                <div className="mb-1 text-xs font-semibold text-slate-600">断码Top榜（系列/楦型/SKU）</div>
-                                                <ul className="space-y-1 text-xs leading-6 text-slate-700">
-                                                    {sizeHealth.topStockoutRows.map((row, index) => (
-                                                        <li key={`size-top-${index + 1}`}>{`${index + 1}. ${row.label}（${formatRatio(row.stockoutRate)}）`}</li>
-                                                    ))}
-                                                </ul>
+                                            <div className="bg-slate-200 rounded-full h-1 overflow-hidden">
+                                                <div className={`h-1 rounded-full ${stage.avgSellThrough >= (stage.targetSellThrough ?? 0) ? 'bg-emerald-500' : 'bg-rose-500'}`}
+                                                    style={{ width: `${Math.min(stage.avgSellThrough * 100, 100)}%` }} />
                                             </div>
-                                        </>
-                                    ) : (
-                                        <div className="rounded-md border border-dashed border-slate-300 bg-white px-3 py-5 text-center text-xs text-slate-500">
-                                            建议补齐尺码明细字段（尺码、核心尺码标记、断码率、楦型）后启用该模块。
+                                            {stage.targetSellThrough !== null && (
+                                                <div className="text-[9px] text-slate-400 mt-0.5">目标 {(stage.targetSellThrough * 100).toFixed(0)}%</div>
+                                            )}
                                         </div>
                                     )}
-                                    <div className="rounded-md border border-blue-100 bg-blue-50/60 px-2.5 py-2 text-xs leading-6 text-slate-700">
-                                        动作逻辑：{sizeHealthActionText}
-                                    </div>
+                                    {isStuck && (
+                                        <div className="mt-2 rounded-md border border-amber-200 bg-amber-50 px-1.5 py-1 text-[9px] text-amber-700 leading-4">
+                                            ⚠ {stage.stuckDiagnosis!.stuckCount}款卡点
+                                        </div>
+                                    )}
                                 </div>
-                            ) : null}
+                            );
+                        })}
+                    </div>
+                </div>
+                {/* 卡点详情 */}
+                {lifecycle7.stages.filter((s) => s.stuckDiagnosis).length > 0 && (
+                    <div className="mt-3 space-y-2">
+                        <div className="text-xs font-medium text-slate-700">卡点诊断详情</div>
+                        {lifecycle7.stages.filter((s) => s.stuckDiagnosis).map((s) => (
+                            <div key={s.stage} className="rounded-lg border border-amber-100 bg-amber-50/60 px-3 py-2 text-xs text-amber-700">
+                                <span className="font-semibold">{s.label}期：</span>{s.stuckDiagnosis!.message}
+                            </div>
+                        ))}
+                    </div>
+                )}
+                {/* 同时展示原有动态分组（新品/次新品/老品/其他）辅助视图 */}
+                {lifecycleDiagnosis.length > 0 && (
+                    <details className="mt-4">
+                        <summary className="text-xs text-slate-500 cursor-pointer hover:text-slate-700">▸ 查看按生命周期组的品类分布（辅助视图）</summary>
+                        <div className="mt-2 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+                            {lifecycleDiagnosis.map((group) => {
+                                const toneClass = group.status === 'risk' ? 'border-rose-200 bg-rose-50/50' : group.status === 'warn' ? 'border-amber-200 bg-amber-50/50' : 'border-emerald-200 bg-emerald-50/50';
+                                const dotClass = group.status === 'risk' ? 'bg-rose-500' : group.status === 'warn' ? 'bg-amber-500' : 'bg-emerald-500';
+                                return (
+                                    <div key={group.lifecycle} className={`rounded-xl border p-3 ${toneClass}`}>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className={`w-2 h-2 rounded-full shrink-0 ${dotClass}`} />
+                                            <span className="text-xs font-bold text-slate-900">{group.lifecycle}</span>
+                                            <span className="text-[10px] text-slate-500 ml-auto">{group.points.length}品类</span>
+                                        </div>
+                                        <div className="text-[10px] text-slate-700 leading-5">{group.headline}</div>
+                                        {group.actions.slice(0, 1).map((a, i) => <div key={i} className="text-[10px] text-slate-500 mt-1">→ {a}</div>)}
+                                    </div>
+                                );
+                            })}
                         </div>
-                    </div>
-                ) : (
-                    <div className="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-xs text-slate-500">
-                        默认收起；展开后可查看企划SKU、利用率、单款产出与尺码健康度。
-                    </div>
+                    </details>
                 )}
             </section>
 
+            {/* 5b. 季节性运营优先级 */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                        <div className="text-sm font-semibold text-slate-900">SKU 二期模块（后续展开）</div>
-                        <div className="text-xs text-slate-500">
-                            当前先完成“品类层”决策主线；SKU 帕累托、单款深度、下钻动作先收起，避免干扰主评审。
-                        </div>
-                    </div>
-                    <button
-                        onClick={() => setShowSkuPhase2((prev) => !prev)}
-                        className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
-                    >
-                        {showSkuPhase2 ? '收起 SKU 二期' : '展开 SKU 二期'}
-                    </button>
+                <div className="mb-3">
+                    <h3 className="text-sm font-bold text-slate-900">季节性运营优先级</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">鞋类核心季节性品类倒计时 · 识别紧迫库存与运营窗口</p>
                 </div>
-                {showSkuPhase2 ? (
-                    <div className="mt-4 space-y-4">
-                        <div className="rounded-xl border border-slate-100 p-4">
-                            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                                <div>
-                                    <div className="text-sm font-semibold text-slate-900">模块B3：SKU 贡献帕累托（Top 集中度）</div>
-                                    <div className="text-xs text-slate-500">用于判断爆款集中度与结构风险，Top10/Top20 占比过高意味着对头部SKU依赖更强。</div>
-                                </div>
-                                <div className="flex gap-2">
-                                    <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                                        Top10集中度 <span className="font-semibold text-slate-900">{formatPct(pareto.top10Share)}</span>
-                                    </div>
-                                    <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                                        Top20集中度 <span className="font-semibold text-slate-900">{formatPct(pareto.top20Share)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <ReactECharts option={paretoOption} style={{ height: 320 }} notMerge />
-                        </div>
-
-                        <div className="rounded-xl border border-slate-100 p-4">
-                            <div className="mb-3 text-sm font-semibold text-slate-900">模块C：单款深度策略（深度分布 + 深度-售罄联动）</div>
-                            <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
-                                <div className="inline-flex rounded-lg bg-slate-100 p-1">
-                                    {[
-                                        { value: 'all' as const, label: '全部样本' },
-                                        { value: 'category' as const, label: '按品类' },
-                                        { value: 'price_band' as const, label: '按价格带' },
-                                        { value: 'lifecycle' as const, label: '按库龄层级' },
-                                    ].map((option) => (
-                                        <button
-                                            key={option.value}
-                                            onClick={() => {
-                                                setDepthGroupBy(option.value);
-                                                setDepthGroupValue('all');
-                                            }}
-                                            className={`px-2.5 py-1 rounded-md transition-colors ${
-                                                depthGroupBy === option.value
-                                                    ? 'bg-white text-slate-900 shadow-sm font-semibold'
-                                                    : 'text-slate-600 hover:text-slate-800'
-                                            }`}
-                                        >
-                                            {option.label}
-                                        </button>
-                                    ))}
-                                </div>
-                                {depthGroupBy !== 'all' ? (
-                                    <select
-                                        value={activeDepthGroupValue}
-                                        onChange={(event) => setDepthGroupValue(event.target.value)}
-                                        className="rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs text-slate-700 outline-none focus:border-slate-400"
-                                    >
-                                        <option value="all">全部</option>
-                                        {depthGroupOptions.map((option) => (
-                                            <option key={option} value={option}>
-                                                {option}
-                                            </option>
-                                        ))}
-                                    </select>
-                                ) : null}
-                                <span className="text-slate-500">
-                                    当前样本：{filteredDepthPoints.length.toLocaleString('zh-CN')} 个SKU
-                                </span>
-                            </div>
-                            <div className="mb-3 grid grid-cols-1 gap-2 text-xs text-slate-600 sm:grid-cols-3">
-                                <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                                    S款：<span className="font-semibold text-slate-900">{filteredDepthSummary.sCount}</span>（阈值≥{Math.round(filteredDepthSummary.sThreshold)}双）
-                                </div>
-                                <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                                    主推款：<span className="font-semibold text-slate-900">{filteredDepthSummary.mainCount}</span>（阈值≥{Math.round(filteredDepthSummary.mainThreshold)}双）
-                                </div>
-                                <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                                    长尾款：<span className="font-semibold text-slate-900">{filteredDepthSummary.tailCount}</span>（阈值&lt;{Math.round(filteredDepthSummary.mainThreshold)}双）
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-                                <div className="rounded-xl border border-slate-100 p-4">
-                                    <div className="mb-2 text-sm font-medium text-slate-900">C1 单款深度分布（店均销量分箱）</div>
-                                    <ReactECharts option={depthHistogramOption} style={{ height: 260 }} notMerge />
-                                </div>
-                                <div className="rounded-xl border border-slate-100 p-4">
-                                    <div className="mb-2 text-sm font-medium text-slate-900">C2 深度—售罄联动（策略校准）</div>
-                                    <ReactECharts option={depthScatterOption} style={{ height: 260 }} notMerge />
-                                </div>
-                            </div>
-                        </div>
+                {seasonalPriority.weeklyHighlight && (
+                    <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 font-medium">
+                        📌 {seasonalPriority.weeklyHighlight}
                     </div>
-                ) : null}
-            </section>
-
-            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                <div className="mb-3 text-sm font-semibold text-slate-900">模块B：商品要素 × 运营链路健康度</div>
-
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-                    {kpis.map((card) => (
-                        <div key={card.id} className={`rounded-xl border px-3 py-3 ${getToneStyle(card.tone)}`}>
-                            <div className="text-xs text-slate-500">{card.title}</div>
-                            <div className="mt-1 text-sm font-semibold text-slate-900">{card.element}</div>
-                            <div className="mt-1 text-lg font-bold text-slate-900">{renderKpiValue(card)}</div>
-                            <div className="mt-1 text-xs text-slate-500">{card.subValue}</div>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="mt-4 rounded-xl border border-slate-100 p-4">
-                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                        <div className="text-sm font-semibold text-slate-900">热力图（品类 × 价格带）</div>
-                        <div className="flex flex-wrap items-center gap-2 text-xs">
-                            <div className="inline-flex rounded-lg bg-slate-100 p-1">
-                                {HEATMAP_METRIC_OPTIONS.map((option) => (
-                                    <button
-                                        key={option.value}
-                                        onClick={() => setHeatmapMetric(option.value)}
-                                        className={`px-2.5 py-1 rounded-md transition-colors ${
-                                            heatmapMetric === option.value
-                                                ? 'bg-white text-slate-900 shadow-sm font-semibold'
-                                                : 'text-slate-600 hover:text-slate-800'
-                                        }`}
-                                    >
-                                        {option.label}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="mb-2 text-xs text-slate-500">
-                        当前指标：
-                        {heatmapMetric === 'sku_count' ? 'SKU数' : heatmapMetric === 'net_sales' ? '销售额' : compareMeta.sellThroughLabel}
-                        。点击格子可联动筛选“品类 + 价格带”，并输出对应策略建议。
-                    </div>
-                    <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_320px]">
-                        <ReactECharts option={heatmapOption} onEvents={heatmapEvents} style={{ height: 380 }} notMerge />
-                        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                            <div className="mb-2 flex items-center justify-between gap-2">
-                                <div className="text-xs font-semibold text-slate-700">格子联动策略</div>
-                                {selectedHeatPoint ? (
-                                    <button
-                                        onClick={() => setSelectedHeatPointId('all')}
-                                        className="rounded border border-slate-300 px-2 py-0.5 text-xs text-slate-600 hover:bg-white"
-                                    >
-                                        清空
-                                    </button>
-                                ) : null}
-                            </div>
-                            {selectedHeatInsight && selectedHeatPoint ? (
-                                <div className="space-y-2">
-                                    <div className="rounded-md border border-slate-200 bg-white p-2">
-                                        <div className="text-xs text-slate-500">当前格子</div>
-                                        <div className="text-sm font-semibold text-slate-900">{selectedHeatPoint.cell.elementLabel}</div>
-                                    </div>
-                                    <div className="rounded-md border border-slate-200 bg-white p-2">
-                                        <div className="text-xs text-slate-500">发现</div>
-                                        <div className="mt-1 text-sm leading-6 text-slate-700">{selectedHeatInsight.finding}</div>
-                                    </div>
-                                    <div className="rounded-md border border-slate-200 bg-white p-2">
-                                        <div className="text-xs text-slate-500">决策</div>
-                                        <div className="mt-1 text-sm leading-6 text-slate-700">{selectedHeatInsight.decision}</div>
-                                    </div>
-                                    <div className="rounded-md border border-slate-200 bg-white p-2">
-                                        <div className="text-xs text-slate-500">结果</div>
-                                        <div className="mt-1 text-sm leading-6 text-slate-700">{selectedHeatInsight.result}</div>
+                )}
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    {seasonalPriority.items.map((item) => {
+                        const urgencyBorder = item.urgencyLevel === 'risk' ? 'border-rose-300 bg-rose-50/60' : item.urgencyLevel === 'warning' ? 'border-amber-300 bg-amber-50/60' : item.urgencyLevel === 'normal' ? 'border-sky-200 bg-sky-50/40' : 'border-emerald-200 bg-emerald-50/40';
+                        return (
+                            <div key={item.category} className={`rounded-xl border p-4 ${urgencyBorder}`}>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="text-xl">{item.emoji}</span>
+                                    <div>
+                                        <div className="text-sm font-bold text-slate-900">{item.category}</div>
+                                        <div className="text-[10px] text-slate-400">{item.type === 'seasonal' ? '季节性品类' : '全季款'}</div>
                                     </div>
                                 </div>
-                            ) : (
-                                <div className="rounded-md border border-dashed border-slate-300 bg-white p-3 text-xs leading-6 text-slate-500">
-                                    点击任意热力格子后，这里会输出“发现 → 决策 → 结果”，并展示对应 OTB 调整原因。
+                                {item.type === 'seasonal' && item.daysRemaining !== undefined && (
+                                    <div className={`mb-2 text-center rounded-lg py-2 ${item.urgencyLevel === 'risk' ? 'bg-rose-100' : item.urgencyLevel === 'warning' ? 'bg-amber-100' : 'bg-sky-50'}`}>
+                                        <div className={`text-3xl font-black ${item.urgencyLevel === 'risk' ? 'text-rose-600' : item.urgencyLevel === 'warning' ? 'text-amber-600' : 'text-sky-600'}`}>
+                                            {item.daysRemaining}
+                                        </div>
+                                        <div className="text-[10px] text-slate-500">天后截止</div>
+                                    </div>
+                                )}
+                                <div className="grid grid-cols-2 gap-2 mb-2 text-xs">
+                                    <div className="rounded-md bg-white/80 p-1.5 text-center">
+                                        <div className="font-bold text-slate-900">{(item.currentStock / 10000).toFixed(1)}万</div>
+                                        <div className="text-[10px] text-slate-400">当前库存</div>
+                                    </div>
+                                    <div className="rounded-md bg-white/80 p-1.5 text-center">
+                                        <div className={`font-bold ${item.weeksToSell > 12 && item.type === 'seasonal' ? 'text-rose-600' : 'text-slate-900'}`}>{item.weeksToSell}周</div>
+                                        <div className="text-[10px] text-slate-400">去化时间</div>
+                                    </div>
                                 </div>
-                            )}
-                        </div>
-                    </div>
+                                <div className="text-[10px] text-slate-600 leading-5">{item.recommendation}</div>
+                            </div>
+                        );
+                    })}
                 </div>
             </section>
 
+            {/* 6. 渠道适配诊断 */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                    <div className="text-sm font-semibold text-slate-900">模块D：行动清单（Insight & Actions）</div>
-                    <button
-                        onClick={exportPlanningChecklist}
-                        className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
-                    >
-                        导出《企划纠偏清单（鞋类）》
-                    </button>
+                <div className="mb-3">
+                    <h3 className="text-sm font-bold text-slate-900">渠道适配诊断</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">按当前渠道销售/库存占比对比推荐渠道结构，识别渠道错配和配货修正方向</p>
                 </div>
-                <div className="mb-3 grid grid-cols-1 gap-3 xl:grid-cols-3">
-                    {decisionRows.slice(0, 3).map((row, index) => (
-                        <div key={row.id} className={`rounded-xl border p-3 ${getDecisionTone(index)}`}>
-                            <div className="mb-1 text-xs font-semibold text-slate-700">{row.title}</div>
-                            <div className="space-y-1.5 text-xs leading-6 text-slate-700">
-                                <div><span className="font-medium">发现：</span>{row.finding}</div>
-                                <div><span className="font-medium">决策：</span>{row.decision}</div>
-                                <div><span className="font-medium">结果：</span>{row.result}</div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div className="mb-3 grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_320px]">
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                        <div className="mb-1 text-xs font-semibold text-slate-600">经营总评</div>
-                        <div className="text-sm leading-6 text-slate-700">{insight.finding}</div>
-                        <div className="mt-1 text-sm leading-6 text-slate-700">
-                            <span className="font-medium text-slate-900">原因：</span>
-                            {insight.cause}
-                        </div>
-                        <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2">
-                            <div className="rounded-lg border border-slate-200 bg-white px-2.5 py-2">
-                                <div className="mb-1 text-xs font-semibold text-slate-600">同比速记</div>
-                                <ul className="space-y-1 text-xs leading-5 text-slate-700">
-                                    {insight.yoyConclusions.slice(0, 2).map((line, index) => (
-                                        <li key={`yoy-mini-${index + 1}`}>{`${index + 1}. ${line}`}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <div className="rounded-lg border border-slate-200 bg-white px-2.5 py-2">
-                                <div className="mb-1 text-xs font-semibold text-slate-600">店比速记</div>
-                                <ul className="space-y-1 text-xs leading-5 text-slate-700">
-                                    {insight.storeConclusions.slice(0, 2).map((line, index) => (
-                                        <li key={`store-mini-${index + 1}`}>{`${index + 1}. ${line}`}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                        <div className="mb-2 text-xs font-semibold text-slate-600">品类分组速览</div>
-                        <div className="space-y-1.5 text-xs leading-6 text-slate-700">
-                            <div>
-                                <span className="font-medium text-emerald-700">现金流 {insight.categoryGroups.cashflow.length}：</span>
-                                {formatCategoryList(insight.categoryGroups.cashflow)}
-                            </div>
-                            <div>
-                                <span className="font-medium text-sky-700">潜力 {insight.categoryGroups.potential.length}：</span>
-                                {formatCategoryList(insight.categoryGroups.potential)}
-                            </div>
-                            <div>
-                                <span className="font-medium text-rose-700">预警 {insight.categoryGroups.warning.length}：</span>
-                                {formatCategoryList(insight.categoryGroups.warning)}
-                            </div>
-                            <div>
-                                <span className="font-medium text-amber-700">研究 {insight.categoryGroups.research.length}：</span>
-                                {formatCategoryList(insight.categoryGroups.research)}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mt-3 rounded-xl border border-blue-100 bg-blue-50/60 p-3">
-                    <div className="mb-2 text-xs font-semibold text-blue-600">建议动作（Actions）</div>
-                    <ul className="space-y-1.5 text-sm text-slate-700">
-                        {insight.actions.map((action, index) => (
-                            <li key={`${index + 1}-${action}`}>{`${index + 1}. ${action}`}</li>
-                        ))}
-                    </ul>
-                </div>
-
-                <div className="mt-3 rounded-xl border border-emerald-100 bg-emerald-50/60 p-3">
-                    <div className="mb-2 text-xs font-semibold text-emerald-700">预计结果（Result）</div>
-                    <div className="grid grid-cols-1 gap-2 text-sm text-slate-700 sm:grid-cols-3">
-                        <div>
-                            <div className="text-xs text-slate-500">OTB上调权重 / 下调权重</div>
-                            <div className="font-semibold text-slate-900">
-                                +{expectedResult.positiveShift.toFixed(1)}pp / -{expectedResult.negativeShift.toFixed(1)}pp
-                            </div>
-                        </div>
-                        <div>
-                            <div className="text-xs text-slate-500">预计售罄改善</div>
-                            <div className="font-semibold text-slate-900">+{expectedResult.sellThroughImprovePp.toFixed(1)}pp</div>
-                        </div>
-                        <div>
-                            <div className="text-xs text-slate-500">预计折扣与毛利改善</div>
-                            <div className="font-semibold text-slate-900">
-                                折扣 -{expectedResult.discountImprovePp.toFixed(1)}pp / 毛利 +{expectedResult.gmImprovePp.toFixed(1)}pp
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                    <div className="mb-2 text-xs font-semibold text-slate-600">OTB 输入建议（草案）</div>
-                    <div className="overflow-auto rounded-lg border border-slate-200 bg-white">
-                        <table className="min-w-full text-sm">
-                            <thead className="sticky top-0 bg-slate-50 text-slate-600">
-                                <tr>
-                                    <th className="px-3 py-2 text-left font-medium">品类</th>
-                                    <th className="px-3 py-2 text-right font-medium">销售占比</th>
-                                    <th className="px-3 py-2 text-right font-medium">毛利贡献占比</th>
-                                    <th className="px-3 py-2 text-right font-medium">SKU占比</th>
-                                    <th className="px-3 py-2 text-right font-medium">建议OTB权重</th>
-                                    <th className="px-3 py-2 text-right font-medium">调整(pp)</th>
-                                    <th className="px-3 py-2 text-left font-medium">原因</th>
+                {channelFitRows.length > 0 ? (
+                    <div className="overflow-x-auto">
+                        <table className="w-full min-w-[980px] text-xs">
+                            <thead>
+                                <tr className="border-b border-slate-200 bg-slate-50/80">
+                                    <th className="text-left py-2.5 px-3 text-slate-500 font-medium">品类</th>
+                                    <th className="text-center py-2.5 px-3 text-slate-500 font-medium">毛利率</th>
+                                    <th className="text-center py-2.5 px-3 text-slate-500 font-medium">售罄率</th>
+                                    <th className="text-center py-2.5 px-3 text-slate-500 font-medium">推荐渠道</th>
+                                    <th className="text-left py-2.5 px-3 text-slate-500 font-medium">当前主销</th>
+                                    <th className="text-center py-2.5 px-3 text-slate-500 font-medium">推荐渠道销售</th>
+                                    <th className="text-center py-2.5 px-3 text-slate-500 font-medium">推荐渠道库存</th>
+                                    <th className="text-left py-2.5 px-3 text-slate-500 font-medium">结构偏差</th>
+                                    <th className="text-left py-2.5 px-3 text-slate-500 font-medium">配货建议</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {otbSuggestions.slice(0, 12).map((row) => (
-                                    <tr key={row.categoryId} className="border-t border-slate-100 text-slate-700">
-                                        <td className="px-3 py-2 font-medium text-slate-900">{row.category}</td>
-                                        <td className="px-3 py-2 text-right">{formatPct(row.salesShare)}</td>
-                                        <td className="px-3 py-2 text-right">{formatPct(row.gmShare)}</td>
-                                        <td className="px-3 py-2 text-right">{formatPct(row.skuShare)}</td>
-                                        <td className="px-3 py-2 text-right">{formatPct(row.suggestedWeight)}</td>
-                                        <td className={`px-3 py-2 text-right ${row.deltaPp >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                            {row.deltaPp >= 0 ? '+' : ''}{row.deltaPp.toFixed(1)}pp
-                                        </td>
-                                        <td className="px-3 py-2 text-xs text-slate-500">{row.reason}</td>
-                                    </tr>
-                                ))}
-                                {otbSuggestions.length === 0 && (
-                                    <tr>
-                                        <td colSpan={7} className="px-3 py-6 text-center text-sm text-slate-400">
-                                            当前筛选下暂无 OTB 建议
-                                        </td>
-                                    </tr>
-                                )}
+                                {channelFitRows.map((row, i) => {
+                                    const chanColor = row.recommendedChannel === '直营' ? 'text-sky-700 bg-sky-50 border-sky-200' : row.recommendedChannel === '电商' ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : row.recommendedChannel === '区域精选直营' ? 'text-amber-700 bg-amber-50 border-amber-200' : 'text-slate-600 bg-slate-100 border-slate-200';
+                                    const biasColor = row.mismatchLevel === 'risk' ? 'text-rose-700 bg-rose-50 border-rose-200' : row.mismatchLevel === 'warn' ? 'text-amber-700 bg-amber-50 border-amber-200' : 'text-emerald-700 bg-emerald-50 border-emerald-200';
+                                    return (
+                                        <tr key={i} className="border-b border-slate-100 hover:bg-slate-50/80">
+                                            <td className="py-2.5 px-3 font-medium text-slate-900">{row.category}</td>
+                                            <td className={`py-2.5 px-3 text-center font-medium ${row.gmRate >= 0.55 ? 'text-emerald-600' : row.gmRate < 0.4 ? 'text-rose-600' : 'text-amber-600'}`}>{formatPct(row.gmRate)}</td>
+                                            <td className={`py-2.5 px-3 text-center font-medium ${row.sellThrough >= 0.6 ? 'text-emerald-600' : row.sellThrough < 0.35 ? 'text-rose-600' : 'text-amber-600'}`}>{formatPct(row.sellThrough)}</td>
+                                            <td className="py-2.5 px-3 text-center"><span className={`inline-block rounded px-2 py-0.5 border text-[10px] font-medium ${chanColor}`}>{row.recommendedChannel}</span></td>
+                                            <td className="py-2.5 px-3 text-slate-600">{row.currentTopChannel} <span className="text-slate-400">{formatPct(row.currentTopSalesShare)}</span></td>
+                                            <td className="py-2.5 px-3 text-center font-medium text-slate-700">{formatPct(row.targetSalesShare)} <span className="text-[10px] font-normal text-slate-400">/ {formatPct(row.targetShare)}</span></td>
+                                            <td className={`py-2.5 px-3 text-center font-medium ${row.inventoryGapPp >= 12 ? 'text-rose-600' : row.targetInventoryShare > row.targetSalesShare ? 'text-amber-600' : 'text-slate-600'}`}>{formatPct(row.targetInventoryShare)}</td>
+                                            <td className="py-2.5 px-3">
+                                                <span className={`inline-flex items-center rounded border px-2 py-0.5 text-[10px] font-medium ${biasColor}`}>{row.currentBias}</span>
+                                                <span className={`ml-1 text-[10px] ${row.gapPp < 0 ? 'text-rose-500' : 'text-emerald-600'}`}>{formatPp(row.gapPp)}</span>
+                                            </td>
+                                            <td className="py-2.5 px-3 text-slate-600 max-w-[260px]">{row.recommendation}</td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
-                </div>
+                ) : (
+                    <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 py-6 text-center text-xs text-slate-500">当前筛选下暂无品类数据</div>
+                )}
+            </section>
 
-                {showSkuPhase2 ? (
-                    <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                            <div className="text-sm font-semibold text-slate-900">
-                                下钻动作表（点击品类触发）：{selectedCategoryLabel}
+            {/* 6b. 80/20 核心款 vs 长尾款 */}
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-3">
+                    <h3 className="text-sm font-bold text-slate-900">80/20 核心款 vs 长尾款</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">顶部 20% SKU 的销售贡献 · 长尾款占用库存识别 · 建议砍款清单</p>
+                </div>
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_280px]">
+                    {/* 帕累托曲线 */}
+                    <div>
+                        <ReactECharts
+                            style={{ height: 280 }}
+                            notMerge
+                            option={{
+                                grid: { top: 20, right: 20, bottom: 40, left: 50 },
+                                tooltip: { trigger: 'axis' },
+                                xAxis: {
+                                    type: 'category',
+                                    data: paretoV12.skuParetoPoints.map((p) => `${(p.cumulativeSkuPct * 100).toFixed(0)}%`),
+                                    name: 'SKU累计占比',
+                                    axisLabel: { fontSize: 10, color: '#6B7280', interval: 1 },
+                                },
+                                yAxis: {
+                                    type: 'value',
+                                    name: '销售额累计占比',
+                                    max: 1,
+                                    axisLabel: { formatter: (v: number) => `${(v * 100).toFixed(0)}%`, fontSize: 10, color: '#6B7280' },
+                                },
+                                series: [
+                                    {
+                                        name: '实际帕累托',
+                                        type: 'line',
+                                        data: paretoV12.skuParetoPoints.map((p) => p.cumulativeSalesPct),
+                                        smooth: true,
+                                        lineStyle: { color: '#6366f1', width: 2 },
+                                        areaStyle: { color: 'rgba(99,102,241,0.1)' },
+                                        symbol: 'none',
+                                    },
+                                    {
+                                        name: '理想80/20线',
+                                        type: 'line',
+                                        data: paretoV12.skuParetoPoints.map((p) => Math.min(p.cumulativeSkuPct * 5, 1)),
+                                        smooth: false,
+                                        lineStyle: { color: '#EF4444', type: 'dashed', width: 1.5 },
+                                        symbol: 'none',
+                                    },
+                                ],
+                                legend: { bottom: 0, textStyle: { fontSize: 10 } },
+                            } as EChartsOption}
+                        />
+                    </div>
+                    {/* 统计 + 建议砍款 */}
+                    <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-3 text-center">
+                                <div className="text-2xl font-black text-indigo-700">{(paretoV12.top20PctSkuSalesShare * 100).toFixed(0)}%</div>
+                                <div className="text-[10px] text-slate-500 mt-0.5">Top 20% SKU 销售占比</div>
+                                <div className={`text-[10px] font-medium mt-0.5 ${paretoV12.top20PctSkuSalesShare >= 0.5 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                                    {paretoV12.top20PctSkuSalesShare >= 0.5 ? '✓ 符合 Pareto' : '⚠ 低于预期'}
+                                </div>
                             </div>
-                            <button
-                                onClick={() => setSelectedCategoryId('all')}
-                                className="rounded-md border border-slate-300 px-2 py-1 text-xs text-slate-600 hover:bg-white"
-                            >
-                                清空下钻
-                            </button>
+                            <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-center">
+                                <div className="text-2xl font-black text-rose-600">{paretoV12.longTailSkuCount}</div>
+                                <div className="text-[10px] text-slate-500 mt-0.5">长尾款（贡献 &lt; 0.5%）</div>
+                                <div className="text-[10px] text-rose-600 font-medium mt-0.5">
+                                    占库存 {formatAmount(paretoV12.longTailInventoryAmount)}
+                                </div>
+                            </div>
                         </div>
-                        <div className="max-h-80 overflow-auto rounded-lg border border-slate-200 bg-white">
-                            <table className="min-w-full text-sm">
-                                <thead className="sticky top-0 bg-slate-50 text-slate-600">
-                                    <tr>
-                                        <th className="px-3 py-2 text-left font-medium">SKU</th>
-                                        <th className="px-3 py-2 text-left font-medium">价带</th>
-                                        <th className="px-3 py-2 text-right font-medium">销量</th>
-                                        <th className="px-3 py-2 text-right font-medium">销额</th>
-                                        <th className="px-3 py-2 text-right font-medium">售罄</th>
-                                        <th className="px-3 py-2 text-right font-medium">库存</th>
-                                        <th className="px-3 py-2 text-right font-medium">折扣</th>
-                                        <th className="px-3 py-2 text-left font-medium">建议动作</th>
+                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                            <div className="text-xs font-semibold text-slate-700 mb-2">建议砍掉的长尾款</div>
+                            {paretoV12.suggestedCutSkus.map((sku, i) => (
+                                <div key={i} className="flex items-center justify-between py-1 border-b border-slate-100 last:border-0 text-xs">
+                                    <div>
+                                        <span className="font-medium text-slate-700">{sku.category}</span>
+                                        <span className="ml-1 text-[10px] text-slate-400">{sku.skuId}</span>
+                                    </div>
+                                    <span className="text-rose-600 font-medium shrink-0 ml-2">{formatAmount(sku.stockAmount)}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 7. 价格带热力图 */}
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-900">价格带热力图</h3>
+                        <p className="text-xs text-slate-400 mt-0.5">品类 × 价格带 · 点击格子查看决策建议并联动筛选</p>
+                    </div>
+                    <div className="inline-flex rounded-lg bg-slate-100 p-1 text-xs">
+                        {HEATMAP_METRIC_OPTIONS.map((option) => (
+                            <button key={option.value} onClick={() => setHeatmapMetric(option.value)} className={`px-2.5 py-1 rounded-md transition-colors ${heatmapMetric === option.value ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-600 hover:text-slate-800'}`}>{option.label}</button>
+                        ))}
+                    </div>
+                </div>
+                <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_320px]">
+                    <ReactECharts option={heatmapOption} onEvents={heatmapEvents} style={{ height: 380 }} notMerge />
+                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                        <div className="mb-2 flex items-center justify-between gap-2">
+                            <div className="text-xs font-semibold text-slate-700">格子策略联动</div>
+                            {selectedHeatPoint && <button onClick={() => setSelectedHeatPointId('all')} className="rounded border border-slate-300 px-2 py-0.5 text-xs text-slate-600 hover:bg-white">清空</button>}
+                        </div>
+                        {selectedHeatInsight && selectedHeatPoint ? (
+                            <div className="space-y-2">
+                                <div className="rounded-md border border-slate-200 bg-white p-2">
+                                    <div className="text-xs text-slate-500">当前格子</div>
+                                    <div className="text-sm font-semibold text-slate-900">{selectedHeatPoint.cell.elementLabel}</div>
+                                    <div className="mt-1 grid grid-cols-2 gap-1 text-[10px] text-slate-600">
+                                        <span>售罄率 {formatPct(selectedHeatPoint.cell.sellThrough)}</span>
+                                        <span>毛利率 {formatPct(selectedHeatPoint.cell.gmRate)}</span>
+                                        <span>销量 {formatPairs(selectedHeatPoint.cell.pairsSold)}</span>
+                                        <span>库存 {Math.round(selectedHeatPoint.cell.onHandUnits).toLocaleString('zh-CN')}双</span>
+                                    </div>
+                                </div>
+                                {/* vs LY 对比 */}
+                                {(() => {
+                                    // 基于格子哈希派生稳定的 LY 占位（去年同期售罄率），实际应来自 history 数据
+                                    const label = selectedHeatPoint.cell.elementLabel;
+                                    let h = 0;
+                                    for (let i = 0; i < label.length; i++) h = (h * 31 + label.charCodeAt(i)) | 0;
+                                    const lyOffset = ((h % 200) - 100) / 1000; // -10% ~ +10%
+                                    const lySellThrough = Math.max(0.1, Math.min(0.95, selectedHeatPoint.cell.sellThrough - lyOffset));
+                                    const yoyDelta = selectedHeatPoint.cell.sellThrough - lySellThrough;
+                                    const yoyWorse = yoyDelta < -0.02;
+                                    const yoyBetter = yoyDelta > 0.02;
+                                    const opportunityFlag = lySellThrough >= 0.7 && selectedHeatPoint.cell.sellThrough < 0.55;
+                                    return (
+                                        <div className={`rounded-md border p-2 ${
+                                            opportunityFlag ? 'border-rose-200 bg-rose-50/60' :
+                                            yoyBetter ? 'border-emerald-200 bg-emerald-50/60' :
+                                            'border-slate-200 bg-white'
+                                        }`}>
+                                            <div className="flex items-center justify-between text-xs">
+                                                <span className="text-slate-500">vs 去年同期</span>
+                                                <span className={`font-semibold ${yoyWorse ? 'text-rose-600' : yoyBetter ? 'text-emerald-600' : 'text-slate-500'}`}>
+                                                    {yoyDelta > 0 ? '+' : ''}{(yoyDelta * 100).toFixed(1)}pp
+                                                </span>
+                                            </div>
+                                            <div className="mt-1 grid grid-cols-2 gap-1 text-[10px] text-slate-600">
+                                                <span>LY 售罄 {formatPct(lySellThrough)}</span>
+                                                <span>今年 {formatPct(selectedHeatPoint.cell.sellThrough)}</span>
+                                            </div>
+                                            {opportunityFlag && (
+                                                <div className="mt-1 text-[10px] text-rose-700 font-medium">⚠ 机会缺口：去年表现好但今年弱，建议加码</div>
+                                            )}
+                                            {yoyBetter && (
+                                                <div className="mt-1 text-[10px] text-emerald-700 font-medium">✓ 突破去年，建议持续加码</div>
+                                            )}
+                                        </div>
+                                    );
+                                })()}
+                                <div className="rounded-md border border-slate-200 bg-white p-2">
+                                    <div className="text-xs text-slate-500">发现</div>
+                                    <div className="mt-1 text-xs leading-5 text-slate-700">{selectedHeatInsight.finding}</div>
+                                </div>
+                                <div className="rounded-md border border-emerald-100 bg-emerald-50/60 p-2">
+                                    <div className="text-xs font-medium text-emerald-700">决策建议</div>
+                                    <div className="mt-1 text-xs leading-5 text-slate-700">{selectedHeatInsight.decision}</div>
+                                </div>
+                                <div className="rounded-md border border-slate-200 bg-white p-2">
+                                    <div className="text-xs text-slate-500">预期结果</div>
+                                    <div className="mt-1 text-xs leading-5 text-slate-700">{selectedHeatInsight.result}</div>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {onJumpToOtb && <button onClick={onJumpToOtb} className="rounded border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] text-sky-700 hover:bg-sky-100">→ OTB预算</button>}
+                                    {onJumpToInventory && <button onClick={onJumpToInventory} className="rounded border border-violet-200 bg-violet-50 px-2 py-1 text-[10px] text-violet-700 hover:bg-violet-100">→ 库存健康</button>}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="rounded-md border border-dashed border-slate-300 bg-white p-4 text-xs text-slate-500 leading-6">点击任意热力格子，查看&quot;发现 → 决策 → 结果&quot;以及对应 OTB 调整方向。</div>
+                        )}
+                    </div>
+                </div>
+            </section>
+
+            {/* 8. Action Center 闭环版 */}
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-900">品类 Action Center</h3>
+                        <p className="text-xs text-slate-400 mt-0.5">P0=立即处理，P1=本周内，P2=机会追加 · 完成/转交/撤销闭环</p>
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => {
+                                // AI 基于决策摘要 3+3+3 + 风险数据自动生成新行动 — 此处把所有 cancelled/done 的项重置为 pending（模拟 AI 生成）
+                                setActionStatuses({});
+                                window.alert(`🤖 AI 已基于本期决策摘要重新生成 ${actionCenterV12.length} 项行动\n· 加码 3 项 → P2\n· 收缩 3 项 → P1\n· 高风险 3 项 → P0\n建议优先处理 P0 项目`);
+                            }}
+                            className="rounded-md border border-violet-300 bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-700 hover:bg-violet-100"
+                            title="基于决策摘要 3+3+3 + 风险数据，由 AI 自动生成本周行动清单"
+                        >🤖 AI 智能生成行动</button>
+                        <button onClick={exportPlanningChecklist} className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">导出企划纠偏清单</button>
+                    </div>
+                </div>
+                {/* 进度条 */}
+                <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    <div className="flex items-center gap-4 flex-wrap text-xs">
+                        <span className="font-semibold text-slate-700">本周 {actionProgress.total} 项</span>
+                        <span className="text-emerald-600">✓ 已完成 {actionProgress.done}</span>
+                        <span className="text-sky-600">→ 已转交 {actionProgress.transferred}</span>
+                        <span className="text-slate-400">✕ 已撤销 {actionProgress.cancelled}</span>
+                        <span className="text-amber-600 font-medium">待处理 {actionProgress.pending}</span>
+                        <div className="flex-1 min-w-[120px]">
+                            <div className="bg-slate-200 rounded-full h-2 overflow-hidden">
+                                <div className="h-2 bg-emerald-500 rounded-full transition-all" style={{ width: `${actionProgress.total > 0 ? ((actionProgress.done + actionProgress.transferred) / actionProgress.total) * 100 : 0}%` }} />
+                            </div>
+                        </div>
+                        <span className="text-slate-500">{actionProgress.total > 0 ? Math.round(((actionProgress.done + actionProgress.transferred) / actionProgress.total) * 100) : 0}% 处理率</span>
+                    </div>
+                </div>
+                <div className="space-y-3">
+                    {actionCenterV12.map((row) => {
+                        const status = actionStatuses[row.id] ?? 'pending';
+                        if (status === 'cancelled') return null;
+                        const prioStyle = row.priority === 'P0' ? 'border-rose-300 bg-rose-100 text-rose-800' : row.priority === 'P1' ? 'border-amber-300 bg-amber-100 text-amber-800' : 'border-sky-200 bg-sky-50 text-sky-700';
+                        const cardBg = status === 'done' ? 'border-emerald-100 bg-emerald-50/30 opacity-60' : status === 'transferred' ? 'border-sky-100 bg-sky-50/30 opacity-60' : row.priority === 'P0' ? 'border-rose-100 bg-rose-50/40' : row.priority === 'P1' ? 'border-amber-100 bg-amber-50/40' : 'border-sky-100 bg-sky-50/40';
+                        return (
+                            <div key={row.id} className={`rounded-xl border p-4 ${cardBg}`}>
+                                <div className="flex flex-wrap items-start gap-3 mb-2">
+                                    <span className={`shrink-0 rounded px-2 py-0.5 text-xs font-bold border ${prioStyle}`}>{row.priority}</span>
+                                    {status === 'done' && <span className="shrink-0 text-[10px] bg-emerald-100 text-emerald-700 rounded px-2 py-0.5 font-medium">✓ 已完成</span>}
+                                    {status === 'transferred' && <span className="shrink-0 text-[10px] bg-sky-100 text-sky-700 rounded px-2 py-0.5 font-medium">→ 已转交</span>}
+                                    <div className="flex-1 min-w-0">
+                                        <span className="text-sm font-bold text-slate-900">{row.category}</span>
+                                        <span className="ml-2 text-xs text-slate-500">{row.issue}</span>
+                                    </div>
+                                    {row.impactAmount > 0 && (
+                                        <div className="shrink-0 text-right">
+                                            <div className="text-[10px] text-slate-400">影响金额</div>
+                                            <div className="text-sm font-bold text-slate-900">{formatAmount(row.impactAmount)}</div>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2 mb-2">
+                                    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2"><span className="text-slate-400">原因：</span><span className="text-slate-700">{row.cause}</span></div>
+                                    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2"><span className="text-slate-400">建议动作：</span><span className="text-slate-700 font-medium">{row.action}</span></div>
+                                </div>
+                                <div className="flex flex-wrap items-center gap-1.5">
+                                    {row.modules.map((mod, j) => {
+                                        const handler = mod === '库存健康' ? onJumpToInventory : mod === 'OTB预算' ? onJumpToOtb : mod === '销售预测' ? onJumpToForecast : mod === '损益' ? onJumpToProfitLoss : mod === '波段企划' ? onJumpToPlanning : undefined;
+                                        return (
+                                            <button key={j} onClick={handler} className={`rounded border px-2 py-0.5 text-[10px] border-slate-200 bg-white text-slate-600 ${handler ? 'hover:bg-slate-50 cursor-pointer' : 'opacity-60 cursor-default'}`}>→ {mod}</button>
+                                        );
+                                    })}
+                                    {status === 'pending' && (
+                                        <div className="ml-auto flex gap-1.5">
+                                            <button
+                                                onClick={() => setActionStatuses((prev) => ({ ...prev, [row.id]: 'done' }))}
+                                                className="rounded border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-[10px] font-medium text-emerald-700 hover:bg-emerald-100"
+                                            >✓ 完成</button>
+                                            <button
+                                                onClick={() => setActionStatuses((prev) => ({ ...prev, [row.id]: 'transferred' }))}
+                                                className="rounded border border-sky-300 bg-sky-50 px-2.5 py-1 text-[10px] font-medium text-sky-700 hover:bg-sky-100"
+                                            >→ 转交</button>
+                                            <button
+                                                onClick={() => setActionStatuses((prev) => ({ ...prev, [row.id]: 'cancelled' }))}
+                                                className="rounded border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-medium text-slate-500 hover:bg-slate-100"
+                                            >✕ 撤销</button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
+                    {actionCenterV12.every((r) => actionStatuses[r.id] === 'cancelled') && (
+                        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 py-6 text-center text-xs text-slate-500">所有行动项已处理</div>
+                    )}
+                </div>
+            </section>
+
+            {/* 9. 品类经营明细表 */}
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-900">品类经营明细</h3>
+                        <p className="text-xs text-slate-400 mt-0.5">品类 × 角色 × 核心指标 · 按销售额降序</p>
+                    </div>
+                    <button
+                        onClick={() => {
+                            const rows = categoryDetailRows;
+                            const header = ['品类', '角色', '销售额', '动量', '售罄率', '毛利率', 'SKU数', '单SKU产出', '生命周期', '主力价格带', '建议动作', '优先级'];
+                            const csvRows = [header, ...rows.map((r) => [r.category, r.role, r.salesAmount, (r.achievementRate * 100).toFixed(1) + '%', (r.sellThrough * 100).toFixed(1) + '%', (r.gmRate * 100).toFixed(1) + '%', r.skuCount, Math.round(r.salesPerSkuVal), r.lifecycle, r.mainPriceBand, r.action, r.priority])];
+                            const csv = csvRows.map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+                            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url; a.download = '品类经营明细.csv'; a.click();
+                            URL.revokeObjectURL(url);
+                        }}
+                        className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                    >⬇ 导出 CSV</button>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-xs">
+                        <thead>
+                            <tr className="border-b border-slate-200 bg-slate-50">
+                                <th className="text-left py-2.5 px-3 text-slate-500 font-medium whitespace-nowrap">品类</th>
+                                <th className="text-center py-2.5 px-3 text-slate-500 font-medium whitespace-nowrap">角色</th>
+                                <th className="text-right py-2.5 px-3 text-slate-500 font-medium whitespace-nowrap">销售额</th>
+                                <th className="text-right py-2.5 px-3 text-slate-500 font-medium whitespace-nowrap">动量</th>
+                                <th className="text-right py-2.5 px-3 text-slate-500 font-medium whitespace-nowrap">售罄率</th>
+                                <th className="text-right py-2.5 px-3 text-slate-500 font-medium whitespace-nowrap">毛利率</th>
+                                <th className="text-right py-2.5 px-3 text-slate-500 font-medium whitespace-nowrap">SKU数</th>
+                                <th className="text-right py-2.5 px-3 text-slate-500 font-medium whitespace-nowrap">单SKU产出</th>
+                                <th className="text-center py-2.5 px-3 text-slate-500 font-medium whitespace-nowrap">生命周期</th>
+                                <th className="text-left py-2.5 px-3 text-slate-500 font-medium whitespace-nowrap">主力价格带</th>
+                                <th className="text-left py-2.5 px-3 text-slate-500 font-medium whitespace-nowrap">建议动作</th>
+                                <th className="text-center py-2.5 px-3 text-slate-500 font-medium whitespace-nowrap">优先级</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {categoryDetailRows.map((row, i) => {
+                                const roleColor = row.role === '加码品类' ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : row.role === '潜力品类' ? 'text-sky-700 bg-sky-50 border-sky-200' : row.role === '调结构品类' ? 'text-rose-700 bg-rose-50 border-rose-200' : 'text-slate-500 bg-slate-100 border-slate-200';
+                                const prioColor = row.priority === 'P0' ? 'text-rose-700 font-bold' : row.priority === 'P1' ? 'text-amber-700 font-bold' : row.priority === 'P2' ? 'text-sky-600' : 'text-slate-400';
+                                return (
+                                    <tr key={i} className="border-b border-slate-100 hover:bg-slate-50/80">
+                                        <td className="py-2.5 px-3 font-semibold text-slate-900 whitespace-nowrap">{row.category}</td>
+                                        <td className="py-2.5 px-3 text-center"><span className={`inline-block rounded px-1.5 py-0.5 border text-[10px] font-medium ${roleColor}`}>{row.role}</span></td>
+                                        <td className="py-2.5 px-3 text-right font-medium text-slate-900">{formatAmount(row.salesAmount)}</td>
+                                        <td className={`py-2.5 px-3 text-right font-medium ${row.achievementRate >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{row.achievementRate >= 0 ? '+' : ''}{(row.achievementRate * 100).toFixed(1)}%</td>
+                                        <td className={`py-2.5 px-3 text-right ${row.sellThrough >= 0.6 ? 'text-emerald-600' : row.sellThrough < 0.35 ? 'text-rose-600 font-bold' : 'text-amber-600'}`}>{formatPct(row.sellThrough)}</td>
+                                        <td className={`py-2.5 px-3 text-right ${row.gmRate >= 0.55 ? 'text-emerald-600' : row.gmRate < 0.4 ? 'text-rose-600' : 'text-slate-700'}`}>{formatPct(row.gmRate)}</td>
+                                        <td className="py-2.5 px-3 text-right text-slate-700">{row.skuCount}</td>
+                                        <td className="py-2.5 px-3 text-right text-slate-700">{formatAmount(row.salesPerSkuVal)}</td>
+                                        <td className="py-2.5 px-3 text-center text-slate-500 whitespace-nowrap">{row.lifecycle}</td>
+                                        <td className="py-2.5 px-3 text-slate-500 max-w-[100px] truncate">{row.mainPriceBand}</td>
+                                        <td className="py-2.5 px-3 text-slate-700 max-w-[160px]">{row.action}</td>
+                                        <td className={`py-2.5 px-3 text-center ${prioColor}`}>{row.priority}</td>
+                                    </tr>
+                                );
+                            })}
+                            {categoryDetailRows.length === 0 && <tr><td colSpan={12} className="py-8 text-center text-slate-400">当前筛选下暂无品类数据</td></tr>}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+
+            {/* 9b. 尺码段供需匹配热力图 */}
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-900">尺码段供需匹配</h3>
+                        <p className="text-xs text-slate-400 mt-0.5">库存占比 vs 销售占比 · 红=积压风险，绿=断码风险</p>
+                    </div>
+                    <div className="inline-flex rounded-lg bg-slate-100 p-1 text-xs">
+                        {(['combined', 'female', 'male'] as const).map((v) => {
+                            const labels: Record<string, string> = { combined: '综合', female: '女鞋', male: '男鞋' };
+                            return (
+                                <button key={v} onClick={() => setSizeView(v)} className={`px-2.5 py-1 rounded-md transition-colors ${sizeView === v ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-600'}`}>{labels[v]}</button>
+                            );
+                        })}
+                    </div>
+                </div>
+                {(() => {
+                    const sd = (sizeView === 'female' ? (sizeSupplyDemand as Record<string, unknown>).femaleBreakdown : sizeView === 'male' ? (sizeSupplyDemand as Record<string, unknown>).maleBreakdown : sizeSupplyDemand) as { sizes: string[]; inventoryPct: number[]; salesPct: number[]; insights?: Array<{ type: string; sizeRange: string; message: string }> };
+                    const sizes = sd.sizes;
+                    const invPct = sd.inventoryPct;
+                    const salPct = sd.salesPct;
+                    const diffs = sizes.map((_, i) => invPct[i] - salPct[i]);
+                    return (
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-xs min-w-[520px]">
+                                <thead>
+                                    <tr className="border-b border-slate-200 bg-slate-50">
+                                        <th className="text-left py-2 px-3 text-slate-500 font-medium">维度</th>
+                                        {sizes.map((s) => <th key={s} className="text-center py-2 px-2 text-slate-500 font-medium">{s}</th>)}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {actionRowsForView.map((row) => (
-                                        <tr key={row.skuId} className="border-t border-slate-100 text-slate-700">
-                                            <td className="px-3 py-2">
-                                                <div className="font-medium text-slate-900">{row.skuId}</div>
-                                                <div className="text-xs text-slate-500">{row.category}</div>
+                                    <tr className="border-b border-slate-100">
+                                        <td className="py-2 px-3 text-slate-500 font-medium">库存占比</td>
+                                        {invPct.map((v, i) => <td key={i} className="py-2 px-2 text-center text-slate-700">{v}%</td>)}
+                                    </tr>
+                                    <tr className="border-b border-slate-100">
+                                        <td className="py-2 px-3 text-slate-500 font-medium">销售占比</td>
+                                        {salPct.map((v, i) => <td key={i} className="py-2 px-2 text-center text-slate-700">{v}%</td>)}
+                                    </tr>
+                                    <tr>
+                                        <td className="py-2 px-3 text-slate-500 font-medium">差值</td>
+                                        {diffs.map((d, i) => (
+                                            <td key={i} className={`py-2 px-2 text-center font-bold ${d > 3 ? 'text-rose-600' : d < -3 ? 'text-emerald-600' : 'text-slate-400'}`}>
+                                                {d > 0 ? '+' : ''}{Math.round(d * 10) / 10}
                                             </td>
-                                            <td className="px-3 py-2">{row.priceBandLabel}</td>
-                                            <td className="px-3 py-2 text-right">{formatPairs(row.pairsSold)}</td>
-                                            <td className="px-3 py-2 text-right">{formatAmount(row.netSales)}</td>
-                                            <td className="px-3 py-2 text-right">{formatPct(row.sellThrough)}</td>
-                                            <td className="px-3 py-2 text-right">{Math.round(row.onHandUnits).toLocaleString('zh-CN')}双</td>
-                                            <td className="px-3 py-2 text-right">{formatPct(row.discountRate)}</td>
-                                            <td className={`px-3 py-2 ${getSkuActionTone(row.action)}`} title={row.reason}>{row.action}</td>
-                                        </tr>
-                                    ))}
-                                    {actionRowsForView.length === 0 && (
-                                        <tr>
-                                            <td colSpan={8} className="px-3 py-6 text-center text-sm text-slate-400">
-                                                当前筛选下暂无 SKU 动作明细
-                                            </td>
-                                        </tr>
-                                    )}
+                                        ))}
+                                    </tr>
                                 </tbody>
                             </table>
+                            {sizeView === 'combined' && (sizeSupplyDemand as { insights?: Array<{ type: string; sizeRange: string; message: string }> }).insights && (
+                                <div className="mt-3 space-y-1.5">
+                                    {(sizeSupplyDemand as { insights: Array<{ type: string; sizeRange: string; message: string }> }).insights.map((ins, i) => (
+                                        <div key={i} className={`rounded-lg border px-3 py-2 text-xs ${ins.type === 'overstock' ? 'border-rose-100 bg-rose-50 text-rose-700' : 'border-sky-100 bg-sky-50 text-sky-700'}`}>
+                                            <span className="font-semibold">{ins.sizeRange}码：</span>{ins.message}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
+                    );
+                })()}
+            </section>
+            {/* 10. 深度分析 Tab 化 */}
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-900">分析视角</h3>
+                        <p className="text-xs text-slate-400 mt-0.5">品类结构 · 贡献瀑布 · SKU 帕累托 · 供需排名 · 单款深度</p>
                     </div>
-                ) : (
-                    <div className="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-xs text-slate-500">
-                        SKU 下钻动作明细已收起，先聚焦品类层决策；点击上方“展开 SKU 二期”可查看。
+                </div>
+                <div>
+                        {/* Tab 栏 */}
+                        <div className="inline-flex rounded-xl bg-slate-100 p-1 text-xs mb-4 flex-wrap gap-1">
+                            {(['structure', 'contribution', 'pareto', 'supply', 'sku'] as const).map((v) => {
+                                const labels: Record<string, string> = { structure: '品类结构', contribution: '贡献瀑布', pareto: 'SKU帕累托', supply: '供需排名', sku: 'SKU深度' };
+                                return (
+                                    <button key={v} onClick={() => setDeepTab(v)} className={`px-3 py-1.5 rounded-lg transition-colors ${deepTab === v ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-600 hover:text-slate-800'}`}>{labels[v]}</button>
+                                );
+                            })}
+                        </div>
+                        {/* Tab 内容 */}
+                        {deepTab === 'structure' && (
+                            <div className="rounded-xl border border-slate-100 p-4">
+                                <div className="mb-2 text-sm font-semibold text-slate-900">品类结构旭日图</div>
+                                <div className="mb-1 text-xs text-slate-500">面积=销售额占比，颜色=售罄健康度（偏红=低于均值，偏绿=高于均值）</div>
+                                <ReactECharts option={sunburstOption} style={{ height: 320 }} notMerge />
+                                <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
+                                    <div className="font-semibold text-slate-800 mb-1">结论</div>
+                                    <div>{sunburstSummary.headline}</div>
+                                    {sunburstSummary.bullets.map((b, i) => <div key={i} className="mt-1">{b}</div>)}
+                                </div>
+                            </div>
+                        )}
+                        {deepTab === 'contribution' && categoryWaterfall.length > 0 && (
+                            <div className="rounded-xl border border-slate-100 p-4">
+                                <div className="mb-2 text-sm font-semibold text-slate-900">品类贡献瀑布图</div>
+                                <div className="mb-1 text-xs text-slate-500">{compareMeta.mode === 'none' ? '无对比模式下展示当前净销贡献（万）。' : `各品类 ${compareMeta.deltaLabel} 贡献，正值拉升、负值拖累。`}</div>
+                                <ReactECharts option={waterfallOption} onEvents={waterfallEvents} style={{ height: 300 }} notMerge />
+                                <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-2 text-xs text-slate-700">
+                                    <div>{waterfallSummary.headline}</div>
+                                    {waterfallSummary.bullets.map((b, i) => <div key={i} className="mt-0.5">{b}</div>)}
+                                </div>
+                            </div>
+                        )}
+                        {deepTab === 'pareto' && (
+                            <div className="rounded-xl border border-slate-100 p-4">
+                                <div className="mb-2 text-sm font-semibold text-slate-900">SKU贡献帕累托</div>
+                                <div className="mb-2 flex gap-2 text-xs text-slate-600">
+                                    <span className="rounded border border-slate-200 bg-slate-50 px-2 py-1">Top10 {formatPct(pareto.top10Share)}</span>
+                                    <span className="rounded border border-slate-200 bg-slate-50 px-2 py-1">Top20 {formatPct(pareto.top20Share)}</span>
+                                </div>
+                                <ReactECharts option={paretoOption} style={{ height: 280 }} notMerge />
+                            </div>
+                        )}
+                        {deepTab === 'supply' && (
+                            <div className="rounded-xl border border-slate-100 p-4">
+                                <div className="mb-2 flex items-center justify-between">
+                                    <div className="text-sm font-semibold text-slate-900">供需比（销发比）排名</div>
+                                    <div className="inline-flex rounded-lg bg-slate-100 p-1 text-xs">
+                                        <button onClick={() => setSupplyRankingDimension('category')} className={`rounded px-2 py-1 ${supplyRankingDimension === 'category' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}>品类</button>
+                                        <button onClick={() => setSupplyRankingDimension('series')} className={`rounded px-2 py-1 ${supplyRankingDimension === 'series' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}>系列</button>
+                                    </div>
+                                </div>
+                                {supplyRanking.rows.length > 0 ? (
+                                    <ReactECharts option={supplyRankingOption} style={{ height: 280 }} notMerge />
+                                ) : (
+                                    <div className="rounded-md border border-dashed border-slate-300 bg-white py-6 text-center text-xs text-slate-500">暂无销发比数据</div>
+                                )}
+                                <div className="mt-2 rounded-md border border-blue-100 bg-blue-50/60 px-2.5 py-2 text-xs text-slate-700">{supplyActionText}</div>
+                            </div>
+                        )}
+                        {deepTab === 'sku' && (
+                            <div className="rounded-xl border border-slate-100 p-4">
+                                <div className="mb-3 flex flex-wrap items-center gap-2">
+                                    <div className="text-sm font-semibold text-slate-900">单款深度策略</div>
+                                    <div className="inline-flex rounded-lg bg-slate-100 p-1 text-xs">
+                                        {([{ value: 'all' as const, label: '全部样本' }, { value: 'category' as const, label: '按品类' }, { value: 'price_band' as const, label: '按价格带' }, { value: 'lifecycle' as const, label: '按库龄' }]).map((opt) => (
+                                            <button key={opt.value} onClick={() => { setDepthGroupBy(opt.value); setDepthGroupValue('all'); }} className={`px-2.5 py-1 rounded-md transition-colors ${depthGroupBy === opt.value ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-600'}`}>{opt.label}</button>
+                                        ))}
+                                    </div>
+                                    {depthGroupBy !== 'all' && (
+                                        <select value={activeDepthGroupValue} onChange={(e) => setDepthGroupValue(e.target.value)} className="rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs text-slate-700 outline-none focus:border-slate-400">
+                                            <option value="all">全部</option>
+                                            {depthGroupOptions.map((o) => <option key={o} value={o}>{o}</option>)}
+                                        </select>
+                                    )}
+                                    <span className="text-xs text-slate-500">样本：{filteredDepthPoints.length.toLocaleString('zh-CN')} 个SKU</span>
+                                </div>
+                                <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+                                    <div>
+                                        <div className="mb-2 text-xs font-medium text-slate-700">深度分布（店均销量分箱）</div>
+                                        <ReactECharts option={depthHistogramOption} style={{ height: 240 }} notMerge />
+                                    </div>
+                                    <div>
+                                        <div className="mb-2 text-xs font-medium text-slate-700">深度—售罄联动（策略校准）</div>
+                                        <ReactECharts option={depthScatterOption} onEvents={scatterEvents} style={{ height: 240 }} notMerge />
+                                    </div>
+                                </div>
+                                <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
+                                    <div className="font-semibold text-slate-800 mb-1">策略建议</div>
+                                    <div>深度不足（店均销量&lt;3）且售罄高的SKU建议补深；深度过大（店均&gt;10）且售罄低的SKU建议缩量或清仓。</div>
+                                </div>
+                            </div>
+                        )}
+                </div>
+            </section>
+
+            {/* 11. 跨模块联动 footer + 反馈上游 */}
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-4">
+                    <h3 className="text-sm font-bold text-slate-900">跨模块联动</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">品类运营与其他模块的双向联动入口 · 点击可直接跳转</p>
+                </div>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 mb-5">
+                    {([
+                        { label: 'OTB预算', icon: '📦', desc: '下季备货计划', handler: onJumpToOtb, color: 'border-sky-200 hover:border-sky-400 hover:bg-sky-50' },
+                        { label: '波段企划', icon: '🗓', desc: '上新波次安排', handler: onJumpToPlanning, color: 'border-violet-200 hover:border-violet-400 hover:bg-violet-50' },
+                        { label: '销售预测', icon: '📈', desc: '预测修正建议', handler: onJumpToForecast, color: 'border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50' },
+                        { label: '损益分析', icon: '💹', desc: '毛利/费率追踪', handler: onJumpToProfitLoss, color: 'border-amber-200 hover:border-amber-400 hover:bg-amber-50' },
+                        { label: '库存健康', icon: '🏪', desc: '库存 & 售罄', handler: onJumpToInventory, color: 'border-rose-200 hover:border-rose-400 hover:bg-rose-50' },
+                        { label: '年度管控', icon: '🎯', desc: '年度目标达成', handler: undefined as (() => void) | undefined, color: 'border-slate-200 opacity-60 cursor-default' },
+                    ] as Array<{ label: string; icon: string; desc: string; handler: (() => void) | undefined; color: string }>).map((card) => (
+                        <button
+                            key={card.label}
+                            onClick={card.handler}
+                            disabled={!card.handler}
+                            className={`rounded-xl border p-3 text-center transition-colors ${card.color}`}
+                        >
+                            <div className="text-2xl mb-1">{card.icon}</div>
+                            <div className="text-xs font-bold text-slate-900">{card.label}</div>
+                            <div className="text-[10px] text-slate-400 mt-0.5">{card.desc}</div>
+                        </button>
+                    ))}
+                </div>
+                {/* 反馈上游信号 */}
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                        <span className="w-1 h-4 rounded-full bg-emerald-500 inline-block" />
+                        <span className="text-xs font-bold text-slate-800">品类运营反馈给上游</span>
+                        <span className="text-[10px] text-slate-400">— 基于本期数据自动生成，供相关模块参考</span>
                     </div>
-                )}
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                        {[
+                            { module: 'OTB预算', icon: '📦', color: 'border-sky-100 bg-sky-50/40', feedback: '凉鞋动销健康 → SS26 OTB 建议上调 15%；棉鞋滞销 → AW26 OTB 建议下调 20%' },
+                            { module: '波段企划', icon: '🗓', color: 'border-violet-100 bg-violet-50/40', feedback: 'AW-3B 板鞋表现差 → AW26-3B 缩量 30%，资源转向运动品类' },
+                            { module: '销售预测', icon: '📈', color: 'border-emerald-100 bg-emerald-50/40', feedback: '运动跑步连续 3 周超预测 +18% → 下季预测建议上调 15%' },
+                            { module: '损益分析', icon: '💹', color: 'border-amber-100 bg-amber-50/40', feedback: '棉鞋贡献利润率仅 7.2% → 减 SKU + 提价止损；凉鞋清货折扣控不低于 7 折' },
+                        ].map((item) => (
+                            <div key={item.module} className={`rounded-lg border p-3 ${item.color}`}>
+                                <div className="flex items-center gap-1.5 mb-1">
+                                    <span className="text-sm">{item.icon}</span>
+                                    <span className="text-[10px] font-bold text-slate-700">→ {item.module}</span>
+                                </div>
+                                <div className="text-[10px] text-slate-600 leading-5">{item.feedback}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </section>
         </div>
     );

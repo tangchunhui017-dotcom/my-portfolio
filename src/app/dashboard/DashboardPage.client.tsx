@@ -13,6 +13,7 @@ import AnnualControlPanel from '@/components/dashboard/AnnualControlPanel';
 import NarrativeSummary from '@/components/dashboard/NarrativeSummary';
 import ProductBasicPanel from '@/components/dashboard/ProductBasicPanel';
 import CategoryOpsPanel from '@/components/dashboard/CategoryOpsPanel';
+import CategoryFeedbackBanner from '@/components/dashboard/CategoryFeedbackBanner';
 import WavePlanningPanel from '@/components/dashboard/WavePlanningPanel';
 import ChannelAnalysisPanel from '@/components/dashboard/ChannelAnalysisPanel';
 import CompetitorTrendPanel from '@/components/dashboard/CompetitorTrendPanel';
@@ -28,13 +29,17 @@ import { resolveDashboardLifecycleLabel, type DashboardLifecycleLabel } from '@/
 import DiagnosisActionPanel from '@/components/dashboard/DiagnosisActionPanel';
 import OtbBudgetStrip from '@/components/dashboard/OtbBudgetStrip';
 import InventoryHealth from '@/components/dashboard/InventoryHealth';
+import InventoryFeedbackBanner from '@/components/inventory/InventoryFeedbackBanner';
+import PnlFeedbackBanner from '@/components/profit-loss/PnlFeedbackBanner';
 import ForecastTab from '@/components/forecast/ForecastTab';
 import ProfitLossTab from '@/components/profit-loss/ProfitLossTab';
 import OtbTab from '@/components/otb/OtbTab';
+import OtbNavigationContextPanel from '@/components/otb/OtbNavigationContextPanel';
+import type { OtbNavigationContext } from '@/components/otb/types';
 import CashflowPanel from '@/components/otb/CashflowPanel';
 import ChartMetricStrip, { type ChartMetricStripItem } from '@/components/dashboard/ChartMetricStrip';
 import { FOOTWEAR_ANALYSIS_MODULES } from '@/config/footwearLanguage';
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { formatMoneyCny } from '@/config/numberFormat';
 import { THRESHOLDS } from '@/config/thresholds';
 import { GlobalConfigProvider, useGlobalConfig } from '@/context/GlobalConfigContext';
@@ -43,6 +48,39 @@ import GlobalConfigDrawer from '@/components/config/GlobalConfigDrawer';
 type DashboardTab = 'overview' | 'annual-control' | 'consumer' | 'category' | 'channel' | 'planning' | 'otb' | 'cashflow' | 'forecast' | 'profit-loss' | 'competitor' | 'inventory';
 type DashboardRecord = ReturnType<typeof useDashboardFilter>['filteredRecords'][number];
 type DashboardFilterWindow = Window & { __openDashboardFilterBar?: () => void };
+
+const OTB_NAVIGATION_CONTEXT_KEY = 'otb-navigation-context';
+const OTB_NAVIGATION_CONTEXT_EVENT = 'otb-navigation-context-change';
+
+function readStoredOtbNavigationContext(): OtbNavigationContext | null {
+    if (typeof window === 'undefined') return null;
+    try {
+        const raw = sessionStorage.getItem(OTB_NAVIGATION_CONTEXT_KEY);
+        return raw ? (JSON.parse(raw) as OtbNavigationContext) : null;
+    } catch {
+        return null;
+    }
+}
+
+function persistStoredOtbNavigationContext(context: OtbNavigationContext | null): OtbNavigationContext | null {
+    const nextContext = context
+        ? { ...context, createdAt: context.createdAt ?? new Date().toISOString() }
+        : null;
+    if (typeof window === 'undefined') return nextContext;
+    try {
+        if (nextContext) {
+            sessionStorage.setItem(OTB_NAVIGATION_CONTEXT_KEY, JSON.stringify(nextContext));
+        } else {
+            sessionStorage.removeItem(OTB_NAVIGATION_CONTEXT_KEY);
+        }
+        window.dispatchEvent(new CustomEvent<OtbNavigationContext | null>(OTB_NAVIGATION_CONTEXT_EVENT, {
+            detail: nextContext,
+        }));
+    } catch {
+        /* noop */
+    }
+    return nextContext;
+}
 
 const TABS: { key: DashboardTab; label: string; icon: string }[] = [
     { key: 'overview', label: '总览', icon: '📊' },
@@ -170,6 +208,7 @@ function DashboardPageInner() {
     const { config } = useGlobalConfig();
     const [compareMode, setCompareMode] = useState<CompareMode>('none');
     const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
+    const [otbNavigationContext, setOtbNavigationContext] = useState<OtbNavigationContext | null>(() => readStoredOtbNavigationContext());
     // forecast / profit-loss 不参与比对模式，退化为 overview context
     const compareContext = (activeTab === 'forecast' || activeTab === 'profit-loss')
         ? 'overview' as const
@@ -178,6 +217,23 @@ function DashboardPageInner() {
     const [selectedSku, setSelectedSku] = useState<SkuDrillData | null>(null);
     const [selectedOverviewModuleId, setSelectedOverviewModuleId] = useState('annual-performance');
     const [overviewSellThroughCaliber, setOverviewSellThroughCaliber] = useState<SellThroughCaliber>('active');
+
+    useEffect(() => {
+        const handleContextChange = (event: Event) => {
+            setOtbNavigationContext((event as CustomEvent<OtbNavigationContext | null>).detail ?? null);
+        };
+        const handleStorageChange = (event: StorageEvent) => {
+            if (event.key === OTB_NAVIGATION_CONTEXT_KEY) {
+                setOtbNavigationContext(readStoredOtbNavigationContext());
+            }
+        };
+        window.addEventListener(OTB_NAVIGATION_CONTEXT_EVENT, handleContextChange);
+        window.addEventListener('storage', handleStorageChange);
+        return () => {
+            window.removeEventListener(OTB_NAVIGATION_CONTEXT_EVENT, handleContextChange);
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
     
     const effectiveCompareMode: CompareMode =
         (compareMode === 'mom' && !compareMeta.momAvailable) ||
@@ -260,7 +316,17 @@ function DashboardPageInner() {
     const scrollToSection = (ref: React.RefObject<HTMLDivElement | null>) => {
         ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     };
-    const jumpToTab = (tab: DashboardTab) => setActiveTab(tab);
+    const jumpToTab = (tab: DashboardTab, context?: OtbNavigationContext | null) => {
+        if (context) {
+            const nextContext = persistStoredOtbNavigationContext({ ...context, targetModule: tab });
+            setOtbNavigationContext(nextContext);
+        }
+        setActiveTab(tab);
+    };
+    const clearOtbNavigationContext = () => {
+        setOtbNavigationContext(null);
+        persistStoredOtbNavigationContext(null);
+    };
     const jumpToSkuRisk = () => {
         setActiveTab('overview');
         window.requestAnimationFrame(() => {
@@ -540,6 +606,15 @@ function DashboardPageInner() {
                         </div>
                     )}
 
+                    {otbNavigationContext && activeTab !== 'otb' && (
+                        <OtbNavigationContextPanel
+                            context={otbNavigationContext}
+                            targetModule={activeTab}
+                            onClear={clearOtbNavigationContext}
+                            className="mb-4"
+                        />
+                    )}
+
                     {activeTab === 'overview' && kpis && (
                         <>
                             <OverviewSectionHeading
@@ -579,7 +654,20 @@ function DashboardPageInner() {
                         <ProductBasicPanel filters={filters} setFilters={setFilters} />
                     )}
                     {activeTab === 'category' && (
-                        <CategoryOpsPanel filters={filters} setFilters={setFilters} compareMode={effectiveCompareMode} />
+                        <>
+                            <InventoryFeedbackBanner targetModule="category" onJumpToInventory={() => jumpToTab('inventory')} />
+                            <PnlFeedbackBanner targetModule="category" onJumpToPnl={() => jumpToTab('profit-loss')} />
+                            <CategoryOpsPanel
+                                filters={filters}
+                                setFilters={setFilters}
+                                compareMode={effectiveCompareMode}
+                                onJumpToOtb={() => jumpToTab('otb')}
+                                onJumpToInventory={() => jumpToTab('inventory')}
+                                onJumpToForecast={() => jumpToTab('forecast')}
+                                onJumpToProfitLoss={() => jumpToTab('profit-loss')}
+                                onJumpToPlanning={() => jumpToTab('planning')}
+                            />
+                        </>
                     )}
                     {activeTab === 'channel' && (
                         <div className="space-y-8">
@@ -623,27 +711,54 @@ function DashboardPageInner() {
                         </div>
                     )}
                     {activeTab === 'planning' && (
-                        <WavePlanningPanel
-                            defaultView="wave"
-                            lockView
-                            compareMode={effectiveCompareMode}
-                            filters={filters}
-                            onJumpToChannel={() => jumpToTab('channel')}
-                            onJumpToOtb={() => jumpToTab('otb')}
-                            onJumpToSkuRisk={jumpToSkuRisk}
-                        />
+                        <>
+                            <InventoryFeedbackBanner targetModule="wave" onJumpToInventory={() => jumpToTab('inventory')} />
+                            <PnlFeedbackBanner targetModule="planning" onJumpToPnl={() => jumpToTab('profit-loss')} />
+                            <CategoryFeedbackBanner targetModule="planning" onJumpToCategory={() => jumpToTab('category')} />
+                            <WavePlanningPanel
+                                defaultView="wave"
+                                lockView
+                                compareMode={effectiveCompareMode}
+                                filters={filters}
+                                onJumpToChannel={() => jumpToTab('channel')}
+                                onJumpToOtb={() => jumpToTab('otb')}
+                                onJumpToSkuRisk={jumpToSkuRisk}
+                                onJumpToForecast={() => jumpToTab('forecast')}
+                                onJumpToInventory={() => jumpToTab('inventory')}
+                                onJumpToCashflow={() => jumpToTab('cashflow')}
+                                onJumpToProfitLoss={() => jumpToTab('profit-loss')}
+                                onJumpToCategory={() => jumpToTab('category')}
+                            />
+                        </>
                     )}
                     {activeTab === 'otb' && (
-                        <OtbTab filters={filters} compareMode={effectiveCompareMode} />
+                        <>
+                            <InventoryFeedbackBanner targetModule="otb" onJumpToInventory={() => jumpToTab('inventory')} />
+                            <PnlFeedbackBanner targetModule="otb" onJumpToPnl={() => jumpToTab('profit-loss')} />
+                            <CategoryFeedbackBanner targetModule="otb" onJumpToCategory={() => jumpToTab('category')} />
+                            <OtbTab filters={filters} compareMode={effectiveCompareMode} onJumpToTab={(tab, context) => jumpToTab(tab as DashboardTab, context)} />
+                        </>
                     )}
                     {activeTab === 'cashflow' && (
-                        <CashflowPanel />
+                        <>
+                            <InventoryFeedbackBanner targetModule="cashflow" onJumpToInventory={() => jumpToTab('inventory')} />
+                            <CashflowPanel onJumpToTab={tab => jumpToTab(tab as DashboardTab)} />
+                        </>
                     )}
                     {activeTab === 'forecast' && (
-                        <ForecastTab />
+                        <>
+                            <InventoryFeedbackBanner targetModule="forecast" onJumpToInventory={() => jumpToTab('inventory')} />
+                            <PnlFeedbackBanner targetModule="forecast" onJumpToPnl={() => jumpToTab('profit-loss')} />
+                            <CategoryFeedbackBanner targetModule="forecast" onJumpToCategory={() => jumpToTab('category')} />
+                            <ForecastTab onJumpToTab={tab => jumpToTab(tab as DashboardTab)} />
+                        </>
                     )}
                     {activeTab === 'profit-loss' && (
-                        <ProfitLossTab />
+                        <>
+                            <InventoryFeedbackBanner targetModule="pnl" onJumpToInventory={() => jumpToTab('inventory')} />
+                            <CategoryFeedbackBanner targetModule="profit-loss" onJumpToCategory={() => jumpToTab('category')} />
+                            <ProfitLossTab />
+                        </>
                     )}
                     {activeTab === 'competitor' && (
                         <CompetitorTrendPanel
@@ -655,7 +770,7 @@ function DashboardPageInner() {
                     )}
                     {activeTab === 'inventory' && (
                         <div className="space-y-6">
-                            <InventoryHealth />
+                            <InventoryHealth onJumpToTab={(tab) => jumpToTab(tab as DashboardTab)} />
                         </div>
                     )}
 

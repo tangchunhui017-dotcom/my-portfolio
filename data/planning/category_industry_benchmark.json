@@ -1,0 +1,13 @@
+{
+  "benchmarks": {
+    "portfolioScore":        { "industry": 66, "top25pct": 78,  "unit": "分" },
+    "skuUtilization":        { "industry": 0.68, "top25pct": 0.78, "unit": "%" },
+    "coreSkuContribution":   { "industry": 0.55, "top25pct": 0.70, "unit": "%" },
+    "sellThrough":           { "industry": 0.52, "top25pct": 0.65, "unit": "%" },
+    "gmRate":                { "industry": 0.48, "top25pct": 0.58, "unit": "%" },
+    "salesPerSku":           { "industry": 85000, "top25pct": 120000, "unit": "元/款" },
+    "longTailSkuShare":      { "industry": 0.35, "top25pct": 0.22, "unit": "%" }
+  },
+  "source": "2025年鞋类零售行业经营白皮书",
+  "updatedAt": "2026-01-01"
+}

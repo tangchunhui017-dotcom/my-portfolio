@@ -1,0 +1,37 @@
+{
+  "gender": "combined",
+  "sizes": [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45],
+  "inventoryPct": [2, 5, 9, 14, 18, 22, 15, 8, 4, 2, 1],
+  "salesPct":     [2, 6, 11, 15, 20, 22, 13, 7, 3, 1, 0],
+  "matchDiff":    [0, 1, 2,  1,  2,  0, -2, -1, -1, -1, -1],
+  "insights": [
+    {
+      "sizeRange": "41-42",
+      "type": "overstock",
+      "severity": "warning",
+      "message": "41-42码库存占比超出销售需求 2-3pp，存在积压风险"
+    },
+    {
+      "sizeRange": "37-38",
+      "type": "risk_stockout",
+      "severity": "info",
+      "message": "37-38码销售占比略高于库存，密切关注补货节奏"
+    },
+    {
+      "sizeRange": "43-45",
+      "type": "overstock",
+      "severity": "risk",
+      "message": "大码（43-45）库存占比合计 7%，但销售合计仅 4%，建议向折扣/奥莱渠道分流"
+    }
+  ],
+  "femaleBreakdown": {
+    "sizes":        [35, 36, 37, 38, 39, 40],
+    "inventoryPct": [5,  12, 20, 28, 24, 11],
+    "salesPct":     [5,  14, 22, 27, 24, 8]
+  },
+  "maleBreakdown": {
+    "sizes":        [39, 40, 41, 42, 43, 44, 45],
+    "inventoryPct": [10, 18, 22, 20, 15, 10, 5],
+    "salesPct":     [12, 20, 22, 18, 14, 10, 4]
+  }
+}

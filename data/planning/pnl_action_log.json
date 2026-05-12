@@ -1,0 +1,135 @@
+{
+  "_comment": "S2 利润行动闭环执行记录",
+  "updatedAt": "2026-05-11",
+  "weekSummary": {
+    "total": 8,
+    "completed": 3,
+    "transferred": 1,
+    "cancelled": 0,
+    "pending": 4,
+    "recoveredProfit": 1850000,
+    "releasedCash": 2100000,
+    "reducedExpenseRate": 0.008
+  },
+  "actions": [
+    {
+      "id": "PLA001",
+      "priority": 1,
+      "riskLevel": "critical",
+      "title": "启动凉鞋深度清仓方案",
+      "owner": "商品部",
+      "deadline": "2026-05-20",
+      "status": "pending",
+      "financialImpact": -2300000,
+      "improvementPotential": 4200000,
+      "relatedModules": [
+        "inventory",
+        "otb"
+      ],
+      "aiSuggestion": "建议本周内锁定清仓折扣率（六折以内）并通知加盟商跟进，预计2周内完成库存消化"
+    },
+    {
+      "id": "PLA002",
+      "priority": 2,
+      "riskLevel": "high",
+      "title": "压缩电商平台营销费用率至8%",
+      "owner": "电商部",
+      "deadline": "2026-05-31",
+      "status": "in_progress",
+      "financialImpact": -980000,
+      "improvementPotential": 1200000,
+      "relatedModules": [
+        "forecast"
+      ],
+      "aiSuggestion": "优先削减ROI<2的KOL投放，保留头部达人合作"
+    },
+    {
+      "id": "PLA003",
+      "priority": 3,
+      "riskLevel": "high",
+      "title": "缩减低效经销商SKU供货",
+      "owner": "销售部",
+      "deadline": "2026-06-15",
+      "status": "pending",
+      "financialImpact": -650000,
+      "improvementPotential": 800000,
+      "relatedModules": [
+        "otb",
+        "inventory"
+      ],
+      "aiSuggestion": "对贡献利润率<10%的经销商暂停新货供应，转为清库存模式"
+    },
+    {
+      "id": "PLA004",
+      "priority": 4,
+      "riskLevel": "medium",
+      "title": "提升运动品类OTB占比至35%",
+      "owner": "采购部",
+      "deadline": "2026-06-30",
+      "status": "completed",
+      "financialImpact": 0,
+      "improvementPotential": 1500000,
+      "relatedModules": [
+        "otb",
+        "planning"
+      ],
+      "aiSuggestion": "下季OTB中运动品类占比从30%提至35%，预计毛利率提升1.5pp"
+    },
+    {
+      "id": "PLA005",
+      "priority": 5,
+      "riskLevel": "medium",
+      "title": "加快AW24积压款清仓处理",
+      "owner": "商品部",
+      "deadline": "2026-05-31",
+      "status": "completed",
+      "financialImpact": -420000,
+      "improvementPotential": 650000,
+      "relatedModules": [
+        "inventory"
+      ],
+      "aiSuggestion": "优先处理入库超180天的库龄款，避免进一步计提跌价"
+    },
+    {
+      "id": "PLA006",
+      "priority": 6,
+      "riskLevel": "medium",
+      "title": "直营门店租金重谈（到期门店）",
+      "owner": "运营部",
+      "deadline": "2026-07-31",
+      "status": "transferred",
+      "financialImpact": -380000,
+      "improvementPotential": 600000,
+      "relatedModules": [],
+      "aiSuggestion": "针对3家租金超营收8%的门店启动重谈，目标降至6%"
+    },
+    {
+      "id": "PLA007",
+      "priority": 7,
+      "riskLevel": "low",
+      "title": "私域复购率提升专项",
+      "owner": "会员部",
+      "deadline": "2026-06-30",
+      "status": "completed",
+      "financialImpact": 0,
+      "improvementPotential": 450000,
+      "relatedModules": [
+        "forecast"
+      ],
+      "aiSuggestion": "月度复购率从12%提升至15%，可带来增量收入约¥450万"
+    },
+    {
+      "id": "PLA008",
+      "priority": 8,
+      "riskLevel": "low",
+      "title": "优化仓配物流成本",
+      "owner": "供应链",
+      "deadline": "2026-07-15",
+      "status": "pending",
+      "financialImpact": -220000,
+      "improvementPotential": 320000,
+      "relatedModules": [],
+      "aiSuggestion": "合并发货批次，降低尾程物流单价"
+    }
+  ]
+}

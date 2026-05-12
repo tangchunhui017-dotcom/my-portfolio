@@ -172,8 +172,25 @@ function GrossProfitDonut({
 }) {
     const radius = 28;
     const circumference = 2 * Math.PI * radius;
-    let cumOffset = 0;
     const total = contribs.reduce((s, c) => s + c.contribution, 0);
+    const arcs = contribs.reduce<{
+        offset: number;
+        items: Array<{ row: { priceBandId: string; contribution: number }; index: number; dasharray: string; dashoffset: number }>;
+    }>((acc, row, index) => {
+        const len = (row.contribution / Math.max(total, 1)) * circumference;
+        return {
+            offset: acc.offset + len,
+            items: [
+                ...acc.items,
+                {
+                    row,
+                    index,
+                    dasharray: `${len} ${circumference - len}`,
+                    dashoffset: -acc.offset,
+                },
+            ],
+        };
+    }, { offset: 0, items: [] }).items;
     if (total <= 0) {
         return (
             <div className="flex items-center justify-center w-[80px] h-[80px] text-[9px] text-slate-300">
@@ -185,23 +202,19 @@ function GrossProfitDonut({
         <div className="flex flex-col items-center gap-0.5">
             <svg width="80" height="80" viewBox="0 0 80 80" className="shrink-0">
                 <circle cx="40" cy="40" r={radius} fill="none" stroke="#f1f5f9" strokeWidth="10" />
-                {contribs.map((c, i) => {
-                    const len = (c.contribution / total) * circumference;
-                    const dasharray = `${len} ${circumference - len}`;
-                    const dashoffset = -cumOffset;
-                    cumOffset += len;
+                {arcs.map(({ row, index, dasharray, dashoffset }) => {
                     return (
                         <circle
-                            key={c.priceBandId}
+                            key={row.priceBandId}
                             cx="40" cy="40" r={radius}
                             fill="none"
-                            stroke={PB_DONUT_COLORS[i % PB_DONUT_COLORS.length]}
+                            stroke={PB_DONUT_COLORS[index % PB_DONUT_COLORS.length]}
                             strokeWidth="10"
                             strokeDasharray={dasharray}
                             strokeDashoffset={dashoffset}
                             transform="rotate(-90 40 40)"
                         >
-                            <title>{bandLabels[c.priceBandId] ?? c.priceBandId}：{(c.contribution * 100).toFixed(1)}%</title>
+                            <title>{bandLabels[row.priceBandId] ?? row.priceBandId}：{(row.contribution * 100).toFixed(1)}%</title>
                         </circle>
                     );
                 })}
@@ -840,11 +853,10 @@ const ISSUE_COLOR: Record<string, string> = {
 };
 
 function PricingCheckView({
-    rows, categoryDepthInputs, currencyUnit, showSkuLevel, onToggleSkuLevel,
+    rows, categoryDepthInputs, showSkuLevel, onToggleSkuLevel,
 }: {
     rows: LocalPricingRow[];
     categoryDepthInputs?: CategoryDepthInput[];
-    currencyUnit: CurrencyUnit;
     showSkuLevel: boolean;
     onToggleSkuLevel: () => void;
 }) {
@@ -960,7 +972,7 @@ function PricingCheckView({
             </div>
             {showSkuLevel && (
                 <p className="text-[10px] text-slate-400">
-                    SKU 细分基于"输出到品类/款深"的 categoryDepthInputs，按 priceBandId 关联。当前共 {Object.values(skusByPriceBand).reduce((s, arr) => s + arr.length, 0)} 个 SKU。
+                    SKU 细分基于&quot;输出到品类/款深&quot;的 categoryDepthInputs，按 priceBandId 关联。当前共 {Object.values(skusByPriceBand).reduce((s, arr) => s + arr.length, 0)} 个 SKU。
                 </p>
             )}
         </div>
@@ -978,6 +990,8 @@ interface OTBPriceStructurePanelProps {
     waves: WaveOTBInput[];
     onStructureChange?: (output: OTBPriceStructureOutput) => void;
     isLocked?: boolean;
+    /** 跳转到其他子视图或主模块 */
+    onJumpToTab?: (tab: string) => void;
 }
 
 // 初始化价格带行（取跑步鞋作为默认品类）
@@ -1341,6 +1355,7 @@ export default function OTBPriceStructurePanel({
     waves,
     onStructureChange,
     isLocked = false,
+    onJumpToTab,
 }: OTBPriceStructurePanelProps) {
     // 渠道维度 toggle：null = 沿用 businessContext.channelId（即"全渠道"或上游筛选）
     const [channelOverride, setChannelOverride] = useState<string | null>(null);
@@ -1348,7 +1363,7 @@ export default function OTBPriceStructurePanel({
         channelOverride ? { ...businessContext, channelId: channelOverride } : businessContext
     ), [businessContext, channelOverride]);
     const resolvedInitialPriceBands = useMemo(() => initPriceBandRows(effectiveContext), [effectiveContext]);
-    const [priceBandRowsOverride, setPriceBandRowsOverride] = useState<LocalPriceBandRow[] | null>(null);
+    const [priceBandRowsOverrideState, setPriceBandRowsOverrideState] = useState<{ channelKey: string | null; rows: LocalPriceBandRow[] } | null>(null);
     const [helpOpen, setHelpOpen] = useState(false);
     const [showSkuDrilldown, setShowSkuDrilldown] = useState(false);
     const [sensitivityOpen, setSensitivityOpen] = useState(false);
@@ -1356,8 +1371,16 @@ export default function OTBPriceStructurePanel({
     const priceBandRefs = useRef<Record<string, HTMLTableRowElement | null>>({});
     const productRoleRefs = useRef<Record<string, HTMLTableRowElement | null>>({});
     const [flashKey, setFlashKey] = useState<string | null>(null);
-    // 切换渠道时重置 priceBand override（避免上次手动调整跨渠道污染）
-    useEffect(() => { setPriceBandRowsOverride(null); }, [channelOverride]);
+    const setPriceBandRowsOverride = useCallback((
+        next: LocalPriceBandRow[] | null | ((prev: LocalPriceBandRow[] | null) => LocalPriceBandRow[] | null),
+    ) => {
+        setPriceBandRowsOverrideState(prevState => {
+            const prevRows = prevState?.channelKey === channelOverride ? prevState.rows : null;
+            const nextRows = typeof next === 'function' ? next(prevRows) : next;
+            return nextRows ? { channelKey: channelOverride, rows: nextRows } : null;
+        });
+    }, [channelOverride]);
+    const priceBandRowsOverride = priceBandRowsOverrideState?.channelKey === channelOverride ? priceBandRowsOverrideState.rows : null;
     const priceBandRows = priceBandRowsOverride ?? resolvedInitialPriceBands;
     const [productRoleRows, setProductRoleRows] = useState<LocalProductRoleRow[]>(initProductRoleRows);
     const waveRows = useMemo<LocalWaveRow[]>(() => {
@@ -1409,14 +1432,14 @@ export default function OTBPriceStructurePanel({
         setPriceBandRowsOverride(prev => (prev ?? resolvedInitialPriceBands).map((r, i) =>
             i === idx ? { ...r, [field]: value, isManualOverride: true } : r,
         ));
-    }, [isLocked, resolvedInitialPriceBands]);
+    }, [isLocked, resolvedInitialPriceBands, setPriceBandRowsOverride]);
 
     const handlePriceBandNormalize = useCallback(() => {
         if (isLocked) return;
         setPriceBandRowsOverride(prev =>
             normalizeActivePriceBands(prev ?? resolvedInitialPriceBands, 'targetSalesRatio') as LocalPriceBandRow[]
         );
-    }, [isLocked, resolvedInitialPriceBands]);
+    }, [isLocked, resolvedInitialPriceBands, setPriceBandRowsOverride]);
 
     // 货品角色编辑
     const handleProductRoleRowChange = useCallback((idx: number, field: keyof LocalProductRoleRow, value: number) => {
@@ -1436,13 +1459,13 @@ export default function OTBPriceStructurePanel({
         if (isLocked) return;
         setPriceBandRowsOverride(null);
         setProductRoleRows(initProductRoleRows());
-    }, [isLocked]);
+    }, [isLocked, setPriceBandRowsOverride]);
 
     const handleImportSuggestion = useCallback(() => {
         if (isLocked) return;
         setPriceBandRowsOverride(prev => normalizeActivePriceBands(prev ?? resolvedInitialPriceBands, 'targetSalesRatio').map(row => ({ ...row, isManualOverride: true })) as LocalPriceBandRow[]);
         setProductRoleRows(prev => normalizeRatio(prev, 'styleRatio').map(row => ({ ...row, isManualOverride: true })) as LocalProductRoleRow[]);
-    }, [isLocked, resolvedInitialPriceBands]);
+    }, [isLocked, resolvedInitialPriceBands, setPriceBandRowsOverride]);
 
     const handleExportCsv = useCallback(() => {
         const lines = [
@@ -1763,7 +1786,6 @@ export default function OTBPriceStructurePanel({
                     <PricingCheckView
                         rows={pricingRows}
                         categoryDepthInputs={categoryDepthInputs}
-                        currencyUnit={currencyUnit}
                         showSkuLevel={showSkuDrilldown}
                         onToggleSkuLevel={() => setShowSkuDrilldown(prev => !prev)}
                     />
@@ -1898,6 +1920,27 @@ export default function OTBPriceStructurePanel({
                     )}
                 </section>
             </div>
+
+            {/* 跨模块联动跳转 */}
+            {onJumpToTab && (
+                <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+                    <p className="mb-2 text-xs font-bold text-slate-600">跨模块联动</p>
+                    <div className="flex flex-wrap gap-2">
+                        <button type="button" onClick={() => onJumpToTab('category')}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs text-sky-700 transition-colors hover:bg-sky-100">
+                            📦 品类&款深
+                        </button>
+                        <button type="button" onClick={() => onJumpToTab('wave')}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs text-violet-700 transition-colors hover:bg-violet-100">
+                            🌊 回波段预算
+                        </button>
+                        <button type="button" onClick={() => onJumpToTab('execution')}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs text-slate-700 transition-colors hover:bg-slate-200">
+                            ✅ 查执行跟踪
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

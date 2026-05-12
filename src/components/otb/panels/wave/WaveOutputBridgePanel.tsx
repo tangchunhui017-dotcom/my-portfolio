@@ -14,6 +14,8 @@ interface WaveOutputBridgePanelProps {
     onJumpToTab?: (tab: 'price' | 'category' | 'execution') => void;
 }
 
+const BRIDGE_BUSINESS_DATE = new Date('2026-05-09T00:00:00');
+
 export default function WaveOutputBridgePanel({
     waves,
     currencyUnit,
@@ -23,14 +25,14 @@ export default function WaveOutputBridgePanel({
     const totalOtb = waves.reduce((sum, w) => sum + (w.forecastOtbBudget || 0), 0);
     const totalStyleCount = waves.reduce((sum, w) => sum + (w.targetStyleCount || 0), 0);
     const launchedCount = waves.filter(w => {
-        const d = Math.floor((new Date(w.launchDate).getTime() - Date.now()) / 86400000);
+        const d = Math.floor((new Date(w.launchDate).getTime() - BRIDGE_BUSINESS_DATE.getTime()) / 86400000);
         return d < 0;
     }).length;
 
     const flowNodes = [
         {
             id: 'wave' as const,
-            label: '波段拆解',
+            label: '波段预算',
             status: '当前',
             statusTone: 'sky' as const,
             detail: `${waveCount} 波段`,
@@ -75,7 +77,7 @@ export default function WaveOutputBridgePanel({
 
     return (
         <div className="space-y-4">
-            <div className="text-sm font-semibold text-slate-700">波段拆解输出联动</div>
+            <div className="text-sm font-semibold text-slate-700">波段预算输出联动</div>
 
             {/* 箭头流程图 */}
             <div className="flex items-center gap-0 overflow-x-auto">

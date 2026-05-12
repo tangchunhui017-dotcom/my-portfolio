@@ -1,0 +1,138 @@
+{
+  "_comment": "S5 滚动12月预测：历史实线+未来虚线+置信区间",
+  "updatedAt": "2026-05-11",
+  "forecastBase": "2026-05",
+  "history": [
+    {
+      "month": "1月",
+      "netRevenue": 8200000,
+      "grossProfit": 4018000,
+      "grossMarginRate": 0.49,
+      "ebit": 656000,
+      "ebitRate": 0.08,
+      "isActual": true
+    },
+    {
+      "month": "2月",
+      "netRevenue": 6100000,
+      "grossProfit": 2989000,
+      "grossMarginRate": 0.49,
+      "ebit": 488000,
+      "ebitRate": 0.08,
+      "isActual": true
+    },
+    {
+      "month": "3月",
+      "netRevenue": 9800000,
+      "grossProfit": 4802000,
+      "grossMarginRate": 0.49,
+      "ebit": 784000,
+      "ebitRate": 0.08,
+      "isActual": true
+    },
+    {
+      "month": "4月",
+      "netRevenue": 10500000,
+      "grossProfit": 5145000,
+      "grossMarginRate": 0.49,
+      "ebit": 840000,
+      "ebitRate": 0.08,
+      "isActual": true
+    },
+    {
+      "month": "5月",
+      "netRevenue": 11200000,
+      "grossProfit": 5488000,
+      "grossMarginRate": 0.49,
+      "ebit": 896000,
+      "ebitRate": 0.08,
+      "isActual": true
+    }
+  ],
+  "forecast": [
+    {
+      "month": "6月",
+      "netRevenue": 12800000,
+      "upper": 14080000,
+      "lower": 11520000,
+      "grossMarginRate": 0.48,
+      "ebit": 960000,
+      "ebitRate": 0.075,
+      "seasonFactor": 1.14,
+      "confidence": 0.82
+    },
+    {
+      "month": "7月",
+      "netRevenue": 11500000,
+      "upper": 12650000,
+      "lower": 10350000,
+      "grossMarginRate": 0.47,
+      "ebit": 805000,
+      "ebitRate": 0.07,
+      "seasonFactor": 1.03,
+      "confidence": 0.78
+    },
+    {
+      "month": "8月",
+      "netRevenue": 10200000,
+      "upper": 11220000,
+      "lower": 9180000,
+      "grossMarginRate": 0.46,
+      "ebit": 612000,
+      "ebitRate": 0.06,
+      "seasonFactor": 0.91,
+      "confidence": 0.74
+    },
+    {
+      "month": "9月",
+      "netRevenue": 9800000,
+      "upper": 10780000,
+      "lower": 8820000,
+      "grossMarginRate": 0.5,
+      "ebit": 784000,
+      "ebitRate": 0.08,
+      "seasonFactor": 0.88,
+      "confidence": 0.72
+    },
+    {
+      "month": "10月",
+      "netRevenue": 11200000,
+      "upper": 12320000,
+      "lower": 10080000,
+      "grossMarginRate": 0.52,
+      "ebit": 1008000,
+      "ebitRate": 0.09,
+      "seasonFactor": 1,
+      "confidence": 0.7
+    },
+    {
+      "month": "11月",
+      "netRevenue": 14500000,
+      "upper": 15950000,
+      "lower": 13050000,
+      "grossMarginRate": 0.48,
+      "ebit": 1015000,
+      "ebitRate": 0.07,
+      "seasonFactor": 1.29,
+      "confidence": 0.68
+    },
+    {
+      "month": "12月",
+      "netRevenue": 13200000,
+      "upper": 14520000,
+      "lower": 11880000,
+      "grossMarginRate": 0.49,
+      "ebit": 924000,
+      "ebitRate": 0.07,
+      "seasonFactor": 1.18,
+      "confidence": 0.66
+    }
+  ],
+  "annualForecast": {
+    "totalNetRevenue": 128900000,
+    "vsLastYear": 0.086,
+    "vsBudget": -0.007,
+    "totalNetProfit": 7800000,
+    "netProfitRate": 0.0605
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "thisWeek": "2026-05-11",
+    "lastWeek": "2026-05-04"
+  },
+  "kpis": {
+    "totalInventoryCost": {
+      "current": 28640000,
+      "lastWeek": 29180000,
+      "delta": -540000,
+      "deltaPct": -0.019
+    },
+    "overallWos": {
+      "current": 9.2,
+      "lastWeek": 9.5,
+      "delta": -0.3,
+      "deltaPct": -0.032
+    },
+    "healthySkuPct": {
+      "current": 0.38,
+      "lastWeek": 0.34,
+      "delta": 0.04,
+      "deltaPct": 0.118
+    },
+    "riskInventoryAmount": {
+      "current": 8920000,
+      "lastWeek": 9200000,
+      "delta": -280000,
+      "deltaPct": -0.03
+    },
+    "brokenSizeSkuCount": {
+      "current": 18,
+      "lastWeek": 21,
+      "delta": -3,
+      "deltaPct": -0.143
+    },
+    "healthScore": {
+      "current": 52,
+      "lastWeek": 51,
+      "delta": 1,
+      "deltaPct": 0.02
+    }
+  }
+}

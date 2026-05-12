@@ -1,46 +1,29 @@
 ﻿/**
  * src/app/dashboard/page.tsx
  *
- * Server Component：在服务端并行预取所有维度表 + 小事实表，
+ * Server Component：从本地 JSON 预载所有维度表 + 小事实表，
  * 通过 SWRConfig fallback 注入客户端缓存，首屏无加载状态。
- * 大事实表（fact_sales / fact_ops）由客户端 SWR 懒加载，
- * 但因为本页预取已唤醒 Neon DB，后续请求不再有冷启动延迟。
+ * 无 DB 调用，完全离线可用。
  */
-import { sql } from '@/lib/db';
+import dimSkuData from '../../../data/dashboard/dim_sku.json';
+import dimChannelData from '../../../data/dashboard/dim_channel.json';
+import dimWavePlanData from '../../../data/dashboard/dim_wave_plan.json';
+import dimCompetitorData from '../../../data/dashboard/dim_competitor.json';
+import factInventoryData from '../../../data/dashboard/fact_inventory.json';
+import factPlanData from '../../../data/dashboard/fact_plan.json';
+import factCompetitorData from '../../../data/dashboard/fact_competitor.json';
 import SWRFallbackProvider from './SWRFallbackProvider';
 import DashboardPageClient from './DashboardPage.client';
 
-export const runtime = 'edge';
-
-export default async function DashboardPage() {
-    const [dimSku, dimChannel, dimWavePlan, factInventory, factPlan, factCompetitor, dimCompetitor] =
-        await Promise.all([
-            sql`SELECT * FROM dim_sku`,
-            sql`SELECT * FROM dim_channel`,
-            sql`SELECT * FROM dim_wave_plan`,
-            sql`SELECT * FROM fact_inventory`,
-            sql`SELECT * FROM fact_plan`,
-            sql`SELECT * FROM fact_competitor`,
-            // dim_competitor 的 JSON 数组列需要在 DB 层展开
-            sql`
-                SELECT
-                    id, name, position, market_share, yoy,
-                    (SELECT json_agg(elem::json) FROM unnest(category_mix::text[])   AS elem) AS category_mix,
-                    (SELECT json_agg(elem::json) FROM unnest(price_band_mix::text[]) AS elem) AS price_band_mix,
-                    (SELECT json_agg(elem)       FROM unnest(trend_tags::text[])     AS elem) AS trend_tags,
-                    (SELECT json_agg(elem::json) FROM unnest(hot_skus::text[])       AS elem) AS hot_skus
-                FROM dim_competitor
-            `,
-        ]);
-
+export default function DashboardPage() {
     const fallback: Record<string, unknown> = {
-        '/api/dashboard/dim-sku': dimSku,
-        '/api/dashboard/dim-channel': dimChannel,
-        '/api/dashboard/dim-wave-plan': dimWavePlan,
-        '/api/dashboard/dim-competitor': dimCompetitor,
-        '/api/dashboard/fact-inventory': factInventory,
-        '/api/dashboard/fact-plan': factPlan,
-        '/api/dashboard/fact-competitor': factCompetitor,
+        '/api/dashboard/dim-sku': dimSkuData,
+        '/api/dashboard/dim-channel': dimChannelData,
+        '/api/dashboard/dim-wave-plan': dimWavePlanData,
+        '/api/dashboard/dim-competitor': dimCompetitorData,
+        '/api/dashboard/fact-inventory': factInventoryData,
+        '/api/dashboard/fact-plan': factPlanData,
+        '/api/dashboard/fact-competitor': factCompetitorData,
     };
 
     return (

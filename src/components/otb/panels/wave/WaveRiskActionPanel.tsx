@@ -222,15 +222,13 @@ const ActionGrid: React.FC<ActionGridProps> = ({ actions, currencyUnit }) => {
     return <div className="text-center py-6 text-slate-500 text-sm">暂无动作建议</div>;
   }
 
-  // 按优先级排序
-  const priorityOrder: Record<string, number> = { '高': 0, '中': 1, '低': 2 };
   const sortedActions = [...actions].sort((a, b) => {
     // 首先按责任部门分组
     if (a.owner !== b.owner) {
       const ownerOrder: Record<string, number> = { '采购': 0, '企划': 1, '商品': 2, '财务': 3 };
       return (ownerOrder[a.owner] ?? 99) - (ownerOrder[b.owner] ?? 99);
     }
-    return 0;
+    return String(a.deadline ?? '').localeCompare(String(b.deadline ?? ''));
   });
 
   return (

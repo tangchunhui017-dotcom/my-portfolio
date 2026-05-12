@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "updatedAt": "2026-05-11"
+  },
+  "rules": [
+    {
+      "bucket": "0-90d",
+      "impairmentRate": 0,
+      "label": "正常库存"
+    },
+    {
+      "bucket": "91-180d",
+      "impairmentRate": 0.3,
+      "label": "关注库存"
+    },
+    {
+      "bucket": "181d+",
+      "impairmentRate": 0.55,
+      "label": "高风险库存"
+    }
+  ],
+  "calculation": {
+    "normal": {
+      "amount": 18400000,
+      "impairmentRate": 0,
+      "impairmentAmount": 0
+    },
+    "watch": {
+      "amount": 6240000,
+      "impairmentRate": 0.3,
+      "impairmentAmount": 1872000
+    },
+    "risk": {
+      "amount": 4000000,
+      "impairmentRate": 0.55,
+      "impairmentAmount": 2200000
+    }
+  },
+  "totalImpairment": 4072000,
+  "pnlImpact": {
+    "ebitImpactPct": -0.006,
+    "note": "计提跌价¥407万，拖累EBIT约0.6pp"
+  }
+}

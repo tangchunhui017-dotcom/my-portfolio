@@ -1,0 +1,93 @@
+{
+  "_comment": "S6b 80/20核心款vs长尾款 + 分销结构P&L",
+  "updatedAt": "2026-05-11",
+  "pareto": {
+    "coreSkuPct": 0.2,
+    "coreRevenuePct": 0.78,
+    "coreProfitPct": 0.82,
+    "coreSkuCount": 48,
+    "totalSkuCount": 240,
+    "coreNetRevenue": 94984000,
+    "coreTotalOpex": 36884000,
+    "coreContributionProfit": 25100000,
+    "coreContributionProfitRate": 0.264,
+    "tailNetRevenue": 26816000,
+    "tailTotalOpex": 12930000,
+    "tailContributionProfit": 5500000,
+    "tailContributionProfitRate": 0.205,
+    "decision": "建议聚焦核心款，下季缩减长尾款SKU数 20-30%，预计释放 OTB 预算 ¥800万",
+    "topCoreSkus": [
+      {
+        "skuId": "SN-2026-001",
+        "label": "经典运动休闲 A款",
+        "salesAmount": 8200000,
+        "grossMarginRate": 0.55,
+        "contributionProfit": 2460000
+      },
+      {
+        "skuId": "BT-2026-003",
+        "label": "马丁靴 B款",
+        "salesAmount": 7600000,
+        "grossMarginRate": 0.58,
+        "contributionProfit": 2280000
+      },
+      {
+        "skuId": "SN-2026-008",
+        "label": "功能运动 C款",
+        "salesAmount": 6900000,
+        "grossMarginRate": 0.54,
+        "contributionProfit": 1932000
+      }
+    ]
+  },
+  "distribution": [
+    {
+      "channel": "direct",
+      "label": "直营",
+      "netRevenue": 45000000,
+      "grossMarginRate": 0.52,
+      "totalOpex": 17100000,
+      "contributionProfit": 6300000,
+      "contributionProfitRate": 0.14,
+      "verdict": "主战场，贡献利润率健康",
+      "riskLevel": "healthy",
+      "action": "维持现规模，优化单店效率"
+    },
+    {
+      "channel": "franchise",
+      "label": "加盟",
+      "netRevenue": 28000000,
+      "grossMarginRate": 0.35,
+      "totalOpex": 13160000,
+      "contributionProfit": 4200000,
+      "contributionProfitRate": 0.15,
+      "verdict": "控宽策略，加盟商折扣压低毛利",
+      "riskLevel": "medium",
+      "action": "控制新开加盟点，提升管理半径"
+    },
+    {
+      "channel": "distribution",
+      "label": "经销",
+      "netRevenue": 15000000,
+      "grossMarginRate": 0.28,
+      "totalOpex": 8100000,
+      "contributionProfit": 1800000,
+      "contributionProfitRate": 0.12,
+      "verdict": "贡献利润率偏低，需重新评估",
+      "riskLevel": "high",
+      "action": "缩减低效经销商，集中优势品类"
+    },
+    {
+      "channel": "ecommerce",
+      "label": "电商自营",
+      "netRevenue": 32000000,
+      "grossMarginRate": 0.38,
+      "totalOpex": 12480000,
+      "contributionProfit": 5300000,
+      "contributionProfitRate": 0.166,
+      "verdict": "增长快，平台扣点压力大",
+      "riskLevel": "medium",
+      "action": "加深私域运营，降低平台依赖"
+    }
+  ]
+}

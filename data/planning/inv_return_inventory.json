@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "updatedAt": "2026-05-11"
+  },
+  "summary": {
+    "totalReturnUnits": 4820,
+    "totalReturnAmount": 2140000,
+    "secondSaleRate": 0.68,
+    "reworkRate": 0.18,
+    "scrappedRate": 0.14
+  },
+  "byChannel": [
+    {
+      "channel": "电商",
+      "units": 3200,
+      "amount": 1280000,
+      "returnRate": 0.28
+    },
+    {
+      "channel": "直营",
+      "units": 980,
+      "amount": 520000,
+      "returnRate": 0.08
+    },
+    {
+      "channel": "加盟",
+      "units": 640,
+      "amount": 340000,
+      "returnRate": 0.05
+    }
+  ]
+}

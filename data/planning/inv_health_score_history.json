@@ -1,0 +1,74 @@
+{
+  "meta": {
+    "updatedAt": "2026-05-11",
+    "note": "库存健康度评分历史 — 4周滚动"
+  },
+  "current": {
+    "score": 52,
+    "grade": "warning",
+    "dimensions": {
+      "turnover": {
+        "score": 55,
+        "weight": 0.3,
+        "label": "周转效率",
+        "note": "WOS 9.2W vs 目标8W"
+      },
+      "brokenSize": {
+        "score": 42,
+        "weight": 0.2,
+        "label": "断码控制",
+        "note": "断码SKU 18个，目标<8"
+      },
+      "seasonal": {
+        "score": 48,
+        "weight": 0.2,
+        "label": "季节性风险",
+        "note": "凉鞋/棉鞋积压"
+      },
+      "cashOccupy": {
+        "score": 58,
+        "weight": 0.15,
+        "label": "现金占用",
+        "note": "风险库存¥892万"
+      },
+      "slowMoving": {
+        "score": 60,
+        "weight": 0.15,
+        "label": "滞销控制",
+        "note": "滞销率22%"
+      }
+    }
+  },
+  "history": [
+    {
+      "week": "W15",
+      "date": "2026-04-13",
+      "score": 46,
+      "riskAmount": 10200000
+    },
+    {
+      "week": "W16",
+      "date": "2026-04-20",
+      "score": 49,
+      "riskAmount": 9800000
+    },
+    {
+      "week": "W17",
+      "date": "2026-04-27",
+      "score": 51,
+      "riskAmount": 9200000
+    },
+    {
+      "week": "W18",
+      "date": "2026-05-04",
+      "score": 52,
+      "riskAmount": 8920000
+    }
+  ],
+  "vsLastWeek": {
+    "scoreDelta": 1,
+    "riskAmountDelta": -280000,
+    "processedSkuCount": 3,
+    "releasedCash": 420000
+  }
+}

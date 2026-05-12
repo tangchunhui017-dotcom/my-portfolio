@@ -39,6 +39,8 @@ interface Props {
     isLockedScenario?: boolean;
     executedActionsByMonth?: Record<number, ExecutedAction[]>;
     factSalesByMonth?: Record<number, number>;
+    /** 跳转到其他子视图或主模块 */
+    onJumpToTab?: (tab: string) => void;
 }
 
 const MONTH_LABELS = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
@@ -380,19 +382,24 @@ function MonthlyRollingTrendChart({
     const riskByMonth = primaryRiskMap(risks);
 
     // Cumulative achievement line points
-    let cumActual = 0;
-    let cumPlan = 0;
-    const cumPoints = rows.map((row) => {
+    const cumPoints = rows.reduce<{
+        actual: number;
+        plan: number;
+        points: Array<number | null>;
+    }>((acc, row) => {
         const fact = factSalesByMonth?.[row.month - 1];
-        if (row.monthStatus === 'actual' && typeof fact === 'number') {
-            cumActual += fact;
-            cumPlan += row.originalPlanSales;
-        } else if (row.monthStatus === 'actual') {
-            cumActual += row.salesForecast;
-            cumPlan += row.originalPlanSales;
-        }
-        return cumPlan > 0 ? cumActual / cumPlan : null;
-    });
+        const nextActual = row.monthStatus === 'actual'
+            ? acc.actual + (typeof fact === 'number' ? fact : row.salesForecast)
+            : acc.actual;
+        const nextPlan = row.monthStatus === 'actual'
+            ? acc.plan + row.originalPlanSales
+            : acc.plan;
+        return {
+            actual: nextActual,
+            plan: nextPlan,
+            points: [...acc.points, nextPlan > 0 ? nextActual / nextPlan : null],
+        };
+    }, { actual: 0, plan: 0, points: [] }).points;
 
     return (
         <div className="bg-white rounded-xl border border-slate-100 shadow-sm">
@@ -759,6 +766,7 @@ export default function MonthlyOTBRollingPanel({
     isLockedScenario,
     executedActionsByMonth = {},
     factSalesByMonth,
+    onJumpToTab,
 }: Props) {
     const virtualLoop = useOtbVirtualSalesLoop(filters);
 
@@ -963,7 +971,7 @@ export default function MonthlyOTBRollingPanel({
         link.download = `otb-monthly-${scenario}.csv`;
         link.click();
         URL.revokeObjectURL(url);
-    }, [rolling.risks, rolling.rows, scenario]);
+    }, [currencyUnit, rolling.risks, rolling.rows, scenario]);
 
     const onEditAttempt = useCallback((row: MonthlyRollingRow) => {
         if (row.monthStatus === 'actual') {
@@ -1224,6 +1232,27 @@ export default function MonthlyOTBRollingPanel({
                     <p><strong>预测月 (forecast)</strong>：未来月份，OTB 模型</p>
                 </div>
             ) : null}
+
+            {/* 跨模块联动跳转 */}
+            {onJumpToTab && (
+                <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+                    <p className="mb-2 text-xs font-bold text-slate-600">跨模块联动</p>
+                    <div className="flex flex-wrap gap-2">
+                        <button type="button" onClick={() => onJumpToTab('annual')}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs text-sky-700 transition-colors hover:bg-sky-100">
+                            🎯 回年度总控
+                        </button>
+                        <button type="button" onClick={() => onJumpToTab('execution')}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs text-slate-700 transition-colors hover:bg-slate-200">
+                            ✅ 查执行跟踪
+                        </button>
+                        <button type="button" onClick={() => onJumpToTab('cashflow')}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs text-emerald-700 transition-colors hover:bg-emerald-100">
+                            💰 现金流影响
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {virtualLoop.diagnostics.map((diagnosis, index) => (
                 <div key={`${diagnosis}-${index}`} className="px-4 py-3 rounded-xl text-xs bg-amber-50 border border-amber-100 text-amber-700">

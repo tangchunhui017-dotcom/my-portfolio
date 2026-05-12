@@ -1,0 +1,860 @@
+{
+  "meta": {
+    "year": "2026",
+    "updatedAt": "2026-05-11",
+    "version": "v10"
+  },
+  "kpis": [
+    {
+      "key": "grossSales",
+      "label": "销售额",
+      "actual": 121800000,
+      "plan": 130000000,
+      "variance": -8200000,
+      "variancePct": -0.063,
+      "vsLastPeriod": 0.042,
+      "riskLevel": "warning",
+      "format": "money"
+    },
+    {
+      "key": "achievementRate",
+      "label": "销售达成率",
+      "actual": 0.937,
+      "plan": 1,
+      "variance": -0.063,
+      "variancePct": -0.063,
+      "vsLastPeriod": 0.012,
+      "riskLevel": "warning",
+      "format": "pct"
+    },
+    {
+      "key": "grossProfit",
+      "label": "毛利额",
+      "actual": 59682000,
+      "plan": 65000000,
+      "variance": -5318000,
+      "variancePct": -0.082,
+      "vsLastPeriod": 0.028,
+      "riskLevel": "warning",
+      "format": "money"
+    },
+    {
+      "key": "grossMargin",
+      "label": "毛利率",
+      "actual": 0.49,
+      "plan": 0.5,
+      "variance": -0.01,
+      "variancePct": -0.02,
+      "vsLastPeriod": -0.005,
+      "riskLevel": "healthy",
+      "format": "pct"
+    },
+    {
+      "key": "expenseRate",
+      "label": "费用率",
+      "actual": 0.41,
+      "plan": 0.385,
+      "variance": 0.025,
+      "variancePct": 0.065,
+      "vsLastPeriod": 0.018,
+      "riskLevel": "high",
+      "format": "pct",
+      "higherIsBad": true
+    },
+    {
+      "key": "netProfit",
+      "label": "净利润",
+      "actual": 7301250,
+      "plan": 9100000,
+      "variance": -1798750,
+      "variancePct": -0.198,
+      "vsLastPeriod": -0.082,
+      "riskLevel": "high",
+      "format": "money"
+    },
+    {
+      "key": "netMargin",
+      "label": "净利率",
+      "actual": 0.0599,
+      "plan": 0.07,
+      "variance": -0.0101,
+      "variancePct": -0.144,
+      "vsLastPeriod": -0.006,
+      "riskLevel": "high",
+      "format": "pct"
+    },
+    {
+      "key": "cashProfitGap",
+      "label": "现金利润差",
+      "actual": -4280000,
+      "plan": 0,
+      "variance": -4280000,
+      "variancePct": -9.99,
+      "vsLastPeriod": -0.15,
+      "riskLevel": "high",
+      "format": "money"
+    }
+  ],
+  "alertActions": [
+    {
+      "id": "ALT001",
+      "priority": 1,
+      "riskLevel": "high",
+      "actionType": "clearance",
+      "subject": "2025AW板鞋/靴类",
+      "subjectType": "wave",
+      "riskReason": "跨季尾货库龄超180天，库存减值+清货损失已达¥426万，持续侵蚀净利",
+      "financialImpact": -4263000,
+      "improvementAmount": 2800000,
+      "recommendedAction": "整批转奥莱，立即停止正价渠道补货，冻结AW款OTB预算¥150万",
+      "status": "suggested",
+      "deadline": "2026-05-20",
+      "owner": "商品企划",
+      "relatedModules": [
+        "otb",
+        "inventory"
+      ]
+    },
+    {
+      "id": "ALT002",
+      "priority": 2,
+      "riskLevel": "high",
+      "actionType": "reduce_expense",
+      "subject": "电商渠道营销费用",
+      "subjectType": "channel",
+      "riskReason": "电商营销费率9.8%，高于行业基准7.5%，全年超支¥284万，ROI低于1.2",
+      "financialImpact": -2840000,
+      "improvementAmount": 1800000,
+      "recommendedAction": "降低低效直播预算，聚焦头部主播+搜索词，预计节省¥180万",
+      "status": "in_progress",
+      "deadline": "2026-05-31",
+      "owner": "电商运营",
+      "relatedModules": [
+        "forecast"
+      ]
+    },
+    {
+      "id": "ALT003",
+      "priority": 3,
+      "riskLevel": "high",
+      "actionType": "stop_replenishment",
+      "subject": "训练鞋大码SKU",
+      "subjectType": "sku",
+      "riskReason": "45/46码训练鞋WOS超60周，大码积压导致毛利被稀释，净利贡献为负",
+      "financialImpact": -1260000,
+      "improvementAmount": 840000,
+      "recommendedAction": "立即停止大码补货，设定折扣出清计划，冻结OTB相关预算",
+      "status": "pending",
+      "deadline": "2026-05-18",
+      "owner": "OTB计划",
+      "relatedModules": [
+        "otb",
+        "inventory"
+      ]
+    },
+    {
+      "id": "ALT004",
+      "priority": 4,
+      "riskLevel": "medium",
+      "actionType": "adjust_price_band",
+      "subject": "休闲鞋299-499价格带",
+      "subjectType": "priceBand",
+      "riskReason": "该价格带毛利率38%，低于品牌均值11pp，拖累整体毛利率0.8pp",
+      "financialImpact": -980000,
+      "improvementAmount": 650000,
+      "recommendedAction": "下季控制该价格带选款数量，向499-699价格带迁移主力款",
+      "status": "suggested",
+      "deadline": "2026-06-30",
+      "owner": "商品企划",
+      "relatedModules": [
+        "wave",
+        "category"
+      ]
+    },
+    {
+      "id": "ALT005",
+      "priority": 5,
+      "riskLevel": "medium",
+      "actionType": "optimize_store_cost",
+      "subject": "华南实体门店",
+      "subjectType": "region",
+      "riskReason": "华南区租金率超14%，3家门店连续2季亏损，拖累渠道净利¥62万",
+      "financialImpact": -620000,
+      "improvementAmount": 420000,
+      "recommendedAction": "启动亏损门店评估，月净利连续3月为负则启动撤店程序",
+      "status": "pending",
+      "deadline": "2026-06-15",
+      "owner": "渠道拓展",
+      "relatedModules": [
+        "pnl"
+      ]
+    },
+    {
+      "id": "ALT006",
+      "priority": 6,
+      "riskLevel": "medium",
+      "actionType": "increase_high_margin_mix",
+      "subject": "跑鞋品类占比",
+      "subjectType": "category",
+      "riskReason": "跑鞋毛利率58%是最高品类，但销售占比仅28%，提升10pp可改善净利¥120万",
+      "financialImpact": 0,
+      "improvementAmount": 1200000,
+      "recommendedAction": "下季波段企划向跑鞋倾斜，提升跑鞋OTB预算占比至35%",
+      "status": "suggested",
+      "deadline": "2026-06-30",
+      "owner": "商品企划",
+      "relatedModules": [
+        "wave",
+        "otb"
+      ]
+    }
+  ],
+  "profitStatement": [
+    {
+      "key": "grossSales",
+      "label": "Gross Sales 吊牌销售额",
+      "indent": 0,
+      "isTotal": false,
+      "plan": 168000000,
+      "forecast": 162000000,
+      "actual": 168000000,
+      "yoy": 0.08
+    },
+    {
+      "key": "discount",
+      "label": "  Discount / Markdown 折扣",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -33600000,
+      "forecast": -36400000,
+      "actual": -33600000,
+      "yoy": 0.12
+    },
+    {
+      "key": "return",
+      "label": "  Return 退货退款",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -12600000,
+      "forecast": -13100000,
+      "actual": -12600000,
+      "yoy": 0.05
+    },
+    {
+      "key": "netSales",
+      "label": "Net Sales 净销售额",
+      "indent": 0,
+      "isTotal": true,
+      "plan": 121800000,
+      "forecast": 112500000,
+      "actual": 121800000,
+      "yoy": 0.065
+    },
+    {
+      "key": "cogs",
+      "label": "  COGS 商品成本",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -58464000,
+      "forecast": -56250000,
+      "actual": -58464000,
+      "yoy": 0.05
+    },
+    {
+      "key": "inboundLogis",
+      "label": "  Inbound Logistics 入仓物流",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -3654000,
+      "forecast": -3600000,
+      "actual": -3654000,
+      "yoy": 0.03
+    },
+    {
+      "key": "grossProfit",
+      "label": "Gross Profit 毛利",
+      "indent": 0,
+      "isTotal": true,
+      "plan": 59682000,
+      "forecast": 52650000,
+      "actual": 59682000,
+      "yoy": 0.082
+    },
+    {
+      "key": "platformFee",
+      "label": "  Platform Fee 平台费用",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -4872000,
+      "forecast": -5100000,
+      "actual": -4872000,
+      "yoy": 0.08
+    },
+    {
+      "key": "mallDeduction",
+      "label": "  Mall Deduction 商场扣点",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -7308000,
+      "forecast": -7500000,
+      "actual": -7308000,
+      "yoy": 0.04
+    },
+    {
+      "key": "marketing",
+      "label": "  Marketing 营销费用",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -9744000,
+      "forecast": -10200000,
+      "actual": -9744000,
+      "yoy": 0.15
+    },
+    {
+      "key": "rent",
+      "label": "  Rent 门店租金",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -6708000,
+      "forecast": -7100000,
+      "actual": -6708000,
+      "yoy": 0.06
+    },
+    {
+      "key": "labor",
+      "label": "  Labor 人工费用",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -8526000,
+      "forecast": -8800000,
+      "actual": -8526000,
+      "yoy": 0.07
+    },
+    {
+      "key": "logistics",
+      "label": "  Logistics 仓配物流",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -3654000,
+      "forecast": -3800000,
+      "actual": -3654000,
+      "yoy": 0.04
+    },
+    {
+      "key": "fitout",
+      "label": "  Fitout Amortization 装修摊销",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -1218000,
+      "forecast": -1218000,
+      "actual": -1218000,
+      "yoy": 0
+    },
+    {
+      "key": "admin",
+      "label": "  Admin 管理费用",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -3654000,
+      "forecast": -3900000,
+      "actual": -3654000,
+      "yoy": 0.05
+    },
+    {
+      "key": "invWriteDown",
+      "label": "  Inventory Write-down 库存减值",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -2436000,
+      "forecast": -3800000,
+      "actual": -2436000,
+      "yoy": 0.28
+    },
+    {
+      "key": "clearanceLoss",
+      "label": "  Clearance Loss 清货损失",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -1827000,
+      "forecast": -2400000,
+      "actual": -1827000,
+      "yoy": 0.22
+    },
+    {
+      "key": "ebit",
+      "label": "Operating Profit EBIT",
+      "indent": 0,
+      "isTotal": true,
+      "plan": 9735000,
+      "forecast": 1732000,
+      "actual": 9735000,
+      "yoy": -0.05
+    },
+    {
+      "key": "tax",
+      "label": "  Income Tax 所得税",
+      "indent": 1,
+      "isTotal": false,
+      "plan": -2433750,
+      "forecast": -433000,
+      "actual": -2433750,
+      "yoy": -0.05
+    },
+    {
+      "key": "netProfit",
+      "label": "Net Profit 净利润",
+      "indent": 0,
+      "isTotal": true,
+      "plan": 7301250,
+      "forecast": 1299000,
+      "actual": 7301250,
+      "yoy": -0.06
+    }
+  ],
+  "profitBridge": {
+    "targetNetProfit": 9100000,
+    "actualNetProfit": 7301250,
+    "totalGap": -1798750,
+    "factors": [
+      {
+        "key": "revenue_shortfall",
+        "label": "销售额低于计划",
+        "impact": -1025000,
+        "type": "negative",
+        "description": "销售额较计划少¥820万，净利影响约¥102万"
+      },
+      {
+        "key": "discount_excess",
+        "label": "折扣率超预期",
+        "impact": -460000,
+        "type": "negative",
+        "description": "综合折扣率超目标1.8pp，净利损失¥46万"
+      },
+      {
+        "key": "marketing_overrun",
+        "label": "营销费用超支",
+        "impact": -284000,
+        "type": "negative",
+        "description": "电商营销ROI低，超预算¥284万"
+      },
+      {
+        "key": "rent_overrun",
+        "label": "租金费用超支",
+        "impact": -196000,
+        "type": "negative",
+        "description": "新店爬坡租金成本高于预期"
+      },
+      {
+        "key": "inv_writedown",
+        "label": "库存减值超预期",
+        "impact": -420000,
+        "type": "negative",
+        "description": "AW跨季库存减值大幅超出预算"
+      },
+      {
+        "key": "cogs_saving",
+        "label": "COGS成本节约",
+        "impact": 320000,
+        "type": "positive",
+        "description": "供应链优化，成本低于计划"
+      },
+      {
+        "key": "new_product_mix",
+        "label": "新品毛利提升",
+        "impact": 267000,
+        "type": "positive",
+        "description": "跑鞋新品毛利率高于预期"
+      }
+    ]
+  },
+  "waveContribution": [
+    {
+      "waveId": "2026SS-W1",
+      "waveName": "2026SS第一波",
+      "launchDate": "2026-02-15",
+      "salesAmount": 28400000,
+      "grossMargin": 0.51,
+      "discountRate": 0.18,
+      "netProfit": 2130000,
+      "netMargin": 0.075,
+      "roi": 2.4,
+      "inventoryCost": 8640000,
+      "inventoryWriteDown": 320000,
+      "riskLevel": "healthy",
+      "action": "维持，加速核心款补货"
+    },
+    {
+      "waveId": "2026SS-W2",
+      "waveName": "2026SS第二波",
+      "launchDate": "2026-03-20",
+      "salesAmount": 22600000,
+      "grossMargin": 0.49,
+      "discountRate": 0.21,
+      "netProfit": 1244000,
+      "netMargin": 0.055,
+      "roi": 1.9,
+      "inventoryCost": 7820000,
+      "inventoryWriteDown": 480000,
+      "riskLevel": "medium",
+      "action": "控折扣，跑鞋追单"
+    },
+    {
+      "waveId": "2026SS-W3",
+      "waveName": "2026SS夏季主推",
+      "launchDate": "2026-04-20",
+      "salesAmount": 14200000,
+      "grossMargin": 0.47,
+      "discountRate": 0.24,
+      "netProfit": 568000,
+      "netMargin": 0.04,
+      "roi": 1.5,
+      "inventoryCost": 4280000,
+      "inventoryWriteDown": 280000,
+      "riskLevel": "medium",
+      "action": "缺货款追单，控费用"
+    },
+    {
+      "waveId": "2025AW-W2",
+      "waveName": "2025AW第二波",
+      "launchDate": "2025-09-15",
+      "salesAmount": 18600000,
+      "grossMargin": 0.46,
+      "discountRate": 0.31,
+      "netProfit": -744000,
+      "netMargin": -0.04,
+      "roi": 0.8,
+      "inventoryCost": 6420000,
+      "inventoryWriteDown": 1280000,
+      "riskLevel": "critical",
+      "action": "立即出清，冻结OTB"
+    },
+    {
+      "waveId": "2025AW-W3",
+      "waveName": "2025AW第三波",
+      "launchDate": "2025-10-01",
+      "salesAmount": 12800000,
+      "grossMargin": 0.44,
+      "discountRate": 0.28,
+      "netProfit": -128000,
+      "netMargin": -0.01,
+      "roi": 0.9,
+      "inventoryCost": 4840000,
+      "inventoryWriteDown": 980000,
+      "riskLevel": "high",
+      "action": "折扣出清，停止补货"
+    },
+    {
+      "waveId": "others",
+      "waveName": "其他波段汇总",
+      "launchDate": "",
+      "salesAmount": 25200000,
+      "grossMargin": 0.52,
+      "discountRate": 0.15,
+      "netProfit": 2331250,
+      "netMargin": 0.092,
+      "roi": 2.8,
+      "inventoryCost": 5420000,
+      "inventoryWriteDown": 220000,
+      "riskLevel": "healthy",
+      "action": "继续保持"
+    }
+  ],
+  "priceBandContribution": [
+    {
+      "priceBand": "199-299",
+      "label": "199-299",
+      "salesAmount": 9840000,
+      "grossMargin": 0.35,
+      "discountRate": 0.28,
+      "netProfit": -197000,
+      "netMargin": -0.02,
+      "roi": 0.9,
+      "riskLevel": "high",
+      "action": "减少选款，清理积压"
+    },
+    {
+      "priceBand": "299-499",
+      "label": "299-499",
+      "salesAmount": 28400000,
+      "grossMargin": 0.38,
+      "discountRate": 0.26,
+      "netProfit": 852000,
+      "netMargin": 0.03,
+      "roi": 1.2,
+      "riskLevel": "medium",
+      "action": "控款深，向上迁移"
+    },
+    {
+      "priceBand": "499-699",
+      "label": "499-699",
+      "salesAmount": 34200000,
+      "grossMargin": 0.5,
+      "discountRate": 0.19,
+      "netProfit": 3420000,
+      "netMargin": 0.1,
+      "roi": 2.4,
+      "riskLevel": "healthy",
+      "action": "主力价格带，继续扩大"
+    },
+    {
+      "priceBand": "699-999",
+      "label": "699-999",
+      "salesAmount": 32800000,
+      "grossMargin": 0.54,
+      "discountRate": 0.16,
+      "netProfit": 3936000,
+      "netMargin": 0.12,
+      "roi": 2.8,
+      "riskLevel": "healthy",
+      "action": "提升占比，跑鞋主力"
+    },
+    {
+      "priceBand": "999+",
+      "label": "999+",
+      "salesAmount": 16560000,
+      "grossMargin": 0.58,
+      "discountRate": 0.12,
+      "netProfit": 2153000,
+      "netMargin": 0.13,
+      "roi": 3.2,
+      "riskLevel": "opportunity",
+      "action": "试水高端，形象款优先"
+    }
+  ],
+  "markdownScenarios": {
+    "current": {
+      "grossSales": 168000000,
+      "discountSales": 0.2,
+      "avgDiscountRate": 0.2,
+      "markdownLoss": 6840000,
+      "clearanceLoss": 1827000,
+      "inventoryWriteDown": 2436000,
+      "riskInventoryAmount": 8920000,
+      "discountedGrossMargin": 0.47,
+      "netProfitImpact": -5560000
+    },
+    "scenarios": [
+      {
+        "scenario": "A",
+        "label": "轻折扣 85折",
+        "desc": "温和促销，保护毛利",
+        "estimatedSales": 4200000,
+        "cashRelease": 2520000,
+        "markdownLoss": 630000,
+        "grossMarginImpact": -0.03,
+        "netProfitImpact": -630000,
+        "inventoryRelease": 3200000,
+        "weeks": 16
+      },
+      {
+        "scenario": "B",
+        "label": "深折扣 65折",
+        "desc": "快速清仓，牺牲毛利",
+        "estimatedSales": 6800000,
+        "cashRelease": 4760000,
+        "markdownLoss": 2380000,
+        "grossMarginImpact": -0.14,
+        "netProfitImpact": -2380000,
+        "inventoryRelease": 6400000,
+        "weeks": 8
+      },
+      {
+        "scenario": "C",
+        "label": "转奥莱/清仓",
+        "desc": "批量出清，最快回笼",
+        "estimatedSales": 5240000,
+        "cashRelease": 3670000,
+        "markdownLoss": 3640000,
+        "grossMarginImpact": -0.22,
+        "netProfitImpact": -3640000,
+        "inventoryRelease": 8920000,
+        "weeks": 5
+      }
+    ]
+  },
+  "breakEven": {
+    "brand": {
+      "breakEvenSales": 108000000,
+      "breakEvenUnits": 180000,
+      "breakEvenMargin": 0.41,
+      "currentSales": 121800000,
+      "gapAmount": 13800000,
+      "gapUnits": 23000,
+      "estimatedBreakEvenMonth": "2026-04",
+      "safetyMargin": 0.113,
+      "riskLevel": "healthy"
+    },
+    "channels": [
+      {
+        "channel": "ecommerce",
+        "label": "电商",
+        "breakEvenSales": 38000000,
+        "currentSales": 47200000,
+        "safetyMargin": 0.195,
+        "riskLevel": "healthy"
+      },
+      {
+        "channel": "physical",
+        "label": "实体",
+        "breakEvenSales": 42000000,
+        "currentSales": 52800000,
+        "safetyMargin": 0.208,
+        "riskLevel": "healthy"
+      },
+      {
+        "channel": "new_store",
+        "label": "新店",
+        "breakEvenSales": 16000000,
+        "currentSales": 14600000,
+        "safetyMargin": -0.088,
+        "riskLevel": "high"
+      },
+      {
+        "channel": "outlet",
+        "label": "奥莱",
+        "breakEvenSales": 8200000,
+        "currentSales": 7200000,
+        "safetyMargin": -0.122,
+        "riskLevel": "high"
+      }
+    ],
+    "categories": [
+      {
+        "category": "running",
+        "label": "跑鞋",
+        "breakEvenSales": 26000000,
+        "currentSales": 34100000,
+        "safetyMargin": 0.238,
+        "riskLevel": "healthy"
+      },
+      {
+        "category": "casual",
+        "label": "休闲",
+        "breakEvenSales": 24000000,
+        "currentSales": 28400000,
+        "safetyMargin": 0.155,
+        "riskLevel": "healthy"
+      },
+      {
+        "category": "outdoor",
+        "label": "户外",
+        "breakEvenSales": 12000000,
+        "currentSales": 14800000,
+        "safetyMargin": 0.189,
+        "riskLevel": "healthy"
+      },
+      {
+        "category": "training",
+        "label": "训练",
+        "breakEvenSales": 10000000,
+        "currentSales": 8200000,
+        "safetyMargin": -0.18,
+        "riskLevel": "high"
+      },
+      {
+        "category": "boots",
+        "label": "靴",
+        "breakEvenSales": 14000000,
+        "currentSales": 10400000,
+        "safetyMargin": -0.257,
+        "riskLevel": "critical"
+      }
+    ]
+  },
+  "cashPnlLinkage": {
+    "accountingNetProfit": 7301250,
+    "operatingCashflow": 3021250,
+    "inventoryCashTied": 11240000,
+    "purchasePayment": 14820000,
+    "clearanceCashback": 3670000,
+    "accountsReceivable": 6840000,
+    "cashGap": -4280000,
+    "conclusion": "账面净利润¥730万，但经营现金流仅¥302万。库存占用现金¥1124万是主要差异，尾货清仓可释放¥367万，建议优先推进清仓方案B。",
+    "drivers": [
+      {
+        "driver": "库存占用",
+        "amount": -11240000,
+        "explanation": "大量在途和AW积压款占用现金"
+      },
+      {
+        "driver": "采购付款",
+        "amount": -14820000,
+        "explanation": "春季大货付款高峰集中在Q1"
+      },
+      {
+        "driver": "折旧摊销加回",
+        "amount": 1218000,
+        "explanation": "装修摊销无现金支出"
+      },
+      {
+        "driver": "应收账款",
+        "amount": -6840000,
+        "explanation": "部分门店结款滞后"
+      },
+      {
+        "driver": "清仓回款",
+        "amount": 3670000,
+        "explanation": "预计清仓方案B执行后回笼"
+      }
+    ],
+    "otbRecommendation": "建议冻结2025AW相关OTB预算¥150万，延后2026AW第一波采购付款至6月后。"
+  },
+  "relatedModules": [
+    {
+      "id": "forecast",
+      "label": "销售预测",
+      "color": "#8b5cf6",
+      "relationship": "销售达成、预测偏差影响净利",
+      "icon": "📈",
+      "param": "forecastVariance"
+    },
+    {
+      "id": "otb",
+      "label": "OTB预算",
+      "color": "#3b82f6",
+      "relationship": "采购投入、预算冻结影响成本",
+      "icon": "📦",
+      "param": "budgetImpact"
+    },
+    {
+      "id": "inventory",
+      "label": "库存健康",
+      "color": "#ef4444",
+      "relationship": "库存减值、清仓损失影响净利",
+      "icon": "🗃️",
+      "param": "inventoryRiskAmount"
+    },
+    {
+      "id": "wave",
+      "label": "波段企划",
+      "color": "#0ea5e9",
+      "relationship": "波段利润、上市节奏影响结构",
+      "icon": "🌊",
+      "param": "waveId"
+    },
+    {
+      "id": "category",
+      "label": "品类运营",
+      "color": "#22c55e",
+      "relationship": "品类毛利、款深款宽影响结构",
+      "icon": "👟",
+      "param": "category"
+    },
+    {
+      "id": "cashflow",
+      "label": "现金流",
+      "color": "#f97316",
+      "relationship": "利润与现金差异、付款节奏",
+      "icon": "💰",
+      "param": "cashGap"
+    },
+    {
+      "id": "store",
+      "label": "区域门店",
+      "color": "#a855f7",
+      "relationship": "门店盈利、租金人工效率",
+      "icon": "🏬",
+      "param": "storeType"
+    }
+  ]
+}

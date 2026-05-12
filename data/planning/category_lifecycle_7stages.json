@@ -1,0 +1,83 @@
+{
+  "stages": [
+    {
+      "stage": "development",
+      "label": "开发",
+      "description": "设计中，未出样品",
+      "skuCount": 18,
+      "avgSellThrough": null,
+      "targetSellThrough": null,
+      "stuckDiagnosis": null
+    },
+    {
+      "stage": "sample",
+      "label": "样品",
+      "description": "待评审",
+      "skuCount": 12,
+      "avgSellThrough": null,
+      "targetSellThrough": null,
+      "stuckDiagnosis": null
+    },
+    {
+      "stage": "prelaunch",
+      "label": "上市预热",
+      "description": "试销阶段",
+      "skuCount": 24,
+      "avgSellThrough": 0.28,
+      "targetSellThrough": 0.35,
+      "stuckDiagnosis": {
+        "type": "slow_trial",
+        "stuckCount": 8,
+        "message": "8款试销售罄低于目标 35%，建议加大投放或调整定价"
+      }
+    },
+    {
+      "stage": "rampup",
+      "label": "爬坡期",
+      "description": "M1-M3",
+      "skuCount": 45,
+      "avgSellThrough": 0.41,
+      "targetSellThrough": 0.50,
+      "stuckDiagnosis": {
+        "type": "stuck_rampup",
+        "stuckCount": 12,
+        "message": "12款应在巅峰但卡在爬坡 → 推广不力，建议加强渠道陈列与流量"
+      }
+    },
+    {
+      "stage": "peak",
+      "label": "巅峰期",
+      "description": "M3-M9",
+      "skuCount": 68,
+      "avgSellThrough": 0.72,
+      "targetSellThrough": 0.65,
+      "stuckDiagnosis": null
+    },
+    {
+      "stage": "decline",
+      "label": "衰退期",
+      "description": "M9-M12",
+      "skuCount": 38,
+      "avgSellThrough": 0.55,
+      "targetSellThrough": 0.70,
+      "stuckDiagnosis": {
+        "type": "slow_clearance",
+        "stuckCount": 9,
+        "message": "9款本应在清货但停滞于衰退 → 清货不力，建议启动折扣 + 奥莱转移"
+      }
+    },
+    {
+      "stage": "clearance",
+      "label": "清货期",
+      "description": "M12+",
+      "skuCount": 22,
+      "avgSellThrough": 0.31,
+      "targetSellThrough": 0.80,
+      "stuckDiagnosis": {
+        "type": "clearance_stuck",
+        "stuckCount": 22,
+        "message": "清货期 SKU 售罄仅 31%，库存积压严重，建议加大折扣力度与渠道转移"
+      }
+    }
+  ]
+}

@@ -60,6 +60,8 @@ interface DimSkuRecord {
 interface DimChannelRecord {
     channel_id: string;
     channel_type: string;
+    channel_name?: string;
+    is_online?: boolean;
     region: string;
     city_tier: string;
     store_format: string;
@@ -70,6 +72,7 @@ type SizeLineTypeKey = 'fashion_casual' | 'sport_casual';
 type SizeRegionClusterKey = 'north' | 'south' | 'default';
 type SizeCategoryBiasKey = 'upsize' | 'fit_strict' | 'none';
 type SizeChannelBiasKey = 'online' | 'offline';
+type ChannelFitBucketKey = 'direct' | 'ecommerce' | 'franchise' | 'outlet' | 'other';
 
 interface SizeBandDefinition {
     size_range: string[];
@@ -143,6 +146,31 @@ interface AggregationResult {
     scopedStoreSet: Set<string>;
     activeSkuSet: Set<string>;
     activeStoreSet: Set<string>;
+}
+
+interface CategoryBucketMeta {
+    categoryKey: string;
+    categoryId: string;
+    categoryFilterId: string;
+    category: string;
+    productLine: string;
+}
+
+interface ChannelMixBucket {
+    bucketKey: ChannelFitBucketKey;
+    label: string;
+    netSales: number;
+    pairsSold: number;
+    onHandUnits: number;
+    storeSet: Set<string>;
+}
+
+interface CategoryChannelMix {
+    categoryKey: string;
+    buckets: Map<ChannelFitBucketKey, ChannelMixBucket>;
+    totalNetSales: number;
+    totalPairs: number;
+    totalOnHandUnits: number;
 }
 
 interface SellThroughTrendBucket {
@@ -377,6 +405,26 @@ export interface CategoryOpsBaselineTotals {
 export type SellThroughMode = 'effective' | 'cumulative';
 export type CategoryLevel = 'l1' | 'l2';
 
+export interface CategoryOpsChannelFitRow {
+    categoryId: string;
+    categoryFilterId: string;
+    category: string;
+    gmRate: number;
+    sellThrough: number;
+    recommendedChannel: string;
+    targetChannelBucket: string;
+    currentTopChannel: string;
+    currentTopSalesShare: number;
+    targetShare: number;
+    targetSalesShare: number;
+    targetInventoryShare: number;
+    gapPp: number;
+    inventoryGapPp: number;
+    mismatchLevel: 'good' | 'warn' | 'risk';
+    currentBias: string;
+    recommendation: string;
+}
+
 export interface CategoryOpsDepthBin {
     label: string;
     count: number;
@@ -479,8 +527,26 @@ const SPORT_LINE_HINTS = [
 const UPSIZE_HINTS = ['boots', 'boot', 'dad', 'running', 'outdoor', '靴', '老爹', '跑', '户外', '越野', '徒步', '登山'];
 const FIT_STRICT_HINTS = ['heels', 'heel', 'pump', 'pumps', 'ballet', 'mary_jane', 'maryjane', '高跟', '浅口', '芭蕾', '玛丽珍', '单鞋'];
 const ONLINE_CHANNEL_HINTS = ['online', 'ecom', 'e-commerce', 'ec', '电商', '线上'];
+const OUTLET_CHANNEL_HINTS = ['outlet', '奥莱', '奥特莱斯', '折扣', '清仓'];
+const DIRECT_CHANNEL_HINTS = ['direct', '直营', '自营'];
+const FRANCHISE_CHANNEL_HINTS = ['franchise', '加盟', 'ka', 'key account', '经销'];
 const NORTH_REGION_HINTS = ['north_china', 'northeast_china', 'northwest_china', 'north', 'northeast', 'northwest', '华北', '东北', '西北'];
 const SOUTH_REGION_HINTS = ['south_china', 'southwest_china', 'east_china', 'south', 'southwest', 'east', '华南', '西南', '华东'];
+
+const CHANNEL_FIT_BUCKET_LABEL: Record<ChannelFitBucketKey, string> = {
+    direct: '直营',
+    ecommerce: '电商',
+    franchise: '加盟/KA',
+    outlet: '奥莱/折扣',
+    other: '其他渠道',
+};
+
+const CHANNEL_FIT_TARGETS: Record<string, { bucket: ChannelFitBucketKey; share: number }> = {
+    '直营': { bucket: 'direct', share: 0.58 },
+    '电商': { bucket: 'ecommerce', share: 0.55 },
+    '区域精选直营': { bucket: 'direct', share: 0.42 },
+    '奥莱/折扣': { bucket: 'outlet', share: 0.50 },
+};
 
 const sizeProfileMap = new Map<string, SizeRuleProfile>(
     (sizeRuleMatrix.base_profiles || []).map((profile) => [`${profile.gender}__${profile.line_type}`, profile] as const),
@@ -549,6 +615,39 @@ function normalizeChannelBias(channelTypeRaw?: string | null): SizeChannelBiasKe
     const channelType = normalizeToken(channelTypeRaw);
     if (includesAnyToken(channelType, ONLINE_CHANNEL_HINTS)) return 'online';
     return 'offline';
+}
+
+function resolveChannelFitBucket(channel: DimChannelRecord): ChannelFitBucketKey {
+    const text = normalizeToken([
+        channel.channel_type,
+        channel.channel_name,
+        channel.store_format,
+        channel.region,
+    ].filter(Boolean).join(' '));
+
+    if (includesAnyToken(text, OUTLET_CHANNEL_HINTS)) return 'outlet';
+    if (channel.is_online || includesAnyToken(text, ONLINE_CHANNEL_HINTS)) return 'ecommerce';
+    if (includesAnyToken(text, DIRECT_CHANNEL_HINTS)) return 'direct';
+    if (includesAnyToken(text, FRANCHISE_CHANNEL_HINTS)) return 'franchise';
+    return 'other';
+}
+
+function resolveRecommendedChannelProfile(gmRate: number, sellThrough: number) {
+    const highGm = gmRate >= 0.55;
+    const highSellThrough = sellThrough >= 0.60;
+    const recommendedChannel = highGm && highSellThrough
+        ? '直营'
+        : !highGm && highSellThrough
+            ? '电商'
+            : highGm && !highSellThrough
+                ? '区域精选直营'
+                : '奥莱/折扣';
+    const target = CHANNEL_FIT_TARGETS[recommendedChannel] ?? CHANNEL_FIT_TARGETS['直营'];
+    return {
+        recommendedChannel,
+        targetBucket: target.bucket,
+        targetShare: target.share,
+    };
 }
 
 function resolveSizeCategoryBias(sku: DimSkuRecord): SizeCategoryBiasKey {
@@ -865,6 +964,31 @@ function createBucket(
     };
 }
 
+function resolveCategoryBucketMeta(sku: DimSkuRecord, categoryLevel: CategoryLevel): CategoryBucketMeta {
+    const categoryMeta = resolveFootwearCategory(
+        sku.category_name,
+        sku.category_id,
+        sku.sku_name,
+        sku.category_l2,
+        sku.product_line,
+    );
+    const categoryFilterId = categoryMeta.categoryL1 || sku.category_id || 'unknown';
+    const categoryL1 = categoryMeta.categoryL1 || sku.category_name || categoryFilterId || '未定义品类';
+    const categoryL2 = categoryMeta.categoryL2 || categoryL1;
+    const categoryId = categoryLevel === 'l2'
+        ? `${categoryFilterId}__${categoryL2}`
+        : categoryFilterId;
+    const category = categoryLevel === 'l2' ? categoryL2 : categoryL1;
+    const productLine = categoryMeta.categoryL1 || '未定义产品线';
+    return {
+        categoryKey: `${productLine}__${categoryId}`,
+        categoryId,
+        categoryFilterId,
+        category,
+        productLine,
+    };
+}
+
 function aggregateSales(
     records: FactSalesRecord[],
     filters: DashboardFilters,
@@ -898,24 +1022,14 @@ function aggregateSales(
         if (!sku || !channel) return;
         if (!shouldIncludeRecord(sale, sku, channel, filters, forcedYear, forcedSeason, forcedWave)) return;
 
-        const categoryMeta = resolveFootwearCategory(
-            sku.category_name,
-            sku.category_id,
-            sku.sku_name,
-            sku.category_l2,
-            sku.product_line,
-        );
-        const categoryFilterId = categoryMeta.categoryL1 || sku.category_id || 'unknown';
-        const categoryL1 = categoryMeta.categoryL1 || sku.category_name || categoryFilterId || '未定义品类';
-        const categoryL2 = categoryMeta.categoryL2 || categoryL1;
-        const categoryId = categoryLevel === 'l2'
-            ? `${categoryFilterId}__${categoryL2}`
-            : categoryFilterId;
-        const category = categoryLevel === 'l2' ? categoryL2 : categoryL1;
-        const productLine = categoryMeta.categoryL1 || '未定义产品线';
+        const {
+            categoryKey,
+            categoryId,
+            categoryFilterId,
+            category,
+            productLine,
+        } = resolveCategoryBucketMeta(sku, categoryLevel);
         const priceBand = normalizePriceBandKey(sku.price_band || resolvePriceBandByMsrp(sku.msrp));
-
-        const categoryKey = `${productLine}__${categoryId}`;
         const cellKey = `${categoryId}__${priceBand}`;
 
         if (!categoryMap.has(categoryKey)) {
@@ -1027,6 +1141,88 @@ function aggregateSales(
         activeSkuSet,
         activeStoreSet,
     };
+}
+
+function getOrCreateChannelMixBucket(categoryMix: CategoryChannelMix, bucketKey: ChannelFitBucketKey) {
+    const existing = categoryMix.buckets.get(bucketKey);
+    if (existing) return existing;
+    const created: ChannelMixBucket = {
+        bucketKey,
+        label: CHANNEL_FIT_BUCKET_LABEL[bucketKey],
+        netSales: 0,
+        pairsSold: 0,
+        onHandUnits: 0,
+        storeSet: new Set<string>(),
+    };
+    categoryMix.buckets.set(bucketKey, created);
+    return created;
+}
+
+function buildCategoryChannelMix(
+    records: FactSalesRecord[],
+    filters: DashboardFilters,
+    skuMap: Map<string, DimSkuRecord>,
+    channelMap: Map<string, DimChannelRecord>,
+    categoryLevel: CategoryLevel,
+) {
+    const categoryChannelMap = new Map<string, CategoryChannelMix>();
+    const latestInventoryBySkuChannel = new Map<string, {
+        weekNum: number;
+        categoryKey: string;
+        bucketKey: ChannelFitBucketKey;
+        onHandUnits: number;
+    }>();
+
+    records.forEach((sale) => {
+        const sku = skuMap.get(sale.sku_id);
+        const channel = channelMap.get(sale.channel_id);
+        if (!sku || !channel) return;
+        if (!shouldIncludeRecord(sale, sku, channel, filters, null, null, null)) return;
+
+        const categoryMeta = resolveCategoryBucketMeta(sku, categoryLevel);
+        const bucketKey = resolveChannelFitBucket(channel);
+        let categoryMix = categoryChannelMap.get(categoryMeta.categoryKey);
+        if (!categoryMix) {
+            categoryMix = {
+                categoryKey: categoryMeta.categoryKey,
+                buckets: new Map<ChannelFitBucketKey, ChannelMixBucket>(),
+                totalNetSales: 0,
+                totalPairs: 0,
+                totalOnHandUnits: 0,
+            };
+            categoryChannelMap.set(categoryMeta.categoryKey, categoryMix);
+        }
+
+        const channelBucket = getOrCreateChannelMixBucket(categoryMix, bucketKey);
+        const units = Math.max(0, sale.unit_sold || 0);
+        const sales = Math.max(0, sale.net_sales_amt || 0);
+        channelBucket.netSales += sales;
+        channelBucket.pairsSold += units;
+        channelBucket.storeSet.add(sale.channel_id);
+        categoryMix.totalNetSales += sales;
+        categoryMix.totalPairs += units;
+
+        const snapshotKey = `${sale.sku_id}__${sale.channel_id}`;
+        const latestSnapshot = latestInventoryBySkuChannel.get(snapshotKey);
+        if (!latestSnapshot || sale.week_num > latestSnapshot.weekNum) {
+            latestInventoryBySkuChannel.set(snapshotKey, {
+                weekNum: sale.week_num,
+                categoryKey: categoryMeta.categoryKey,
+                bucketKey,
+                onHandUnits: Math.max(0, sale.on_hand_unit || 0),
+            });
+        }
+    });
+
+    latestInventoryBySkuChannel.forEach((snapshot) => {
+        const categoryMix = categoryChannelMap.get(snapshot.categoryKey);
+        if (!categoryMix) return;
+        const channelBucket = getOrCreateChannelMixBucket(categoryMix, snapshot.bucketKey);
+        channelBucket.onHandUnits += snapshot.onHandUnits;
+        categoryMix.totalOnHandUnits += snapshot.onHandUnits;
+    });
+
+    return categoryChannelMap;
 }
 
 function aggregateSellThroughTrend(
@@ -1619,10 +1815,10 @@ export function useCategoryOps(
     const { data: dimSkuData } = useDimSku();
     const { data: dimChannelData } = useDimChannel();
     const { data: factOpsData } = useFactOpsForDashboard(filters.season_year);
-    const factSales = (factSalesData ?? []) as FactSalesRecord[];
-    const dimSku = (dimSkuData ?? []) as DimSkuRecord[];
-    const dimChannel = (dimChannelData ?? []) as DimChannelRecord[];
-    const factOps = (factOpsData ?? []) as DashboardOpsFactRecord[];
+    const factSales = useMemo(() => (factSalesData ?? []) as FactSalesRecord[], [factSalesData]);
+    const dimSku = useMemo(() => (dimSkuData ?? []) as DimSkuRecord[], [dimSkuData]);
+    const dimChannel = useMemo(() => (dimChannelData ?? []) as DimChannelRecord[], [dimChannelData]);
+    const factOps = useMemo(() => (factOpsData ?? []) as DashboardOpsFactRecord[], [factOpsData]);
 
     return useMemo(() => {
         const factOpsMap = new Map<string, DashboardOpsFactRecord>(
@@ -1865,6 +2061,14 @@ export function useCategoryOps(
                 };
             })
             .sort((a, b) => b.netSales - a.netSales);
+
+        const categoryChannelMixMap = buildCategoryChannelMix(
+            factSales,
+            filters,
+            skuMap,
+            channelMap,
+            categoryLevel,
+        );
 
         type CellRow = {
             id: string;
@@ -2238,6 +2442,86 @@ export function useCategoryOps(
             reorderRate: row.reorderRate,
             priceBandMix: categoryPriceBandMix.get(row.categoryId) || PRICE_BAND_LABELS.PBX,
         }));
+
+        const channelFitRows: CategoryOpsChannelFitRow[] = categoryRows
+            .map((row) => {
+                const channelProfile = resolveRecommendedChannelProfile(row.gmRate, row.sellThrough);
+                const channelMix = categoryChannelMixMap.get(row.id);
+                const channelBuckets = Array.from(channelMix?.buckets.values() ?? []);
+                const topBucket = channelBuckets
+                    .slice()
+                    .sort((a, b) => b.netSales - a.netSales || b.onHandUnits - a.onHandUnits)[0];
+                const targetBucket = channelMix?.buckets.get(channelProfile.targetBucket);
+                const salesBase = Math.max(channelMix?.totalNetSales || row.netSales, 1);
+                const inventoryBase = Math.max(channelMix?.totalOnHandUnits || row.onHandUnits, 1);
+                const targetSalesShare = safeDiv(targetBucket?.netSales || 0, salesBase);
+                const targetInventoryShare = safeDiv(targetBucket?.onHandUnits || 0, inventoryBase);
+                const currentTopSalesShare = safeDiv(topBucket?.netSales || 0, salesBase);
+                const gapPp = (targetSalesShare - channelProfile.targetShare) * 100;
+                const inventoryGapPp = (targetInventoryShare - targetSalesShare) * 100;
+                const targetLabel = CHANNEL_FIT_BUCKET_LABEL[channelProfile.targetBucket];
+                const targetShortfall = channelProfile.targetShare - targetSalesShare;
+
+                let mismatchLevel: CategoryOpsChannelFitRow['mismatchLevel'] = 'good';
+                if (!channelMix || targetShortfall >= 0.15 || inventoryGapPp >= 20) {
+                    mismatchLevel = 'risk';
+                } else if (
+                    targetShortfall >= 0.08 ||
+                    inventoryGapPp >= 12 ||
+                    (topBucket && topBucket.bucketKey !== channelProfile.targetBucket && targetSalesShare < channelProfile.targetShare)
+                ) {
+                    mismatchLevel = 'warn';
+                }
+
+                let currentBias = '结构匹配';
+                if (!channelMix) currentBias = '缺少渠道结构';
+                else if (targetShortfall >= 0.08) currentBias = `${targetLabel}销售占比低于目标 ${Math.abs(gapPp).toFixed(1)}pp`;
+                else if (inventoryGapPp >= 12) currentBias = `${targetLabel}库存高于销售 ${inventoryGapPp.toFixed(1)}pp`;
+                else if (topBucket && topBucket.bucketKey !== channelProfile.targetBucket) currentBias = `主销在${topBucket.label}`;
+
+                let recommendation = `维持${targetLabel}当前占比，按真实动销做周度补货。`;
+                if (!channelMix) {
+                    recommendation = '补齐品类×渠道销售和库存数据后再执行配货调整。';
+                } else if (targetShortfall >= 0.08) {
+                    recommendation = `新增配货和陈列资源向${channelProfile.recommendedChannel}倾斜，把${targetLabel}销售占比从${(targetSalesShare * 100).toFixed(1)}%提升至${(channelProfile.targetShare * 100).toFixed(0)}%。`;
+                } else if (inventoryGapPp >= 12) {
+                    recommendation = `${targetLabel}库存占比高于销售，先清低效门店和尺码，再给高动销点位补货。`;
+                } else if (channelProfile.recommendedChannel === '奥莱/折扣') {
+                    recommendation = '慢动销品类优先转入奥莱/折扣，控制正价渠道补货。';
+                } else if (channelProfile.recommendedChannel === '电商') {
+                    recommendation = '保持线上走量，线下只保留试穿和形象点位库存。';
+                }
+
+                return {
+                    categoryId: row.categoryId,
+                    categoryFilterId: row.categoryFilterId,
+                    category: row.category,
+                    gmRate: row.gmRate,
+                    sellThrough: row.sellThrough,
+                    recommendedChannel: channelProfile.recommendedChannel,
+                    targetChannelBucket: targetLabel,
+                    currentTopChannel: topBucket?.label || '无渠道销售',
+                    currentTopSalesShare,
+                    targetShare: channelProfile.targetShare,
+                    targetSalesShare,
+                    targetInventoryShare,
+                    gapPp,
+                    inventoryGapPp,
+                    mismatchLevel,
+                    currentBias,
+                    recommendation,
+                };
+            })
+            .sort((a, b) => {
+                const levelOrder: Record<CategoryOpsChannelFitRow['mismatchLevel'], number> = {
+                    risk: 0,
+                    warn: 1,
+                    good: 2,
+                };
+                return levelOrder[a.mismatchLevel] - levelOrder[b.mismatchLevel]
+                    || Math.abs(b.gapPp) - Math.abs(a.gapPp);
+            })
+            .slice(0, 12);
 
         const scatterReference = {
             contributionShareAvg: safeDiv(1, Math.max(categoryRows.length, 1)),
@@ -2837,6 +3121,7 @@ export function useCategoryOps(
             kpis,
             sunburstData: buildSunburstData(heatCells),
             scatterPoints,
+            channelFitRows,
             scatterReference,
             categoryWaterfall,
             pareto: {

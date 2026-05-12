@@ -1,0 +1,149 @@
+{
+  "meta": {
+    "updatedAt": "2026-05-11"
+  },
+  "summary": {
+    "totalBrokenSkuCount": 18,
+    "coreBrokenSkuCount": 7,
+    "nonCoreBrokenSkuCount": 11,
+    "brokenSizeAmountPct": 0.16,
+    "healthyThreshold": 0.12,
+    "totalOccupyAmount": 4320000,
+    "coreOccupyAmount": 2850000
+  },
+  "topBrokenSkus": [
+    {
+      "skuId": "SKU-RUN-003",
+      "styleName": "轻速跑鞋Pro",
+      "category": "running",
+      "isCore": true,
+      "missingSizes": [
+        "40.5",
+        "41",
+        "41.5"
+      ],
+      "occupyAmount": 680000,
+      "suggestAction": "追加补码，核心款",
+      "补码成本": 95000
+    },
+    {
+      "skuId": "SKU-RUN-007",
+      "styleName": "碳板竞速鞋",
+      "category": "running",
+      "isCore": true,
+      "missingSizes": [
+        "42",
+        "42.5"
+      ],
+      "occupyAmount": 520000,
+      "suggestAction": "追加补码，下季前补齐",
+      "补码成本": 72000
+    },
+    {
+      "skuId": "SKU-CAS-005",
+      "styleName": "复古厚底休闲",
+      "category": "casual",
+      "isCore": true,
+      "missingSizes": [
+        "37",
+        "38"
+      ],
+      "occupyAmount": 490000,
+      "suggestAction": "核心女码段，需补码",
+      "补码成本": 65000
+    },
+    {
+      "skuId": "SKU-OUT-002",
+      "styleName": "越野登山鞋",
+      "category": "outdoor",
+      "isCore": false,
+      "missingSizes": [
+        "43",
+        "44"
+      ],
+      "occupyAmount": 380000,
+      "suggestAction": "非核心可接受断大码，监控",
+      "补码成本": 0
+    },
+    {
+      "skuId": "SKU-TRN-004",
+      "styleName": "功能训练鞋",
+      "category": "training",
+      "isCore": false,
+      "missingSizes": [
+        "36",
+        "36.5",
+        "40"
+      ],
+      "occupyAmount": 320000,
+      "suggestAction": "折扣处理，无需补码",
+      "补码成本": 0
+    },
+    {
+      "skuId": "SKU-RUN-009",
+      "styleName": "轻盈慢跑鞋",
+      "category": "running",
+      "isCore": true,
+      "missingSizes": [
+        "38",
+        "38.5",
+        "39"
+      ],
+      "occupyAmount": 290000,
+      "suggestAction": "核心女码段，建议补码",
+      "补码成本": 42000
+    },
+    {
+      "skuId": "SKU-BOOT-012",
+      "styleName": "时尚马丁靴",
+      "category": "boots",
+      "isCore": false,
+      "missingSizes": [
+        "41",
+        "42",
+        "43"
+      ],
+      "occupyAmount": 260000,
+      "suggestAction": "季节外库存，清仓优先",
+      "补码成本": 0
+    },
+    {
+      "skuId": "SKU-CAS-011",
+      "styleName": "帆布休闲鞋",
+      "category": "casual",
+      "isCore": false,
+      "missingSizes": [
+        "37",
+        "44"
+      ],
+      "occupyAmount": 220000,
+      "suggestAction": "非核心款，维持清货",
+      "补码成本": 0
+    },
+    {
+      "skuId": "SKU-OUT-008",
+      "styleName": "溯溪水陆鞋",
+      "category": "outdoor",
+      "isCore": false,
+      "missingSizes": [
+        "39",
+        "40"
+      ],
+      "occupyAmount": 198000,
+      "suggestAction": "夏季款，加快动销",
+      "补码成本": 0
+    },
+    {
+      "skuId": "SKU-TRN-006",
+      "styleName": "综合训练Pro",
+      "category": "training",
+      "isCore": false,
+      "missingSizes": [
+        "41.5"
+      ],
+      "occupyAmount": 154000,
+      "suggestAction": "单码断货影响有限，监控",
+      "补码成本": 0
+    }
+  ]
+}

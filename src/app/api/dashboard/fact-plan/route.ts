@@ -1,9 +1,6 @@
-import { sql } from '@/lib/db';
 import { NextResponse } from 'next/server';
-
-export const runtime = 'edge';
+import data from '../../../../../data/dashboard/fact_plan.json';
 
 export async function GET() {
-    const rows = await sql`SELECT * FROM fact_plan`;
-    return NextResponse.json(rows);
+    return NextResponse.json(data);
 }

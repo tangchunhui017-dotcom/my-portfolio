@@ -4,13 +4,13 @@
  */
 import { useState } from 'react';
 import { calcWosDistribution, fmtCny } from '@/utils/inventoryHealth';
-import type { StyleRecord, WosViewMode } from '@/utils/inventoryHealth';
+import type { StyleRecord, WosViewMode, WosBucketStat } from '@/utils/inventoryHealth';
 
-interface Props { styles: StyleRecord[]; }
+interface Props { styles: StyleRecord[]; precomputedStats?: WosBucketStat[]; }
 
-export default function InvWosDistribution({ styles }: Props) {
+export default function InvWosDistribution({ styles, precomputedStats }: Props) {
     const [viewMode, setViewMode] = useState<WosViewMode>('sku');
-    const stats = calcWosDistribution(styles);
+    const stats = precomputedStats ?? calcWosDistribution(styles);
 
     const getValue = (s: typeof stats[0]) => {
         if (viewMode === 'sku') return s.skuCount;

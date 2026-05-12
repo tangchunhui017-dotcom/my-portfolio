@@ -12,7 +12,7 @@ import {
     calcChannelSummary, calcChannelAllocation, calcChannelQuarterMatrix,
     generateChannelActions, getChannelRole,
     calcInventoryComplianceWarnings, groupActionsByChannel,
-    type ChannelAllocationRow, type MatrixCell, type ChannelDiagnosis, type CellRiskLevel,
+    type ChannelAllocationRow, type MatrixCell, type CellRiskLevel,
     type ChannelRiskGroup,
 } from '@/utils/otbChannelModel';
 import type { DashboardFilters } from '@/hooks/useDashboardFilter';
@@ -22,6 +22,8 @@ import channelsRaw from '../../../../data/otb/channels.json';
 interface Props {
     currencyUnit: CurrencyUnit;
     filters: DashboardFilters;
+    /** 跳转到其他子视图或主模块 */
+    onJumpToTab?: (tab: string) => void;
 }
 
 interface ChannelRecord {
@@ -75,12 +77,6 @@ const PRIORITY_BADGE: Record<string, string> = {
     P1: 'bg-amber-500 text-white',
     P2: 'bg-slate-200 text-slate-600',
 };
-const PRIORITY_CARD: Record<string, string> = {
-    P0: 'border-rose-200 bg-rose-50',
-    P1: 'border-amber-200 bg-amber-50',
-    P2: 'border-slate-200 bg-slate-50',
-};
-
 // ─── 数据初始化 ────────────────────────────────────────────────────────────────
 
 function getChannels(): ChannelRecord[] {
@@ -126,7 +122,7 @@ function resolveChannelScopeLabel(channelType: DashboardFilters['channel_type'])
 
 // ─── 主组件 ───────────────────────────────────────────────────────────────────
 
-export default function ChannelEcommerceOTBPanel({ currencyUnit, filters }: Props) {
+export default function ChannelEcommerceOTBPanel({ currencyUnit, filters, onJumpToTab }: Props) {
     const [rows, setRows]                   = useState<ChannelOTBInput[]>(() => normalizeInitialRows());
     const [selectedCell, setSelected]       = useState<{ channelId: string; quarter: string } | null>(null);
     const [detailOpen, setDetailOpen]       = useState(false);
@@ -184,11 +180,6 @@ export default function ChannelEcommerceOTBPanel({ currencyUnit, filters }: Prop
         }
         return conflicts;
     }, [computed]);
-
-    const openDetail = () => {
-        setDetailOpen(true);
-        setTimeout(() => detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-    };
 
     // ─── 渠道对比矩阵行定义 ─────────────────────────────────────────────────
 
@@ -479,7 +470,59 @@ export default function ChannelEcommerceOTBPanel({ currencyUnit, filters }: Prop
                 </div>
             </section>
 
-            {/* ── 7. 跨渠道款盘冲突预警 ──────────────────────────────────── */}
+            {/* ── 7. 渠道调拨与补货建议 ──────────────────────────────────── */}
+            {allocation.length > 0 && (
+                <section>
+                    <SectionHeader title="渠道调拨 & 补货建议" subtitle="基于库销比、健康度和 OTB 占比自动生成" />
+                    <div className="mt-2 rounded-xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+                        <table className="w-full text-xs">
+                            <thead>
+                                <tr className="border-b border-slate-100 bg-slate-50 text-slate-400 text-[11px]">
+                                    <th className="py-2 px-3 text-left font-medium">渠道</th>
+                                    <th className="py-2 px-3 text-right font-medium">目标库销比</th>
+                                    <th className="py-2 px-3 text-right font-medium">当前库销比</th>
+                                    <th className="py-2 px-3 text-right font-medium">健康度</th>
+                                    <th className="py-2 px-3 text-right font-medium">净OTB 占比</th>
+                                    <th className="py-2 px-3 text-left font-medium">建议</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {allocation.map(a => {
+                                    const s2sDelta = a.actualStockToSales - a.targetStockToSales;
+                                    const isHighStock = s2sDelta > 0.5;
+                                    const isLowStock = s2sDelta < -0.5;
+                                    const isHighOtb = a.otbRatio > 0.35;
+                                    const isLowOtb = a.otbRatio < 0.05 && a.salesRatio > 0.1;
+                                    const suggestion = isHighStock
+                                        ? `库存偏高（+${s2sDelta.toFixed(1)}），建议暂缓补货，优先消化现有库存${isHighOtb ? '，并压缩 OTB 占比' : ''}`
+                                        : isLowStock
+                                        ? `库存偏低（${s2sDelta.toFixed(1)}），建议从高库销渠道调拨或追加该渠道采购`
+                                        : isLowOtb
+                                        ? `OTB 占比（${(a.otbRatio * 100).toFixed(0)}%）低于销售贡献（${(a.salesRatio * 100).toFixed(0)}%），建议适当上调预算分配`
+                                        : '当前库销比健康，维持现有补货节奏';
+                                    const tone = isHighStock ? 'text-amber-700' : isLowStock ? 'text-rose-700' : isLowOtb ? 'text-sky-700' : 'text-emerald-700';
+                                    return (
+                                        <tr key={a.channelId} className="border-b border-slate-50 hover:bg-slate-50/40">
+                                            <td className="py-2 px-3 font-medium text-slate-800">{a.channelLabel}</td>
+                                            <td className="py-2 px-3 text-right text-slate-500">{a.targetStockToSales.toFixed(1)}</td>
+                                            <td className={`py-2 px-3 text-right font-semibold ${
+                                                isHighStock ? 'text-amber-600' : isLowStock ? 'text-rose-600' : 'text-emerald-600'
+                                            }`}>{a.actualStockToSales.toFixed(1)}</td>
+                                            <td className={`py-2 px-3 text-right ${
+                                                a.healthScore >= 80 ? 'text-emerald-600' : a.healthScore >= 60 ? 'text-amber-600' : 'text-rose-600'
+                                            }`}>{a.healthScore}</td>
+                                            <td className="py-2 px-3 text-right text-slate-500">{(a.otbRatio * 100).toFixed(0)}%</td>
+                                            <td className={`py-2 px-3 text-[11px] ${tone}`}>{suggestion}</td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            )}
+
+            {/* ── 8. 跨渠道款盘冲突预警 ──────────────────────────────────── */}
             {channelConflicts.length > 0 && (
                 <section>
                     <SectionHeader title="跨渠道款盘冲突预警" subtitle={`${channelConflicts.length} 项冲突`} />
@@ -665,6 +708,26 @@ export default function ChannelEcommerceOTBPanel({ currencyUnit, filters }: Prop
                 </CollapsibleSection>
             </div>
 
+            {/* 跨模块联动跳转 */}
+            {onJumpToTab && (
+                <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+                    <p className="mb-2 text-xs font-bold text-slate-600">跨模块联动</p>
+                    <div className="flex flex-wrap gap-2">
+                        <button type="button" onClick={() => onJumpToTab('annual')}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs text-sky-700 transition-colors hover:bg-sky-100">
+                            🎯 回年度总控
+                        </button>
+                        <button type="button" onClick={() => onJumpToTab('execution')}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs text-slate-700 transition-colors hover:bg-slate-200">
+                            ✅ 查执行跟踪
+                        </button>
+                        <button type="button" onClick={() => onJumpToTab('cashflow')}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs text-emerald-700 transition-colors hover:bg-emerald-100">
+                            💰 现金流影响
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
