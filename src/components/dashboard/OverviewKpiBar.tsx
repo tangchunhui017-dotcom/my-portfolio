@@ -1,6 +1,6 @@
 'use client';
 
-import { THRESHOLDS } from '@/config/thresholds';
+import { useResolvedThresholds } from '@/hooks/useResolvedThresholds';
 import type { CompareMode } from '@/hooks/useDashboardFilter';
 import type { DashboardCompareMeta } from '@/config/dashboardCompare';
 import { formatMoneyCny } from '@/config/numberFormat';
@@ -189,6 +189,7 @@ export default function OverviewKpiBar({
     filters,
 }: OverviewKpiBarProps) {
     const plan = kpis.planData?.overall_plan;
+    const THRESHOLDS = useResolvedThresholds();
 
 
     const kpiItems: KpiItem[] = (() => {

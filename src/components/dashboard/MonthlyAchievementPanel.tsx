@@ -6,7 +6,14 @@ import * as echarts from 'echarts';
 import type { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
 import { formatMoneyCny } from '@/config/numberFormat';
 import { useMonthlyAchievementData } from '@/hooks/useMonthlyAchievementData';
-import { THRESHOLDS } from '@/config/thresholds';
+import { useResolvedThresholds, type ResolvedThresholds } from '@/hooks/useResolvedThresholds';
+import {
+    CHART_INK, CHART_TEXT_MUTED, CHART_TEXT_FAINT,
+    CHART_LINE, CHART_LINE_DASHED, CHART_BG_MUTED,
+    CHART_POSITIVE, CHART_HIGHLIGHT, CHART_HIGHLIGHT_LIGHT,
+    CHART_ACCENT, CHART_DANGER, CHART_ROSE,
+} from '@/config/chartTheme';
+import ChartCard from '@/components/charts/ChartCard';
 
 
 // ─── 类型 ─────────────────────────────────────────────────────────────────────
@@ -76,7 +83,7 @@ const exportCsv = (filename: string, headers: string[], rows: Array<Array<string
 
 // ─── 状态判断 ─────────────────────────────────────────────────────────────────
 
-function getWosStatus(wos: number | null) {
+function getWosStatus(wos: number | null, THRESHOLDS: ResolvedThresholds) {
   if (wos === null || Number.isNaN(wos)) return { label: '待补库存口径', tone: 'neutral' as Tone };
   if (wos > THRESHOLDS.wos.overstocked) return { label: '积压风险', tone: 'red' as Tone };
   if (wos > THRESHOLDS.wos.healthy) return { label: '库存偏高', tone: 'yellow' as Tone };
@@ -150,6 +157,7 @@ export default function MonthlyAchievementPanel({
   filters,
   compareMode,
 }: Props) {
+  const THRESHOLDS = useResolvedThresholds();
   const {
     selectedYear,
     selectedMonth,
@@ -188,15 +196,15 @@ export default function MonthlyAchievementPanel({
   const worstPlanRow = [...monthlyRows].filter((row) => row.gap !== null).sort((a, b) => (a.gap ?? 0) - (b.gap ?? 0))[0] || null;
   const worstYoyRow = [...monthlyRows].filter((row) => row.yoyDiff !== null).sort((a, b) => (a.yoyDiff ?? 0) - (b.yoyDiff ?? 0))[0] || null;
   const worstMomRow = [...monthlyRows].filter((row) => row.momDiff !== null).sort((a, b) => (a.momDiff ?? 0) - (b.momDiff ?? 0))[0] || null;
-  const latestWosStatus = getWosStatus(latestActiveRow.wos);
-  const focusWosStatus = getWosStatus(focusRow.wos);
+  const latestWosStatus = getWosStatus(latestActiveRow.wos, THRESHOLDS);
+  const focusWosStatus = getWosStatus(focusRow.wos, THRESHOLDS);
   const focusStStatus = getSellThroughStatus(focusRow.st);
 
   const riskMonthCount = monthlyRows.filter((row) => {
     if (compareMode === 'plan') return (row.gap ?? 0) < 0;
     if (compareMode === 'yoy') return (row.yoyDiff ?? 0) < 0;
     if (compareMode === 'mom') return (row.momDiff ?? 0) < 0;
-    return row.stockWeight - row.salesWeight > 0.08 || getWosStatus(row.wos).tone === 'red';
+    return row.stockWeight - row.salesWeight > 0.08 || getWosStatus(row.wos, THRESHOLDS).tone === 'red';
   }).length;
 
   const focusStatus = (() => {
@@ -204,7 +212,7 @@ export default function MonthlyAchievementPanel({
     if (compareMode === 'yoy') return ((isAnnualView ? annualYoyDiff : focusRow.yoyDiff) ?? 0) >= 0 ? '趋势走强' : '趋势回落';
     if (compareMode === 'mom') return ((isAnnualView ? latestMomRow.momDiff : focusRow.momDiff) ?? 0) >= 0 ? '承接走强' : '承接转弱';
     const mismatchGap = focusRow.stockWeight - focusRow.salesWeight;
-    const wosTone = getWosStatus(focusRow.wos).tone;
+    const wosTone = getWosStatus(focusRow.wos, THRESHOLDS).tone;
     if (wosTone === 'red' || mismatchGap > 0.08) return '库存承压';
     if (wosTone === 'yellow') return '节奏偏紧';
     return '节奏健康';
@@ -275,7 +283,7 @@ export default function MonthlyAchievementPanel({
               { title: '当前视角', value: '全年', detail: '按全年骨架观察最新月份承接变化' },
               { title: '最新月环比', value: fmtSignedPct(latestMomRow.momRate), detail: `${latestMomRow.label} 较上月`, tone: deltaTone(latestMomRow.momDiff) },
               { title: '环比差额', value: fmtSignedAmt(latestMomRow.momDiff), detail: `最大承压 ${worstMomRow?.label || '--'}`, tone: deltaTone(latestMomRow.momDiff) },
-              { title: '最新月 WOS', value: latestMomRow.wos === null ? '--' : `${latestMomRow.wos.toFixed(1)}w`, detail: getWosStatus(latestMomRow.wos).label, tone: getWosStatus(latestMomRow.wos).tone },
+              { title: '最新月 WOS', value: latestMomRow.wos === null ? '--' : `${latestMomRow.wos.toFixed(1)}w`, detail: getWosStatus(latestMomRow.wos, THRESHOLDS).label, tone: getWosStatus(latestMomRow.wos, THRESHOLDS).tone },
               { title: '承压月份', value: `${riskMonthCount}个`, detail: '优先处理连续转弱的月份', tone: riskMonthCount > 0 ? 'red' : 'blue' },
             ]
           : [
@@ -340,46 +348,46 @@ export default function MonthlyAchievementPanel({
       </div>
 
       {/* ── 主图表区 ── */}
-      <div className="mt-8 rounded-panel border border-slate-200/80 bg-white p-5 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-          <div>
-            <h3 className="text-lg font-medium tracking-wide text-slate-700 flex items-center gap-3">
-              <div className="w-1.5 h-6 bg-gradient-to-b from-sky-400 to-indigo-500 rounded-full" />
-              {effectiveMainView === 'sales' ? '月度销售额走势' : compareMode === 'plan' ? '计划差额分解' : compareMode === 'yoy' ? '同比差额分解' : '环比差额分解'}
-            </h3>
-            <p className="mt-2 text-xs text-slate-500 max-w-2xl line-clamp-1">
-              {effectiveMainView === 'sales'
-                ? compareMode === 'plan' ? '销售额走势叠加计划值，便于同时看实际与计划。' : compareMode === 'yoy' ? '销售额走势叠加去年同期，用于观察趋势变化。' : compareMode === 'mom' ? '销售额走势叠加上月，用于观察月度承接变化。' : '按当前聚焦月回看全年月度走势与节奏峰谷。'
-                : compareMode === 'plan' ? '按月查看实际相对计划的正负差额。' : compareMode === 'yoy' ? '按月查看当前相对去年同期的正负差额。' : '按月查看当前相对上月的正负差额。'}
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 p-1">
-              <button type="button" onClick={() => setMainView('sales')} className={`rounded-full px-5 py-2 text-sm font-semibold transition ${effectiveMainView === 'sales' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+      <div className="mt-8">
+      <ChartCard
+        title={effectiveMainView === 'sales' ? '月度销售额走势' : compareMode === 'plan' ? '计划差额分解' : compareMode === 'yoy' ? '同比差额分解' : '环比差额分解'}
+        subtitle={effectiveMainView === 'sales'
+          ? compareMode === 'plan' ? '销售额走势叠加计划值，便于同时看实际与计划。' : compareMode === 'yoy' ? '销售额走势叠加去年同期，用于观察趋势变化。' : compareMode === 'mom' ? '销售额走势叠加上月，用于观察月度承接变化。' : '按当前聚焦月回看全年月度走势与节奏峰谷。'
+          : compareMode === 'plan' ? '按月查看实际相对计划的正负差额。' : compareMode === 'yoy' ? '按月查看当前相对去年同期的正负差额。' : '按月查看当前相对上月的正负差额。'}
+        showMenu={false}
+        actions={
+          <>
+            <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 p-0.5">
+              <button type="button" onClick={() => setMainView('sales')} className={`rounded-full px-3.5 py-1 text-xs font-semibold transition ${effectiveMainView === 'sales' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
                 销售额
               </button>
-              <button type="button" onClick={() => compareMode !== 'none' && setMainView('delta')} disabled={compareMode === 'none'} className={`rounded-full px-5 py-2 text-sm font-semibold transition ${effectiveMainView === 'delta' && compareMode !== 'none' ? 'bg-white text-slate-900 shadow-sm' : compareMode === 'none' ? 'cursor-not-allowed text-slate-300' : 'text-slate-500 hover:text-slate-700'}`}>
+              <button type="button" onClick={() => compareMode !== 'none' && setMainView('delta')} disabled={compareMode === 'none'} className={`rounded-full px-3.5 py-1 text-xs font-semibold transition ${effectiveMainView === 'delta' && compareMode !== 'none' ? 'bg-white text-slate-900 shadow-sm' : compareMode === 'none' ? 'cursor-not-allowed text-slate-300' : 'text-slate-500 hover:text-slate-700'}`}>
                 差额
               </button>
             </div>
-            <div className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600">聚焦：{focusLabel}</div>
+            <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-600">聚焦：{focusLabel}</div>
+          </>
+        }
+        footer={
+          <div className="flex flex-wrap gap-2">
+            {summaryTags.map((tag) => <SummaryPill key={`${tag.label}-${tag.value}`} {...tag} />)}
           </div>
-        </div>
-
-        <div className="mt-6 h-[360px] min-w-0">
+        }
+      >
+        <div className="h-[360px] min-w-0">
           {!mounted ? <ChartPlaceholder /> : effectiveMainView === 'sales' ? (
             <ReactECharts notMerge={true} lazyUpdate={true} option={{
               tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: 'rgba(15, 23, 42, 0.95)', borderColor: 'rgba(255,255,255,0.1)', textStyle: { color: '#fff', fontWeight: 600 }, padding: [12, 16], borderRadius: 12,
                 formatter: (params: unknown) => { const list = toTooltipParams(params); let str = `${list[0]?.axisValue ?? ''}<br/>`; list.forEach((p) => { str += `${p.marker ?? ''} ${p.seriesName ?? ''}: ${fmtAmt(Number(p.value))}<br/>`; }); return str; }
               },
               grid: { top: 30, right: 24, bottom: 20, left: 24, containLabel: true },
-              xAxis: { type: 'category', data: comparisonRows.map((row) => row.label), axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: '#94A3B8', fontSize: 12 } },
-              yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed', color: '#F1F5F9' } }, axisLabel: { color: '#94A3B8', fontSize: 12, formatter: (val: number) => fmtAxisAmt(val) } },
+              xAxis: { type: 'category', data: comparisonRows.map((row) => row.label), axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: CHART_TEXT_FAINT, fontSize: 12 } },
+              yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed', color: CHART_LINE_DASHED } }, axisLabel: { color: CHART_TEXT_FAINT, fontSize: 12, formatter: (val: number) => fmtAxisAmt(val) } },
               animation: true, animationDuration: 1500, animationEasing: 'cubicOut',
               series: [
-                ...(compareMode !== 'none' ? [{ name: compareMode === 'plan' ? '计划' : compareMode === 'yoy' ? '去年同期' : '上月', type: 'bar', data: comparisonRows.map((row) => row.referenceValue), itemStyle: { color: '#E2E8F0', borderRadius: [6, 6, 0, 0] }, barGap: '15%', barMaxWidth: 32, animationDelay: (idx: number) => idx * 100, z: 1 }] : []),
-                { name: '实际', type: 'bar', data: comparisonRows.map((row) => row.actual), itemStyle: { color: '#0F172A', borderRadius: [6, 6, 0, 0] }, showBackground: true, backgroundStyle: { color: '#F8FAFC', borderRadius: [6, 6, 0, 0] }, barMaxWidth: 32, animationDelay: (idx: number) => idx * 100 + 50, z: 2,
-                  markLine: { symbol: 'none', label: { show: false }, lineStyle: { color: '#CBD5E1', type: 'dashed', width: 1 }, data: selectedMonth ? [{ xAxis: focusRow.label }] : [] } },
+                ...(compareMode !== 'none' ? [{ name: compareMode === 'plan' ? '计划' : compareMode === 'yoy' ? '去年同期' : '上月', type: 'bar', data: comparisonRows.map((row) => row.referenceValue), itemStyle: { color: CHART_LINE, borderRadius: [6, 6, 0, 0] }, barGap: '15%', barMaxWidth: 32, animationDelay: (idx: number) => idx * 100, z: 1 }] : []),
+                { name: '实际', type: 'bar', data: comparisonRows.map((row) => row.actual), itemStyle: { color: CHART_INK, borderRadius: [6, 6, 0, 0] }, showBackground: true, backgroundStyle: { color: CHART_BG_MUTED, borderRadius: [6, 6, 0, 0] }, barMaxWidth: 32, animationDelay: (idx: number) => idx * 100 + 50, z: 2,
+                  markLine: { symbol: 'none', label: { show: false }, lineStyle: { color: CHART_LINE, type: 'dashed', width: 1 }, data: selectedMonth ? [{ xAxis: focusRow.label }] : [] } },
               ],
             }} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'svg' }} />
           ) : (
@@ -388,52 +396,48 @@ export default function MonthlyAchievementPanel({
                 formatter: (params: unknown) => { const first = toTooltipParams(params)[0]; const val = first?.value; const signed = typeof val === 'number' ? fmtSignedAmt(val) : '--'; return `${first?.axisValue ?? ''}<br/>${first?.marker ?? ''} 差额：${signed}`; }
               },
               grid: { top: 30, right: 24, bottom: 20, left: 24, containLabel: true },
-              xAxis: { type: 'category', data: comparisonRows.map((row) => row.label), axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: '#94A3B8', fontSize: 12 } },
-              yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed', color: '#F1F5F9' } }, axisLabel: { color: '#94A3B8', fontSize: 12, formatter: (val: number) => fmtAxisAmt(val) } },
+              xAxis: { type: 'category', data: comparisonRows.map((row) => row.label), axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: CHART_TEXT_FAINT, fontSize: 12 } },
+              yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed', color: CHART_LINE_DASHED } }, axisLabel: { color: CHART_TEXT_FAINT, fontSize: 12, formatter: (val: number) => fmtAxisAmt(val) } },
               series: [{ name: '差额', type: 'bar', barMaxWidth: 48,
                 data: comparisonRows.map((row) => ({ value: row.deltaValue, itemStyle: {
-                  color: (row.deltaValue ?? 0) >= 0 ? new echarts.graphic.LinearGradient(0, 1, 0, 0, [{ offset: 0, color: '#38BDF8' }, { offset: 1, color: '#0EA5E9' }]) : new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#FB7185' }, { offset: 1, color: '#E11D48' }]),
+                  color: (row.deltaValue ?? 0) >= 0 ? new echarts.graphic.LinearGradient(0, 1, 0, 0, [{ offset: 0, color: CHART_HIGHLIGHT_LIGHT }, { offset: 1, color: CHART_HIGHLIGHT }]) : new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: CHART_ROSE }, { offset: 1, color: CHART_DANGER }]),
                   borderRadius: (row.deltaValue ?? 0) >= 0 ? [6, 6, 0, 0] : [0, 0, 6, 6], opacity: row.isFocus ? 1 : 0.4 }
                 })),
-                showBackground: true, backgroundStyle: { color: '#F8FAFC', borderRadius: [6, 6, 0, 0] },
-                markLine: { symbol: 'none', label: { show: false }, data: [{ yAxis: 0, lineStyle: { color: '#CBD5E1', type: 'solid', width: 1 } }, ...(selectedMonth ? [{ xAxis: focusRow.label, lineStyle: { color: '#CBD5E1', type: 'dashed', width: 1 } }] : [])] },
+                showBackground: true, backgroundStyle: { color: CHART_BG_MUTED, borderRadius: [6, 6, 0, 0] },
+                markLine: { symbol: 'none', label: { show: false }, data: [{ yAxis: 0, lineStyle: { color: CHART_LINE, type: 'solid', width: 1 } }, ...(selectedMonth ? [{ xAxis: focusRow.label, lineStyle: { color: CHART_LINE, type: 'dashed', width: 1 } }] : [])] },
               }],
             }} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'svg' }} />
           )}
         </div>
-
-        <div className="mt-5 flex flex-wrap gap-3">
-          {summaryTags.map((tag) => <SummaryPill key={`${tag.label}-${tag.value}`} {...tag} />)}
-        </div>
+      </ChartCard>
       </div>
 
       {/* ── [item 7] 折扣深度走势图 ── */}
-      <div className="mt-6 rounded-panel border border-slate-200/80 bg-white p-5 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
-        <h3 className="text-base font-semibold text-slate-700 flex items-center gap-2">
-          <div className="w-1.5 h-5 bg-gradient-to-b from-violet-400 to-purple-600 rounded-full" />
-          折扣深度 &amp; 毛利率走势
-        </h3>
-        <p className="mt-1 text-xs text-slate-500">
-          数据来源：fact_sales.discount_amt / gross_sales_amt（折扣率）；gross_profit_amt / net_sales_amt（毛利率）。均为真实字段，非估算值。
-        </p>
-        <div className="mt-5 h-[260px]">
+      <div className="mt-6">
+      <ChartCard
+        title="折扣深度 & 毛利率走势"
+        subtitle="数据来源：fact_sales.discount_amt / gross_sales_amt（折扣率）；gross_profit_amt / net_sales_amt（毛利率）。均为真实字段，非估算值。"
+        showMenu={false}
+      >
+        <div className="h-[260px]">
           {!mounted ? <ChartPlaceholder /> : (
             <ReactECharts option={{
               tooltip: { trigger: 'axis', backgroundColor: 'rgba(15, 23, 42, 0.95)', borderColor: 'rgba(255,255,255,0.1)', textStyle: { color: '#fff', fontWeight: 600 }, padding: [12, 16], borderRadius: 12,
                 formatter: (params: unknown) => { const list = toTooltipParams(params); let str = `${list[0]?.axisValue ?? ''}<br/>`; list.forEach((p) => { const value = typeof p.value === 'number' ? p.value : Number(p.value); str += `${p.marker ?? ''} ${p.seriesName ?? ''}: ${fmtPct(value / 100)}<br/>`; }); return str; }
               },
-              legend: { data: ['折扣率', '毛利率'], right: 0, top: 0, textStyle: { color: '#64748B', fontSize: 12 } },
+              legend: { data: ['折扣率', '毛利率'], right: 0, top: 0, textStyle: { color: CHART_TEXT_MUTED, fontSize: 12 } },
               grid: { top: 36, right: 24, bottom: 20, left: 24, containLabel: true },
-              xAxis: { type: 'category', data: monthlyRows.map((r) => r.label), axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: '#94A3B8', fontSize: 11 } },
-              yAxis: { type: 'value', min: 0, max: 100, splitLine: { lineStyle: { type: 'dashed', color: '#F1F5F9' } }, axisLabel: { color: '#94A3B8', fontSize: 11, formatter: (v: number) => `${v}%` } },
+              xAxis: { type: 'category', data: monthlyRows.map((r) => r.label), axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: CHART_TEXT_FAINT, fontSize: 11 } },
+              yAxis: { type: 'value', min: 0, max: 100, splitLine: { lineStyle: { type: 'dashed', color: CHART_LINE_DASHED } }, axisLabel: { color: CHART_TEXT_FAINT, fontSize: 11, formatter: (v: number) => `${v}%` } },
               series: [
-                { name: '折扣率', type: 'line', smooth: true, data: monthlyRows.map((r) => r.discountPct > 0 ? parseFloat((r.discountPct * 100).toFixed(1)) : null), lineStyle: { color: '#8B5CF6', width: 2 }, itemStyle: { color: '#8B5CF6' }, symbol: 'circle', symbolSize: 6, connectNulls: false },
-                { name: '毛利率', type: 'line', smooth: true, data: monthlyRows.map((r) => r.marginPct > 0 ? parseFloat((r.marginPct * 100).toFixed(1)) : null), lineStyle: { color: '#10B981', width: 2 }, itemStyle: { color: '#10B981' }, symbol: 'circle', symbolSize: 6, connectNulls: false,
+                { name: '折扣率', type: 'line', smooth: true, data: monthlyRows.map((r) => r.discountPct > 0 ? parseFloat((r.discountPct * 100).toFixed(1)) : null), lineStyle: { color: CHART_ACCENT, width: 2 }, itemStyle: { color: CHART_ACCENT }, symbol: 'circle', symbolSize: 6, connectNulls: false },
+                { name: '毛利率', type: 'line', smooth: true, data: monthlyRows.map((r) => r.marginPct > 0 ? parseFloat((r.marginPct * 100).toFixed(1)) : null), lineStyle: { color: CHART_POSITIVE, width: 2 }, itemStyle: { color: CHART_POSITIVE }, symbol: 'circle', symbolSize: 6, connectNulls: false,
                   areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(16,185,129,0.15)' }, { offset: 1, color: 'rgba(16,185,129,0)' }]) } },
               ],
             }} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'svg' }} />
           )}
         </div>
+      </ChartCard>
       </div>
 
       {/* ── 月度明细展开表 ── */}

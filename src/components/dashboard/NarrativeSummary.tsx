@@ -3,7 +3,7 @@
 import type { CompareMode } from '@/hooks/useDashboardFilter';
 import type { DashboardCompareMeta } from '@/config/dashboardCompare';
 import { FOOTWEAR_ANALYSIS_MODULES } from '@/config/footwearLanguage';
-import { THRESHOLDS } from '@/config/thresholds';
+import { useResolvedThresholds, type ResolvedThresholds } from '@/hooks/useResolvedThresholds';
 import { formatMoneyCny } from '@/config/numberFormat';
 
 type OverviewModuleId = 'annual-performance' | 'region-channel' | 'category-quarter' | 'wave-plan' | 'consumer-color';
@@ -126,12 +126,14 @@ function assessHealth({
     salesDeltaPct,
     stDeltaPp,
     marginDeltaPp,
+    THRESHOLDS,
 }: {
     kpis: NarrativeSummaryProps['kpis'];
     compareMode: CompareMode;
     salesDeltaPct: number | undefined;
     stDeltaPp: number | undefined;
     marginDeltaPp: number | undefined;
+    THRESHOLDS: ResolvedThresholds;
 }): Health {
     let score = 0;
 
@@ -171,6 +173,7 @@ export default function NarrativeSummary({
     onSkuClick,
     onChannelClick,
 }: NarrativeSummaryProps) {
+    const THRESHOLDS = useResolvedThresholds();
     const moduleId = selectedModuleId && Object.prototype.hasOwnProperty.call(MODULE_META, selectedModuleId)
         ? (selectedModuleId as OverviewModuleId)
         : DEFAULT_MODULE_ID;
@@ -221,6 +224,7 @@ export default function NarrativeSummary({
         salesDeltaPct,
         stDeltaPp,
         marginDeltaPp,
+        THRESHOLDS,
     });
 
     const healthConfig = {

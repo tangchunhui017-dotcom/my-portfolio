@@ -27,7 +27,7 @@ import {
     getAnnualControlWosTone as getWosTone,
     type AnnualControlHealthTone,
 } from '@/config/annualControl';
-import { THRESHOLDS } from '@/config/thresholds';
+import { useResolvedThresholds } from '@/hooks/useResolvedThresholds';
 import AnnualControlMasterView from '@/components/dashboard/AnnualControlMasterView';
 
 type JumpTab = 'category' | 'planning' | 'otb' | 'channel' | 'inventory';
@@ -271,6 +271,7 @@ export default function AnnualControlPanel({
     onJumpToTab,
     onJumpToDesignReview,
 }: AnnualControlPanelProps) {
+    const THRESHOLDS = useResolvedThresholds();
     // 风险卡片状态管理
     const [riskStatuses, setRiskStatuses] = useState<Record<string, 'pending' | 'in_progress' | 'resolved'>>({});
 
@@ -294,7 +295,7 @@ export default function AnnualControlPanel({
             newGoodsGapPp: currentTransition ? (currentTransition.actualNewGoodsRatio - currentTransition.newGoodsRatio) * 100 : null,
             marginGapPp: kpis ? (kpis.avgMarginRate - mg) * 100 : null,
         });
-    }, [filters, kpis, currentTransition]);
+    }, [filters, kpis, currentTransition, THRESHOLDS.marginRate.target, THRESHOLDS.sellThrough.target]);
     const designReviewInput = useMemo(
         () => buildAnnualControlDesignReviewInput({ filters, focus, transition: currentTransition, stage }),
         [currentTransition, filters, focus, stage],

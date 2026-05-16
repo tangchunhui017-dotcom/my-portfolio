@@ -2963,42 +2963,101 @@ export const FOOTWEAR_INDUSTRY_DATA = {
       "thresholdId": "sellThroughRate_health",
       "label": "售罄率健康线",
       "unit": "percent",
-      "defaultValue": 0.7,
-      "warningValue": 0.5,
-      "criticalValue": 0.3,
+      "defaultValue": 0.80,
+      "warningValue": 0.65,
+      "criticalValue": 0.50,
       "comparator": "gte",
       "appliedTo": [
+        "overview",
         "category-ops",
         "wave-planning",
         "inventory-health",
-        "region-store"
+        "region-store",
+        "annual-control"
       ]
     },
     {
       "thresholdId": "grossMarginRate_health",
       "label": "毛利率健康线",
       "unit": "percent",
-      "defaultValue": 0.5,
-      "warningValue": 0.38,
-      "criticalValue": 0.25,
+      "defaultValue": 0.45,
+      "warningValue": 0.40,
+      "criticalValue": 0.35,
       "comparator": "gte",
       "appliedTo": [
-        "pnl",
         "overview",
-        "annual-control"
+        "pnl",
+        "annual-control",
+        "category-ops"
       ]
     },
     {
       "thresholdId": "weeksOfSupply_max",
       "label": "库存周数上限",
       "unit": "weeks",
-      "defaultValue": 12,
-      "warningValue": 16,
+      "defaultValue": 8,
+      "warningValue": 12,
       "criticalValue": 20,
       "comparator": "lte",
       "appliedTo": [
+        "overview",
         "region-store",
         "inventory-health"
+      ]
+    },
+    {
+      "thresholdId": "weeksOfSupply_min",
+      "label": "库存周数断货线",
+      "unit": "weeks",
+      "defaultValue": 4,
+      "warningValue": 3,
+      "criticalValue": 2,
+      "comparator": "gte",
+      "appliedTo": [
+        "overview",
+        "region-store",
+        "inventory-health"
+      ]
+    },
+    {
+      "thresholdId": "discountDepth_max",
+      "label": "折扣深度上限",
+      "unit": "percent",
+      "defaultValue": 0.10,
+      "warningValue": 0.15,
+      "criticalValue": 0.20,
+      "comparator": "lte",
+      "appliedTo": [
+        "overview",
+        "pnl",
+        "category-ops",
+        "region-store"
+      ]
+    },
+    {
+      "thresholdId": "channelConcentration_max",
+      "label": "单渠道集中度上限",
+      "unit": "percent",
+      "defaultValue": 0.60,
+      "warningValue": 0.70,
+      "criticalValue": 0.80,
+      "comparator": "lte",
+      "appliedTo": [
+        "overview",
+        "region-store"
+      ]
+    },
+    {
+      "thresholdId": "top10Concentration_max",
+      "label": "Top10 SKU 集中度上限",
+      "unit": "percent",
+      "defaultValue": 0.60,
+      "warningValue": 0.70,
+      "criticalValue": 0.75,
+      "comparator": "lte",
+      "appliedTo": [
+        "overview",
+        "category-ops"
       ]
     },
     {
