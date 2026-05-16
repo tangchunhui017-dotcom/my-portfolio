@@ -1,6 +1,6 @@
 'use client';
 
-import { THRESHOLDS } from '@/config/thresholds';
+import { useResolvedThresholds } from '@/hooks/useResolvedThresholds';
 
 interface InsightsBannerProps {
     kpis: {
@@ -16,6 +16,7 @@ interface InsightsBannerProps {
 }
 
 export default function InsightsBanner({ kpis }: InsightsBannerProps) {
+    const THRESHOLDS = useResolvedThresholds();
     if (!kpis) return null;
 
     const st = kpis.avgSellThrough;

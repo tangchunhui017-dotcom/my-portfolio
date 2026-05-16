@@ -4,6 +4,7 @@
  */
 import type { StyleRecord } from '@/utils/inventoryHealth';
 import { fmtCny } from '@/utils/inventoryHealth';
+import { useResolvedThresholds } from '@/hooks/useResolvedThresholds';
 
 interface Props {
     summary: {
@@ -25,6 +26,10 @@ const STOCKOUT_RISKS = ['stockout', 'tight'];
 const OVERSTOCK_RISKS = ['overstock', 'high'];
 
 export default function InvKpiBar({ summary, styles }: Props) {
+    const THRESHOLDS = useResolvedThresholds();
+    const wosMin = THRESHOLDS.wos.stockout;
+    const wosMax = THRESHOLDS.wos.healthy;
+    const wosOverstocked = THRESHOLDS.wos.overstocked;
     const monitoredStyles = styles.length;
     const stockoutCount = styles.filter(s => STOCKOUT_RISKS.includes(s.riskType)).length;
     const overstockCount = styles.filter(s => OVERSTOCK_RISKS.includes(s.riskType)).length;
@@ -32,7 +37,7 @@ export default function InvKpiBar({ summary, styles }: Props) {
     const kpis = [
         { l: '库存总金额', v: fmtCny(summary.totalStockAmount), sub: null, tone: 'neutral' },
         { l: '可售库存（双）', v: summary.totalAvailableQty.toLocaleString(), sub: '在途 ' + summary.totalInTransitQty.toLocaleString() + ' 双', tone: 'neutral' },
-        { l: '整体 WOS', v: summary.overallWos.toFixed(1) + ' 周', sub: '目标 6-8 周', tone: summary.overallWos >= 6 && summary.overallWos <= 8 ? 'positive' : summary.overallWos > 12 ? 'negative' : 'warning' },
+        { l: '整体 WOS', v: summary.overallWos.toFixed(1) + ' 周', sub: `目标 ${wosMin}-${wosMax} 周`, tone: summary.overallWos >= wosMin && summary.overallWos <= wosMax ? 'positive' : summary.overallWos > wosOverstocked ? 'negative' : 'warning' },
         { l: '健康库存占比', v: (summary.healthySkuPct * 100).toFixed(0) + '%', sub: 'SKU 口径', tone: summary.healthySkuPct >= 0.50 ? 'positive' : 'warning' },
         { l: '断货机会损失', v: fmtCny(summary.stockoutOpportunityLoss), sub: stockoutCount + ' 款断货', tone: 'negative' },
         { l: '积压库存金额', v: fmtCny(summary.overstockAmount), sub: overstockCount + ' 款积压', tone: 'negative' },

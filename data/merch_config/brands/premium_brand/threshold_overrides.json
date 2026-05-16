@@ -1,0 +1,20 @@
+[
+  {
+    "thresholdId": "sellThroughRate_health",
+    "defaultValue": 0.85,
+    "warningValue": 0.70,
+    "criticalValue": 0.55
+  },
+  {
+    "thresholdId": "grossMarginRate_health",
+    "defaultValue": 0.55,
+    "warningValue": 0.48,
+    "criticalValue": 0.42
+  },
+  {
+    "thresholdId": "weeksOfSupply_max",
+    "defaultValue": 6,
+    "warningValue": 10,
+    "criticalValue": 16
+  }
+]

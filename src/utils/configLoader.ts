@@ -15,6 +15,7 @@ import type {
 // TypeScript 数据文件代替直接 JSON 导入，避免 Turbopack JSON-bundling 问题
 import { FOOTWEAR_INDUSTRY_DATA } from '@/data/footwearIndustryData';
 import { DEFAULT_BRAND_DATA } from '@/data/defaultBrandData';
+import { PREMIUM_BRAND_DATA } from '@/data/premiumBrandData';
 
 // ─── 类型转换助手 ──────────────────────────────────────────────────────────────
 
@@ -54,6 +55,12 @@ const BRAND_REGISTRY: Record<string, BrandEntry> = {
         metricOverrides: DEFAULT_BRAND_DATA.metricOverrides as unknown as Array<Partial<MetricDefinition> & { metricId: string }>,
         dimensionOverrides: DEFAULT_BRAND_DATA.dimensionOverrides as unknown as Array<Partial<DimensionDefinition> & { dimensionId: string }>,
         thresholdOverrides: DEFAULT_BRAND_DATA.thresholdOverrides as unknown as Array<Partial<ThresholdDefinition> & { thresholdId: string }>,
+    },
+    premium_brand: {
+        meta: PREMIUM_BRAND_DATA.brandMeta as unknown as BrandMeta,
+        metricOverrides: PREMIUM_BRAND_DATA.metricOverrides as unknown as Array<Partial<MetricDefinition> & { metricId: string }>,
+        dimensionOverrides: PREMIUM_BRAND_DATA.dimensionOverrides as unknown as Array<Partial<DimensionDefinition> & { dimensionId: string }>,
+        thresholdOverrides: PREMIUM_BRAND_DATA.thresholdOverrides as unknown as Array<Partial<ThresholdDefinition> & { thresholdId: string }>,
     },
 };
 

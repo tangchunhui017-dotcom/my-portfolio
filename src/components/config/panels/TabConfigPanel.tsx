@@ -57,8 +57,17 @@ function formatThresholdValue(value: number | undefined, unit: string): string {
 }
 
 export default function TabConfigPanel({ tabKey, customSections }: Props) {
-    const { metrics, dimensions, thresholds } = useMerchConfig();
+    const { metrics, dimensions, thresholds, overrideMap, saveTabOverride, resetTabOverride } = useMerchConfig();
     const tab = useTabConfig(tabKey);
+    const tabOverridden = overrideMap.tabs.has(tabKey);
+
+    function toggleSection(sectionId: string, nextEnabled: boolean) {
+        if (!tab) return;
+        const nextSections = tab.sections.map((s) =>
+            s.id === sectionId ? { ...s, enabled: nextEnabled } : s
+        );
+        saveTabOverride(tabKey, { sections: nextSections });
+    }
 
     const relevantMetrics = Array.from(metrics.values()).filter((m) =>
         m.usedBy.includes(tabKey)
@@ -90,16 +99,29 @@ export default function TabConfigPanel({ tabKey, customSections }: Props) {
             {/* Section 启用控制 */}
             {tab?.sections && tab.sections.length > 0 && (
                 <section>
-                    <h4 className="text-sm font-semibold text-slate-700 mb-2">📦 显示模块</h4>
-                    <p className="text-[11px] text-slate-400 mb-2">控制此 Tab 中哪些 Section 在前端显示</p>
+                    <div className="flex items-center justify-between mb-2">
+                        <div>
+                            <h4 className="text-sm font-semibold text-slate-700">📦 显示模块</h4>
+                            <p className="text-[11px] text-slate-400">控制此 Tab 中哪些 Section 在前端显示，修改后立即对当前品牌生效</p>
+                        </div>
+                        {tabOverridden && (
+                            <button
+                                type="button"
+                                onClick={() => resetTabOverride(tabKey)}
+                                className="text-[11px] text-rose-500 hover:text-rose-700 px-2 py-1 rounded border border-rose-100 hover:bg-rose-50"
+                            >
+                                ↶ 还原此 Tab
+                            </button>
+                        )}
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         {tab.sections.map((s) => (
                             <label key={s.id} className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer p-2 rounded hover:bg-slate-50">
                                 <input
                                     type="checkbox"
-                                    defaultChecked={s.enabled}
+                                    checked={s.enabled}
+                                    onChange={(e) => toggleSection(s.id, e.target.checked)}
                                     className="rounded"
-                                    readOnly
                                 />
                                 <span className="flex-1">{s.label}</span>
                                 {s.collapsedByDefault && (
