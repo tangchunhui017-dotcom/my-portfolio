@@ -138,5 +138,45 @@
     "criticalValue": 0.70,
     "comparator": "gte",
     "appliedTo": ["otb","annual-control"]
+  },
+  {
+    "thresholdId": "coreSizeSalesShare_min",
+    "label": "核心尺码销量占比下限",
+    "unit": "percent",
+    "defaultValue": 0.60,
+    "warningValue": 0.50,
+    "criticalValue": 0.40,
+    "comparator": "gte",
+    "appliedTo": ["consumer","inventory-health","region-store"]
+  },
+  {
+    "thresholdId": "cashGap_red",
+    "label": "现金缺口红线",
+    "unit": "currency",
+    "defaultValue": 0,
+    "warningValue": 1000000,
+    "criticalValue": 5000000,
+    "comparator": "lte",
+    "appliedTo": ["cashflow","overview","otb"]
+  },
+  {
+    "thresholdId": "forecastError_max",
+    "label": "预测误差上限",
+    "unit": "percent",
+    "defaultValue": 0.10,
+    "warningValue": 0.15,
+    "criticalValue": 0.20,
+    "comparator": "lte",
+    "appliedTo": ["forecast"]
+  },
+  {
+    "thresholdId": "newProductRatio_min",
+    "label": "新品占比下限",
+    "unit": "percent",
+    "defaultValue": 0.30,
+    "warningValue": 0.20,
+    "criticalValue": 0.15,
+    "comparator": "gte",
+    "appliedTo": ["competitor-trend","category-ops","wave-planning"]
   }
 ]

@@ -49,20 +49,33 @@ export function runMerchConfigHealthCheck(config: MergedMerchConfig): MerchConfi
     const { metrics, dimensions, thresholds, tabs } = config;
 
     // 1. 阈值逻辑冲突
+    // 正确语义：
+    //   gte（越大越好）: default > warning > critical（按"健康 → 警戒 → 危险"递减）
+    //   lte（越小越好）: default < warning < critical（按"健康 → 警戒 → 危险"递增）
     for (const t of thresholds.values()) {
-        if (
-            t.warningValue !== undefined && t.warningValue !== null &&
-            t.comparator === 'gte' &&
-            Number(t.warningValue) < Number(t.defaultValue)
-        ) {
+        const dv = Number(t.defaultValue);
+        const wv = t.warningValue !== undefined && t.warningValue !== null ? Number(t.warningValue) : undefined;
+        const cv = t.criticalValue !== undefined && t.criticalValue !== null ? Number(t.criticalValue) : undefined;
+
+        let violated = false;
+        let reason = '';
+        if (t.comparator === 'gte' || t.comparator === 'gt') {
+            if (wv !== undefined && wv > dv) { violated = true; reason = `警示线 ${wv} 大于正常线 ${dv}（比较方向 ≥，应正常 > 警戒 > 危险）`; }
+            else if (wv !== undefined && cv !== undefined && cv > wv) { violated = true; reason = `危险线 ${cv} 大于警示线 ${wv}（比较方向 ≥）`; }
+        } else if (t.comparator === 'lte' || t.comparator === 'lt') {
+            if (wv !== undefined && wv < dv) { violated = true; reason = `警示线 ${wv} 小于正常线 ${dv}（比较方向 ≤，应正常 < 警戒 < 危险）`; }
+            else if (wv !== undefined && cv !== undefined && cv < wv) { violated = true; reason = `危险线 ${cv} 小于警示线 ${wv}（比较方向 ≤）`; }
+        }
+
+        if (violated) {
             result.push({
                 id: `threshold-conflict-${t.thresholdId}`,
                 severity: 'error',
                 area: 'threshold',
                 targetId: t.thresholdId,
                 title: `阈值逻辑冲突：${t.label}`,
-                description: `正常线 ${t.defaultValue} 大于警示线 ${t.warningValue}（比较方向 ≥），阈值层级无效`,
-                suggestion: '检查正常线/警示线/危险线的大小顺序是否符合比较方向',
+                description: reason,
+                suggestion: '检查正常线/警示线/危险线的大小顺序是否符合比较方向语义',
             });
         }
     }

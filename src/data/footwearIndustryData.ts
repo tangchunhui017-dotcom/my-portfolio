@@ -79,7 +79,7 @@ export const FOOTWEAR_INDUSTRY_DATA = {
       "label": "销售双数",
       "description": "实际销售出库的商品双数",
       "unit": "pairs",
-      "formula": "sum(outbound pairs)",
+      "formula": "sum(outboundPairs)",
       "defaultMetricType": "standard",
       "usedBy": [
         "region-store",
@@ -146,7 +146,7 @@ export const FOOTWEAR_INDUSTRY_DATA = {
       "label": "同比增长",
       "description": "本期指标 vs 去年同期，增长幅度",
       "unit": "percent",
-      "formula": "(current - lastYear) / lastYear",
+      "formula": "(periodValue - lastYearValue) / lastYearValue",
       "defaultMetricType": "standard",
       "usedBy": [
         "overview",
@@ -161,7 +161,7 @@ export const FOOTWEAR_INDUSTRY_DATA = {
       "label": "环比增长",
       "description": "本期指标 vs 上期，增长幅度",
       "unit": "percent",
-      "formula": "(current - last) / last",
+      "formula": "(periodValue - priorPeriodValue) / priorPeriodValue",
       "defaultMetricType": "standard",
       "usedBy": [
         "forecast",
@@ -567,7 +567,7 @@ export const FOOTWEAR_INDUSTRY_DATA = {
       "label": "库存双数",
       "description": "当前在库的商品双数合计",
       "unit": "pairs",
-      "formula": "sum(on_hand_pairs)",
+      "formula": "sum(onHandPairs)",
       "defaultMetricType": "standard",
       "usedBy": ["inventory-health","region-store","category-ops"],
       "category": "inventory",
@@ -835,7 +835,17 @@ export const FOOTWEAR_INDUSTRY_DATA = {
     { "metricId": "openingCash", "label": "期初现金", "description": "期初现金及等价物余额", "unit": "currency", "formula": "", "defaultMetricType": "reference", "usedBy": [], "category": "data-source", "source": "industry" },
     { "metricId": "operatingExpense", "label": "运营费用项", "description": "单项运营费用（人力/租金/营销/物流等之一）", "unit": "currency", "formula": "", "defaultMetricType": "reference", "usedBy": [], "category": "data-source", "source": "industry" },
     { "metricId": "salesPlanCost", "label": "销售计划成本", "description": "计划销售额对应的销售成本", "unit": "currency", "formula": "", "defaultMetricType": "reference", "usedBy": [], "category": "data-source", "source": "industry" },
-    { "metricId": "costOfGoods", "label": "销售商品成本", "description": "销售商品采购成本（按已销售商品）", "unit": "currency", "formula": "", "defaultMetricType": "reference", "usedBy": [], "category": "data-source", "source": "industry" }
+    { "metricId": "costOfGoods", "label": "销售商品成本", "description": "销售商品采购成本（按已销售商品）", "unit": "currency", "formula": "", "defaultMetricType": "reference", "usedBy": [], "category": "data-source", "source": "industry" },
+
+    { "metricId": "styleId", "label": "款 ID", "description": "数据层标识：商品款式 ID", "unit": "count", "formula": "", "defaultMetricType": "reference", "usedBy": [], "category": "data-source", "source": "industry" },
+    { "metricId": "colorId", "label": "颜色 ID", "description": "数据层标识：商品颜色 ID（与 styleId 组合形成 SKC）", "unit": "count", "formula": "", "defaultMetricType": "reference", "usedBy": [], "category": "data-source", "source": "industry" },
+    { "metricId": "sizeId", "label": "尺码 ID", "description": "数据层标识：商品尺码 ID（与 styleId+colorId 组合形成 SKU）", "unit": "count", "formula": "", "defaultMetricType": "reference", "usedBy": [], "category": "data-source", "source": "industry" },
+    { "metricId": "skuId", "label": "SKU ID", "description": "数据层标识：单 SKU 唯一 ID", "unit": "count", "formula": "", "defaultMetricType": "reference", "usedBy": [], "category": "data-source", "source": "industry" },
+    { "metricId": "outboundPairs", "label": "出库双数", "description": "数据层字段：销售出库的商品双数", "unit": "pairs", "formula": "", "defaultMetricType": "reference", "usedBy": [], "category": "data-source", "source": "industry" },
+    { "metricId": "onHandPairs", "label": "在库双数", "description": "数据层字段：当前在库的商品双数", "unit": "pairs", "formula": "", "defaultMetricType": "reference", "usedBy": [], "category": "data-source", "source": "industry" },
+    { "metricId": "periodValue", "label": "本期值", "description": "公式占位：当前期间的指标值（用于同比/环比基础计算）", "unit": "ratio", "formula": "", "defaultMetricType": "reference", "usedBy": [], "category": "data-source", "source": "industry" },
+    { "metricId": "lastYearValue", "label": "去年同期值", "description": "公式占位：去年同期指标值", "unit": "ratio", "formula": "", "defaultMetricType": "reference", "usedBy": [], "category": "data-source", "source": "industry" },
+    { "metricId": "priorPeriodValue", "label": "上期值", "description": "公式占位：上一个期间的指标值", "unit": "ratio", "formula": "", "defaultMetricType": "reference", "usedBy": [], "category": "data-source", "source": "industry" }
   ],
   "dimensions": [
     {
@@ -3153,6 +3163,46 @@ export const FOOTWEAR_INDUSTRY_DATA = {
         "otb",
         "annual-control"
       ]
+    },
+    {
+      "thresholdId": "coreSizeSalesShare_min",
+      "label": "核心尺码销量占比下限",
+      "unit": "percent",
+      "defaultValue": 0.60,
+      "warningValue": 0.50,
+      "criticalValue": 0.40,
+      "comparator": "gte",
+      "appliedTo": ["consumer","inventory-health","region-store"]
+    },
+    {
+      "thresholdId": "cashGap_red",
+      "label": "现金缺口红线",
+      "unit": "currency",
+      "defaultValue": 0,
+      "warningValue": 1000000,
+      "criticalValue": 5000000,
+      "comparator": "lte",
+      "appliedTo": ["cashflow","overview","otb"]
+    },
+    {
+      "thresholdId": "forecastError_max",
+      "label": "预测误差上限",
+      "unit": "percent",
+      "defaultValue": 0.10,
+      "warningValue": 0.15,
+      "criticalValue": 0.20,
+      "comparator": "lte",
+      "appliedTo": ["forecast"]
+    },
+    {
+      "thresholdId": "newProductRatio_min",
+      "label": "新品占比下限",
+      "unit": "percent",
+      "defaultValue": 0.30,
+      "warningValue": 0.20,
+      "criticalValue": 0.15,
+      "comparator": "gte",
+      "appliedTo": ["competitor-trend","category-ops","wave-planning"]
     }
   ],
   "tabs": {
