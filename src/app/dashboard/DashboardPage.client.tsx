@@ -490,7 +490,7 @@ function DashboardPageInner() {
                                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-sky-50 text-sky-700 border border-sky-100 hover:bg-sky-100 transition-colors"
                             >
                                 <span>⚙️</span>
-                                <span>年度配置</span>
+                                <span>中台配置</span>
                                 {!config.isConfigured && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 ml-0.5" />}
                             </button>
                         </div>
@@ -500,7 +500,7 @@ function DashboardPageInner() {
                     {!config.isConfigured && (activeTab === 'forecast' || activeTab === 'profit-loss' || activeTab === 'otb') && (
                         <div className="flex items-center gap-2 text-xs text-sky-700 bg-sky-50 border border-sky-100 rounded-lg px-4 py-2 mb-4">
                             <span>ℹ️</span>
-                            <span>当前使用默认假设参数，点击右上角「年度配置」可自定义品牌参数与预测方法。</span>
+                            <span>当前使用默认假设参数，点击右上角「中台配置」可自定义品牌参数与预测方法。</span>
                         </div>
                     )}
 

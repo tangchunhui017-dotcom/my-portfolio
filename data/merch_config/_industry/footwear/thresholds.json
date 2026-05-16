@@ -178,5 +178,55 @@
     "criticalValue": 0.15,
     "comparator": "gte",
     "appliedTo": ["competitor-trend","category-ops","wave-planning"]
+  },
+  {
+    "thresholdId": "sellThroughTarget_phase_teaser",
+    "label": "预热测款期累计售罄目标",
+    "unit": "percent",
+    "defaultValue": 0.08,
+    "warningValue": 0.05,
+    "criticalValue": 0.03,
+    "comparator": "gte",
+    "appliedTo": ["overview","wave-planning","inventory-health"]
+  },
+  {
+    "thresholdId": "sellThroughTarget_phase_ramp",
+    "label": "上新爬坡期累计售罄目标",
+    "unit": "percent",
+    "defaultValue": 0.30,
+    "warningValue": 0.20,
+    "criticalValue": 0.15,
+    "comparator": "gte",
+    "appliedTo": ["overview","wave-planning","inventory-health"]
+  },
+  {
+    "thresholdId": "sellThroughTarget_phase_peak",
+    "label": "主销爆发期累计售罄目标",
+    "unit": "percent",
+    "defaultValue": 0.70,
+    "warningValue": 0.60,
+    "criticalValue": 0.50,
+    "comparator": "gte",
+    "appliedTo": ["overview","wave-planning","inventory-health"]
+  },
+  {
+    "thresholdId": "sellThroughTarget_phase_steady",
+    "label": "尾段平销期累计售罄目标",
+    "unit": "percent",
+    "defaultValue": 0.82,
+    "warningValue": 0.75,
+    "criticalValue": 0.70,
+    "comparator": "gte",
+    "appliedTo": ["overview","wave-planning","inventory-health"]
+  },
+  {
+    "thresholdId": "sellThroughTarget_phase_clearance",
+    "label": "清货出清期累计售罄目标",
+    "unit": "percent",
+    "defaultValue": 0.92,
+    "warningValue": 0.88,
+    "criticalValue": 0.85,
+    "comparator": "gte",
+    "appliedTo": ["overview","wave-planning","inventory-health","pnl"]
   }
 ]

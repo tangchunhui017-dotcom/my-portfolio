@@ -48,6 +48,8 @@ export type MetricUnit =
 export interface MetricDefinition {
   metricId: string;
   label: string;
+  /** 英文名称（便于跨团队/跨系统对齐） */
+  englishName?: string;
   description: string;
   unit: MetricUnit;
   formula: string;
@@ -55,6 +57,8 @@ export interface MetricDefinition {
   defaultMetricType: 'standard' | 'reference' | 'derived';
   usedBy: TabKey[];
   category?: string;
+  /** 兼容旧命名 / 跨系统别名（如 net_sales、retail_qty 等历史 ID） */
+  aliases?: string[];
   source: ConfigSource;
 }
 
@@ -70,6 +74,8 @@ export interface DimensionDefinition {
   label: string;
   type: string;
   values: DimensionValue[];
+  /** 维度级元数据（不属于任何单值的全局规则，如尺码维度的动态修正规则） */
+  metadata?: Record<string, unknown>;
   scope?: TabKey[];
   source?: ConfigSource;
 }

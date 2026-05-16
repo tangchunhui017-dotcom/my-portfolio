@@ -44,10 +44,58 @@
     "label": "季节",
     "type": "season",
     "values": [
-      { "id": "spring", "label": "春季", "metadata": { "monthRange": "3-5月", "planningMonths": ["3月","4月","5月"], "mainCategories": ["板鞋","跑鞋"], "seasonGroup": "春夏" } },
-      { "id": "summer", "label": "夏季", "metadata": { "monthRange": "6-8月", "planningMonths": ["6月","7月","8月"], "mainCategories": ["凉鞋","凉拖","透气跑鞋"], "seasonGroup": "春夏" } },
-      { "id": "autumn", "label": "秋季", "metadata": { "monthRange": "9-11月", "planningMonths": ["9月","10月","11月"], "mainCategories": ["跑鞋","休闲","篮球"], "seasonGroup": "秋冬" } },
-      { "id": "winter", "label": "冬季", "metadata": { "monthRange": "12-2月", "planningMonths": ["12月","1月","2月"], "mainCategories": ["棉鞋","短靴","雪地靴"], "seasonGroup": "秋冬" } }
+      {
+        "id": "spring", "label": "春季",
+        "metadata": {
+          "monthRange": "3-5月", "planningMonths": ["3月","4月","5月"], "mainCategories": ["板鞋","跑鞋"], "seasonGroup": "春夏",
+          "phases": [
+            { "id": "teaser",    "label": "预热测款期", "salesShare": 0.10, "startDate": "上年12/10", "endDate": "上年12/26", "sellThroughTargetMin": 0.05, "sellThroughTargetMax": 0.10 },
+            { "id": "ramp",      "label": "上新爬坡期", "salesShare": 0.20, "startDate": "上年12/27", "endDate": "1/29",     "sellThroughTargetMin": 0.25, "sellThroughTargetMax": 0.35 },
+            { "id": "peak",      "label": "主销爆发期", "salesShare": 0.30, "startDate": "1/30",     "endDate": "3/22",     "sellThroughTargetMin": 0.65, "sellThroughTargetMax": 0.75 },
+            { "id": "steady",    "label": "尾段平销期", "salesShare": 0.20, "startDate": "3/23",     "endDate": "4/25",     "sellThroughTargetMin": 0.80, "sellThroughTargetMax": 0.85 },
+            { "id": "clearance", "label": "清货出清期", "salesShare": 0.20, "startDate": "4/26",     "endDate": "5/月末",    "sellThroughTargetMin": 0.90, "sellThroughTargetMax": 0.95 }
+          ]
+        }
+      },
+      {
+        "id": "summer", "label": "夏季",
+        "metadata": {
+          "monthRange": "6-8月", "planningMonths": ["6月","7月","8月"], "mainCategories": ["凉鞋","凉拖","透气跑鞋"], "seasonGroup": "春夏",
+          "phases": [
+            { "id": "teaser",    "label": "预热测款期", "salesShare": 0.10, "startDate": "3/10",  "endDate": "3/26",  "sellThroughTargetMin": 0.05, "sellThroughTargetMax": 0.10 },
+            { "id": "ramp",      "label": "上新爬坡期", "salesShare": 0.20, "startDate": "3/27",  "endDate": "4/29",  "sellThroughTargetMin": 0.25, "sellThroughTargetMax": 0.35 },
+            { "id": "peak",      "label": "主销爆发期", "salesShare": 0.30, "startDate": "4/30",  "endDate": "6/22",  "sellThroughTargetMin": 0.65, "sellThroughTargetMax": 0.75 },
+            { "id": "steady",    "label": "尾段平销期", "salesShare": 0.20, "startDate": "6/23",  "endDate": "7/25",  "sellThroughTargetMin": 0.80, "sellThroughTargetMax": 0.85 },
+            { "id": "clearance", "label": "清货出清期", "salesShare": 0.20, "startDate": "7/26",  "endDate": "8/月末", "sellThroughTargetMin": 0.90, "sellThroughTargetMax": 0.95 }
+          ]
+        }
+      },
+      {
+        "id": "autumn", "label": "秋季",
+        "metadata": {
+          "monthRange": "9-11月", "planningMonths": ["9月","10月","11月"], "mainCategories": ["跑鞋","休闲","篮球"], "seasonGroup": "秋冬",
+          "phases": [
+            { "id": "teaser",    "label": "预热测款期", "salesShare": 0.10, "startDate": "6/10",  "endDate": "6/26",  "sellThroughTargetMin": 0.05, "sellThroughTargetMax": 0.10 },
+            { "id": "ramp",      "label": "上新爬坡期", "salesShare": 0.20, "startDate": "6/27",  "endDate": "7/29",  "sellThroughTargetMin": 0.25, "sellThroughTargetMax": 0.35 },
+            { "id": "peak",      "label": "主销爆发期", "salesShare": 0.30, "startDate": "7/30",  "endDate": "9/22",  "sellThroughTargetMin": 0.65, "sellThroughTargetMax": 0.75 },
+            { "id": "steady",    "label": "尾段平销期", "salesShare": 0.20, "startDate": "9/23",  "endDate": "10/25", "sellThroughTargetMin": 0.80, "sellThroughTargetMax": 0.85 },
+            { "id": "clearance", "label": "清货出清期", "salesShare": 0.20, "startDate": "10/26", "endDate": "11/月末","sellThroughTargetMin": 0.90, "sellThroughTargetMax": 0.95 }
+          ]
+        }
+      },
+      {
+        "id": "winter", "label": "冬季",
+        "metadata": {
+          "monthRange": "12-2月", "planningMonths": ["12月","1月","2月"], "mainCategories": ["棉鞋","短靴","雪地靴"], "seasonGroup": "秋冬",
+          "phases": [
+            { "id": "teaser",    "label": "预热测款期", "salesShare": 0.10, "startDate": "9/10",   "endDate": "9/26",   "sellThroughTargetMin": 0.05, "sellThroughTargetMax": 0.10 },
+            { "id": "ramp",      "label": "上新爬坡期", "salesShare": 0.20, "startDate": "9/27",   "endDate": "10/29",  "sellThroughTargetMin": 0.25, "sellThroughTargetMax": 0.35 },
+            { "id": "peak",      "label": "主销爆发期", "salesShare": 0.30, "startDate": "10/30",  "endDate": "12/22",  "sellThroughTargetMin": 0.65, "sellThroughTargetMax": 0.75 },
+            { "id": "steady",    "label": "尾段平销期", "salesShare": 0.20, "startDate": "12/23",  "endDate": "次年1/25", "sellThroughTargetMin": 0.80, "sellThroughTargetMax": 0.85 },
+            { "id": "clearance", "label": "清货出清期", "salesShare": 0.20, "startDate": "次年1/26", "endDate": "次年2/月末","sellThroughTargetMin": 0.90, "sellThroughTargetMax": 0.95 }
+          ]
+        }
+      }
     ],
     "scope": ["overview","annual-control","region-store","category-ops","wave-planning","otb","cashflow","forecast","pnl","inventory-health"]
   },
@@ -328,6 +376,23 @@
         }
       }
     ],
+    "metadata": {
+      "dynamicAdjustments": {
+        "regionClusters": {
+          "north": ["north_china","northeast_china","northwest_china"],
+          "south": ["south_china","southwest_china","east_china"]
+        },
+        "categoryBias": {
+          "upsize": ["boots","dad_shoes","running","outdoor"],
+          "fitStrict": ["heels","pumps","ballet","mary_jane"]
+        },
+        "channelBias": {
+          "offline": { "edgeSizeFactor": 1.0, "note": "线下门店按标准曲线" },
+          "online":  { "edgeSizeFactor": 1.2, "note": "线上电商：边缘尺码备货系数 1.2，覆盖更广人群" }
+        }
+      },
+      "note": "动态修正规则：地域 / 品类 / 渠道偏差。补深和调拨时按规则放大边缘尺码备货。"
+    },
     "scope": ["region-store","inventory-health"]
   },
   {
@@ -384,5 +449,70 @@
       { "id": "clearance", "label": "清仓品", "metadata": { "ageRange": "365天+", "targetSellThrough": "95%-100%", "inventoryAction": "紧急出清或批量处理" } }
     ],
     "scope": ["category-ops","otb","cashflow","pnl","inventory-health"]
+  },
+  {
+    "dimensionId": "season_phase",
+    "label": "季节阶段",
+    "type": "season_phase",
+    "values": [
+      { "id": "teaser",    "label": "预热测款期", "metadata": { "salesShare": 0.10, "sellThroughTargetMin": 0.05, "sellThroughTargetMax": 0.10, "focus": "上市前测款，验证趋势与款式接受度" } },
+      { "id": "ramp",      "label": "上新爬坡期", "metadata": { "salesShare": 0.20, "sellThroughTargetMin": 0.25, "sellThroughTargetMax": 0.35, "focus": "主推上市与铺货，重点提升核心款命中" } },
+      { "id": "peak",      "label": "主销爆发期", "metadata": { "salesShare": 0.30, "sellThroughTargetMin": 0.65, "sellThroughTargetMax": 0.75, "focus": "占比最高的销售集中期，节奏快、补货密集" } },
+      { "id": "steady",    "label": "尾段平销期", "metadata": { "salesShare": 0.20, "sellThroughTargetMin": 0.80, "sellThroughTargetMax": 0.85, "focus": "稳态销售，逐步收口补货与折扣" } },
+      { "id": "clearance", "label": "清货出清期", "metadata": { "salesShare": 0.20, "sellThroughTargetMin": 0.90, "sellThroughTargetMax": 0.95, "focus": "深度折扣 / 调拨 / 计提，为下季让位" } }
+    ],
+    "scope": ["overview","annual-control","wave-planning","category-ops","inventory-health","forecast"]
+  },
+  {
+    "dimensionId": "planning_axis_x",
+    "label": "企划魔方 X 轴：气候与波段",
+    "type": "planning_cube_x",
+    "values": [
+      { "id": "east",  "label": "华东", "metadata": { "scope": "沪苏浙皖", "planningFocus": "趋势试验田，换季快，优先新材质" } },
+      { "id": "south", "label": "华南", "metadata": { "scope": "粤闽琼桂", "planningFocus": "长夏无冬，凉拖与透气款占比更高" } },
+      { "id": "north", "label": "华北", "metadata": { "scope": "京津冀鲁晋", "planningFocus": "春秋防风耐脏，秋冬保暖前置" } },
+      { "id": "mid",   "label": "华中", "metadata": { "scope": "鄂湘赣", "planningFocus": "湿冷与酷热并存，季节切换需更平滑" } },
+      { "id": "sw",    "label": "西南", "metadata": { "scope": "川渝云贵", "planningFocus": "耐磨抓地与缓震舒适优先" } },
+      { "id": "nw",    "label": "西北", "metadata": { "scope": "陕甘宁青新", "planningFocus": "温差大，秋冬波段提前，防风防尘" } },
+      { "id": "ne",    "label": "东北", "metadata": { "scope": "辽吉黑", "planningFocus": "极寒长冬，防滑与高保暖深度优先" } }
+    ],
+    "metadata": {
+      "title": "气候与波段",
+      "englishName": "Region & Climate Matrix",
+      "coreLogic": "按气候与季节轮动分配波段，不做全国均值铺货"
+    },
+    "scope": ["annual-control","region-store","wave-planning","forecast"]
+  },
+  {
+    "dimensionId": "planning_axis_y",
+    "label": "企划魔方 Y 轴：商业能级",
+    "type": "planning_cube_y",
+    "values": [
+      { "id": "S", "label": "S 级（一线/新一线）", "metadata": { "scope": "高能级商业城市", "planningFocus": "首发与形象阵地，承担高溢价与实验款" } },
+      { "id": "A", "label": "A 级（二线/三线）", "metadata": { "scope": "省会与强地级市", "planningFocus": "利润中枢，走量款与形象款保持 7:3" } },
+      { "id": "B", "label": "B 级（四/五线）", "metadata": { "scope": "下沉市场", "planningFocus": "现金流底盘，强调耐穿与性价比" } }
+    ],
+    "metadata": {
+      "title": "商业能级",
+      "englishName": "City Tier & Commercial Level",
+      "coreLogic": "按城市商业能级切分价格带与款式结构"
+    },
+    "scope": ["annual-control","region-store","category-ops","otb"]
+  },
+  {
+    "dimensionId": "planning_axis_z",
+    "label": "企划魔方 Z 轴：店态调性",
+    "type": "planning_cube_z",
+    "values": [
+      { "id": "type_a", "label": "Type A · 高能级潮流", "metadata": { "scope": "核心 MALL / 标杆百货", "planningFocus": "可投高颜值、限量配色和创新工艺" } },
+      { "id": "type_b", "label": "Type B · 大众生活方式", "metadata": { "scope": "社区 MALL / 步行街专卖", "planningFocus": "高频百搭与舒适体感优先" } },
+      { "id": "type_c", "label": "Type C · 下沉高频刚需", "metadata": { "scope": "社区街边 / 普通百货", "planningFocus": "耐穿耐脏与价格敏感，严控娇贵材质" } }
+    ],
+    "metadata": {
+      "title": "店态调性",
+      "englishName": "Store Format & Channel Vibe",
+      "coreLogic": "按消费场景调性定义 SKU 宽度与风格深度"
+    },
+    "scope": ["region-store","category-ops","wave-planning"]
   }
 ]
