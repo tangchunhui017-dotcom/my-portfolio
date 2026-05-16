@@ -4408,6 +4408,12 @@ export const FOOTWEAR_INDUSTRY_DATA = {
           "label": "渠道预算",
           "enabled": true,
           "order": 5
+        },
+        {
+          "id": "merch-transition-plan",
+          "label": "货盘切换计划",
+          "enabled": true,
+          "order": 6
         }
       ],
       "customSettings": {
@@ -4473,7 +4479,7 @@ export const FOOTWEAR_INDUSTRY_DATA = {
         },
         {
           "id": "lifecycle-stage",
-          "label": "生命周期7阶段",
+          "label": "生命周期与库龄承接",
           "enabled": true,
           "order": 4
         },
@@ -4505,6 +4511,13 @@ export const FOOTWEAR_INDUSTRY_DATA = {
           "label": "趋势信号",
           "enabled": true,
           "order": 3
+        },
+        {
+          "id": "planning-cube-benchmark",
+          "label": "企划魔方对标",
+          "enabled": true,
+          "order": 4,
+          "collapsedByDefault": true
         }
       ]
     },
@@ -4666,6 +4679,18 @@ export const FOOTWEAR_INDUSTRY_DATA = {
           "label": "品类结构",
           "enabled": true,
           "order": 4
+        },
+        {
+          "id": "lifecycle-transition",
+          "label": "库龄承接结构",
+          "enabled": true,
+          "order": 5
+        },
+        {
+          "id": "season-phase-progress",
+          "label": "季节阶段进度",
+          "enabled": true,
+          "order": 6
         }
       ],
       "customSettings": {
@@ -4769,6 +4794,12 @@ export const FOOTWEAR_INDUSTRY_DATA = {
           "label": "季节温度窗口",
           "enabled": true,
           "order": 4
+        },
+        {
+          "id": "season-phase-progress",
+          "label": "季节阶段进度",
+          "enabled": true,
+          "order": 5
         }
       ],
       "customSettings": {

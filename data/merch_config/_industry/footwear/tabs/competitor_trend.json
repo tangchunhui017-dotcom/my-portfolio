@@ -1,1 +1,1 @@
-{"tabKey":"competitor-trend","sections":[{"id":"competitor-list","label":"竞品列表","enabled":true,"order":1},{"id":"price-compare","label":"价格对标","enabled":true,"order":2},{"id":"trend-signal","label":"趋势信号","enabled":true,"order":3}]}
+{"tabKey":"competitor-trend","sections":[{"id":"competitor-list","label":"竞品列表","enabled":true,"order":1},{"id":"price-compare","label":"价格对标","enabled":true,"order":2},{"id":"trend-signal","label":"趋势信号","enabled":true,"order":3},{"id":"planning-cube-benchmark","label":"企划魔方对标","enabled":true,"order":4,"collapsedByDefault":true}]}
