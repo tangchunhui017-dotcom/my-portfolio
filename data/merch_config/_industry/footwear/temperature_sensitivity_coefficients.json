@@ -1,0 +1,75 @@
+{
+  "_meta": {
+    "name": "温度敏感系数",
+    "description": "各鞋类品类与气温区间的销售敏感度系数（1.0 = 基准，>1.0 利好，<1.0 利空）",
+    "version": "1.0.0",
+    "industry": "footwear",
+    "lastUpdated": "2026-05-14"
+  },
+  "temperatureRanges": [
+    { "rangeId": "freezing",    "label": "严寒（<0°C）",    "tempMin": null, "tempMax": 0  },
+    { "rangeId": "cold",        "label": "寒冷（0-8°C）",   "tempMin": 0,    "tempMax": 8  },
+    { "rangeId": "cool",        "label": "凉爽（8-15°C）",  "tempMin": 8,    "tempMax": 15 },
+    { "rangeId": "mild",        "label": "温和（15-22°C）", "tempMin": 15,   "tempMax": 22 },
+    { "rangeId": "warm",        "label": "温暖（22-30°C）", "tempMin": 22,   "tempMax": 30 },
+    { "rangeId": "hot",         "label": "炎热（>30°C）",   "tempMin": 30,   "tempMax": null }
+  ],
+  "categories": [
+    {
+      "categoryId": "sandal",
+      "label": "凉鞋",
+      "coefficients": {
+        "freezing": 0.05, "cold": 0.10, "cool": 0.25, "mild": 0.70, "warm": 1.30, "hot": 1.80
+      }
+    },
+    {
+      "categoryId": "sneaker",
+      "label": "板鞋/休闲鞋",
+      "coefficients": {
+        "freezing": 0.60, "cold": 0.75, "cool": 0.95, "mild": 1.10, "warm": 1.05, "hot": 0.90
+      }
+    },
+    {
+      "categoryId": "running",
+      "label": "跑步鞋",
+      "coefficients": {
+        "freezing": 0.70, "cold": 0.85, "cool": 1.10, "mild": 1.20, "warm": 1.15, "hot": 0.95
+      }
+    },
+    {
+      "categoryId": "cotton",
+      "label": "棉鞋/雪地靴",
+      "coefficients": {
+        "freezing": 1.90, "cold": 1.60, "cool": 1.20, "mild": 0.40, "warm": 0.05, "hot": 0.02
+      }
+    },
+    {
+      "categoryId": "basketball",
+      "label": "篮球鞋",
+      "coefficients": {
+        "freezing": 0.75, "cold": 0.85, "cool": 1.00, "mild": 1.10, "warm": 1.00, "hot": 0.80
+      }
+    },
+    {
+      "categoryId": "hiking",
+      "label": "户外徒步鞋",
+      "coefficients": {
+        "freezing": 0.80, "cold": 1.00, "cool": 1.30, "mild": 1.20, "warm": 0.90, "hot": 0.60
+      }
+    },
+    {
+      "categoryId": "formal",
+      "label": "正装皮鞋",
+      "coefficients": {
+        "freezing": 0.85, "cold": 0.90, "cool": 1.00, "mild": 1.00, "warm": 0.90, "hot": 0.75
+      }
+    },
+    {
+      "categoryId": "kids",
+      "label": "儿童鞋",
+      "coefficients": {
+        "freezing": 0.70, "cold": 0.80, "cool": 1.00, "mild": 1.10, "warm": 1.05, "hot": 0.85
+      }
+    }
+  ]
+}

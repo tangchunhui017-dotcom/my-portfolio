@@ -1,0 +1,1 @@
+{"tabKey":"forecast","sections":[{"id":"forecast-summary","label":"预测汇总","enabled":true,"order":1},{"id":"scenario","label":"情景分析","enabled":true,"order":2},{"id":"by-channel","label":"渠道预测","enabled":true,"order":3},{"id":"by-category","label":"品类预测","enabled":true,"order":4}],"customSettings":{"scenarios":["conservative","base","optimistic"],"defaultScenario":"base"}}

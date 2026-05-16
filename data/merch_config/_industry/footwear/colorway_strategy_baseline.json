@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "name": "配色策略基线",
+    "description": "鞋类不同配色策略的SKU占比基线与销售贡献参考区间",
+    "version": "1.0.0",
+    "industry": "footwear",
+    "lastUpdated": "2026-05-14"
+  },
+  "colorwayTiers": [
+    {
+      "tierId": "core",
+      "label": "基础色",
+      "description": "黑/白/灰等中性色，全品类全渠道常备，适配性强",
+      "skuShareMin": 0.40,
+      "skuShareMax": 0.50,
+      "revenueContribMin": 0.45,
+      "revenueContribMax": 0.55,
+      "turnoverDaysTarget": 60,
+      "replenishmentPriority": "high",
+      "examples": ["纯黑", "纯白", "浅灰", "藏蓝"]
+    },
+    {
+      "tierId": "hero",
+      "label": "主推色",
+      "description": "当季核心推广色，搭配强营销资源，往往为季节标志色",
+      "skuShareMin": 0.25,
+      "skuShareMax": 0.35,
+      "revenueContribMin": 0.30,
+      "revenueContribMax": 0.40,
+      "turnoverDaysTarget": 45,
+      "replenishmentPriority": "high",
+      "examples": ["橘黄", "科技蓝", "荧光绿"]
+    },
+    {
+      "tierId": "fashion",
+      "label": "时尚色",
+      "description": "流行趋势色，吸引尝鲜用户，SKU占比适中，风险可控",
+      "skuShareMin": 0.10,
+      "skuShareMax": 0.20,
+      "revenueContribMin": 0.08,
+      "revenueContribMax": 0.15,
+      "turnoverDaysTarget": 75,
+      "replenishmentPriority": "medium",
+      "examples": ["莫兰迪粉", "薄荷绿", "奶奶灰"]
+    },
+    {
+      "tierId": "limited",
+      "label": "限量色",
+      "description": "联名/特别系列，高溢价小批量，制造稀缺感",
+      "skuShareMin": 0.05,
+      "skuShareMax": 0.10,
+      "revenueContribMin": 0.05,
+      "revenueContribMax": 0.12,
+      "turnoverDaysTarget": 30,
+      "replenishmentPriority": "none",
+      "examples": ["联名特别色", "节庆限定", "艺术家合作款"]
+    }
+  ],
+  "channelAdjustments": {
+    "direct":     { "coreBias": 0.00, "limitedBias": +0.05 },
+    "franchise":  { "coreBias": +0.05, "limitedBias": -0.05 },
+    "ecommerce":  { "coreBias": -0.05, "fashionBias": +0.08 },
+    "wholesale":  { "coreBias": +0.10, "limitedBias": -0.10 }
+  },
+  "seasonAdjustments": {
+    "SS": { "coreBias": -0.05, "fashionBias": +0.05 },
+    "FW": { "coreBias": +0.05, "fashionBias": -0.03 },
+    "AW": { "coreBias": +0.03, "limitedBias": +0.02 }
+  }
+}

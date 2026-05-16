@@ -1,0 +1,116 @@
+{
+  "_meta": {
+    "name": "渠道分销策略",
+    "description": "鞋类四大渠道（直营/加盟/经销/电商）的策略参数与货品配置基线",
+    "version": "1.0.0",
+    "industry": "footwear",
+    "lastUpdated": "2026-05-14"
+  },
+  "channels": [
+    {
+      "channelId": "direct",
+      "label": "直营",
+      "shortLabel": "直营",
+      "description": "品牌自营门店，直接管控，毛利最高，陈列标准最严",
+      "marginTargetMin": 0.48,
+      "marginTargetMax": 0.58,
+      "inventoryDaysTarget": 45,
+      "inventoryDaysWarning": 60,
+      "sellThroughTargetMin": 0.75,
+      "sellThroughTargetMax": 0.90,
+      "newProductRatio": 0.30,
+      "coreSkuDepth": "full",
+      "limitedEditionAccess": true,
+      "replenishmentLeadDays": 3,
+      "markdownAuthority": "brand",
+      "keyMetrics": ["sellThrough", "marginRate", "inventoryDays", "avgUnitRetail"],
+      "productMix": {
+        "newArrival": 0.35,
+        "carryover":  0.45,
+        "clearance":  0.20
+      }
+    },
+    {
+      "channelId": "franchise",
+      "label": "加盟",
+      "shortLabel": "加盟",
+      "description": "授权加盟商门店，品牌提供货品与视觉规范，盈亏加盟商自负",
+      "marginTargetMin": 0.40,
+      "marginTargetMax": 0.50,
+      "inventoryDaysTarget": 55,
+      "inventoryDaysWarning": 75,
+      "sellThroughTargetMin": 0.65,
+      "sellThroughTargetMax": 0.80,
+      "newProductRatio": 0.25,
+      "coreSkuDepth": "standard",
+      "limitedEditionAccess": false,
+      "replenishmentLeadDays": 7,
+      "markdownAuthority": "franchise",
+      "keyMetrics": ["sellThrough", "inventoryDays", "returnRate"],
+      "productMix": {
+        "newArrival": 0.28,
+        "carryover":  0.52,
+        "clearance":  0.20
+      }
+    },
+    {
+      "channelId": "wholesale",
+      "label": "经销",
+      "shortLabel": "经销",
+      "description": "批量采购再销售，风险经销商承担，品牌以出货量和回款为核心",
+      "marginTargetMin": 0.30,
+      "marginTargetMax": 0.42,
+      "inventoryDaysTarget": 70,
+      "inventoryDaysWarning": 90,
+      "sellThroughTargetMin": 0.60,
+      "sellThroughTargetMax": 0.75,
+      "newProductRatio": 0.20,
+      "coreSkuDepth": "selective",
+      "limitedEditionAccess": false,
+      "replenishmentLeadDays": 14,
+      "markdownAuthority": "wholesale",
+      "keyMetrics": ["shipVolume", "paymentRecovery", "returnRate"],
+      "productMix": {
+        "newArrival": 0.20,
+        "carryover":  0.55,
+        "clearance":  0.25
+      }
+    },
+    {
+      "channelId": "ecommerce",
+      "label": "电商",
+      "shortLabel": "电商",
+      "description": "线上旗舰店及平台店（天猫/京东/抖音），流量运营驱动，高并发",
+      "marginTargetMin": 0.35,
+      "marginTargetMax": 0.50,
+      "inventoryDaysTarget": 30,
+      "inventoryDaysWarning": 45,
+      "sellThroughTargetMin": 0.70,
+      "sellThroughTargetMax": 0.85,
+      "newProductRatio": 0.40,
+      "coreSkuDepth": "extended",
+      "limitedEditionAccess": true,
+      "replenishmentLeadDays": 1,
+      "markdownAuthority": "brand",
+      "keyMetrics": ["conversionRate", "sellThrough", "returnRate", "avgUnitRetail"],
+      "productMix": {
+        "newArrival": 0.42,
+        "carryover":  0.38,
+        "clearance":  0.20
+      },
+      "platformWeights": {
+        "tmall": 0.45,
+        "jd":    0.25,
+        "douyin": 0.20,
+        "others": 0.10
+      }
+    }
+  ],
+  "allocationPriority": ["direct", "ecommerce", "franchise", "wholesale"],
+  "channelRevenueTargetMix": {
+    "direct":    0.35,
+    "franchise": 0.30,
+    "wholesale": 0.15,
+    "ecommerce": 0.20
+  }
+}

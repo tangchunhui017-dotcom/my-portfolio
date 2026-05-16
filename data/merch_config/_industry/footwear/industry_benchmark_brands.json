@@ -1,0 +1,150 @@
+{
+  "_meta": {
+    "name": "行业对标品牌数据",
+    "description": "国内运动鞋服主要品牌关键经营指标对标数据（来源：公开财报与行业报告估算）",
+    "version": "1.0.0",
+    "industry": "footwear",
+    "lastUpdated": "2026-05-14",
+    "disclaimer": "数据来源于公开财报及行业研究报告估算，仅供企划参考，不作为投资依据"
+  },
+  "benchmarkYear": "2024",
+  "brands": [
+    {
+      "brandId": "anta",
+      "label": "安踏",
+      "shortLabel": "安踏",
+      "logo": "🦅",
+      "tier": "national-leader",
+      "headquarters": "福建晋江",
+      "founded": 1991,
+      "metrics": {
+        "revenueB_CNY": 708.7,
+        "grossMarginRate": 0.616,
+        "operatingMarginRate": 0.198,
+        "inventoryDays": 102,
+        "sellThroughRate": 0.78,
+        "channelCount": 10800,
+        "skuCount": 8000,
+        "ecommerceRevenueRatio": 0.28,
+        "directChannelRatio": 0.22,
+        "rndSpendRatio": 0.025,
+        "newProductRatio": 0.35,
+        "yoyGrowth": 0.112
+      }
+    },
+    {
+      "brandId": "xtep",
+      "label": "特步",
+      "shortLabel": "特步",
+      "logo": "⚡",
+      "tier": "national-major",
+      "headquarters": "福建厦门",
+      "founded": 1987,
+      "metrics": {
+        "revenueB_CNY": 143.5,
+        "grossMarginRate": 0.433,
+        "operatingMarginRate": 0.098,
+        "inventoryDays": 113,
+        "sellThroughRate": 0.73,
+        "channelCount": 6300,
+        "skuCount": 4500,
+        "ecommerceRevenueRatio": 0.25,
+        "directChannelRatio": 0.18,
+        "rndSpendRatio": 0.018,
+        "newProductRatio": 0.30,
+        "yoyGrowth": 0.072
+      }
+    },
+    {
+      "brandId": "lining",
+      "label": "李宁",
+      "shortLabel": "李宁",
+      "logo": "🌟",
+      "tier": "national-leader",
+      "headquarters": "广东广州",
+      "founded": 1990,
+      "metrics": {
+        "revenueB_CNY": 278.9,
+        "grossMarginRate": 0.489,
+        "operatingMarginRate": 0.129,
+        "inventoryDays": 96,
+        "sellThroughRate": 0.76,
+        "channelCount": 7600,
+        "skuCount": 5800,
+        "ecommerceRevenueRatio": 0.32,
+        "directChannelRatio": 0.24,
+        "rndSpendRatio": 0.022,
+        "newProductRatio": 0.38,
+        "yoyGrowth": 0.034
+      }
+    },
+    {
+      "brandId": "361deg",
+      "label": "361°",
+      "shortLabel": "361°",
+      "logo": "🎯",
+      "tier": "national-major",
+      "headquarters": "福建泉州",
+      "founded": 1994,
+      "metrics": {
+        "revenueB_CNY": 83.8,
+        "grossMarginRate": 0.415,
+        "operatingMarginRate": 0.118,
+        "inventoryDays": 108,
+        "sellThroughRate": 0.71,
+        "channelCount": 5800,
+        "skuCount": 4200,
+        "ecommerceRevenueRatio": 0.22,
+        "directChannelRatio": 0.15,
+        "rndSpendRatio": 0.016,
+        "newProductRatio": 0.28,
+        "yoyGrowth": 0.081
+      }
+    },
+    {
+      "brandId": "hongsing",
+      "label": "鸿星尔克",
+      "shortLabel": "鸿星尔克",
+      "logo": "💫",
+      "tier": "regional-major",
+      "headquarters": "福建泉州",
+      "founded": 2000,
+      "metrics": {
+        "revenueB_CNY": 40.0,
+        "grossMarginRate": 0.360,
+        "operatingMarginRate": 0.072,
+        "inventoryDays": 128,
+        "sellThroughRate": 0.68,
+        "channelCount": 5000,
+        "skuCount": 3500,
+        "ecommerceRevenueRatio": 0.28,
+        "directChannelRatio": 0.12,
+        "rndSpendRatio": 0.012,
+        "newProductRatio": 0.24,
+        "yoyGrowth": 0.050
+      }
+    }
+  ],
+  "industryAverage": {
+    "grossMarginRate": 0.463,
+    "operatingMarginRate": 0.123,
+    "inventoryDays": 109,
+    "sellThroughRate": 0.732,
+    "ecommerceRevenueRatio": 0.270,
+    "yoyGrowth": 0.070
+  },
+  "metricLabels": {
+    "revenueB_CNY":          "营收（亿元）",
+    "grossMarginRate":       "毛利率",
+    "operatingMarginRate":   "营业利润率",
+    "inventoryDays":         "库存天数（天）",
+    "sellThroughRate":       "售罄率",
+    "channelCount":          "渠道终端数",
+    "skuCount":              "在售SKU数",
+    "ecommerceRevenueRatio": "电商占比",
+    "directChannelRatio":    "直营占比",
+    "rndSpendRatio":         "研发投入比",
+    "newProductRatio":       "新品占比",
+    "yoyGrowth":             "同比增速"
+  }
+}

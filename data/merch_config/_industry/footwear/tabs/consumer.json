@@ -1,0 +1,1 @@
+{"tabKey":"consumer","sections":[{"id":"member-overview","label":"会员概览","enabled":true,"order":1},{"id":"rfm","label":"RFM分层","enabled":true,"order":2},{"id":"preference","label":"偏好分析","enabled":true,"order":3},{"id":"lifecycle","label":"会员生命周期","enabled":true,"order":4}]}

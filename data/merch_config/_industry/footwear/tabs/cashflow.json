@@ -1,0 +1,1 @@
+{"tabKey":"cashflow","sections":[{"id":"cashflow-summary","label":"现金流汇总","enabled":true,"order":1},{"id":"inflow","label":"回款计划","enabled":true,"order":2},{"id":"outflow","label":"支出计划","enabled":true,"order":3},{"id":"inventory-lock","label":"库存占款","enabled":true,"order":4},{"id":"clearance-sim","label":"清货模拟","enabled":true,"order":5,"collapsedByDefault":true}]}

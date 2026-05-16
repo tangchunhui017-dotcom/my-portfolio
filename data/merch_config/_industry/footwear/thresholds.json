@@ -1,0 +1,102 @@
+[
+  {
+    "thresholdId": "sellThroughRate_health",
+    "label": "售罄率健康线",
+    "unit": "percent",
+    "defaultValue": 0.70,
+    "warningValue": 0.50,
+    "criticalValue": 0.30,
+    "comparator": "gte",
+    "appliedTo": ["category-ops","wave-planning","inventory-health","region-store"]
+  },
+  {
+    "thresholdId": "grossMarginRate_health",
+    "label": "毛利率健康线",
+    "unit": "percent",
+    "defaultValue": 0.50,
+    "warningValue": 0.38,
+    "criticalValue": 0.25,
+    "comparator": "gte",
+    "appliedTo": ["pnl","overview","annual-control"]
+  },
+  {
+    "thresholdId": "weeksOfSupply_max",
+    "label": "库存周数上限",
+    "unit": "weeks",
+    "defaultValue": 12,
+    "warningValue": 16,
+    "criticalValue": 20,
+    "comparator": "lte",
+    "appliedTo": ["region-store","inventory-health"]
+  },
+  {
+    "thresholdId": "brokenSizeRate_max",
+    "label": "断码率上限",
+    "unit": "percent",
+    "defaultValue": 0.05,
+    "warningValue": 0.10,
+    "criticalValue": 0.20,
+    "comparator": "lte",
+    "appliedTo": ["region-store","inventory-health"]
+  },
+  {
+    "thresholdId": "stockToSalesRatio_max",
+    "label": "存销比上限",
+    "unit": "ratio",
+    "defaultValue": 4.0,
+    "warningValue": 6.0,
+    "criticalValue": 8.0,
+    "comparator": "lte",
+    "appliedTo": ["region-store","otb","wave-planning","inventory-health"]
+  },
+  {
+    "thresholdId": "agedInventoryRate_max",
+    "label": "库龄库存占比上限",
+    "unit": "percent",
+    "defaultValue": 0.15,
+    "warningValue": 0.25,
+    "criticalValue": 0.35,
+    "comparator": "lte",
+    "appliedTo": ["inventory-health","category-ops"]
+  },
+  {
+    "thresholdId": "productAgeThreshold_ss",
+    "label": "春夏品货龄警戒线",
+    "unit": "days",
+    "defaultValue": 90,
+    "warningValue": 120,
+    "criticalValue": 150,
+    "comparator": "lte",
+    "appliedTo": ["inventory-health","wave-planning"]
+  },
+  {
+    "thresholdId": "productAgeThreshold_aw",
+    "label": "秋冬品货龄警戒线",
+    "unit": "days",
+    "defaultValue": 180,
+    "warningValue": 210,
+    "criticalValue": 240,
+    "comparator": "lte",
+    "appliedTo": ["inventory-health","wave-planning"]
+  },
+  {
+    "thresholdId": "discountRate_floor",
+    "label": "折扣率下限",
+    "unit": "percent",
+    "defaultValue": 0.70,
+    "warningValue": 0.60,
+    "criticalValue": 0.50,
+    "comparator": "gte",
+    "appliedTo": ["pnl","category-ops","region-store"]
+  },
+  {
+    "thresholdId": "otbBudgetUtilization",
+    "label": "OTB预算使用率",
+    "unit": "percent",
+    "defaultValue": 0.95,
+    "warningValue": 0.80,
+    "criticalValue": 0.70,
+    "comparator": "gte",
+    "appliedTo": ["otb","annual-control"]
+  }
+]

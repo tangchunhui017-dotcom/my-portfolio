@@ -1,0 +1,388 @@
+[
+  {
+    "dimensionId": "region",
+    "label": "区域",
+    "type": "region",
+    "values": [
+      { "id": "east", "label": "华东", "metadata": { "provinces": ["上海","江苏","浙江","安徽"] } },
+      { "id": "south", "label": "华南", "metadata": { "provinces": ["广东","广西","海南","福建"] } },
+      { "id": "north", "label": "华北", "metadata": { "provinces": ["北京","天津","河北","山东","山西"] } },
+      { "id": "central", "label": "华中", "metadata": { "provinces": ["湖北","湖南","河南","江西"] } },
+      { "id": "southwest", "label": "西南", "metadata": { "provinces": ["四川","重庆","云南","贵州"] } },
+      { "id": "northwest", "label": "西北", "metadata": { "provinces": ["陕西","甘肃","新疆","宁夏"] } },
+      { "id": "northeast", "label": "东北", "metadata": { "provinces": ["辽宁","吉林","黑龙江","内蒙古"] } }
+    ],
+    "scope": ["region-store","overview","forecast","annual-control"]
+  },
+  {
+    "dimensionId": "city_tier",
+    "label": "城市能级",
+    "type": "city_tier",
+    "values": [
+      { "id": "tier1", "label": "一线", "metadata": { "mappedCities": ["北京","上海","广州","深圳"], "candidateCities": ["北京","上海","广州","深圳"], "sourceType": "baseline_sample" } },
+      { "id": "tier_new1", "label": "新一线", "metadata": { "mappedCities": ["成都","杭州","武汉","西安","南京"], "candidateCities": ["成都","杭州","武汉","西安","南京","苏州","重庆","天津","郑州","长沙","东莞","宁波","青岛"], "sourceType": "baseline_sample" } },
+      { "id": "tier2", "label": "二线", "metadata": { "mappedCities": ["合肥","福州","哈尔滨","沈阳"], "candidateCities": ["合肥","福州","哈尔滨","沈阳","济南","厦门","大连","佛山","无锡","长春","昆明","南昌"], "sourceType": "baseline_sample" } },
+      { "id": "tier3", "label": "三线", "metadata": { "mappedCities": ["温州","南通","徐州","泉州","绍兴"], "candidateCities": ["温州","南通","徐州","泉州","绍兴","珠海","常州","扬州","金华","嘉兴"], "sourceType": "baseline_sample" } },
+      { "id": "tier4", "label": "四线", "metadata": { "mappedCities": ["湖州","泰州","台州","芜湖","宜昌"], "candidateCities": ["湖州","泰州","台州","芜湖","宜昌","柳州","绵阳","襄阳","九江","德州"], "sourceType": "baseline_sample" } },
+      { "id": "tier5_plus", "label": "五线及以下", "metadata": { "mappedCities": ["丽水","衢州","黄山","景德镇","大理"], "candidateCities": ["丽水","衢州","黄山","景德镇","大理","安庆","拉萨","日照","抚州","六盘水"], "sourceType": "baseline_sample" } }
+    ],
+    "scope": ["region-store","forecast"]
+  },
+  {
+    "dimensionId": "fiscal_year",
+    "label": "财年",
+    "type": "fiscal_year",
+    "values": [
+      { "id": "FY2025", "label": "FY2025 复盘年", "metadata": { "year": 2025, "fiscalMonths": "1-12月", "status": "复盘年" } },
+      { "id": "FY2026", "label": "FY2026 当前财年", "metadata": { "year": 2026, "fiscalMonths": "1-12月", "status": "当前财年" } },
+      { "id": "FY2027", "label": "FY2027 规划年", "metadata": { "year": 2027, "fiscalMonths": "1-12月", "status": "规划年" } }
+    ],
+    "scope": ["overview","annual-control","region-store","consumer","category-ops","wave-planning","otb","cashflow","forecast","pnl","competitor-trend","inventory-health"]
+  },
+  {
+    "dimensionId": "season",
+    "label": "季节",
+    "type": "season",
+    "values": [
+      { "id": "spring", "label": "春季", "metadata": { "monthRange": "3-5月", "planningMonths": ["3月","4月","5月"], "mainCategories": ["板鞋","跑鞋"], "seasonGroup": "春夏" } },
+      { "id": "summer", "label": "夏季", "metadata": { "monthRange": "6-8月", "planningMonths": ["6月","7月","8月"], "mainCategories": ["凉鞋","凉拖","透气跑鞋"], "seasonGroup": "春夏" } },
+      { "id": "autumn", "label": "秋季", "metadata": { "monthRange": "9-11月", "planningMonths": ["9月","10月","11月"], "mainCategories": ["跑鞋","休闲","篮球"], "seasonGroup": "秋冬" } },
+      { "id": "winter", "label": "冬季", "metadata": { "monthRange": "12-2月", "planningMonths": ["12月","1月","2月"], "mainCategories": ["棉鞋","短靴","雪地靴"], "seasonGroup": "秋冬" } }
+    ],
+    "scope": ["overview","annual-control","region-store","category-ops","wave-planning","otb","cashflow","forecast","pnl","inventory-health"]
+  },
+  {
+    "dimensionId": "wave",
+    "label": "波段",
+    "type": "wave",
+    "values": [
+      { "id": "SS-1A", "label": "SS-1A 春季首波", "metadata": { "season": "春季", "launchWindow": "2月底", "mainCategories": ["板鞋","跑鞋"], "waveRole": "形象+主推" } },
+      { "id": "SS-1B", "label": "SS-1B 春季加深", "metadata": { "season": "春季", "launchWindow": "3月底", "mainCategories": ["跑鞋","休闲"], "waveRole": "主推+走量" } },
+      { "id": "SS-2A", "label": "SS-2A 夏季首波", "metadata": { "season": "夏季", "launchWindow": "4月底", "mainCategories": ["凉鞋","透气跑鞋"], "waveRole": "主推+形象" } },
+      { "id": "SS-2B", "label": "SS-2B 夏季加深", "metadata": { "season": "夏季", "launchWindow": "5月底", "mainCategories": ["凉鞋","凉拖"], "waveRole": "走量" } },
+      { "id": "SS-3A", "label": "SS-3A 夏末清货", "metadata": { "season": "夏季", "launchWindow": "6月底", "mainCategories": ["凉鞋"], "waveRole": "清尾" } },
+      { "id": "AW-1A", "label": "AW-1A 秋季首波", "metadata": { "season": "秋季", "launchWindow": "8月底", "mainCategories": ["跑鞋","休闲"], "waveRole": "形象+主推" } },
+      { "id": "AW-1B", "label": "AW-1B 秋季加深", "metadata": { "season": "秋季", "launchWindow": "9月底", "mainCategories": ["跑鞋","板鞋"], "waveRole": "主推+走量" } },
+      { "id": "AW-2A", "label": "AW-2A 冬季首波", "metadata": { "season": "冬季", "launchWindow": "10月底", "mainCategories": ["棉鞋","短靴"], "waveRole": "形象+主推" } },
+      { "id": "AW-2B", "label": "AW-2B 冬季加深", "metadata": { "season": "冬季", "launchWindow": "11月底", "mainCategories": ["棉鞋","雪地靴"], "waveRole": "主推+走量" } },
+      { "id": "AW-3A", "label": "AW-3A 冬末清货", "metadata": { "season": "冬季", "launchWindow": "1月底", "mainCategories": ["冬鞋"], "waveRole": "清尾" } },
+      { "id": "AW-3B", "label": "AW-3B 春前预热", "metadata": { "season": "春季", "launchWindow": "2月初", "mainCategories": ["板鞋","跑鞋"], "waveRole": "测试" } }
+    ],
+    "scope": ["category-ops","wave-planning","otb","cashflow","forecast","pnl","inventory-health"]
+  },
+  {
+    "dimensionId": "category",
+    "label": "品类",
+    "type": "category",
+    "values": [
+      { "id": "men", "label": "男鞋", "metadata": { "level": 1, "categoryLevel": "一级品类" } },
+      { "id": "men_outdoor", "label": "户外鞋", "parentId": "men", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "men_outdoor_hiking", "label": "徒步登山", "parentId": "men_outdoor", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_outdoor_wading", "label": "溯溪鞋", "parentId": "men_outdoor", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_outdoor_trail", "label": "越野鞋", "parentId": "men_outdoor", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_outdoor_techwear", "label": "潮流机能", "parentId": "men_outdoor", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_street", "label": "休闲/街头", "parentId": "men", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "men_street_skate", "label": "板鞋", "parentId": "men_street", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_street_dad", "label": "老爹鞋", "parentId": "men_street", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_street_gat", "label": "德训鞋", "parentId": "men_street", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_street_cortez", "label": "阿甘鞋", "parentId": "men_street", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_street_canvas", "label": "帆布鞋", "parentId": "men_street", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_fashion_commute", "label": "时尚/通勤", "parentId": "men", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "men_fashion_pump", "label": "浅口单鞋", "parentId": "men_fashion_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_fashion_ballet", "label": "芭蕾舞鞋", "parentId": "men_fashion_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_fashion_mary_jane", "label": "玛丽珍鞋", "parentId": "men_fashion_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_formal_commute", "label": "正装/通勤", "parentId": "men", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "men_formal_loafer", "label": "乐福鞋", "parentId": "men_formal_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_formal_oxford", "label": "牛津鞋", "parentId": "men_formal_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_formal_derby", "label": "德比鞋", "parentId": "men_formal_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_formal_driver", "label": "豆豆鞋", "parentId": "men_formal_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_formal_monk", "label": "穆勒鞋", "parentId": "men_formal_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_boots", "label": "靴类", "parentId": "men", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "men_boots_ankle", "label": "裸靴", "parentId": "men_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_boots_chelsea", "label": "切尔西靴", "parentId": "men_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_boots_martin", "label": "马丁靴", "parentId": "men_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_boots_tall", "label": "长筒靴", "parentId": "men_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_boots_snow", "label": "雪地靴", "parentId": "men_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_boots_short", "label": "短靴", "parentId": "men_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_sandals_slippers", "label": "凉拖鞋", "parentId": "men", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "men_sandals_sandal", "label": "凉鞋", "parentId": "men_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_sandals_clog", "label": "洞洞鞋", "parentId": "men_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_sandals_slipper", "label": "拖鞋", "parentId": "men_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_sandals_open_toe", "label": "前空鞋", "parentId": "men_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_sandals_mid_open", "label": "中空鞋", "parentId": "men_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_sandals_back_open", "label": "后空鞋", "parentId": "men_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_accessories", "label": "配件", "parentId": "men", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "men_accessories_insole", "label": "鞋垫", "parentId": "men_accessories", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_accessories_lace", "label": "鞋带", "parentId": "men_accessories", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "men_accessories_socks", "label": "袜品", "parentId": "men_accessories", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women", "label": "女鞋", "metadata": { "level": 1, "categoryLevel": "一级品类" } },
+      { "id": "women_outdoor", "label": "户外鞋", "parentId": "women", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "women_outdoor_hiking", "label": "徒步登山", "parentId": "women_outdoor", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_outdoor_wading", "label": "溯溪鞋", "parentId": "women_outdoor", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_outdoor_trail", "label": "越野鞋", "parentId": "women_outdoor", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_outdoor_techwear", "label": "潮流机能", "parentId": "women_outdoor", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_street", "label": "休闲/街头", "parentId": "women", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "women_street_skate", "label": "板鞋", "parentId": "women_street", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_street_dad", "label": "老爹鞋", "parentId": "women_street", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_street_gat", "label": "德训鞋", "parentId": "women_street", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_street_cortez", "label": "阿甘鞋", "parentId": "women_street", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_street_canvas", "label": "帆布鞋", "parentId": "women_street", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_fashion_commute", "label": "时尚/通勤", "parentId": "women", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "women_fashion_pump", "label": "浅口单鞋", "parentId": "women_fashion_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_fashion_ballet", "label": "芭蕾舞鞋", "parentId": "women_fashion_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_fashion_mary_jane", "label": "玛丽珍鞋", "parentId": "women_fashion_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_formal_commute", "label": "正装/通勤", "parentId": "women", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "women_formal_loafer", "label": "乐福鞋", "parentId": "women_formal_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_formal_oxford", "label": "牛津鞋", "parentId": "women_formal_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_formal_derby", "label": "德比鞋", "parentId": "women_formal_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_formal_driver", "label": "豆豆鞋", "parentId": "women_formal_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_formal_monk", "label": "穆勒鞋", "parentId": "women_formal_commute", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_boots", "label": "靴类", "parentId": "women", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "women_boots_ankle", "label": "裸靴", "parentId": "women_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_boots_chelsea", "label": "切尔西靴", "parentId": "women_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_boots_martin", "label": "马丁靴", "parentId": "women_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_boots_tall", "label": "长筒靴", "parentId": "women_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_boots_snow", "label": "雪地靴", "parentId": "women_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_boots_short", "label": "短靴", "parentId": "women_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_sandals_slippers", "label": "凉拖鞋", "parentId": "women", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "women_sandals_sandal", "label": "凉鞋", "parentId": "women_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_sandals_clog", "label": "洞洞鞋", "parentId": "women_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_sandals_slipper", "label": "拖鞋", "parentId": "women_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_sandals_open_toe", "label": "前空鞋", "parentId": "women_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_sandals_mid_open", "label": "中空鞋", "parentId": "women_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_sandals_back_open", "label": "后空鞋", "parentId": "women_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_accessories", "label": "配件", "parentId": "women", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "women_accessories_insole", "label": "鞋垫", "parentId": "women_accessories", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_accessories_lace", "label": "鞋带", "parentId": "women_accessories", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "women_accessories_socks", "label": "袜品", "parentId": "women_accessories", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "kids", "label": "童鞋", "metadata": { "level": 1, "categoryLevel": "一级品类" } },
+      { "id": "kids_street", "label": "休闲/街头", "parentId": "kids", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "kids_street_skate", "label": "板鞋", "parentId": "kids_street", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "kids_street_gat", "label": "德训鞋", "parentId": "kids_street", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "kids_street_canvas", "label": "帆布鞋", "parentId": "kids_street", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "kids_outdoor", "label": "户外鞋", "parentId": "kids", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "kids_outdoor_hiking", "label": "徒步登山", "parentId": "kids_outdoor", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "kids_outdoor_trail", "label": "越野鞋", "parentId": "kids_outdoor", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "kids_boots", "label": "靴类", "parentId": "kids", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "kids_boots_short", "label": "短靴", "parentId": "kids_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "kids_boots_rain", "label": "雨靴", "parentId": "kids_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "kids_boots_snow", "label": "雪地靴", "parentId": "kids_boots", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "kids_sandals_slippers", "label": "凉拖鞋", "parentId": "kids", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "kids_sandals_sandal", "label": "凉鞋", "parentId": "kids_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "kids_sandals_clog", "label": "洞洞鞋", "parentId": "kids_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "kids_sandals_slipper", "label": "拖鞋", "parentId": "kids_sandals_slippers", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "kids_accessories", "label": "配件", "parentId": "kids", "metadata": { "level": 2, "categoryLevel": "二级品类" } },
+      { "id": "kids_accessories_insole", "label": "鞋垫", "parentId": "kids_accessories", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "kids_accessories_lace", "label": "鞋带", "parentId": "kids_accessories", "metadata": { "level": 3, "categoryLevel": "三级品类" } },
+      { "id": "kids_accessories_socks", "label": "袜品", "parentId": "kids_accessories", "metadata": { "level": 3, "categoryLevel": "三级品类" } }
+    ],
+    "scope": ["overview","annual-control","consumer","category-ops","wave-planning","otb","forecast","pnl","competitor-trend","inventory-health"]
+  },
+  {
+    "dimensionId": "store_format",
+    "label": "店型",
+    "type": "store_format",
+    "values": [
+      { "id": "mall", "label": "购物中心 Mall" },
+      { "id": "department", "label": "百货 Store" },
+      { "id": "street", "label": "街边大店 Street" },
+      { "id": "outlet", "label": "奥特莱斯 Outlet" },
+      { "id": "community", "label": "社区商业" },
+      { "id": "transport_hub", "label": "交通枢纽店" },
+      { "id": "shop_in_shop", "label": "集合店 / 店中店" }
+    ],
+    "scope": ["region-store"]
+  },
+  {
+    "dimensionId": "store_tier",
+    "label": "门店等级",
+    "type": "store_tier",
+    "values": [
+      { "id": "S", "label": "S 旗舰", "metadata": { "criteria": { "salesPerSqm": ">=5000" } } },
+      { "id": "A", "label": "A 主力", "metadata": { "criteria": { "salesPerSqm": ">=3000" } } },
+      { "id": "B", "label": "B 标准" },
+      { "id": "outlet", "label": "奥莱" }
+    ],
+    "scope": ["region-store"]
+  },
+  {
+    "dimensionId": "last_type",
+    "label": "楦型",
+    "type": "last_type",
+    "values": [
+      { "id": "standard", "label": "标准楦" },
+      { "id": "wide", "label": "宽脚楦" },
+      { "id": "china", "label": "中国楦" },
+      { "id": "european", "label": "欧版楦" },
+      { "id": "kid", "label": "儿童楦" }
+    ],
+    "scope": ["category-ops","region-store"]
+  },
+  {
+    "dimensionId": "price_band",
+    "label": "价格带",
+    "type": "price_band",
+    "values": [
+      { "id": "PB1", "label": "199-399 入门", "metadata": { "min": 199, "max": 399 } },
+      { "id": "PB2", "label": "400-599 走量", "metadata": { "min": 400, "max": 599 } },
+      { "id": "PB3", "label": "600-799 利润", "metadata": { "min": 600, "max": 799 } },
+      { "id": "PB4", "label": "800+ 形象", "metadata": { "min": 800 } }
+    ],
+    "scope": ["category-ops","otb","pnl"]
+  },
+  {
+    "dimensionId": "size",
+    "label": "尺码",
+    "type": "size",
+    "values": [
+      {
+        "id": "women_fashion",
+        "label": "女鞋 · 时装休闲",
+        "metadata": {
+          "gender": "women",
+          "lineType": "fashion_casual",
+          "profileId": "P_W_FASHION",
+          "bandDefinition": "WOMEN_FASHION",
+          "sizeRange": ["34","35","36","37","38","39"],
+          "allSizeRange": ["34","35","36","37","38","39"],
+          "small": ["34","35"],
+          "core": ["36","37","38"],
+          "large": ["39"],
+          "curves": {
+            "standard": { "34": 0, "35": 1, "36": 2, "37": 4, "38": 2, "39": 1 },
+            "north": { "34": 0, "35": 0, "36": 1, "37": 3, "38": 4, "39": 2 },
+            "south": { "34": 1, "35": 2, "36": 3, "37": 3, "38": 1, "39": 0 }
+          }
+        }
+      },
+      {
+        "id": "women_sport",
+        "label": "女鞋 · 运动休闲",
+        "metadata": {
+          "gender": "women",
+          "lineType": "sport_casual",
+          "profileId": "P_W_SPORT",
+          "bandDefinition": "WOMEN_SPORT",
+          "sizeRange": ["35","36","37","38","39","40"],
+          "allSizeRange": ["35","36","37","38","39","40"],
+          "small": ["35","36"],
+          "core": ["37","38","39"],
+          "large": ["40"],
+          "curves": {
+            "standard": { "35": 1, "36": 2, "37": 3, "38": 2, "39": 1, "40": 1 },
+            "north": { "35": 0, "36": 1, "37": 2, "38": 3, "39": 3, "40": 1 },
+            "south": { "35": 2, "36": 3, "37": 3, "38": 1, "39": 1, "40": 0 }
+          }
+        }
+      },
+      {
+        "id": "men_fashion",
+        "label": "男鞋 · 时装休闲",
+        "metadata": {
+          "gender": "men",
+          "lineType": "fashion_casual",
+          "profileId": "P_M_FASHION",
+          "bandDefinition": "MEN_FASHION",
+          "sizeRange": ["38","39","40","41","42","43"],
+          "allSizeRange": ["38","39","40","41","42","43"],
+          "small": ["38","39"],
+          "core": ["40","41","42"],
+          "large": ["43"],
+          "curves": {
+            "standard": { "38": 0, "39": 1, "40": 2, "41": 4, "42": 2, "43": 1 },
+            "north": { "38": 0, "39": 0, "40": 1, "41": 3, "42": 4, "43": 2 },
+            "south": { "38": 1, "39": 2, "40": 3, "41": 3, "42": 1, "43": 0 }
+          }
+        }
+      },
+      {
+        "id": "men_sport",
+        "label": "男鞋 · 运动休闲",
+        "metadata": {
+          "gender": "men",
+          "lineType": "sport_casual",
+          "profileId": "P_M_SPORT",
+          "bandDefinition": "MEN_SPORT",
+          "sizeRange": ["39","40","41","42","43","44"],
+          "allSizeRange": ["39","40","41","42","43","44"],
+          "small": ["39","40"],
+          "core": ["41","42","43"],
+          "large": ["44"],
+          "curves": {
+            "standard": { "39": 1, "40": 2, "41": 3, "42": 2, "43": 1, "44": 1 },
+            "north": { "39": 0, "40": 1, "41": 2, "42": 3, "43": 3, "44": 1 },
+            "south": { "39": 2, "40": 3, "41": 3, "42": 1, "43": 1, "44": 0 }
+          }
+        }
+      },
+      {
+        "id": "kids",
+        "label": "童鞋",
+        "metadata": {
+          "gender": "kids",
+          "enabled": false,
+          "sizeRange": [],
+          "allSizeRange": [],
+          "standardStatus": "brand_extension",
+          "note": "当前行业标准为成人鞋 EU34-44；童鞋尺码需要按品牌童鞋业务单独维护。"
+        }
+      }
+    ],
+    "scope": ["region-store","inventory-health"]
+  },
+  {
+    "dimensionId": "channel",
+    "label": "渠道",
+    "type": "channel",
+    "values": [
+      { "id": "offline-direct", "label": "线下直营" },
+      { "id": "offline-franchise", "label": "线下加盟" },
+      { "id": "online-tmall", "label": "天猫旗舰" },
+      { "id": "online-jd", "label": "京东自营" },
+      { "id": "online-other", "label": "其他电商" }
+    ],
+    "scope": ["overview","region-store","forecast","otb","pnl","cashflow"]
+  },
+  {
+    "dimensionId": "product_role",
+    "label": "货品角色",
+    "type": "product_role",
+    "values": [
+      { "id": "hero", "label": "主推款", "metadata": { "salesRatioTarget": 0.4 } },
+      { "id": "traffic", "label": "引流款", "metadata": { "salesRatioTarget": 0.2 } },
+      { "id": "image", "label": "形象款", "metadata": { "salesRatioTarget": 0.15 } },
+      { "id": "profit", "label": "利润款", "metadata": { "salesRatioTarget": 0.15 } },
+      { "id": "clearance", "label": "清尾款", "metadata": { "salesRatioTarget": 0.1 } }
+    ],
+    "scope": ["category-ops","otb","wave-planning"]
+  },
+  {
+    "dimensionId": "lifecycle_stage",
+    "label": "生命周期阶段",
+    "type": "lifecycle_stage",
+    "values": [
+      { "id": "development", "label": "开发期", "metadata": { "ssRange": "-120天", "awRange": "-150天" } },
+      { "id": "sample", "label": "样品期", "metadata": { "ssRange": "-90天", "awRange": "-120天" } },
+      { "id": "warmup", "label": "预热期", "metadata": { "ssRange": "-30天", "awRange": "-45天" } },
+      { "id": "rampup", "label": "爬坡期", "metadata": { "ssRange": "0-30天", "awRange": "0-45天" } },
+      { "id": "peak", "label": "巅峰期", "metadata": { "ssRange": "30-90天", "awRange": "45-120天" } },
+      { "id": "decline", "label": "衰退期", "metadata": { "ssRange": "90-150天", "awRange": "120-180天" } },
+      { "id": "clearance", "label": "清货期", "metadata": { "ssRange": "150天+", "awRange": "180天+" } }
+    ],
+    "scope": ["category-ops","wave-planning","forecast","inventory-health"]
+  },
+  {
+    "dimensionId": "inventory_age",
+    "label": "库龄段",
+    "type": "inventory_age",
+    "values": [
+      { "id": "new", "label": "新品", "metadata": { "ageRange": "0-59天", "targetSellThrough": "25%-50%", "inventoryAction": "维持正常配货" } },
+      { "id": "near-new", "label": "次新品", "metadata": { "ageRange": "60-89天", "targetSellThrough": "50%-70%", "inventoryAction": "关注断码并及时调拨" } },
+      { "id": "normal", "label": "正常品", "metadata": { "ageRange": "90-119天", "targetSellThrough": "65%-80%", "inventoryAction": "停止补货并消化存量" } },
+      { "id": "watch", "label": "关注品", "metadata": { "ageRange": "120-179天", "targetSellThrough": "75%-90%", "inventoryAction": "向折扣渠道或线上投放" } },
+      { "id": "aged", "label": "老品", "metadata": { "ageRange": "180-364天", "targetSellThrough": "90%-95%", "inventoryAction": "批量出清并计提减值" } },
+      { "id": "clearance", "label": "清仓品", "metadata": { "ageRange": "365天+", "targetSellThrough": "95%-100%", "inventoryAction": "紧急出清或批量处理" } }
+    ],
+    "scope": ["category-ops","otb","cashflow","pnl","inventory-health"]
+  }
+]

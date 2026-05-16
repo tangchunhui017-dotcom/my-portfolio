@@ -1,0 +1,75 @@
+{
+  "_meta": {
+    "name": "帕累托80/20阈值规则",
+    "description": "鞋类帕累托法则配置：核心款/SKU 贡献目标与预警阈值",
+    "version": "1.0.0",
+    "industry": "footwear",
+    "lastUpdated": "2026-05-14"
+  },
+  "rules": [
+    {
+      "ruleId": "sku-revenue-pareto",
+      "label": "SKU销售额帕累托",
+      "description": "Top 20% SKU 应贡献 ≥ 70% 销售额",
+      "topPercentage": 0.20,
+      "contribTarget": 0.70,
+      "contribWarning": 0.65,
+      "contribDanger":  0.55,
+      "comparator": "gte",
+      "applicableTo": ["全部品类"],
+      "suggestedAction": "若低于警示线，检查长尾SKU库存积压并及时促清"
+    },
+    {
+      "ruleId": "sku-quantity-pareto",
+      "label": "SKU件数帕累托",
+      "description": "Top 20% SKU 应贡献 ≥ 65% 销售件数",
+      "topPercentage": 0.20,
+      "contribTarget": 0.65,
+      "contribWarning": 0.60,
+      "contribDanger":  0.50,
+      "comparator": "gte",
+      "applicableTo": ["全部品类"],
+      "suggestedAction": "若低于警示线，评估是否存在断码导致销售分散"
+    },
+    {
+      "ruleId": "category-revenue-pareto",
+      "label": "品类销售额集中度",
+      "description": "Top 2 品类应贡献 ≥ 60% 总销售额（防止品类过度分散）",
+      "topPercentage": null,
+      "topCount": 2,
+      "contribTarget": 0.60,
+      "contribWarning": 0.50,
+      "contribDanger":  0.40,
+      "comparator": "gte",
+      "applicableTo": ["全部品类"],
+      "suggestedAction": "若集中度低，考虑缩减品类数量或聚焦资源投入"
+    },
+    {
+      "ruleId": "colorway-core-contrib",
+      "label": "基础色销售贡献",
+      "description": "基础色（黑/白/灰）应贡献 ≥ 45% 销售件数",
+      "topPercentage": null,
+      "tierTarget": "core",
+      "contribTarget": 0.45,
+      "contribWarning": 0.38,
+      "contribDanger":  0.30,
+      "comparator": "gte",
+      "applicableTo": ["板鞋", "跑步鞋", "篮球鞋"],
+      "suggestedAction": "若低于警示线，可能时尚色选品过多，需回归基础色备货"
+    },
+    {
+      "ruleId": "channel-top2-revenue",
+      "label": "渠道销售集中度",
+      "description": "前2大渠道应贡献 ≥ 70% 销售额",
+      "topCount": 2,
+      "contribTarget": 0.70,
+      "contribWarning": 0.60,
+      "contribDanger":  0.50,
+      "comparator": "gte",
+      "applicableTo": ["全部渠道"],
+      "suggestedAction": "若渠道过度分散，考虑渠道优先级重组"
+    }
+  ],
+  "monitoringFrequency": "weekly",
+  "reportingGranularity": ["brand", "category", "channel", "region"]
+}

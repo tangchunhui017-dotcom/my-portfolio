@@ -1,0 +1,8 @@
+{
+  "_note": "平台层基础指标（L0 不可覆盖）",
+  "metrics": [
+    { "metricId": "sum", "label": "求和", "description": "聚合函数：求和", "unit": "count", "formula": "sum(x)", "defaultMetricType": "standard", "usedBy": [], "source": "platform" },
+    { "metricId": "avg", "label": "平均值", "description": "聚合函数：平均", "unit": "count", "formula": "sum(x) / count(x)", "defaultMetricType": "standard", "usedBy": [], "source": "platform" },
+    { "metricId": "count", "label": "计数", "description": "聚合函数：计数", "unit": "count", "formula": "count(x)", "defaultMetricType": "standard", "usedBy": [], "source": "platform" }
+  ]
+}

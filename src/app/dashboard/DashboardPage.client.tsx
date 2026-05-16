@@ -7,7 +7,6 @@ import DashboardChart, { type SellThroughCaliber } from '@/components/charts/Das
 import SkuRiskList from '@/components/dashboard/SkuRiskList';
 import DashboardSummaryButton from '@/components/dashboard/DashboardSummaryButton';
 import SkuDetailModal, { SkuDrillData } from '@/components/dashboard/SkuDetailModal';
-import ChartMenu from '@/components/dashboard/ChartMenu';
 import OverviewKpiBar from '@/components/dashboard/OverviewKpiBar';
 import AnnualControlPanel from '@/components/dashboard/AnnualControlPanel';
 import NarrativeSummary from '@/components/dashboard/NarrativeSummary';
@@ -24,7 +23,6 @@ import SizeHealthPanel from '@/components/dashboard/SizeHealthPanel';
 import WaveExecutionPanel from '@/components/dashboard/WaveExecutionPanel';
 import LifecycleAssortmentPanel from '@/components/dashboard/LifecycleAssortmentPanel';
 import ClearancePacePanel from '@/components/dashboard/ClearancePacePanel';
-import InventoryRadarPanel from '@/components/dashboard/InventoryRadarPanel';
 import { resolveDashboardLifecycleLabel, type DashboardLifecycleLabel } from '@/config/dashboardLifecycle';
 import DiagnosisActionPanel from '@/components/dashboard/DiagnosisActionPanel';
 import OtbBudgetStrip from '@/components/dashboard/OtbBudgetStrip';
@@ -37,13 +35,17 @@ import OtbTab from '@/components/otb/OtbTab';
 import OtbNavigationContextPanel from '@/components/otb/OtbNavigationContextPanel';
 import type { OtbNavigationContext } from '@/components/otb/types';
 import CashflowPanel from '@/components/otb/CashflowPanel';
-import ChartMetricStrip, { type ChartMetricStripItem } from '@/components/dashboard/ChartMetricStrip';
+import ChartCard from '@/components/charts/ChartCard';
+import MetricChips, { type MetricChipItem } from '@/components/charts/MetricChips';
 import { FOOTWEAR_ANALYSIS_MODULES } from '@/config/footwearLanguage';
 import { useState, useRef, useMemo, useEffect } from 'react';
 import { formatMoneyCny } from '@/config/numberFormat';
 import { THRESHOLDS } from '@/config/thresholds';
 import { GlobalConfigProvider, useGlobalConfig } from '@/context/GlobalConfigContext';
+import { MerchConfigProvider } from '@/context/MerchConfigContext';
 import GlobalConfigDrawer from '@/components/config/GlobalConfigDrawer';
+import BusinessLoopHeader from '@/components/dashboard/BusinessLoopHeader';
+import { DASHBOARD_TAB_TO_CONFIG_TAB } from '@/config/dashboardTabMap';
 
 type DashboardTab = 'overview' | 'annual-control' | 'consumer' | 'category' | 'channel' | 'planning' | 'otb' | 'cashflow' | 'forecast' | 'profit-loss' | 'competitor' | 'inventory';
 type DashboardRecord = ReturnType<typeof useDashboardFilter>['filteredRecords'][number];
@@ -104,12 +106,6 @@ const PRICE_BAND_NAMES: Record<string, string> = {
     PB4: '800+',
 };
 
-interface ConclusionCardProps {
-    finding: string;
-    decision: string;
-    impact: string;
-}
-
 function OverviewSectionHeading({
     label,
     title,
@@ -132,74 +128,14 @@ function OverviewSectionHeading({
     );
 }
 
-function ConclusionCard({ finding, decision, impact }: ConclusionCardProps) {
-    return (
-        <div className="bg-slate-50/50 border border-slate-100 rounded-lg p-4 text-xs leading-relaxed space-y-3">
-            <div className="flex gap-2">
-                <span className="text-sm">🔍</span>
-                <div className="text-slate-500"><span className="font-semibold text-slate-700">发现 </span>{finding}</div>
-            </div>
-            <div className="flex gap-2">
-                <span className="text-sm">⚡</span>
-                <div className="text-slate-500"><span className="font-semibold text-slate-700">决策 </span>{decision}</div>
-            </div>
-            <div className="flex gap-2">
-                <span className="text-sm">📈</span>
-                <div className="text-slate-500"><span className="font-semibold text-slate-700">结果 </span>{impact}</div>
-            </div>
-        </div>
-    );
-}
-
-interface ChartCardProps {
-    title: string;
-    type: 'bar' | 'line' | 'pie' | 'pie-category' | 'scatter' | 'heatmap' | 'gauge' | 'bar-compare';
-    compareMode?: 'category' | 'channel';
-    kpis: ReturnType<typeof useDashboardFilter>['kpis'];
-    conclusion: ConclusionCardProps;
-    headerAction?: React.ReactNode;
-    metricStrip?: React.ReactNode;
-    span?: 'full' | 'half';
-    heatmapMetric?: 'sku' | 'sales' | 'st';
-    onSkuClick?: (sku: SkuDrillData) => void;
-    containerRef?: React.RefObject<HTMLDivElement | null>;
-    sellThroughCaliber?: SellThroughCaliber;
-    onSellThroughCaliberChange?: (caliber: SellThroughCaliber) => void;
-}
-
-function ChartCard({ title, type, kpis, conclusion, headerAction, metricStrip, span = 'half', heatmapMetric, onSkuClick, containerRef, compareMode, sellThroughCaliber, onSellThroughCaliberChange }: ChartCardProps) {
-    const chartRef = useRef<HTMLDivElement>(null);
-    const conclusionText = `${conclusion.finding} ${conclusion.decision} ${conclusion.impact}`;
-
-    return (
-        <div ref={containerRef} className={`bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden ${span === 'full' ? 'col-span-2' : ''}`}>
-            <div className="px-5 py-4 border-b border-slate-50 flex justify-between items-center">
-                <h3 className="font-semibold text-slate-800">{title}</h3>
-                <div className="flex items-center gap-2">
-                    {headerAction}
-                    <ChartMenu
-                        chartTitle={title}
-                        chartRef={chartRef}
-                        conclusion={conclusionText}
-                    />
-                </div>
-            </div>
-            {metricStrip ? <div className="border-b border-slate-50">{metricStrip}</div> : null}
-            <div className="p-5" ref={chartRef}>
-                <DashboardChart title="" type={type} kpis={kpis} heatmapMetric={heatmapMetric} onSkuClick={onSkuClick} compareMode={compareMode} sellThroughCaliber={sellThroughCaliber} onSellThroughCaliberChange={onSellThroughCaliberChange} />
-            </div>
-            <div className="px-5 pb-5">
-                <ConclusionCard {...conclusion} />
-            </div>
-        </div>
-    );
-}
 
 export default function DashboardPage() {
     return (
-        <GlobalConfigProvider>
-            <DashboardPageInner />
-        </GlobalConfigProvider>
+        <MerchConfigProvider>
+            <GlobalConfigProvider>
+                <DashboardPageInner />
+            </GlobalConfigProvider>
+        </MerchConfigProvider>
     );
 }
 
@@ -337,39 +273,21 @@ function DashboardPageInner() {
         window.location.assign('/design-review-center');
     };
 
-    const totalChannelSales = kpis ? Object.values(kpis.channelSales).reduce((a, b) => a + b, 0) : 0;
-    const channelPerformance = kpis ? Object.entries(kpis.channelSales).map(([type, sales]) => ({
-        type,
-        sales,
-        pct: totalChannelSales > 0 ? Math.round(sales / totalChannelSales * 100) : 0,
-    })).sort((a, b) => b.sales - a.sales) : [];
-
     const priceBandLeader = kpis
         ? Object.entries(kpis.priceBandSales).sort((a, b) => b[1].sales - a[1].sales)[0]
         : null;
-    const topChannel = channelPerformance[0];
 
-    const priceBandMetricItems: ChartMetricStripItem[] = kpis ? [
+    const priceBandMetricItems: MetricChipItem[] = kpis ? [
         { label: '核心价格带', value: priceBandLeader ? PRICE_BAND_NAMES[priceBandLeader[0]] : '-', detail: '销售额最高价格带', tone: 'amber' },
         { label: 'MSRP金额', value: formatMoneyCny(kpis.totalGrossSales), detail: '吊牌额', tone: 'slate' },
-        { label: '毛利额', value: formatMoneyCny(kpis.totalGrossProfit), detail: '折扣贡献后毛利', tone: 'pink', detailTone: 'positive' },
-    ] : [];
-
-    const channelMetricItems: ChartMetricStripItem[] = topChannel ? [
-        {
-            label: '最强渠道',
-            value: topChannel.type,
-            detail: `销售贡献 ${topChannel.pct}%`,
-            tone: 'emerald',
-            detailTone: topChannel.pct > 60 ? 'warning' : 'positive',
-        },
+        { label: '毛利额', value: formatMoneyCny(kpis.totalGrossProfit), detail: '折扣贡献后毛利', tone: 'rose', detailTone: 'positive' },
     ] : [];
 
     // 品类饼图 metricStrip
     const topCategory = kpis
         ? Object.entries(kpis.categoryActual ?? {}).sort((a, b) => b[1].actual_sales - a[1].actual_sales)[0]
         : null;
-    const categoryMetricItems: ChartMetricStripItem[] = topCategory ? [
+    const categoryMetricItems: MetricChipItem[] = topCategory ? [
         {
             label: '首位品类',
             value: topCategory[0],
@@ -509,26 +427,6 @@ function DashboardPageInner() {
         };
     })();
 
-    const pieConclusion = (() => {
-        if (!kpis || channelPerformance.length === 0) return {
-            finding: '渠道销售结构分析，识别高贡献与低效渠道。',
-            decision: '优化低效渠道陈列策略，聚焦主力价格带。',
-            impact: '预计渠道售罄率提升，减少折扣损失。',
-        };
-        const top = channelPerformance[0];
-        const bottom = channelPerformance[channelPerformance.length - 1];
-        const onlineSales = kpis.channelSales['电商'] ?? 0;
-        const totalSales = kpis.totalNetSales;
-        const onlinePct = totalSales > 0 ? Math.round(onlineSales / totalSales * 100) : 0;
-        return {
-            finding: `${top.type} 渠道贡献最高（${top.pct}%），${bottom.type} 渠道贡献最低（${bottom.pct}%）；电商渠道合计占比 ${onlinePct}%。`,
-            decision: bottom.pct < 15
-                ? `优化 ${bottom.type} 渠道陈列策略，聚焦 399-599 主力价格带，减少尾部低效款比例。`
-                : '渠道结构均衡，维持现有分配，关注各渠道售罄节奏差异。',
-            impact: `预计 ${bottom.type} 渠道售罄率提升 +5-8pp，减少折扣损失。`,
-        };
-    })();
-
     return (
         <>
             <div className="min-h-screen bg-slate-50">
@@ -615,6 +513,11 @@ function DashboardPageInner() {
                         />
                     )}
 
+                    <BusinessLoopHeader
+                        tabKey={DASHBOARD_TAB_TO_CONFIG_TAB[activeTab]}
+                        onJumpToTab={(tab) => jumpToTab(tab)}
+                    />
+
                     {activeTab === 'overview' && kpis && (
                         <>
                             <OverviewSectionHeading
@@ -651,7 +554,11 @@ function DashboardPageInner() {
                         />
                     )}
                     {activeTab === 'consumer' && (
-                        <ProductBasicPanel filters={filters} setFilters={setFilters} />
+                        <ProductBasicPanel
+                            filters={filters}
+                            setFilters={setFilters}
+                            onJumpToTab={(tab) => jumpToTab(tab as DashboardTab)}
+                        />
                     )}
                     {activeTab === 'category' && (
                         <>
@@ -670,45 +577,7 @@ function DashboardPageInner() {
                         </>
                     )}
                     {activeTab === 'channel' && (
-                        <div className="space-y-8">
-                            <ChannelAnalysisPanel filters={filters} setFilters={setFilters} compareMode={effectiveCompareMode} />
-                            {/* 渠道销售占比 — 从总览迁移 */}
-                            <ChartCard
-                                title="渠道销售占比"
-                                type="pie"
-                                kpis={kpis}
-                                metricStrip={<ChartMetricStrip items={channelMetricItems} />}
-                                conclusion={pieConclusion}
-                            />
-                            {/* 渠道计划对比 — 从总览迁移，渠道Tab此前缺此维度 */}
-                            <ChartCard
-                                title="渠道结构计划 vs 实际（售罄率）"
-                                type="bar-compare"
-                                kpis={kpis}
-                                compareMode="channel"
-                                conclusion={{
-                                    finding: `电商渠道表现相对计划较优；加盟和KA渠道售罄率明显低于目标，需重点关注。`,
-                                    decision: '对加盟/KA渠道发起专项动销支持：追加联销或补贴政策，提升渠道动力。',
-                                    impact: '预计提升加盟/KA渠道售罄率 +3-5pp，降低渠道库存积压。',
-                                }}
-                            />
-                            {/* 库存战列与尺码履约雷达 — 从总览迁移，属于渠道运营维度 */}
-                            <InventoryRadarPanel
-                                records={filteredRecords}
-                                skuMap={skuMap}
-                            />
-                            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <span className="w-1 h-5 rounded-full bg-rose-500 inline-block" />
-                                    <h3 className="text-base font-bold text-slate-900">区域联动风险 SKU 表</h3>
-                                </div>
-                                <SkuRiskList
-                                    filteredRecords={filteredRecords}
-                                    filters={filters}
-                                    filterSummary={filterSummary}
-                                />
-                            </div>
-                        </div>
+                        <ChannelAnalysisPanel filters={filters} setFilters={setFilters} compareMode={effectiveCompareMode} />
                     )}
                     {activeTab === 'planning' && (
                         <>
@@ -845,33 +714,40 @@ function DashboardPageInner() {
                             />
 
                             {/* 核心洞察图 — 售罄趋势独占一行，品类占比+价格带并排 */}
-                            <div className="mt-6">
+                            <div className="mt-6" ref={lineChartRef}>
                                 <ChartCard
                                     title="售罄率曲线（累计）"
-                                    type="line"
-                                    kpis={kpis}
+                                    subtitle="按口径切换查看本季 / 同期群 / 新品群的售罄节奏"
                                     conclusion={lineConclusion}
-                                    containerRef={lineChartRef}
-                                    sellThroughCaliber={overviewSellThroughCaliber}
-                                    onSellThroughCaliberChange={setOverviewSellThroughCaliber}
-                                />
+                                >
+                                    <DashboardChart
+                                        title=""
+                                        type="line"
+                                        kpis={kpis}
+                                        sellThroughCaliber={overviewSellThroughCaliber}
+                                        onSellThroughCaliberChange={setOverviewSellThroughCaliber}
+                                    />
+                                </ChartCard>
                             </div>
                             <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-5">
+                                <div ref={pieChartRef}>
+                                    <ChartCard
+                                        title="品类销售占比"
+                                        subtitle="识别首位品类与售罄节奏"
+                                        metricStrip={<MetricChips items={categoryMetricItems} />}
+                                        conclusion={categoryPieConclusion}
+                                    >
+                                        <DashboardChart title="" type="pie-category" kpis={kpis} />
+                                    </ChartCard>
+                                </div>
                                 <ChartCard
-                                    title="品类销售占比"
-                                    type="pie-category"
-                                    kpis={kpis}
-                                    metricStrip={<ChartMetricStrip items={categoryMetricItems} />}
-                                    conclusion={categoryPieConclusion}
-                                    containerRef={pieChartRef}
-                                />
-                                <ChartCard
-                                    title="SKU 价格带分布（计划 vs 实际）"
-                                    type="bar"
-                                    kpis={kpis}
-                                    metricStrip={<ChartMetricStrip items={priceBandMetricItems} />}
+                                    title="SKU 价格带分布"
+                                    subtitle="计划 vs 实际 · 识别主力价格段"
+                                    metricStrip={<MetricChips items={priceBandMetricItems} />}
                                     conclusion={barConclusion}
-                                />
+                                >
+                                    <DashboardChart title="" type="bar" kpis={kpis} />
+                                </ChartCard>
                             </div>
 
                             <OverviewSectionHeading

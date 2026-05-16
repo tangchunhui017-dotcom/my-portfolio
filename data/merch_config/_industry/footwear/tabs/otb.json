@@ -1,0 +1,1 @@
+{"tabKey":"otb","sections":[{"id":"otb-summary","label":"OTB汇总","enabled":true,"order":1},{"id":"otb-by-wave","label":"波段OTB","enabled":true,"order":2},{"id":"otb-by-category","label":"品类OTB","enabled":true,"order":3},{"id":"approval-flow","label":"审批流","enabled":true,"order":4,"collapsedByDefault":true}]}

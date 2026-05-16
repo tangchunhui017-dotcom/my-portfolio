@@ -1,0 +1,1 @@
+{"tabKey":"overview","sections":[{"id":"kpi-bar","label":"顶部KPI卡片","enabled":true,"order":1},{"id":"trend-chart","label":"销售趋势图","enabled":true,"order":2},{"id":"narrative","label":"决策摘要","enabled":true,"order":3},{"id":"category-split","label":"品类结构","enabled":true,"order":4}],"customSettings":{"defaultDateRange":"ytd","showYoyComparison":true}}
