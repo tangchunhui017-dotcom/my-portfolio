@@ -6,6 +6,7 @@
 export type TabKey =
   | 'overview'
   | 'annual-control'
+  | 'brand-positioning'
   | 'region-store'
   | 'consumer'
   | 'category-ops'
@@ -20,6 +21,7 @@ export type TabKey =
 export const ALL_TABS: TabKey[] = [
   'overview',
   'annual-control',
+  'brand-positioning',
   'region-store',
   'consumer',
   'category-ops',

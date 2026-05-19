@@ -10,7 +10,7 @@ import type { InvFeedbackSignals, InvFeedbackSignal } from '@/types/invHealthV10
 const feedback = fbData as InvFeedbackSignals;
 
 interface Props {
-    targetModule: 'otb' | 'forecast' | 'wave' | 'cashflow' | 'pnl' | 'category';
+    targetModule: 'otb' | 'forecast' | 'wave' | 'cashflow' | 'pnl' | 'category' | 'channel';
     onJumpToInventory?: () => void;
 }
 

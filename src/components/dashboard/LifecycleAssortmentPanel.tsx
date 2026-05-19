@@ -22,6 +22,13 @@ import { getDashboardMonthByWave, getDashboardSeasonByWave, normalizeDashboardWa
 import type { CompareMode } from '@/hooks/useDashboardFilter';
 import { buildSeasonTransitionAnalysisRows, buildSeasonTransitionLanes, resolveTransitionVisibleRange as resolveTransitionVisibleRangeFromTable } from '@/config/dashboardSeasonTransition';
 import { buildSeasonTransitionAnalysisTable, buildSeasonTransitionMockRows, buildSeasonTransitionMonthlySummary, buildSeasonTransitionPlanBaseline } from '@/config/dashboardSeasonTransitionStandard';
+import {
+    CHART_INK, CHART_TEXT, CHART_TEXT_MUTED, CHART_TEXT_FAINT,
+    CHART_LINE, CHART_LINE_DASHED, CHART_BG_CARD,
+    CHART_POSITIVE, CHART_WARNING, CHART_DANGER,
+    CHART_HIGHLIGHT, CHART_HIGHLIGHT_LIGHT, CHART_ROSE,
+} from '@/config/chartTheme';
+import ChartCard from '@/components/charts/ChartCard';
 
 interface DashboardSalesRecord {
     sku_id: string;
@@ -120,10 +127,10 @@ const ASSORTMENT_MATRIX_STANDARD = {
 } as const;
 
 const ASSORTMENT_LEGEND_ITEMS = [
-    { key: 'cash-cow', label: '现金牛', color: '#10B981', softColor: 'rgba(16,185,129,0.10)' },
-    { key: 'traffic-driver', label: '引流款', color: '#0EA5E9', softColor: 'rgba(14,165,233,0.10)' },
-    { key: 'profit-builder', label: '利润机会', color: '#F59E0B', softColor: 'rgba(245,158,11,0.10)' },
-    { key: 'risk', label: '风险', color: '#E11D48', softColor: 'rgba(225,29,72,0.10)' },
+    { key: 'cash-cow', label: '现金牛', color: CHART_POSITIVE, softColor: 'rgba(16,185,129,0.10)' },
+    { key: 'traffic-driver', label: '引流款', color: CHART_HIGHLIGHT, softColor: 'rgba(14,165,233,0.10)' },
+    { key: 'profit-builder', label: '利润机会', color: CHART_WARNING, softColor: 'rgba(245,158,11,0.10)' },
+    { key: 'risk', label: '风险', color: CHART_DANGER, softColor: 'rgba(225,29,72,0.10)' },
 ] as const satisfies ReadonlyArray<{
     key: AssortmentLegendKey;
     label: string;
@@ -248,11 +255,11 @@ function resolveAssortmentRoleLabel(point: Pick<AssortmentDataPoint, 'role' | 'p
 }
 
 function resolveAssortmentRoleColor(point: Pick<AssortmentDataPoint, 'role' | 'pseudoExplosiveRisk'>) {
-    if (point.pseudoExplosiveRisk) return '#E11D48';
-    if (point.role === 'Cash Cow') return '#10B981';
-    if (point.role === 'Traffic Driver') return '#0EA5E9';
-    if (point.role === 'Profit Builder') return '#F59E0B';
-    return '#FB7185';
+    if (point.pseudoExplosiveRisk) return CHART_DANGER;
+    if (point.role === 'Cash Cow') return CHART_POSITIVE;
+    if (point.role === 'Traffic Driver') return CHART_HIGHLIGHT;
+    if (point.role === 'Profit Builder') return CHART_WARNING;
+    return CHART_ROSE;
 }
 
 function resolveWaveKey(record: DashboardSalesRecord) {
@@ -484,7 +491,7 @@ const SEASON_SALES_WINDOWS: Record<'Q1' | 'Q2' | 'Q3' | 'Q4', {
     },
     Q2: {
         ...DASHBOARD_SEASON_LIFECYCLE_PANEL_WINDOWS.Q2,
-        color: '#38BDF8',
+        color: CHART_HIGHLIGHT_LIGHT,
         fill: 'rgba(56, 189, 248, 0.10)',
         border: 'rgba(56, 189, 248, 0.34)',
     },
@@ -864,7 +871,7 @@ function buildSeasonSalesLanes(
             })),
             actualSales: Number(residualActual.toFixed(1)),
             planSales: Number(residualPlan.toFixed(1)),
-            color: '#94A3B8',
+            color: CHART_TEXT_FAINT,
             fill: 'rgba(148, 163, 184, 0.10)',
             border: 'rgba(148, 163, 184, 0.32)',
         });
@@ -1680,7 +1687,7 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
             appendToBody: true,
             backgroundColor: 'rgba(255,255,255,0.98)',
             borderColor: 'rgba(15,23,42,0.08)',
-            textStyle: { color: '#0F172A', fontSize: 13 },
+            textStyle: { color: CHART_INK, fontSize: 13 },
             formatter: (params: any) => {
                 const lane = renderedTransitionLanes[params.dataIndex];
                 if (!lane) return '';
@@ -1694,7 +1701,7 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                 min: transitionVisibleRange.minAxis,
                 max: transitionVisibleRange.maxAxis,
                 interval: 1,
-                axisLine: { lineStyle: { color: '#E2E8F0' } },
+                axisLine: { lineStyle: { color: CHART_LINE } },
                 axisTick: { show: false },
                 axisLabel: { show: false },
                 splitLine: { show: true, lineStyle: { color: 'rgba(148,163,184,0.12)' } },
@@ -1718,7 +1725,7 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                         return '{placeholder|}\n{base|' + value + '}';
                     },
                     rich: {
-                        base: { color: '#64748B', fontWeight: 500, lineHeight: 20 },
+                        base: { color: CHART_TEXT_MUTED, fontWeight: 500, lineHeight: 20 },
                         gapBadge: {
                             color: '#fff',
                             fontSize: 9,
@@ -1729,9 +1736,9 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                             lineHeight: 18,
                         },
                         placeholder: { lineHeight: 18 },
-                        gap: { color: '#334155', fontWeight: 700 },
-                        lag: { color: '#334155', fontWeight: 700 },
-                        drag: { color: '#334155', fontWeight: 700 },
+                        gap: { color: CHART_TEXT, fontWeight: 700 },
+                        lag: { color: CHART_TEXT, fontWeight: 700 },
+                        drag: { color: CHART_TEXT, fontWeight: 700 },
                     },
                 },
                 splitLine: { show: false },
@@ -1743,7 +1750,7 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
             data: renderedTransitionLanes.map((lane) => lane.label),
             axisLine: { show: false },
             axisTick: { show: false },
-            axisLabel: { color: '#334155', fontWeight: 600 },
+            axisLabel: { color: CHART_TEXT, fontWeight: 600 },
             splitLine: { show: false },
         },
         series: [
@@ -1807,12 +1814,12 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                                 r: isLaunchDot ? 4 : width >= 200 ? 3.1 : 2.8,
                             },
                             style: {
-                                fill: isLaunchDot ? '#FFFFFF' : isDragDot ? '#F59E0B' : isGapDot ? '#FB7185' : lane.color,
-                                stroke: isLaunchDot ? '#DC2626' : '#FFFFFF',
+                                fill: isLaunchDot ? CHART_BG_CARD : isDragDot ? CHART_WARNING : isGapDot ? CHART_ROSE : lane.color,
+                                stroke: isLaunchDot ? CHART_DANGER : CHART_BG_CARD,
                                 lineWidth: isLaunchDot ? 2 : 1.2,
                                 opacity: 0.95,
                                 shadowBlur: isLaunchDot || isDragDot || isGapDot ? 8 : 6,
-                                shadowColor: isLaunchDot ? '#DC2626' : isDragDot ? '#F59E0B' : isGapDot ? '#FB7185' : lane.color,
+                                shadowColor: isLaunchDot ? CHART_DANGER : isDragDot ? CHART_WARNING : isGapDot ? CHART_ROSE : lane.color,
                             },
                         };
                     });
@@ -1845,7 +1852,7 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                                     x: amountX,
                                     y: amountY,
                                     text: amountText,
-                                    fill: isShortBar ? '#64748B' : lane.color,
+                                    fill: isShortBar ? CHART_TEXT_MUTED : lane.color,
                                     font: amountFont,
                                     textAlign: amountAlign,
                                     textVerticalAlign: 'middle',
@@ -1859,7 +1866,7 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                                             x: rangeX,
                                             y: rangeY,
                                             text: compressedRange,
-                                            fill: '#94A3B8',
+                                            fill: CHART_TEXT_FAINT,
                                             font: rangeFont,
                                             textAlign: 'center',
                                             textVerticalAlign: 'top',
@@ -1912,15 +1919,15 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
             axisPointer: { type: 'shadow' },
             backgroundColor: 'rgba(255, 255, 255, 0.97)',
             borderColor: 'rgba(15, 23, 42, 0.08)',
-            textStyle: { color: '#0F172A', fontSize: 13 },
+            textStyle: { color: CHART_INK, fontSize: 13 },
             formatter: (params: any) => {
                 const rows = Array.isArray(params) ? params : [params];
                 const point = lifecycleData[rows[0]?.dataIndex ?? 0];
                 if (!point) return '';
                 const colorMap: Record<string, string> = {
-                    '新品': '#0EA5E9',
-                    '次新品': '#CBD5E1',
-                    '老品': '#334155',
+                    '新品': CHART_HIGHLIGHT,
+                    '次新品': CHART_LINE,
+                    '老品': CHART_TEXT,
                 };
                 const detailRows = [
                     ['新品', point.newShare, point.newSales],
@@ -1948,15 +1955,15 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
             data: ['次新品', '老品', '新品'],
             icon: 'circle',
             top: 10,
-            textStyle: { color: '#94A3B8', fontSize: 12 },
+            textStyle: { color: CHART_TEXT_FAINT, fontSize: 12 },
         },
         grid: { top: 64, left: 44, right: 28, bottom: 36, containLabel: true },
         xAxis: {
             type: 'category',
             data: lifecycleData.map((item) => item.periodLabel),
-            axisLine: { lineStyle: { color: '#E2E8F0' } },
+            axisLine: { lineStyle: { color: CHART_LINE } },
             axisTick: { show: false },
-            axisLabel: { color: '#64748B', interval: 0 },
+            axisLabel: { color: CHART_TEXT_MUTED, interval: 0 },
         },
         yAxis: {
             type: 'value',
@@ -1964,7 +1971,7 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
             max: 100,
             splitNumber: 5,
             splitLine: { show: true, lineStyle: { color: 'rgba(0,0,0,0.05)', type: 'dashed' } },
-            axisLabel: { color: '#64748B', formatter: '{value}%' },
+            axisLabel: { color: CHART_TEXT_MUTED, formatter: '{value}%' },
         },
         series: [
             {
@@ -1972,12 +1979,12 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                 type: 'bar',
                 stack: 'lifecycle-share',
                 barMaxWidth: 42,
-                itemStyle: { color: '#CBD5E1', borderRadius: [0, 0, 4, 4] },
+                itemStyle: { color: CHART_LINE, borderRadius: [0, 0, 4, 4] },
                 emphasis: { focus: 'series' },
                 label: {
                     show: true,
                     position: 'inside',
-                    color: '#FFFFFF',
+                    color: CHART_BG_CARD,
                     fontSize: 11,
                     formatter: (params: any) => Number(params.value) >= 12 ? `${Number(params.value).toFixed(0)}%` : '',
                 },
@@ -1988,12 +1995,12 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                 type: 'bar',
                 stack: 'lifecycle-share',
                 barMaxWidth: 42,
-                itemStyle: { color: '#334155' },
+                itemStyle: { color: CHART_TEXT },
                 emphasis: { focus: 'series' },
                 label: {
                     show: true,
                     position: 'inside',
-                    color: '#FFFFFF',
+                    color: CHART_BG_CARD,
                     fontSize: 11,
                     formatter: (params: any) => Number(params.value) >= 12 ? `${Number(params.value).toFixed(0)}%` : '',
                 },
@@ -2004,12 +2011,12 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                 type: 'bar',
                 stack: 'lifecycle-share',
                 barMaxWidth: 42,
-                itemStyle: { color: '#0EA5E9', borderRadius: [4, 4, 0, 0] },
+                itemStyle: { color: CHART_HIGHLIGHT, borderRadius: [4, 4, 0, 0] },
                 emphasis: { focus: 'series' },
                 label: {
                     show: true,
                     position: 'inside',
-                    color: '#FFFFFF',
+                    color: CHART_BG_CARD,
                     fontSize: 11,
                     formatter: (params: any) => Number(params.value) >= 12 ? `${Number(params.value).toFixed(0)}%` : '',
                 },
@@ -2023,7 +2030,7 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                     },
                     label: {
                         formatter: '战略主导线 ' + fmtPct(lifecycleInsight.targetNewShare, 0),
-                        color: lifecycleInsight.status === 'critical' ? '#E11D48' : '#64748B',
+                        color: lifecycleInsight.status === 'critical' ? CHART_DANGER : CHART_TEXT_MUTED,
                     },
                     data: [{ yAxis: lifecycleInsight.targetNewShare * 100 }],
                 },
@@ -2092,7 +2099,7 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
             tooltip: {
                 backgroundColor: 'rgba(255, 255, 255, 0.96)',
                 borderColor: 'rgba(0, 0, 0, 0.05)',
-                textStyle: { color: '#0F172A', fontSize: 13 },
+                textStyle: { color: CHART_INK, fontSize: 13 },
                 formatter: (params: any) => {
                     const payload = Array.isArray(params) ? params[0] : params;
                     const point = payload?.data ?? null;
@@ -2163,21 +2170,21 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
             xAxis: {
                 type: 'value',
                 name: '累计售罄率 (%)',
-                nameTextStyle: { color: '#64748B', align: 'center', padding: [10, 0, 0, 0] },
+                nameTextStyle: { color: CHART_TEXT_MUTED, align: 'center', padding: [10, 0, 0, 0] },
                 nameLocation: 'middle',
                 splitLine: { show: true, lineStyle: { color: 'rgba(0,0,0,0.03)', type: 'dashed' } },
-                axisLine: { lineStyle: { color: '#E2E8F0' } },
-                axisLabel: { color: '#94A3B8', formatter: '{value}%' },
+                axisLine: { lineStyle: { color: CHART_LINE } },
+                axisLabel: { color: CHART_TEXT_FAINT, formatter: '{value}%' },
                 min: 0,
                 max: 100,
             },
             yAxis: {
                 type: 'value',
                 name: '净销售额 (万)',
-                nameTextStyle: { color: '#64748B', padding: [0, 0, 15, 0] },
+                nameTextStyle: { color: CHART_TEXT_MUTED, padding: [0, 0, 15, 0] },
                 splitLine: { show: true, lineStyle: { color: 'rgba(0,0,0,0.03)', type: 'dashed' } },
-                axisLine: { lineStyle: { color: '#E2E8F0' } },
-                axisLabel: { color: '#94A3B8' },
+                axisLine: { lineStyle: { color: CHART_LINE } },
+                axisLabel: { color: CHART_TEXT_FAINT },
                 min: 0,
                 max: yMax,
             },
@@ -2208,15 +2215,15 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                         silent: true,
                         symbol: 'none',
                         data: [
-                            { xAxis: sellThroughSplit, lineStyle: { type: 'dashed', color: 'rgba(100,116,139,0.36)', width: 1.25 }, label: { formatter: '盈亏警戒线', position: 'insideEndTop', color: '#64748B', fontSize: 11 } },
-                            { yAxis: assortmentSalesScaleLine, lineStyle: { type: 'dashed', color: 'rgba(100,116,139,0.22)', width: 1 }, label: { formatter: '平均销量线', position: 'insideEnd', color: '#94A3B8', fontSize: 10 } },
+                            { xAxis: sellThroughSplit, lineStyle: { type: 'dashed', color: 'rgba(100,116,139,0.36)', width: 1.25 }, label: { formatter: '盈亏警戒线', position: 'insideEndTop', color: CHART_TEXT_MUTED, fontSize: 11 } },
+                            { yAxis: assortmentSalesScaleLine, lineStyle: { type: 'dashed', color: 'rgba(100,116,139,0.22)', width: 1 }, label: { formatter: '平均销量线', position: 'insideEnd', color: CHART_TEXT_FAINT, fontSize: 10 } },
                         ],
                     },
                     data: scatterData,
                     label: {
                         show: false,
                         formatter: '{b}',
-                        color: '#334155',
+                        color: CHART_TEXT,
                         fontSize: 11,
                         fontWeight: 600,
                         distance: 10,
@@ -2239,7 +2246,7 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                         label: {
                             show: true,
                             formatter: '{b}',
-                            color: '#0F172A',
+                            color: CHART_INK,
                             fontSize: 12,
                             fontWeight: 700,
                             backgroundColor: 'rgba(255,255,255,0.96)',
@@ -2259,27 +2266,22 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
     }, [assortmentChartData, assortmentData, assortmentLabelMeta, assortmentSalesScaleLine]);
 
     return (
-        <div className="relative mb-6 w-full overflow-hidden rounded-panel bg-white shadow-[0_12px_28px_rgba(15,23,42,0.04)] ring-1 ring-slate-200">
-            <div className="relative flex items-center justify-between border-b border-slate-100 px-8 pb-4 pt-6">
-                <div>
-                    <h2 className="flex items-center gap-3 text-xl font-semibold tracking-wide text-slate-900">
-                        <div className="h-6 w-1.5 rounded-full bg-gradient-to-b from-sky-400 to-indigo-500" />
-                        商品生命周期与销售结构大盘
-                    </h2>
-                    <p className="mt-2 max-w-3xl text-xs text-slate-500">
-                        {activeTab === 'transition'
-                            ? '按春夏秋冬的销售窗口观察上一季与下一季货盘的金额承接，计划模式下对照计划与实际销售额。'
-                            : activeTab === 'lifecycle'
-                              ? '库龄层级页签用于观察新品、次新品、老品在所选时间范围内的销售占比变化，并用 50% 新品主导线判断承接是否形成。'
-                              : '四象限矩阵用于识别真正养家糊口的品类，以及高销量低毛利低售罄的伪爆款风险。'}
-                    </p>
-                </div>
-
-                <div className="flex rounded-xl bg-slate-50 p-1 shadow-inner ring-1 ring-slate-200">
+        <ChartCard
+            title="商品生命周期与销售结构大盘"
+            subtitle={activeTab === 'transition'
+                ? '按春夏秋冬的销售窗口观察上一季与下一季货盘的金额承接，计划模式下对照计划与实际销售额。'
+                : activeTab === 'lifecycle'
+                  ? '库龄层级页签用于观察新品、次新品、老品在所选时间范围内的销售占比变化，并用 50% 新品主导线判断承接是否形成。'
+                  : '四象限矩阵用于识别真正养家糊口的品类，以及高销量低毛利低售罄的伪爆款风险。'}
+            showMenu={false}
+            className="mb-6"
+            bodyClassName="relative bg-gradient-to-b from-transparent to-slate-50/50 p-8 pb-10"
+            actions={
+                <div className="flex rounded-xl bg-slate-50 p-1 ring-1 ring-slate-200">
                     <button
                         onClick={() => setActiveTab('transition')}
                         className={[
-                            'rounded-lg px-4 py-1.5 text-xs font-semibold transition-all',
+                            'rounded-lg px-3 py-1 text-xs font-semibold transition-all',
                             activeTab === 'transition' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700',
                         ].join(' ')}
                     >
@@ -2288,7 +2290,7 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                     <button
                         onClick={() => setActiveTab('lifecycle')}
                         className={[
-                            'rounded-lg px-4 py-1.5 text-xs font-semibold transition-all',
+                            'rounded-lg px-3 py-1 text-xs font-semibold transition-all',
                             activeTab === 'lifecycle' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700',
                         ].join(' ')}
                     >
@@ -2297,17 +2299,16 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                     <button
                         onClick={() => setActiveTab('assortment')}
                         className={[
-                            'rounded-lg px-4 py-1.5 text-xs font-semibold transition-all',
+                            'rounded-lg px-3 py-1 text-xs font-semibold transition-all',
                             activeTab === 'assortment' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700',
                         ].join(' ')}
                     >
                         四象限品类矩阵
                     </button>
                 </div>
-            </div>
-
-            <div className="relative bg-gradient-to-b from-transparent to-slate-50/50 p-8 pb-10">
-                <div className="relative z-10 grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">
+            }
+        >
+            <div className="relative z-10 grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">
                     <div className="flex flex-col gap-4">
                         {activeTab === 'transition' ? (
                             <>
@@ -2675,8 +2676,7 @@ export default function LifecycleAssortmentPanel({ records = [], transitionRecor
                         )}
                     </div>
                 </div>
-            </div>
-        </div>
+        </ChartCard>
     );
 }
 

@@ -1,0 +1,448 @@
+{
+  "brandId": "default_brand",
+  "year": 2026,
+  "season": "SS26",
+  "positioningVersion": "年度版",
+  "positioningStatus": "执行中",
+  "updatedAt": "2026-05-14",
+  "kpis": [
+    { "kpiId": "positioning-health",      "label": "品牌定位健康度",   "currentValue": "82",  "targetValue": "≥ 85",   "variance": "-3pt",  "status": "warning",     "description": "整体定位健康度低于目标 3 个百分点，集中在系列结构与价格匹配度。" },
+    { "kpiId": "dna-consistency",         "label": "品牌DNA一致性",    "currentValue": "88%", "targetValue": "≥ 90%",  "variance": "-2pp",  "status": "warning",     "description": "趣味/异想/质朴/舒适四个关键词在企划落地率 88%，质朴关键词触达不足。" },
+    { "kpiId": "series-match",            "label": "系列结构匹配度",   "currentValue": "76%", "targetValue": "≥ 90%",  "variance": "-14pp", "status": "risk",        "description": "当季流行系列占比偏高（38%），创意先锋系列偏低（4%），偏离品牌策略。" },
+    { "kpiId": "price-band-match",        "label": "价格带匹配度",     "currentValue": "91%", "targetValue": "≥ 90%",  "variance": "+1pp",  "status": "healthy",     "description": "599-799 主力价格带占比与品牌层级一致。" },
+    { "kpiId": "consumer-match",          "label": "目标客群匹配度",   "currentValue": "84%", "targetValue": "≥ 85%",  "variance": "-1pp",  "status": "opportunity", "description": "30-40岁核心客群覆盖良好，25-30岁年轻客群略有流失需关注。" },
+    { "kpiId": "category-boundary-risk",  "label": "品类边界风险数",   "currentValue": "2",   "targetValue": "≤ 1",    "variance": "+1",    "status": "warning",     "description": "运动鞋与户外鞋类拓展接近品牌品类边界，需评估是否偏离定位。" },
+    { "kpiId": "design-deviation",        "label": "设计偏离风险数",   "currentValue": "3",   "targetValue": "≤ 2",    "variance": "+1",    "status": "design",      "description": "3 款设计在色彩或材质上偏离 DNA 关键词，已标注待复评。" },
+    { "kpiId": "planning-actions-needed", "label": "需要调整的企划动作", "currentValue": "5", "targetValue": "—",      "variance": "—",     "status": "opportunity", "description": "建议下季度调整 5 个企划动作：系列OTB、品类边界、波段主题、客群沟通、设计Brief。" }
+  ],
+  "identity": {
+    "brandId": "default_brand",
+    "brandName": "Camper",
+    "brandNameEnglish": "Camper",
+    "country": "西班牙",
+    "foundedYear": 1975,
+    "enterChinaYear": 2004,
+    "founder": "洛伦佐·弗拉萨",
+    "businessScope": "鞋履",
+    "productCategories": ["男鞋", "女鞋", "童鞋", "配饰"],
+    "brandSlogan": "漫步不平凡的每一天",
+    "brandStory": "Camper 诞生于西班牙马略卡岛，承袭弗拉萨家族百年制鞋传统。它不追逐潮流，而是以诙谐、本真、自由的态度，重塑都市行者脚下的步调。",
+    "brandMission": "用一双鞋唤醒都市行者脚下的松弛、个性、反骨与童心。",
+    "brandPromise": "舒适不打折、品质不妥协、设计不平庸。",
+    "mainImage": null
+  },
+  "philosophy": {
+    "slogan": "漫步不平凡的每一天",
+    "sloganEnglish": "Strolling the extraordinary everyday",
+    "themeKeywords": ["诙谐", "本真", "自由"],
+    "manifesto": [
+      "不刻板、不沉闷、不趋同。",
+      "以趣味、异想、质朴、舒适为设计精髓，",
+      "构筑一方地中海式的乐土，拼贴超现实的创意奇思。",
+      "通过色彩、解构、自然、幽默等元素，",
+      "唤醒都市行者脚下的松弛与个性、反骨与童心。",
+      "倡导一种在规则之外的艺术表达，",
+      "重拾那个敢于打破常规的有趣灵魂。"
+    ],
+    "moodImages": [null, null, null, null, null]
+  },
+  "dnaKeywords": [
+    {
+      "keywordId": "dna-taste",
+      "keywordName": "趣味",
+      "keywordEnglish": "Taste",
+      "keywordDefinition": "在产品和视觉中保留一处会让人微笑的设计细节。",
+      "poeticDescription": [
+        "行走如歌，趣味而灵动。",
+        "奇思若稚子，天马行空 自由而乐趣。",
+        "非凡的脑洞恰似一抹斑斓的色彩，一切都是那么出其不意 这样的美妙 如万花筒一般。",
+        "朴实无华中又带着无限的故事。"
+      ],
+      "productExpression": "局部撞色、解构鞋头、可替换鞋扣等趣味元素。",
+      "designExpression": "在常规版型上保留 1 处反常规的设计语言。",
+      "visualExpression": "拍摄场景中加入趣味道具与冷幽默氛围。",
+      "materialExpression": "局部异材质拼接（如皮革 + 反光面料）。",
+      "colorExpression": "主色克制、点缀色大胆，避免大面积撞色。",
+      "doRules": ["保留 1 处趣味亮点", "细节克制不抢主线", "材质对比有节奏"],
+      "dontRules": ["不做整双怪异配色", "不让趣味干扰功能性"],
+      "moodImages": [null, null, null, null, null]
+    },
+    {
+      "keywordId": "dna-freakishness",
+      "keywordName": "异想",
+      "keywordEnglish": "Freakishness",
+      "keywordDefinition": "敢于打破常规线条与结构的设计探索。",
+      "poeticDescription": [
+        "创意如梦，异想而纯粹。",
+        "脑洞似万花筒，斑斓迷离 先锋而诙谐。",
+        "不对称的视角恰似一抹反骨的灵光，一切都是那么打破常规 怪诞而美妙 如寓言一般。",
+        "荒谬中又带着无限的真实。"
+      ],
+      "productExpression": "异形鞋楦、不对称结构、雕塑感鞋跟。",
+      "designExpression": "限于创意先锋系列内的 2-3 款。",
+      "visualExpression": "艺术化拍摄，借助雕塑/装置概念。",
+      "materialExpression": "高科技材质、3D 打印、特殊涂层。",
+      "colorExpression": "实验性配色，单色或单一材质形成视觉冲击。",
+      "doRules": ["仅在创意先锋系列出现", "概念可被穿戴"],
+      "dontRules": ["不进入主销系列", "不挑战核心舒适性"],
+      "moodImages": [null, null, null, null, null]
+    },
+    {
+      "keywordId": "dna-plain",
+      "keywordName": "质朴",
+      "keywordEnglish": "Plain",
+      "keywordDefinition": "返璞归真的材质美与手工感。",
+      "poeticDescription": [
+        "步履如归，质朴而从容。",
+        "匠心如原木，温润天成 舒适而自在。",
+        "天然的触感恰似一抹地中海的微风，一切都是那么返璞归真 拙朴而美妙 如大地一般。",
+        "简约中又带着无限的生命力。"
+      ],
+      "productExpression": "原色皮革、植鞣、天然橡胶、原色棉布。",
+      "designExpression": "简洁线条、低饱和色、保留材质本色。",
+      "visualExpression": "自然光、户外散步与日常场景。",
+      "materialExpression": "可持续材质、再生皮、再生橡胶。",
+      "colorExpression": "大地色系、米白、灰、原色。",
+      "doRules": ["在经典舒适系列里占主导", "保留材质原色"],
+      "dontRules": ["不做高饱和色装饰", "不堆砌 logo"],
+      "moodImages": [null, null, null, null, null]
+    },
+    {
+      "keywordId": "dna-comfort",
+      "keywordName": "舒适",
+      "keywordEnglish": "Comfort",
+      "keywordDefinition": "舒适是品牌不可妥协的底线。",
+      "poeticDescription": [
+        "行止如云，舒适而随心。",
+        "触感似初雪，柔软无声 自在而轻盈。",
+        "贴合的弧度恰似一抹被治愈的温柔，一切都是那么无拘无束 松弛而美妙 如呼吸一般。",
+        "自然中又带着无限的自由。"
+      ],
+      "productExpression": "记忆鞋垫、缓震大底、足弓支撑、宽楦适足。",
+      "designExpression": "所有设计需通过 4 小时穿着测试。",
+      "visualExpression": "突出久穿与日常使用场景。",
+      "materialExpression": "亲肤内里、透气材质、轻量化结构。",
+      "colorExpression": "—",
+      "doRules": ["每一双都过 4 小时舒适测试", "宽楦优先"],
+      "dontRules": ["不为造型牺牲舒适", "不使用硬质衬里"],
+      "moodImages": [null, null, null, null, null]
+    }
+  ],
+  "tier": {
+    "brandTier": "国际二线鞋履品牌",
+    "competitiveSet": "中高端都市鞋履（中国市场）",
+    "upperCompetitors": ["Stella Luna", "73Hours"],
+    "directCompetitors": ["Ecco", "Clarks（其乐）", "UGG", "健乐士", "勃肯"],
+    "lowerCompetitors": ["百丽", "天美意", "莱尔斯丹", "奥康", "红蜻蜓"],
+    "priceFloor": 750,
+    "corePriceBand": [900, 1500],
+    "premiumPriceBand": [1500, 2600],
+    "brandPositionDescription": "对标国内一线（Stella Luna、73Hours）的设计调性，价格略低一档；对国内二线（百丽、奥康）形成材质、设计、品牌叙事的差异化。",
+    "tierLadder": [
+      { "tierId": "intl-luxury",  "tierLabel": "国际一线品牌",       "priceRange": [3000, 10000], "competitors": ["Christian Louboutin", "Roger Vivier", "Ferragamo", "Tod's"] },
+      { "tierId": "domestic-1st", "tierLabel": "国内一线品牌",       "priceRange": [1500, 3000],  "competitors": ["Stella Luna", "73Hours"] },
+      { "tierId": "intl-2nd",     "tierLabel": "国际二线品牌",       "priceRange": [750, 1500],   "competitors": ["Ecco", "Clarks（其乐）", "UGG", "健乐士", "勃肯"], "isOwnTier": true },
+      { "tierId": "domestic-2nd", "tierLabel": "国内二线品牌",       "priceRange": [300, 750],    "competitors": ["百丽", "天美意", "莱尔斯丹", "奥康", "红蜻蜓"] },
+      { "tierId": "domestic-3rd", "tierLabel": "国内三线品牌",       "priceRange": [100, 300],    "competitors": ["热风", "卓诗尼", "大东"] }
+    ],
+    "styleQuadrant": {
+      "axes": { "x": { "left": "极简", "right": "极繁" }, "y": { "top": "前卫", "bottom": "大众" } },
+      "cornerLabels": { "topLeft": "硬朗", "topRight": "奢侈", "bottomLeft": "舒适", "bottomRight": "柔美" },
+      "keywords": [
+        { "keyword": "科技",     "x": -0.96, "y":  0.65 },
+        { "keyword": "建筑",     "x": -0.70, "y":  0.85 },
+        { "keyword": "超前",     "x": -0.40, "y":  0.92 },
+        { "keyword": "迷幻",     "x": -0.10, "y":  0.80 },
+        { "keyword": "嬉皮",     "x":  0.30, "y":  0.92 },
+        { "keyword": "奢侈",     "x":  0.55, "y":  0.85 },
+        { "keyword": "钻石",     "x":  0.78, "y":  0.78 },
+        { "keyword": "挑剔",     "x":  0.55, "y":  0.65 },
+        { "keyword": "戏剧",     "x":  0.88, "y":  0.55 },
+        { "keyword": "怀旧",     "x":  0.35, "y":  0.50 },
+        { "keyword": "精致",     "x":  0.55, "y":  0.40 },
+        { "keyword": "巴洛克",   "x":  0.90, "y":  0.32 },
+        { "keyword": "未来",     "x": -0.55, "y":  0.30, "inCircle": true },
+        { "keyword": "稀缺",     "x": -0.85, "y":  0.18 },
+        { "keyword": "摩登",     "x": -0.30, "y":  0.30, "inCircle": true },
+        { "keyword": "概念",     "x": -0.55, "y":  0.10, "inCircle": true },
+        { "keyword": "破坏",     "x": -0.05, "y":  0.20, "inCircle": true },
+        { "keyword": "都市",     "x": -0.30, "y":  0.05, "inCircle": true },
+        { "keyword": "慢摇",     "x":  0.05, "y":  0.05, "inCircle": true },
+        { "keyword": "经典",     "x":  0.18, "y":  0.20, "inCircle": true },
+        { "keyword": "手工",     "x":  0.42, "y":  0.18, "inCircle": true },
+        { "keyword": "品质",     "x":  0.22, "y":  0.05, "inCircle": true },
+        { "keyword": "对比",     "x":  0.50, "y":  0.05, "inCircle": true },
+        { "keyword": "高贵",     "x":  0.72, "y":  0.10 },
+        { "keyword": "堆叠",     "x":  0.92, "y":  0.05 },
+        { "keyword": "现代",     "x":  0.05, "y": -0.10, "inCircle": true },
+        { "keyword": "轻奢",     "x": -0.22, "y": -0.18, "inCircle": true },
+        { "keyword": "实用",     "x": -0.55, "y": -0.25, "inCircle": true },
+        { "keyword": "活力",     "x":  0.30, "y": -0.25, "inCircle": true },
+        { "keyword": "变化",     "x":  0.55, "y": -0.18, "inCircle": true },
+        { "keyword": "洛丽塔",   "x":  0.92, "y": -0.18 },
+        { "keyword": "文艺",     "x": -0.78, "y": -0.40 },
+        { "keyword": "平衡",     "x": -0.20, "y": -0.35, "inCircle": true },
+        { "keyword": "自然",     "x": -0.40, "y": -0.45, "inCircle": true },
+        { "keyword": "韵律",     "x":  0.22, "y": -0.40, "inCircle": true },
+        { "keyword": "浪漫",     "x":  0.45, "y": -0.45, "inCircle": true },
+        { "keyword": "迷恋",     "x":  0.68, "y": -0.35 },
+        { "keyword": "古典",     "x":  0.92, "y": -0.45 },
+        { "keyword": "静谧",     "x": -0.55, "y": -0.60, "inCircle": true },
+        { "keyword": "功能性",   "x": -0.30, "y": -0.70, "inCircle": true },
+        { "keyword": "温和",     "x":  0.00, "y": -0.65, "inCircle": true },
+        { "keyword": "轻柔",     "x":  0.25, "y": -0.60, "inCircle": true },
+        { "keyword": "融合",     "x":  0.42, "y": -0.65, "inCircle": true },
+        { "keyword": "水波",     "x":  0.65, "y": -0.62 },
+        { "keyword": "文艺复兴", "x":  0.90, "y": -0.70 },
+        { "keyword": "质朴",     "x": -0.45, "y": -0.85, "inCircle": true },
+        { "keyword": "随性",     "x": -0.15, "y": -0.90, "inCircle": true }
+      ],
+      "brandPosition": { "x": -0.18, "y": -0.32 },
+      "previousPosition": { "x": -0.05, "y": -0.20 },
+      "competitorPositions": [
+        { "name": "Ecco",         "x": -0.05, "y": -0.55 },
+        { "name": "Clarks",       "x": -0.25, "y": -0.50 },
+        { "name": "Stella Luna",  "x":  0.45, "y":  0.35 },
+        { "name": "73Hours",      "x":  0.30, "y":  0.20 }
+      ]
+    }
+  },
+  "seriesPortfolio": [
+    {
+      "seriesId": "series-creative",
+      "seriesName": "创意先锋系列",
+      "seriesRole": "品牌光环 / 营销预算",
+      "targetShareMin": 5,
+      "targetShareMax": 10,
+      "currentShare": 4,
+      "targetConsumer": "时尚先锋、设计敏感人群",
+      "targetPriceBand": [899, 1599],
+      "targetGrossMargin": 0.62,
+      "suggestedSkuCount": 12,
+      "suggestedOtbShare": 0.08,
+      "planningRole": "形象款",
+      "riskLevel": "risk",
+      "recommendedAction": "下季度增加 4-6 个 SKU，恢复品牌声量。",
+      "poeticDescription": [
+        "独特的设计风格与元素，",
+        "在创意中不停发觉新的可能；",
+        "在元素运用、色彩搭配、廓型结构、面料材质上力求新意。"
+      ],
+      "moodImages": [null, null, null, null]
+    },
+    {
+      "seriesId": "series-seasonal",
+      "seriesName": "当季流行系列",
+      "seriesRole": "流量引擎 / 季节性",
+      "targetShareMin": 30,
+      "targetShareMax": 35,
+      "currentShare": 38,
+      "targetConsumer": "都市潮流人群、25-35 岁",
+      "targetPriceBand": [599, 999],
+      "targetGrossMargin": 0.55,
+      "suggestedSkuCount": 40,
+      "suggestedOtbShare": 0.32,
+      "planningRole": "主推款",
+      "riskLevel": "warning",
+      "recommendedAction": "占比偏高，下季度收缩 3-4 个 SKU，让位创意先锋系列。",
+      "poeticDescription": [
+        "时尚流行风向标，跟随当季流行趋势，",
+        "与品牌气质相互融合，",
+        "打造既有新意又符合消费审美的设计，",
+        "突出产品气质的同时又能被目标客群所接纳。"
+      ],
+      "moodImages": [null, null, null, null]
+    },
+    {
+      "seriesId": "series-classic",
+      "seriesName": "经典舒适系列",
+      "seriesRole": "基石业务 / 现金奶牛",
+      "targetShareMin": 55,
+      "targetShareMax": 65,
+      "currentShare": 58,
+      "targetConsumer": "成熟稳定人群、30-45 岁",
+      "targetPriceBand": [499, 799],
+      "targetGrossMargin": 0.58,
+      "suggestedSkuCount": 60,
+      "suggestedOtbShare": 0.6,
+      "planningRole": "常青款",
+      "riskLevel": "healthy",
+      "recommendedAction": "维持当前 SKU 深度，关注复购客群的尺码与色系覆盖。",
+      "poeticDescription": [
+        "经典款的延续，简约、大气的格调为主导，",
+        "易搭配、有包容；",
+        "高品质的材质和精湛工艺为主要设计方向，",
+        "注重品质和穿着体验。"
+      ],
+      "moodImages": [null, null, null, null]
+    }
+  ],
+  "priceArchitecture": [
+    { "category": "休闲/运动鞋", "subCategories": ["老爹鞋", "保龄球鞋", "户外跑鞋", "小白鞋"], "channel": "线上", "entryPriceBand": [399, 599], "corePriceBand": [900, 1800], "premiumPriceBand": [1500, 1800], "priceFloor": 399, "priceCeiling": 1800, "targetGrossMargin": 0.58, "markdownSafetyLine": 0.7,  "pricingRole": "主力款",   "riskLevel": "healthy",     "recommendedAction": "主力价格带 900-1800 表现稳定，维持当前结构。" },
+    { "category": "皮鞋/乐福鞋", "subCategories": ["乐福鞋", "德比鞋"],                          "channel": "线上", "entryPriceBand": [499, 799], "corePriceBand": [1000, 1800], "premiumPriceBand": [1500, 1800], "priceFloor": 499, "priceCeiling": 1800, "targetGrossMargin": 0.62, "markdownSafetyLine": 0.75, "pricingRole": "形象款",   "riskLevel": "opportunity", "recommendedAction": "可在 1500+ 高端段尝试新增 2 款，强化品牌质感。" },
+    { "category": "靴子",        "subCategories": ["短靴", "切尔西", "工装靴"],                  "channel": "线上", "entryPriceBand": [599, 899], "corePriceBand": [1100, 1800], "premiumPriceBand": [1500, 1800], "priceFloor": 599, "priceCeiling": 1800, "targetGrossMargin": 0.60, "markdownSafetyLine": 0.7,  "pricingRole": "主力款",   "riskLevel": "warning",     "recommendedAction": "AW 季节售罄率偏低，建议在 1100-1800 主力带回归核心款式。" },
+    { "category": "浅口",        "subCategories": ["芭蕾舞鞋", "玛丽珍", "吸烟鞋"],              "channel": "线上", "entryPriceBand": [399, 599], "corePriceBand": [750, 1400], "premiumPriceBand": [1200, 1400], "priceFloor": 399, "priceCeiling": 1400, "targetGrossMargin": 0.59, "markdownSafetyLine": 0.7,  "pricingRole": "主力款",   "riskLevel": "healthy",     "recommendedAction": "稳定运行，节奏与企划匹配。" },
+    { "category": "凉鞋/拖鞋",   "subCategories": ["运动凉鞋", "织带凉鞋", "居家拖鞋"],          "channel": "线上", "entryPriceBand": [299, 499], "corePriceBand": [500, 1200], "premiumPriceBand": [900, 1200], "priceFloor": 299, "priceCeiling": 1200, "targetGrossMargin": 0.55, "markdownSafetyLine": 0.65, "pricingRole": "入门款",   "riskLevel": "warning",     "recommendedAction": "入门价格带占比偏高，注意维持品牌价格底线 299。" },
+    { "category": "先锋实验",    "subCategories": ["运动风", "拖拉机靴"],                        "channel": "线上", "entryPriceBand": [899, 1499], "corePriceBand": [1900, 2600], "premiumPriceBand": [2300, 2600], "priceFloor": 899, "priceCeiling": 2600, "targetGrossMargin": 0.65, "markdownSafetyLine": 0.85, "pricingRole": "高端拓展", "riskLevel": "risk",        "recommendedAction": "创意先锋系列 SKU 偏少，建议下季度补足品牌声量。" }
+  ],
+  "consumerOverview": {
+    "centralAgeRange": "25-45 岁",
+    "mentalAgeRange": "30-40 岁",
+    "poeticSummary": [
+      "热爱自然舒适的环境，",
+      "开始关注自身的健康。",
+      "他们不追求快节奏的内卷，",
+      "也不沉迷于浮夸的享乐，",
+      "而是追求一种有质感、有审美、可持续的「慢生活」。"
+    ],
+    "occupations": [
+      "自由职业者", "大学教师", "高级白领", "艺术家", "设计师",
+      "新媒体运营者", "作家", "影视明星", "时尚名人", "职场高管", "文艺工作者"
+    ],
+    "occupationImages": [null, null, null, null],
+    "portraitImages": [null, null, null, null, null]
+  },
+  "targetConsumers": [
+    {
+      "segmentName": "都市青年",
+      "ageRange": "25-30 岁",
+      "mentalAgeRange": "25-30 岁",
+      "targetShare": 20,
+      "actualShare": 16,
+      "occupationTags": ["互联网", "设计师", "自由职业"],
+      "lifestyleTags": ["夜生活", "社交", "潮流"],
+      "purchaseMotivation": "新潮设计 / 表达个性 / 社交媒体分享",
+      "purchaseBarrier": "价格敏感 / 替代选择多",
+      "priceAcceptance": [399, 899],
+      "stylePreference": ["街头", "极简", "撞色"],
+      "scenarioPreference": ["聚会", "通勤", "短途旅行"],
+      "productSuggestion": "保留 1-2 款联名/限量，强化年轻语境的视觉表达。",
+      "personaDescription": [
+        "注重自我感受与社会认同。",
+        "希望展现与众不同的一面，喜欢追求新事物。",
+        "经济能力相对薄弱。",
+        "个人生活还处于较为自由的阶段。",
+        "兴趣爱好广泛但不精通，会进行多种尝试。",
+        "会凭一时喜好冲动去消费。",
+        "社交需求通常在同事、朋友、同学间进行。",
+        "通常会与志趣相投的人交往。"
+      ]
+    },
+    {
+      "segmentName": "都市核心",
+      "ageRange": "30-40 岁",
+      "mentalAgeRange": "28-35 岁",
+      "targetShare": 50,
+      "actualShare": 54,
+      "occupationTags": ["白领", "管理者", "新中产"],
+      "lifestyleTags": ["品质生活", "旅行", "户外"],
+      "purchaseMotivation": "舒适耐穿 / 品质感 / 信任品牌",
+      "purchaseBarrier": "时间有限，决策快 / 期望省心选择",
+      "priceAcceptance": [599, 1299],
+      "stylePreference": ["简约", "质感", "经典"],
+      "scenarioPreference": ["通勤", "差旅", "休闲"],
+      "productSuggestion": "经典舒适系列保持核心，增加跨场景兼容款。",
+      "personaDescription": [
+        "大部分女性已经成家。",
+        "身份的转变会使得关注点由自身转向家庭。",
+        "注重他人的评价大于自身的感受。",
+        "会理性追求物质需求。",
+        "对于新事物的关注度降低，更注重习惯性与实用性。",
+        "经济能力相对提升。",
+        "个人自由的生活时间相对减少。",
+        "兴趣爱好开始转向少数几个领域并开始熟练。",
+        "消费习惯处于理性化，消费需求从个人转向家庭。",
+        "社交需求开始出现商业性质的活动。"
+      ]
+    },
+    {
+      "segmentName": "成熟人群",
+      "ageRange": "40-45 岁",
+      "mentalAgeRange": "30-40 岁",
+      "targetShare": 30,
+      "actualShare": 30,
+      "occupationTags": ["管理层", "专业人士"],
+      "lifestyleTags": ["家庭", "出行", "户外/骑行"],
+      "purchaseMotivation": "足部健康 / 长穿舒适 / 高品质材质",
+      "purchaseBarrier": "对新款适应慢 / 期待稳定供应",
+      "priceAcceptance": [699, 1499],
+      "stylePreference": ["经典", "稳重", "质朴"],
+      "scenarioPreference": ["通勤", "户外", "家庭出行"],
+      "productSuggestion": "稳定供应核心鞋型与色系，强化舒适科技背书。",
+      "personaDescription": [
+        "此年龄层的女性基本已经完成经济基础的积累。",
+        "身份的转变开始走向成熟的顶峰。",
+        "关注点从家庭转向自身已经对年轻辈的影响力。",
+        "会开始追去自我价值的实现。",
+        "对于新事物的关注度会趋于一种经验的总结和匹配。",
+        "经济能力相对较为实力。",
+        "个人时间开始相对自由。",
+        "兴趣爱好会进入一种精通阶段。",
+        "消费习惯更注重品质感受。",
+        "社交需求会逐渐从随从者转变为主导者。",
+        "有一定的社会地位。"
+      ]
+    }
+  ],
+  "lifestyleOverview": {
+    "scenarios": ["工作", "旅行", "聚会", "散步", "骑行", "健身", "阅读", "户外", "话剧", "摄影"],
+    "poeticSummary": [
+      "热爱自然舒适的环境，",
+      "开始关注自身的健康。",
+      "他们不追求快节奏的内卷，",
+      "也不沉迷于浮夸的享乐，",
+      "而是追求一种有质感、有审美、可持续的「慢生活」。"
+    ],
+    "moodImages": [null, null, null, null, null]
+  },
+  "lifestyleScenarios": [
+    { "scenario": "工作",  "lifestyleKeyword": "高效得体",   "relatedCategory": ["皮鞋/乐福鞋", "浅口"],     "relatedShoeType": ["乐福鞋", "尖头浅口"], "productOpportunity": "全天舒适的皮鞋/浅口套装组合",       "designSuggestion": "经典楦型 + 易打理皮质", "channelSuggestion": "直营 CBD 旗舰" },
+    { "scenario": "旅行",  "lifestyleKeyword": "轻量自由",   "relatedCategory": ["休闲/运动鞋"],            "relatedShoeType": ["运动休闲", "厚底乐福"], "productOpportunity": "可折叠/超轻便携系列",                "designSuggestion": "轻量大底 + 折叠收纳",     "channelSuggestion": "电商 + 机场免税" },
+    { "scenario": "聚会",  "lifestyleKeyword": "趣味个性",   "relatedCategory": ["浅口", "靴子"],          "relatedShoeType": ["细高跟", "短靴"],     "productOpportunity": "趣味鞋扣/亮色点缀",                  "designSuggestion": "撞色 + 趣味饰物",           "channelSuggestion": "直营快闪" },
+    { "scenario": "散步",  "lifestyleKeyword": "悠闲漫步",   "relatedCategory": ["休闲/运动鞋"],            "relatedShoeType": ["休闲鞋", "板鞋"],     "productOpportunity": "舒适缓震 + 街头日常感",              "designSuggestion": "弹性大底 + 透气网面",       "channelSuggestion": "全渠道" },
+    { "scenario": "骑行",  "lifestyleKeyword": "灵动机能",   "relatedCategory": ["休闲/运动鞋"],            "relatedShoeType": ["运动鞋"],             "productOpportunity": "脚踝包覆 + 防滑大底",                "designSuggestion": "反光元素 + 速干材质",       "channelSuggestion": "电商" },
+    { "scenario": "健身",  "lifestyleKeyword": "动力释放",   "relatedCategory": ["休闲/运动鞋"],            "relatedShoeType": ["训练鞋"],             "productOpportunity": "稳定支撑 + 多场景训练",              "designSuggestion": "鞋仓结构 + 抓地纹",         "channelSuggestion": "电商 + 健身渠道" },
+    { "scenario": "阅读",  "lifestyleKeyword": "静谧质朴",   "relatedCategory": ["休闲/运动鞋", "皮鞋/乐福鞋"], "relatedShoeType": ["软底乐福", "懒人鞋"], "productOpportunity": "居家+出门的双场景轻便鞋",            "designSuggestion": "无系带 + 软包跟",           "channelSuggestion": "直营生活方式店" },
+    { "scenario": "户外",  "lifestyleKeyword": "山野自由",   "relatedCategory": ["靴子", "休闲/运动鞋"],     "relatedShoeType": ["户外靴", "徒步鞋"],   "productOpportunity": "防水抓地 + 轻量户外",                "designSuggestion": "防水皮革 + Vibram 类似大底", "channelSuggestion": "户外渠道 / 联名" },
+    { "scenario": "话剧",  "lifestyleKeyword": "雅致仪式",   "relatedCategory": ["浅口", "皮鞋/乐福鞋"],     "relatedShoeType": ["细跟浅口", "玛丽珍"], "productOpportunity": "晚装舒适感的细跟",                   "designSuggestion": "丝绒/亮皮 + 弧线鞋头",       "channelSuggestion": "直营旗舰 / 联名" },
+    { "scenario": "摄影",  "lifestyleKeyword": "光影叙事",   "relatedCategory": ["先锋实验"],               "relatedShoeType": ["造型款"],             "productOpportunity": "极具识别度的视觉款（创意先锋系列）", "designSuggestion": "雕塑感鞋跟 / 反光材质",     "channelSuggestion": "限量发售 / 时装周" }
+  ],
+  "strategyMatrix": [
+    { "strategyId": "sm-01", "strategyDimension": "产品",   "currentProblem": "创意先锋系列占比偏低（4%）", "opportunity": "中高端市场渴望品牌叙事",         "threat": "国际二线品牌持续下沉",   "strategyType": "SO 进攻", "strategyName": "创意先锋扩容",   "strategyDescription": "下季度增加 4-6 个 SKU，强化品牌声量",          "expectedImpact": "品牌话题度 +30%、形象款贡献毛利 +1pp", "relatedModule": "品类运营 / 波段企划", "owner": "商品总监",    "status": "执行中" },
+    { "strategyId": "sm-02", "strategyDimension": "价格",   "currentProblem": "凉鞋入门价格带占比过高",     "opportunity": "电商客群对入门款敏感",          "threat": "白牌价格挤压",         "strategyType": "WT 止损", "strategyName": "价格底线护城",    "strategyDescription": "守住 299 价格底线，停止低于此价的促销",         "expectedImpact": "防止品牌价值稀释",                       "relatedModule": "损益 / OTB预算",    "owner": "市场副总",    "status": "草稿" },
+    { "strategyId": "sm-03", "strategyDimension": "服务",   "currentProblem": "舒适承诺缺少落地体验",       "opportunity": "门店可做 4 小时试穿体验",        "threat": "—",                  "strategyType": "WO 改良", "strategyName": "舒适体验工程",    "strategyDescription": "门店推出 4 小时舒适测试 + 满意退换",            "expectedImpact": "门店转化 +5pp、复购 +3pp",                "relatedModule": "区域&门店",         "owner": "零售总监",    "status": "执行中" },
+    { "strategyId": "sm-04", "strategyDimension": "渠道",   "currentProblem": "电商占比上升过快，渠道偏移", "opportunity": "直营可承载品牌叙事",            "threat": "电商比价致品牌弱化",   "strategyType": "ST 防御", "strategyName": "直营品牌主场",    "strategyDescription": "直营保留独家形象款与限量款，电商以经典款铺底", "expectedImpact": "直营 ASP +8%、品牌识别度提升",            "relatedModule": "区域&门店 / 竞品&趋势", "owner": "渠道副总",    "status": "执行中" },
+    { "strategyId": "sm-05", "strategyDimension": "供应链", "currentProblem": "新材质打样周期偏长",         "opportunity": "可持续材质供应商扩展",          "threat": "—",                  "strategyType": "WO 改良", "strategyName": "材质实验流水线", "strategyDescription": "建立可持续材质供应链，缩短打样周期至 4 周",      "expectedImpact": "新品上市效率 +20%、可持续叙事增强",       "relatedModule": "波段企划 / 设计计划", "owner": "供应链总监",  "status": "草稿" },
+    { "strategyId": "sm-06", "strategyDimension": "组织",   "currentProblem": "商品/设计跨部门沟通成本高",   "opportunity": "DNA 关键词可作为统一语言",      "threat": "—",                  "strategyType": "WO 改良", "strategyName": "品牌定位运营周",  "strategyDescription": "每周一次跨部门评审，DNA 关键词作为评审基准",     "expectedImpact": "设计返工率下降 30%",                       "relatedModule": "品牌定位 / 设计计划", "owner": "品牌总监",    "status": "搁置" }
+  ],
+  "healthChecks": [
+    { "checkId": "hc-01", "checkItem": "品类边界",       "targetStandard": "品类与品牌定义一致",          "currentStatus": "新增运动/户外品类 2 项", "variance": "+1 风险项", "riskLevel": "warning",     "riskReason": "户外品类拓展接近品牌品类边界",       "recommendedAction": "复评户外鞋是否符合品牌叙事，建议放入创意先锋系列试水", "relatedModule": "品类运营",    "jumpAction": "校准品类边界" },
+    { "checkId": "hc-02", "checkItem": "波段企划 DNA",   "targetStandard": "波段主题命中 DNA 关键词",     "currentStatus": "SS-2B 命中 2/4",          "variance": "-2 关键词",  "riskLevel": "warning",     "riskReason": "质朴关键词在 SS-2B 触达不足",          "recommendedAction": "下个波段补一组植鞣皮/原色橡胶产品组合",                "relatedModule": "波段企划",    "jumpAction": "校准波段主题" },
+    { "checkId": "hc-03", "checkItem": "OTB 系列结构",   "targetStandard": "创意先锋 OTB 8%",            "currentStatus": "当前 OTB 4%",            "variance": "-4pp",     "riskLevel": "risk",        "riskReason": "OTB 倾向当季流行系列",                  "recommendedAction": "将 4% OTB 从当季流行系列调入创意先锋系列",             "relatedModule": "OTB预算",     "jumpAction": "调整系列 OTB" },
+    { "checkId": "hc-04", "checkItem": "价格定位",       "targetStandard": "主力 599-899 占比 ≥ 50%",    "currentStatus": "当前 52%",                "variance": "+2pp",     "riskLevel": "healthy",     "recommendedAction": "维持现状",                                              "relatedModule": "损益",         "jumpAction": "查看价格风险" },
+    { "checkId": "hc-05", "checkItem": "消费者匹配度",   "targetStandard": "30-40 岁占比 50%",           "currentStatus": "当前 54%",                "variance": "+4pp",     "riskLevel": "opportunity", "riskReason": "核心客群占比偏高，年轻人群覆盖不足",  "recommendedAction": "在创意先锋系列加入面向 25-30 岁年轻客群的视觉表达",      "relatedModule": "消费者画像", "jumpAction": "校准消费者画像" },
+    { "checkId": "hc-06", "checkItem": "竞品跟进策略",   "targetStandard": "只跟进与品牌 DNA 一致的趋势", "currentStatus": "复评清单待更新",          "variance": "—",        "riskLevel": "low",         "recommendedAction": "整理可跟进趋势清单与不跟进清单",                          "relatedModule": "竞品&趋势",   "jumpAction": "校准竞品范围" },
+    { "checkId": "hc-07", "checkItem": "设计偏离",       "targetStandard": "0 项偏离 DNA 关键词",         "currentStatus": "3 项待复评",              "variance": "+3",       "riskLevel": "design",      "riskReason": "色彩/材质偏离质朴关键词",              "recommendedAction": "为 3 款设计安排 DNA 复评，给出 Brief 调整意见",         "relatedModule": "设计计划",    "jumpAction": "生成设计 Brief" }
+  ],
+  "planningOutputs": [
+    { "outputId": "po-consumer",   "targetModule": "消费者画像",   "targetIcon": "🧑‍🤝‍🧑", "outputs": [ { "label": "目标客群标准", "value": "25-30 / 30-40 / 40-45 = 20% / 50% / 30%" }, { "label": "生活方式",     "value": "品质生活 / 旅行 / 户外" }, { "label": "价格接受度", "value": "¥399 - ¥1499" }, { "label": "场景偏好",     "value": "通勤 / 差旅 / 户外 / 聚会" } ] },
+    { "outputId": "po-competitor", "targetModule": "竞品&趋势",    "targetIcon": "🧭",        "outputs": [ { "label": "直接竞品",   "value": "国内一线 C / D / E" }, { "label": "上位竞品",     "value": "国际二线 A / B" }, { "label": "可跟进趋势", "value": "可持续材质 / 户外都市 / 极简" }, { "label": "不应跟进", "value": "重 logo / 高饱和撞色 / 怪诞造型" } ] },
+    { "outputId": "po-category",   "targetModule": "品类运营",     "targetIcon": "📋",        "outputs": [ { "label": "品类边界",   "value": "休闲/皮鞋/靴/浅口/凉鞋/先锋" }, { "label": "系列占比", "value": "创意先锋 5-10% · 流行 30-35% · 经典 55-65%" }, { "label": "款宽款深", "value": "经典系列宽款深、流行系列宽款浅" } ] },
+    { "outputId": "po-wave",       "targetModule": "波段企划",     "targetIcon": "📅",        "outputs": [ { "label": "波段主题",   "value": "每波段命中 ≥ 3 个 DNA 关键词" }, { "label": "系列角色", "value": "形象/主推/常青" }, { "label": "上市节奏", "value": "创意先锋随主推同步上市，提前 2 周预热" } ] },
+    { "outputId": "po-otb",        "targetModule": "OTB预算",      "targetIcon": "💰",        "outputs": [ { "label": "系列 OTB 占比", "value": "创意 8% / 流行 32% / 经典 60%" }, { "label": "品类预算边界", "value": "户外鞋 ≤ 10%、入门凉鞋 ≤ 15%" }, { "label": "价格带预算", "value": "主力 599-899 ≥ 50%" } ] },
+    { "outputId": "po-design",     "targetModule": "设计计划",     "targetIcon": "🎨",        "outputs": [ { "label": "品牌 DNA",     "value": "趣味 / 异想 / 质朴 / 舒适" }, { "label": "设计表达", "value": "保留 1 处趣味亮点、不破坏舒适" }, { "label": "色彩/材质边界", "value": "主色克制、点缀色大胆、可持续材质优先" }, { "label": "不可偏离", "value": "舒适 / 质朴关键词为底线" } ] },
+    { "outputId": "po-pnl",        "targetModule": "损益 / 现金流", "targetIcon": "💹",       "outputs": [ { "label": "价格底线",     "value": "¥299（凉鞋入门）" }, { "label": "折扣安全线",  "value": "≥ 0.7 折后毛利率仍 ≥ 35%" }, { "label": "毛利率要求",  "value": "整体 ≥ 58%、创意先锋 ≥ 62%" }, { "label": "库存投入边界", "value": "创意 8% / 流行 32% / 经典 60%" } ] }
+  ],
+  "relatedModuleLinks": [
+    { "linkId": "rl-annual",     "targetModule": "年度总控",    "targetIcon": "🗺️", "relationship": "总控承接品牌定位 → 拆为年度销售/毛利/OTB", "actionLabel": "查看年度拆解" },
+    { "linkId": "rl-consumer",   "targetModule": "消费者画像",  "targetIcon": "🧑‍🤝‍🧑", "relationship": "目标客群 → 校准实际客群偏移",             "actionLabel": "校准消费者画像" },
+    { "linkId": "rl-competitor", "targetModule": "竞品&趋势",   "targetIcon": "🧭",        "relationship": "竞品分层 + 趋势取舍清单",                  "actionLabel": "校准竞品范围" },
+    { "linkId": "rl-category",   "targetModule": "品类运营",    "targetIcon": "📋",        "relationship": "品类边界 + 系列占比",                       "actionLabel": "调整品类结构" },
+    { "linkId": "rl-wave",       "targetModule": "波段企划",    "targetIcon": "📅",        "relationship": "波段主题需命中 DNA 关键词",                "actionLabel": "调整波段主题" },
+    { "linkId": "rl-otb",        "targetModule": "OTB预算",     "targetIcon": "💰",        "relationship": "OTB 系列占比 → 价格带预算边界",            "actionLabel": "调整系列 OTB" },
+    { "linkId": "rl-pnl",        "targetModule": "损益",        "targetIcon": "💹",        "relationship": "价格底线 / 折扣安全线 → 毛利约束",         "actionLabel": "查看价格风险" },
+    { "linkId": "rl-cashflow",   "targetModule": "现金流",      "targetIcon": "💧",        "relationship": "系列 OTB → 库存投入 → 现金占用",           "actionLabel": "查看现金影响" },
+    { "linkId": "rl-inventory",  "targetModule": "库存健康",    "targetIcon": "📦",        "relationship": "品牌库存边界 + 清货策略",                    "actionLabel": "查看定位健康度" },
+    { "linkId": "rl-design",     "targetModule": "设计计划",    "targetIcon": "🎨",        "relationship": "DNA 关键词 → 设计 Brief 输入",              "actionLabel": "生成设计 Brief" }
+  ]
+}

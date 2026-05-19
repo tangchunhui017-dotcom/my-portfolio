@@ -9,6 +9,7 @@ import DashboardSummaryButton from '@/components/dashboard/DashboardSummaryButto
 import SkuDetailModal, { SkuDrillData } from '@/components/dashboard/SkuDetailModal';
 import OverviewKpiBar from '@/components/dashboard/OverviewKpiBar';
 import AnnualControlPanel from '@/components/dashboard/AnnualControlPanel';
+import BrandPositioningPanel from '@/components/dashboard/BrandPositioningPanel';
 import NarrativeSummary from '@/components/dashboard/NarrativeSummary';
 import ProductBasicPanel from '@/components/dashboard/ProductBasicPanel';
 import CategoryOpsPanel from '@/components/dashboard/CategoryOpsPanel';
@@ -44,10 +45,8 @@ import { THRESHOLDS } from '@/config/thresholds';
 import { GlobalConfigProvider, useGlobalConfig } from '@/context/GlobalConfigContext';
 import { MerchConfigProvider } from '@/context/MerchConfigContext';
 import GlobalConfigDrawer from '@/components/config/GlobalConfigDrawer';
-import BusinessLoopHeader from '@/components/dashboard/BusinessLoopHeader';
-import { DASHBOARD_TAB_TO_CONFIG_TAB } from '@/config/dashboardTabMap';
 
-type DashboardTab = 'overview' | 'annual-control' | 'consumer' | 'category' | 'channel' | 'planning' | 'otb' | 'cashflow' | 'forecast' | 'profit-loss' | 'competitor' | 'inventory';
+type DashboardTab = 'overview' | 'annual-control' | 'brand-positioning' | 'consumer' | 'category' | 'channel' | 'planning' | 'otb' | 'cashflow' | 'forecast' | 'profit-loss' | 'competitor' | 'inventory';
 type DashboardRecord = ReturnType<typeof useDashboardFilter>['filteredRecords'][number];
 type DashboardFilterWindow = Window & { __openDashboardFilterBar?: () => void };
 
@@ -87,15 +86,16 @@ function persistStoredOtbNavigationContext(context: OtbNavigationContext | null)
 const TABS: { key: DashboardTab; label: string; icon: string }[] = [
     { key: 'overview', label: '总览', icon: '📊' },
     { key: 'annual-control', label: '年度总控', icon: '🗺️' },
-    { key: 'channel', label: '区域&门店', icon: '🏪' },
+    { key: 'brand-positioning', label: '品牌定位', icon: '🧬' },
     { key: 'consumer', label: '消费者画像', icon: '🧑‍🤝‍🧑' },
+    { key: 'competitor', label: '竞品&趋势', icon: '🧭' },
+    { key: 'channel', label: '区域&门店', icon: '🏪' },
     { key: 'category', label: '品类运营', icon: '📋' },
     { key: 'planning', label: '波段企划', icon: '📅' },
-    { key: 'otb', label: 'OTB预算', icon: '💰' },
-    { key: 'cashflow', label: '现金流', icon: '💧' },
     { key: 'forecast', label: '销售预测', icon: '📈' },
+    { key: 'otb', label: 'OTB预算', icon: '💰' },
     { key: 'profit-loss', label: '损益', icon: '💹' },
-    { key: 'competitor', label: '竞品&趋势', icon: '🧭' },
+    { key: 'cashflow', label: '现金流', icon: '💧' },
     { key: 'inventory', label: '库存健康', icon: '📦' },
 ];
 
@@ -467,6 +467,29 @@ function DashboardPageInner() {
                             </button>
                             <DashboardSummaryButton kpis={kpis} filterSummary={filterSummary} iconOnly={true} />
                             <MetricsDrawer iconOnly={true} />
+                            <button
+                                type="button"
+                                onClick={() => setConfigOpen(true)}
+                                title="中台配置"
+                                className="relative flex h-8 w-[42px] items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                            >
+                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                    <path
+                                        d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"
+                                        stroke="currentColor"
+                                        strokeWidth="1.4"
+                                    />
+                                    <path
+                                        d="M16.2 11.4a6.3 6.3 0 0 0 0-2.8l1.5-1.1-1.6-2.8-1.8.6a6.3 6.3 0 0 0-2.4-1.4L11.5 2h-3l-.4 1.9a6.3 6.3 0 0 0-2.4 1.4l-1.8-.6L2.3 7.5l1.5 1.1a6.3 6.3 0 0 0 0 2.8l-1.5 1.1 1.6 2.8 1.8-.6a6.3 6.3 0 0 0 2.4 1.4l.4 1.9h3l.4-1.9a6.3 6.3 0 0 0 2.4-1.4l1.8.6 1.6-2.8-1.5-1.1Z"
+                                        stroke="currentColor"
+                                        strokeWidth="1.4"
+                                        strokeLinejoin="round"
+                                    />
+                                </svg>
+                                {!config.isConfigured && (
+                                    <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400" />
+                                )}
+                            </button>
                         </div>
                     </div>
 
@@ -484,16 +507,6 @@ function DashboardPageInner() {
                                 <span>{tab.label}</span>
                             </button>
                         ))}
-                        <div className="ml-auto pl-4 flex-shrink-0 pb-0.5">
-                            <button
-                                onClick={() => setConfigOpen(true)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-sky-50 text-sky-700 border border-sky-100 hover:bg-sky-100 transition-colors"
-                            >
-                                <span>⚙️</span>
-                                <span>中台配置</span>
-                                {!config.isConfigured && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 ml-0.5" />}
-                            </button>
-                        </div>
                     </div>
 
                     {/* 默认参数提示 */}
@@ -513,10 +526,6 @@ function DashboardPageInner() {
                         />
                     )}
 
-                    <BusinessLoopHeader
-                        tabKey={DASHBOARD_TAB_TO_CONFIG_TAB[activeTab]}
-                        onJumpToTab={(tab) => jumpToTab(tab)}
-                    />
 
                     {activeTab === 'overview' && kpis && (
                         <>
@@ -552,6 +561,9 @@ function DashboardPageInner() {
                             onJumpToTab={jumpToTab}
                             onJumpToDesignReview={jumpToDesignReview}
                         />
+                    )}
+                    {activeTab === 'brand-positioning' && (
+                        <BrandPositioningPanel onJumpToTab={(tab) => jumpToTab(tab)} />
                     )}
                     {activeTab === 'consumer' && (
                         <ProductBasicPanel

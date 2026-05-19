@@ -408,10 +408,10 @@ export function useRegionQuarterOps(
     const { data: dimSkuRawData } = useDimSku();
     const { data: dimChannelRawData } = useDimChannel();
     const { data: factOpsData } = useFactOpsForDashboard(filters.season_year);
-    const salesRecords = (factSalesData ?? []) as FactSalesRecord[];
-    const skuRecords = (dimSkuRawData ?? []) as DimSku[];
-    const channelRecords = (dimChannelRawData ?? []) as DimChannel[];
-    const factOps = (factOpsData ?? []) as DashboardOpsFactRecord[];
+    const salesRecords = useMemo(() => (factSalesData ?? []) as FactSalesRecord[], [factSalesData]);
+    const skuRecords = useMemo(() => (dimSkuRawData ?? []) as DimSku[], [dimSkuRawData]);
+    const channelRecords = useMemo(() => (dimChannelRawData ?? []) as DimChannel[], [dimChannelRawData]);
+    const factOps = useMemo(() => (factOpsData ?? []) as DashboardOpsFactRecord[], [factOpsData]);
 
     const latestYear = useMemo(() => getLatestYear(salesRecords), [salesRecords]);
     const skuMap = useMemo(() => Object.fromEntries(skuRecords.map((sku) => [sku.sku_id, sku])), [skuRecords]);
@@ -666,5 +666,5 @@ export function useRegionQuarterOps(
                 reorder_rate: totals.reorder_rate,
             },
         };
-    }, [channelMap, factOps, filters, latestYear, scope, skuMap]);
+    }, [channelMap, channelRecords, factOps, filters, latestYear, salesRecords, scope, skuMap]);
 }

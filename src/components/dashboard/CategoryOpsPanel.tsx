@@ -21,6 +21,10 @@ import paretoData from '../../../data/planning/category_pareto_distribution.json
 import sizeData from '../../../data/planning/category_size_supply_demand.json';
 import lifecycle7Data from '../../../data/planning/category_lifecycle_7stages.json';
 import actionLogData from '../../../data/planning/category_action_log.json';
+import designSignalRaw from '../../../data/planning/category_design_signals.json';
+import otbRecommRaw from '../../../data/planning/category_otb_recommendations.json';
+import CategoryDesignSignal from './CategoryDesignSignal';
+import CategoryOtbRecommendation from './CategoryOtbRecommendation';
 
 function safeDiv(numerator: number, denominator: number) {
     if (denominator <= 0) return 0;
@@ -238,7 +242,7 @@ export default function CategoryOpsPanel({
     const [depthGroupBy, setDepthGroupBy] = useState<DepthGroupBy>('all');
     const [depthGroupValue, setDepthGroupValue] = useState<string>('all');
     const [supplyRankingDimension, setSupplyRankingDimension] = useState<'category' | 'series'>('category');
-    const [deepTab, setDeepTab] = useState<'structure' | 'contribution' | 'pareto' | 'supply' | 'sku'>('structure');
+    const [deepTab, setDeepTab] = useState<'structure' | 'contribution' | 'pareto' | 'supply' | 'sku' | 'action'>('structure');
     // Action Center close-loop state (completed/transferred/cancelled)
     const [actionStatuses, setActionStatuses] = useState<Record<string, 'pending' | 'done' | 'transferred' | 'cancelled'>>(() => {
         const init: Record<string, 'pending' | 'done' | 'transferred' | 'cancelled'> = {};
@@ -248,6 +252,7 @@ export default function CategoryOpsPanel({
         return init;
     });
     const [sizeView, setSizeView] = useState<'combined' | 'female' | 'male'>('combined');
+    const [categoryDetailExpanded, setCategoryDetailExpanded] = useState(false);
 
     const {
         totals,
@@ -1491,6 +1496,29 @@ export default function CategoryOpsPanel({
         return { boostCats, reduceCats, riskCats, boostSales, reduceSaves };
     }, [scatterPoints, scatterReference]);
 
+    // OTB 增加 / 冻结建议（来自静态 JSON 数据）
+    const otbDecisionSummary = useMemo(() => {
+        const otbData = otbRecommRaw as Array<{
+            category: string;
+            currentOtb: number;
+            recommendedOtb: number;
+            adjustment: number;
+            adjustmentReason: string;
+            recommendedAction: string;
+            riskLevel: string;
+        }>;
+        const increaseOtb = otbData.filter((r) => r.adjustment > 0).sort((a, b) => b.adjustment - a.adjustment).slice(0, 3);
+        const freezeOtb = otbData.filter((r) => r.adjustment < 0).sort((a, b) => a.adjustment - b.adjustment).slice(0, 3);
+        const totalIncrease = increaseOtb.reduce((s, r) => s + r.adjustment, 0);
+        const totalFreeze = Math.abs(freezeOtb.reduce((s, r) => s + r.adjustment, 0));
+        // 下一波设计方向：取 continue + hero_visual 的前 3 个
+        const continueSignals = (designSignalRaw as Array<{ shoeType: string; designRecommendation: string; colorStory?: string; funcTags?: string[]; salesGrowth: number }>)
+            .filter((d) => d.designRecommendation === 'continue' || d.designRecommendation === 'hero_visual')
+            .sort((a, b) => b.salesGrowth - a.salesGrowth)
+            .slice(0, 3);
+        return { increaseOtb, freezeOtb, totalIncrease, totalFreeze, continueSignals };
+    }, []);
+
     const lifecycleDiagnosis = useMemo(() => {
         const groups = new Map<string, typeof scatterPoints>();
         scatterPoints.forEach((p) => {
@@ -1697,7 +1725,7 @@ export default function CategoryOpsPanel({
                     <div>
                         <div className="text-xs uppercase tracking-wide text-slate-400">Category Operations</div>
                         <h2 className="text-lg font-bold text-slate-900">品类运营决策工作台</h2>
-                        <p className="mt-0.5 text-xs text-slate-500">帮助商品企划、设计、运营负责人判断各品类是否值得投入，并输出明确动作</p>
+                        <p className="mt-0.5 text-xs text-slate-500">鞋类品牌品类增长与结构优化 · 经营结果 → 角色定位 → 结构诊断 → SKU效率 → 供需 → 款宽款深 → 设计信号 → OTB/波段/库存动作建议</p>
                     </div>
                     <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
                         口径：{compareMeta.modeLabel} ｜ 净销 {formatAmount(totals.netSales)} ｜ 品类层级：二级
@@ -1707,47 +1735,46 @@ export default function CategoryOpsPanel({
             </section>
 
             {/* 1. 决策摘要区 */}
-            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+            <section className="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-5 shadow-sm">
                 <div className="mb-4">
-                    <h3 className="text-sm font-bold text-slate-900">品类运营决策摘要</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">本期品类运营关键结论 · 红=必须处理，黄=观察，绿=健康</p>
+                    <h3 className="text-sm font-bold text-slate-900">品类决策摘要</h3>
+                    <p className="text-xs text-slate-500 mt-0.5">本期品类运营关键结论 · 首屏直接回答 6 个核心决策问题</p>
                 </div>
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                    <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    {/* 1. 建议加码品类 */}
+                    <div className="rounded-xl border border-emerald-200 bg-white/80 p-4">
                         <div className="flex items-center gap-2 mb-3">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                            <span className="text-xs font-bold text-emerald-800">最应该加码的 3 个品类</span>
+                            <span className="text-xs font-bold text-emerald-800">建议加码品类</span>
                         </div>
                         {decisionSummary.boostCats.map((cat, i) => (
                             <div key={i} className="flex items-center justify-between py-1.5 border-b border-emerald-100 last:border-0">
                                 <div className="min-w-0 mr-2">
-                                    <span className="text-sm font-semibold text-slate-900">{cat.name}</span>
-                                    <span className="ml-1.5 text-[10px] rounded px-1.5 py-0.5 bg-emerald-100 text-emerald-700">{cat.role}</span>
+                                    <span className="text-xs font-semibold text-slate-900">{cat.name}</span>
+                                    <span className="ml-1.5 text-[10px] rounded px-1 bg-emerald-100 text-emerald-700">{cat.role}</span>
                                 </div>
-                                <div className="text-right shrink-0">
-                                    <div className="text-xs font-medium text-emerald-700">{cat.momentum >= 0 ? '+' : ''}{(cat.momentum * 100).toFixed(1)}%</div>
-                                    <div className="text-[10px] text-slate-500">GM {formatPct(cat.gmRate)}</div>
+                                <div className="text-right shrink-0 text-[10px]">
+                                    <div className="font-medium text-emerald-700">{cat.momentum >= 0 ? '+' : ''}{(cat.momentum * 100).toFixed(1)}%</div>
+                                    <div className="text-slate-400">GM {formatPct(cat.gmRate)}</div>
                                 </div>
                             </div>
                         ))}
-                        {decisionSummary.boostCats.length === 0 && <div className="text-xs text-slate-400 py-2">暂无加码推荐</div>}
+                        {decisionSummary.boostCats.length === 0 && <div className="text-xs text-slate-400 py-2">暂无推荐</div>}
                         <div className="mt-2 text-[10px] text-emerald-600">预计增量：{formatAmount(decisionSummary.boostSales)}</div>
                     </div>
 
-                    <div className="rounded-xl border border-rose-200 bg-rose-50/60 p-4">
+                    {/* 2. 建议控制/收缩品类 */}
+                    <div className="rounded-xl border border-rose-200 bg-white/80 p-4">
                         <div className="flex items-center gap-2 mb-3">
                             <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
-                            <span className="text-xs font-bold text-rose-800">最应该收缩的 3 个品类</span>
+                            <span className="text-xs font-bold text-rose-800">建议控制品类</span>
                         </div>
                         {decisionSummary.reduceCats.map((cat, i) => (
                             <div key={i} className="flex items-center justify-between py-1.5 border-b border-rose-100 last:border-0">
-                                <div className="min-w-0 mr-2">
-                                    <span className="text-sm font-semibold text-slate-900">{cat.name}</span>
-                                    <span className="ml-1.5 text-[10px] rounded px-1.5 py-0.5 bg-rose-100 text-rose-700">{cat.role}</span>
-                                </div>
-                                <div className="text-right shrink-0">
-                                    <div className="text-xs font-medium text-rose-700">{cat.momentum >= 0 ? '+' : ''}{(cat.momentum * 100).toFixed(1)}%</div>
-                                    <div className="text-[10px] text-slate-500">{formatAmount(cat.netSales)}</div>
+                                <span className="text-xs font-semibold text-slate-900 truncate mr-2">{cat.name}</span>
+                                <div className="text-right shrink-0 text-[10px]">
+                                    <div className="font-medium text-rose-700">{cat.momentum >= 0 ? '+' : ''}{(cat.momentum * 100).toFixed(1)}%</div>
+                                    <div className="text-slate-400">{formatAmount(cat.netSales)}</div>
                                 </div>
                             </div>
                         ))}
@@ -1755,22 +1782,101 @@ export default function CategoryOpsPanel({
                         <div className="mt-2 text-[10px] text-rose-600">可释放资源：{formatAmount(decisionSummary.reduceSaves)}</div>
                     </div>
 
-                    <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4">
+                    {/* 3. 建议清理品类（低售罄高库存） */}
+                    <div className="rounded-xl border border-amber-200 bg-white/80 p-4">
                         <div className="flex items-center gap-2 mb-3">
                             <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                            <span className="text-xs font-bold text-amber-800">库存/毛利/售罄最高风险</span>
+                            <span className="text-xs font-bold text-amber-800">建议清理品类</span>
                         </div>
                         {decisionSummary.riskCats.map((cat, i) => (
                             <div key={i} className="flex items-center justify-between py-1.5 border-b border-amber-100 last:border-0">
-                                <span className="text-sm font-semibold text-slate-900 truncate mr-2">{cat.name}</span>
-                                <div className="text-right shrink-0">
-                                    <div className="text-xs font-medium text-amber-700">售罄 {formatPct(cat.sellThrough)}</div>
-                                    <div className="text-[10px] text-slate-500">GM {formatPct(cat.gmRate)}</div>
+                                <span className="text-xs font-semibold text-slate-900 truncate mr-2">{cat.name}</span>
+                                <div className="text-right shrink-0 text-[10px]">
+                                    <div className="font-medium text-amber-700">售罄 {formatPct(cat.sellThrough)}</div>
+                                    <div className="text-slate-400">GM {formatPct(cat.gmRate)}</div>
                                 </div>
                             </div>
                         ))}
-                        {decisionSummary.riskCats.length === 0 && <div className="text-xs text-slate-400 py-2">暂无风险预警</div>}
-                        <div className="mt-2 text-[10px] text-amber-600">↓ 在 Action Center 查看处理方案</div>
+                        {decisionSummary.riskCats.length === 0 && <div className="text-xs text-slate-400 py-2">暂无清理推荐</div>}
+                        <div className="mt-2 text-[10px] text-amber-600">↓ 在 Action Center 查看清货方案</div>
+                    </div>
+
+                    {/* 4. 建议增加 OTB */}
+                    <div className="rounded-xl border border-sky-200 bg-white/80 p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="w-2 h-2 rounded-full bg-sky-500 shrink-0" />
+                            <span className="text-xs font-bold text-sky-800">建议追加 OTB</span>
+                        </div>
+                        {otbDecisionSummary.increaseOtb.map((r, i) => (
+                            <div key={i} className="flex items-center justify-between py-1.5 border-b border-sky-100 last:border-0">
+                                <span className="text-xs font-semibold text-slate-900 truncate mr-2">{r.category}</span>
+                                <span className="text-xs font-bold text-sky-700 shrink-0">+{formatAmount(r.adjustment)}</span>
+                            </div>
+                        ))}
+                        {otbDecisionSummary.increaseOtb.length === 0 && <div className="text-xs text-slate-400 py-2">暂无追加建议</div>}
+                        <div className="mt-2 text-[10px] text-sky-600">合计追加：{formatAmount(otbDecisionSummary.totalIncrease)}</div>
+                    </div>
+
+                    {/* 5. 建议冻结 OTB */}
+                    <div className="rounded-xl border border-orange-200 bg-white/80 p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="w-2 h-2 rounded-full bg-orange-500 shrink-0" />
+                            <span className="text-xs font-bold text-orange-800">建议冻结 OTB</span>
+                        </div>
+                        {otbDecisionSummary.freezeOtb.map((r, i) => (
+                            <div key={i} className="flex items-center justify-between py-1.5 border-b border-orange-100 last:border-0">
+                                <span className="text-xs font-semibold text-slate-900 truncate mr-2">{r.category}</span>
+                                <span className="text-xs font-bold text-orange-700 shrink-0">{formatAmount(r.adjustment)}</span>
+                            </div>
+                        ))}
+                        {otbDecisionSummary.freezeOtb.length === 0 && <div className="text-xs text-slate-400 py-2">暂无冻结建议</div>}
+                        <div className="mt-2 text-[10px] text-orange-600">可释放现金：{formatAmount(otbDecisionSummary.totalFreeze)}</div>
+                    </div>
+
+                    {/* 6. 下一波品类结构建议 */}
+                    <div className="rounded-xl border border-violet-200 bg-white/80 p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="w-2 h-2 rounded-full bg-violet-500 shrink-0" />
+                            <span className="text-xs font-bold text-violet-800">下一波品类结构</span>
+                        </div>
+                        {decisionSummary.boostCats.slice(0, 2).map((cat, i) => (
+                            <div key={i} className="py-1 border-b border-violet-100 last:border-0 text-xs">
+                                <span className="font-medium text-slate-800">{cat.name}</span>
+                                <span className="ml-1 text-slate-500">→ 加深 + 扩渠道</span>
+                            </div>
+                        ))}
+                        {decisionSummary.reduceCats.slice(0, 1).map((cat, i) => (
+                            <div key={i} className="py-1 border-b border-violet-100 last:border-0 text-xs">
+                                <span className="font-medium text-slate-800">{cat.name}</span>
+                                <span className="ml-1 text-slate-500">→ 控量 + 清仓</span>
+                            </div>
+                        ))}
+                        <div className="mt-2 text-[10px] text-violet-600">基于动量矩阵 + OTB数据综合推演</div>
+                    </div>
+
+                    {/* 7. 设计方向建议（鞋类专业） */}
+                    <div className="col-span-1 sm:col-span-2 rounded-xl border border-indigo-200 bg-white/80 p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
+                            <span className="text-xs font-bold text-indigo-800">下一波设计方向</span>
+                            <span className="text-[10px] text-slate-400 ml-1">来自设计信号 · 延续开发 + 主视觉方向</span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            {otbDecisionSummary.continueSignals.map((sig, i) => (
+                                <div key={i} className="rounded-lg border border-indigo-100 bg-indigo-50/50 px-3 py-2">
+                                    <div className="text-xs font-semibold text-slate-900">{sig.shoeType}</div>
+                                    {sig.colorStory && <div className="text-[10px] text-slate-500 mt-0.5">颜色：{sig.colorStory}</div>}
+                                    {sig.funcTags && sig.funcTags.length > 0 && (
+                                        <div className="mt-1 flex flex-wrap gap-1">
+                                            {sig.funcTags.slice(0, 3).map((tag) => (
+                                                <span key={tag} className="rounded bg-indigo-100 px-1.5 py-0.5 text-[9px] text-indigo-700">{tag}</span>
+                                            ))}
+                                        </div>
+                                    )}
+                                    <div className="mt-1 text-[10px] text-emerald-600">+{(sig.salesGrowth * 100).toFixed(0)}% 销售增长</div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1784,12 +1890,12 @@ export default function CategoryOpsPanel({
                     </div>
                     <div className="text-xs text-slate-400">{compareMeta.note}</div>
                 </div>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
-                    {businessKpis.slice(0, 7).map((card) => {
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8">
+                    {businessKpis.slice(0, 8).map((card) => {
                         const deltaPositive = card.deltaValue !== null && card.deltaValue > 0;
                         const deltaNegative = card.deltaValue !== null && card.deltaValue < 0;
                         return (
-                            <div key={card.id} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                            <div key={card.id} className={`rounded-xl border p-3 ${card.tone === 'good' ? 'border-emerald-200 bg-emerald-50' : card.tone === 'risk' ? 'border-rose-200 bg-rose-50' : 'border-amber-200 bg-amber-50'}`}>
                                 <div className="text-xs text-slate-500">{card.title}</div>
                                 <div className="mt-1 text-xl font-semibold text-slate-900">{formatBizValue(card)}</div>
                                 <div className="mt-1 flex items-center gap-1 text-xs">
@@ -1800,6 +1906,139 @@ export default function CategoryOpsPanel({
                             </div>
                         );
                     })}
+                </div>
+            </section>
+
+            {/* 2.1 品类 Action Center（经营总览后优先展示） */}
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-900">品类 Action Center</h3>
+                        <p className="text-xs text-slate-400 mt-0.5">P0=立即处理，P1=本周内，P2=机会追加 · 完成/转交/撤销闭环</p>
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => {
+                                setActionStatuses({});
+                                window.alert(`🤖 AI 已基于本期决策摘要重新生成 ${actionCenterV12.length} 项行动\n· 加码 3 项 → P2\n· 收缩 3 项 → P1\n· 高风险 3 项 → P0\n建议优先处理 P0 项目`);
+                            }}
+                            className="rounded-md border border-violet-300 bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-700 hover:bg-violet-100"
+                            title="基于决策摘要 3+3+3 + 风险数据，由 AI 自动生成本周行动清单"
+                        >🤖 AI 智能生成行动</button>
+                        <button onClick={exportPlanningChecklist} className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">导出企划纠偏清单</button>
+                    </div>
+                </div>
+                {/* 进度条 */}
+                <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    <div className="flex items-center gap-4 flex-wrap text-xs">
+                        <span className="font-semibold text-slate-700">本周 {actionProgress.total} 项</span>
+                        <span className="text-emerald-600">✓ 已完成 {actionProgress.done}</span>
+                        <span className="text-sky-600">→ 已转交 {actionProgress.transferred}</span>
+                        <span className="text-slate-400">✕ 已撤销 {actionProgress.cancelled}</span>
+                        <span className="text-amber-600 font-medium">待处理 {actionProgress.pending}</span>
+                        <div className="flex-1 min-w-[120px]">
+                            <div className="bg-slate-200 rounded-full h-2 overflow-hidden">
+                                <div className="h-2 bg-emerald-500 rounded-full transition-all" style={{ width: `${actionProgress.total > 0 ? ((actionProgress.done + actionProgress.transferred) / actionProgress.total) * 100 : 0}%` }} />
+                            </div>
+                        </div>
+                        <span className="text-slate-500">{actionProgress.total > 0 ? Math.round(((actionProgress.done + actionProgress.transferred) / actionProgress.total) * 100) : 0}% 处理率</span>
+                    </div>
+                </div>
+                <div className="space-y-3">
+                    {actionCenterV12.map((row) => {
+                        const status = actionStatuses[row.id] ?? 'pending';
+                        if (status === 'cancelled') return null;
+                        const prioStyle = row.priority === 'P0' ? 'border-rose-300 bg-rose-100 text-rose-800' : row.priority === 'P1' ? 'border-amber-300 bg-amber-100 text-amber-800' : 'border-sky-200 bg-sky-50 text-sky-700';
+                        const cardBg = status === 'done' ? 'border-emerald-100 bg-emerald-50/30 opacity-60' : status === 'transferred' ? 'border-sky-100 bg-sky-50/30 opacity-60' : row.priority === 'P0' ? 'border-rose-100 bg-rose-50/40' : row.priority === 'P1' ? 'border-amber-100 bg-amber-50/40' : 'border-sky-100 bg-sky-50/40';
+                        return (
+                            <div key={row.id} className={`rounded-xl border p-4 ${cardBg}`}>
+                                <div className="flex flex-wrap items-start gap-3 mb-2">
+                                    <span className={`shrink-0 rounded px-2 py-0.5 text-xs font-bold border ${prioStyle}`}>{row.priority}</span>
+                                    {status === 'done' && <span className="shrink-0 text-[10px] bg-emerald-100 text-emerald-700 rounded px-2 py-0.5 font-medium">✓ 已完成</span>}
+                                    {status === 'transferred' && <span className="shrink-0 text-[10px] bg-sky-100 text-sky-700 rounded px-2 py-0.5 font-medium">→ 已转交</span>}
+                                    <div className="flex-1 min-w-0">
+                                        <span className="text-sm font-bold text-slate-900">{row.category}</span>
+                                        <span className="ml-2 text-xs text-slate-500">{row.issue}</span>
+                                    </div>
+                                    {row.impactAmount > 0 && (
+                                        <div className="shrink-0 text-right">
+                                            <div className="text-[10px] text-slate-400">影响金额</div>
+                                            <div className="text-sm font-bold text-slate-900">{formatAmount(row.impactAmount)}</div>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2 mb-2">
+                                    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2"><span className="text-slate-400">原因：</span><span className="text-slate-700">{row.cause}</span></div>
+                                    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2"><span className="text-slate-400">建议动作：</span><span className="text-slate-700 font-medium">{row.action}</span></div>
+                                </div>
+                                {/* 影响预估行 */}
+                                <div className="mb-2 flex flex-wrap gap-2 border-t border-b border-slate-100 py-2 text-[10px]">
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-slate-400">📈 销售</span>
+                                        <span className={`font-medium ${row.impactAmount > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{row.impactAmount > 0 ? '+' : '-'}{formatAmount(Math.abs(row.impactAmount * 0.8))}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-slate-400">◎ 毛利</span>
+                                        <span className={`font-medium ${row.impactAmount > 0 ? 'text-emerald-600' : 'text-amber-600'}`}>{row.impactAmount > 0 ? '+' : '-'}{formatAmount(Math.abs(row.impactAmount * 0.3))}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-slate-400">📦 库存</span>
+                                        <span className="font-medium text-slate-600">{formatAmount(Math.abs(row.impactAmount * 0.5))}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-slate-400">💰 现金</span>
+                                        <span className={`font-medium ${row.modules.includes('OTB预算') ? 'text-rose-500' : 'text-emerald-600'}`}>{row.modules.includes('OTB预算') ? '-' : '+'}{formatAmount(Math.abs(row.impactAmount * 0.4))}</span>
+                                    </div>
+                                    {row.modules.includes('OTB预算') && (
+                                        <div className="flex items-center gap-1">
+                                            <span className="text-slate-400">🏷 OTB</span>
+                                            <span className="font-medium text-sky-600">{row.priority === 'P0' ? '冻结' : '追加'}</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex flex-wrap items-center gap-1.5">
+                                    {/* 具体动作按钮 */}
+                                    {row.modules.includes('OTB预算') && (
+                                        <button onClick={onJumpToOtb} className="rounded border border-sky-200 bg-sky-50 px-2.5 py-1 text-[10px] font-medium text-sky-700 hover:bg-sky-100">调整 OTB</button>
+                                    )}
+                                    {row.modules.includes('波段企划') && (
+                                        <button onClick={onJumpToPlanning} className="rounded border border-violet-200 bg-violet-50 px-2.5 py-1 text-[10px] font-medium text-violet-700 hover:bg-violet-100">生成波段建议</button>
+                                    )}
+                                    {row.modules.includes('库存健康') && (
+                                        <button onClick={onJumpToInventory} className="rounded border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-medium text-emerald-700 hover:bg-emerald-100">查看库存风险</button>
+                                    )}
+                                    {row.modules.includes('损益') && (
+                                        <button onClick={onJumpToProfitLoss} className="rounded border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-medium text-amber-700 hover:bg-amber-100">查看损益影响</button>
+                                    )}
+                                    {row.modules.includes('销售预测') && (
+                                        <button onClick={onJumpToForecast} className="rounded border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-medium text-slate-600 hover:bg-slate-50">调整销售预测</button>
+                                    )}
+                                    {(row.priority === 'P0' || row.modules.includes('设计方向')) && (
+                                        <button className="rounded border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-[10px] font-medium text-indigo-700 hover:bg-indigo-100 cursor-default">生成设计 Brief</button>
+                                    )}
+                                    {status === 'pending' && (
+                                        <div className="ml-auto flex gap-1.5">
+                                            <button
+                                                onClick={() => setActionStatuses((prev) => ({ ...prev, [row.id]: 'done' }))}
+                                                className="rounded border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-[10px] font-medium text-emerald-700 hover:bg-emerald-100"
+                                            >✓ 完成</button>
+                                            <button
+                                                onClick={() => setActionStatuses((prev) => ({ ...prev, [row.id]: 'transferred' }))}
+                                                className="rounded border border-sky-300 bg-sky-50 px-2.5 py-1 text-[10px] font-medium text-sky-700 hover:bg-sky-100"
+                                            >→ 转交</button>
+                                            <button
+                                                onClick={() => setActionStatuses((prev) => ({ ...prev, [row.id]: 'cancelled' }))}
+                                                className="rounded border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-medium text-slate-500 hover:bg-slate-100"
+                                            >✕ 撤销</button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
+                    {actionCenterV12.every((r) => actionStatuses[r.id] === 'cancelled') && (
+                        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 py-6 text-center text-xs text-slate-500">所有行动项已处理</div>
+                    )}
                 </div>
             </section>
 
@@ -2334,123 +2573,42 @@ export default function CategoryOpsPanel({
                 </div>
             </section>
 
-            {/* 8. Action Center 闭环版 */}
-            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                        <h3 className="text-sm font-bold text-slate-900">品类 Action Center</h3>
-                        <p className="text-xs text-slate-400 mt-0.5">P0=立即处理，P1=本周内，P2=机会追加 · 完成/转交/撤销闭环</p>
-                    </div>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => {
-                                // AI 基于决策摘要 3+3+3 + 风险数据自动生成新行动 — 此处把所有 cancelled/done 的项重置为 pending（模拟 AI 生成）
-                                setActionStatuses({});
-                                window.alert(`🤖 AI 已基于本期决策摘要重新生成 ${actionCenterV12.length} 项行动\n· 加码 3 项 → P2\n· 收缩 3 项 → P1\n· 高风险 3 项 → P0\n建议优先处理 P0 项目`);
-                            }}
-                            className="rounded-md border border-violet-300 bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-700 hover:bg-violet-100"
-                            title="基于决策摘要 3+3+3 + 风险数据，由 AI 自动生成本周行动清单"
-                        >🤖 AI 智能生成行动</button>
-                        <button onClick={exportPlanningChecklist} className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">导出企划纠偏清单</button>
-                    </div>
-                </div>
-                {/* 进度条 */}
-                <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                    <div className="flex items-center gap-4 flex-wrap text-xs">
-                        <span className="font-semibold text-slate-700">本周 {actionProgress.total} 项</span>
-                        <span className="text-emerald-600">✓ 已完成 {actionProgress.done}</span>
-                        <span className="text-sky-600">→ 已转交 {actionProgress.transferred}</span>
-                        <span className="text-slate-400">✕ 已撤销 {actionProgress.cancelled}</span>
-                        <span className="text-amber-600 font-medium">待处理 {actionProgress.pending}</span>
-                        <div className="flex-1 min-w-[120px]">
-                            <div className="bg-slate-200 rounded-full h-2 overflow-hidden">
-                                <div className="h-2 bg-emerald-500 rounded-full transition-all" style={{ width: `${actionProgress.total > 0 ? ((actionProgress.done + actionProgress.transferred) / actionProgress.total) * 100 : 0}%` }} />
-                            </div>
-                        </div>
-                        <span className="text-slate-500">{actionProgress.total > 0 ? Math.round(((actionProgress.done + actionProgress.transferred) / actionProgress.total) * 100) : 0}% 处理率</span>
-                    </div>
-                </div>
-                <div className="space-y-3">
-                    {actionCenterV12.map((row) => {
-                        const status = actionStatuses[row.id] ?? 'pending';
-                        if (status === 'cancelled') return null;
-                        const prioStyle = row.priority === 'P0' ? 'border-rose-300 bg-rose-100 text-rose-800' : row.priority === 'P1' ? 'border-amber-300 bg-amber-100 text-amber-800' : 'border-sky-200 bg-sky-50 text-sky-700';
-                        const cardBg = status === 'done' ? 'border-emerald-100 bg-emerald-50/30 opacity-60' : status === 'transferred' ? 'border-sky-100 bg-sky-50/30 opacity-60' : row.priority === 'P0' ? 'border-rose-100 bg-rose-50/40' : row.priority === 'P1' ? 'border-amber-100 bg-amber-50/40' : 'border-sky-100 bg-sky-50/40';
-                        return (
-                            <div key={row.id} className={`rounded-xl border p-4 ${cardBg}`}>
-                                <div className="flex flex-wrap items-start gap-3 mb-2">
-                                    <span className={`shrink-0 rounded px-2 py-0.5 text-xs font-bold border ${prioStyle}`}>{row.priority}</span>
-                                    {status === 'done' && <span className="shrink-0 text-[10px] bg-emerald-100 text-emerald-700 rounded px-2 py-0.5 font-medium">✓ 已完成</span>}
-                                    {status === 'transferred' && <span className="shrink-0 text-[10px] bg-sky-100 text-sky-700 rounded px-2 py-0.5 font-medium">→ 已转交</span>}
-                                    <div className="flex-1 min-w-0">
-                                        <span className="text-sm font-bold text-slate-900">{row.category}</span>
-                                        <span className="ml-2 text-xs text-slate-500">{row.issue}</span>
-                                    </div>
-                                    {row.impactAmount > 0 && (
-                                        <div className="shrink-0 text-right">
-                                            <div className="text-[10px] text-slate-400">影响金额</div>
-                                            <div className="text-sm font-bold text-slate-900">{formatAmount(row.impactAmount)}</div>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2 mb-2">
-                                    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2"><span className="text-slate-400">原因：</span><span className="text-slate-700">{row.cause}</span></div>
-                                    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2"><span className="text-slate-400">建议动作：</span><span className="text-slate-700 font-medium">{row.action}</span></div>
-                                </div>
-                                <div className="flex flex-wrap items-center gap-1.5">
-                                    {row.modules.map((mod, j) => {
-                                        const handler = mod === '库存健康' ? onJumpToInventory : mod === 'OTB预算' ? onJumpToOtb : mod === '销售预测' ? onJumpToForecast : mod === '损益' ? onJumpToProfitLoss : mod === '波段企划' ? onJumpToPlanning : undefined;
-                                        return (
-                                            <button key={j} onClick={handler} className={`rounded border px-2 py-0.5 text-[10px] border-slate-200 bg-white text-slate-600 ${handler ? 'hover:bg-slate-50 cursor-pointer' : 'opacity-60 cursor-default'}`}>→ {mod}</button>
-                                        );
-                                    })}
-                                    {status === 'pending' && (
-                                        <div className="ml-auto flex gap-1.5">
-                                            <button
-                                                onClick={() => setActionStatuses((prev) => ({ ...prev, [row.id]: 'done' }))}
-                                                className="rounded border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-[10px] font-medium text-emerald-700 hover:bg-emerald-100"
-                                            >✓ 完成</button>
-                                            <button
-                                                onClick={() => setActionStatuses((prev) => ({ ...prev, [row.id]: 'transferred' }))}
-                                                className="rounded border border-sky-300 bg-sky-50 px-2.5 py-1 text-[10px] font-medium text-sky-700 hover:bg-sky-100"
-                                            >→ 转交</button>
-                                            <button
-                                                onClick={() => setActionStatuses((prev) => ({ ...prev, [row.id]: 'cancelled' }))}
-                                                className="rounded border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-medium text-slate-500 hover:bg-slate-100"
-                                            >✕ 撤销</button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        );
-                    })}
-                    {actionCenterV12.every((r) => actionStatuses[r.id] === 'cancelled') && (
-                        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 py-6 text-center text-xs text-slate-500">所有行动项已处理</div>
-                    )}
-                </div>
-            </section>
+            {/* 8b. 设计信号 */}
+            <CategoryDesignSignal data={designSignalRaw as import('@/types/categoryOpsV13Types').DesignSignalItem[]} />
+
+            {/* 8c. 品类 OTB 建议 */}
+            <CategoryOtbRecommendation
+                data={otbRecommRaw as import('@/types/categoryOpsV13Types').CategoryOtbRecommendation[]}
+                onJumpToOtb={onJumpToOtb ? () => onJumpToOtb() : undefined}
+            />
 
             {/* 9. 品类经营明细表 */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                     <div>
                         <h3 className="text-sm font-bold text-slate-900">品类经营明细</h3>
-                        <p className="text-xs text-slate-400 mt-0.5">品类 × 角色 × 核心指标 · 按销售额降序</p>
+                        <p className="text-xs text-slate-400 mt-0.5">品类 × 角色 × 核心指标 · 按销售额降序 {!categoryDetailExpanded && `· 默认展示 Top 5（共 ${categoryDetailRows.length} 个品类）`}</p>
                     </div>
-                    <button
-                        onClick={() => {
-                            const rows = categoryDetailRows;
-                            const header = ['品类', '角色', '销售额', '动量', '售罄率', '毛利率', 'SKU数', '单SKU产出', '生命周期', '主力价格带', '建议动作', '优先级'];
-                            const csvRows = [header, ...rows.map((r) => [r.category, r.role, r.salesAmount, (r.achievementRate * 100).toFixed(1) + '%', (r.sellThrough * 100).toFixed(1) + '%', (r.gmRate * 100).toFixed(1) + '%', r.skuCount, Math.round(r.salesPerSkuVal), r.lifecycle, r.mainPriceBand, r.action, r.priority])];
-                            const csv = csvRows.map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
-                            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url; a.download = '品类经营明细.csv'; a.click();
-                            URL.revokeObjectURL(url);
-                        }}
-                        className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
-                    >⬇ 导出 CSV</button>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setCategoryDetailExpanded((prev) => !prev)}
+                            className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                        >{categoryDetailExpanded ? '← 收起' : `查看全部 ${categoryDetailRows.length} 个品类 ▼`}</button>
+                        <button
+                            onClick={() => {
+                                const rows = categoryDetailRows;
+                                const header = ['品类', '角色', '销售额', '动量', '售罄率', '毛利率', 'SKU数', '单SKU产出', '生命周期', '主力价格带', '建议动作', '优先级'];
+                                const csvRows = [header, ...rows.map((r) => [r.category, r.role, r.salesAmount, (r.achievementRate * 100).toFixed(1) + '%', (r.sellThrough * 100).toFixed(1) + '%', (r.gmRate * 100).toFixed(1) + '%', r.skuCount, Math.round(r.salesPerSkuVal), r.lifecycle, r.mainPriceBand, r.action, r.priority])];
+                                const csv = csvRows.map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+                                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url; a.download = '品类经营明细.csv'; a.click();
+                                URL.revokeObjectURL(url);
+                            }}
+                            className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                        >⬇ 导出 CSV</button>
+                    </div>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-xs">
@@ -2471,7 +2629,7 @@ export default function CategoryOpsPanel({
                             </tr>
                         </thead>
                         <tbody>
-                            {categoryDetailRows.map((row, i) => {
+                            {(categoryDetailExpanded ? categoryDetailRows : categoryDetailRows.slice(0, 5)).map((row, i) => {
                                 const roleColor = row.role === '加码品类' ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : row.role === '潜力品类' ? 'text-sky-700 bg-sky-50 border-sky-200' : row.role === '调结构品类' ? 'text-rose-700 bg-rose-50 border-rose-200' : 'text-slate-500 bg-slate-100 border-slate-200';
                                 const prioColor = row.priority === 'P0' ? 'text-rose-700 font-bold' : row.priority === 'P1' ? 'text-amber-700 font-bold' : row.priority === 'P2' ? 'text-sky-600' : 'text-slate-400';
                                 return (
@@ -2492,6 +2650,15 @@ export default function CategoryOpsPanel({
                                 );
                             })}
                             {categoryDetailRows.length === 0 && <tr><td colSpan={12} className="py-8 text-center text-slate-400">当前筛选下暂无品类数据</td></tr>}
+                            {!categoryDetailExpanded && categoryDetailRows.length > 5 && (
+                                <tr>
+                                    <td colSpan={12} className="py-3 text-center">
+                                        <button onClick={() => setCategoryDetailExpanded(true)} className="text-xs text-sky-600 hover:underline">
+                                            查看全部 {categoryDetailRows.length} 个品类 ▼
+                                        </button>
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
@@ -2566,14 +2733,14 @@ export default function CategoryOpsPanel({
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                     <div>
                         <h3 className="text-sm font-bold text-slate-900">分析视角</h3>
-                        <p className="text-xs text-slate-400 mt-0.5">品类结构 · 贡献瀑布 · SKU 帕累托 · 供需排名 · 单款深度</p>
+                        <p className="text-xs text-slate-400 mt-0.5">品类结构 · 贡献拆解 · SKU帕累托 · 供需效率 · 款宽款深 · 品类行动</p>
                     </div>
                 </div>
                 <div>
                         {/* Tab 栏 */}
                         <div className="inline-flex rounded-xl bg-slate-100 p-1 text-xs mb-4 flex-wrap gap-1">
-                            {(['structure', 'contribution', 'pareto', 'supply', 'sku'] as const).map((v) => {
-                                const labels: Record<string, string> = { structure: '品类结构', contribution: '贡献瀑布', pareto: 'SKU帕累托', supply: '供需排名', sku: 'SKU深度' };
+                            {(['structure', 'contribution', 'pareto', 'supply', 'sku', 'action'] as const).map((v) => {
+                                const labels: Record<string, string> = { structure: '品类结构', contribution: '贡献拆解', pareto: 'SKU帕累托', supply: '供需效率', sku: '款宽款深', action: '品类行动' };
                                 return (
                                     <button key={v} onClick={() => setDeepTab(v)} className={`px-3 py-1.5 rounded-lg transition-colors ${deepTab === v ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-600 hover:text-slate-800'}`}>{labels[v]}</button>
                                 );
@@ -2592,15 +2759,24 @@ export default function CategoryOpsPanel({
                                 </div>
                             </div>
                         )}
-                        {deepTab === 'contribution' && categoryWaterfall.length > 0 && (
+                        {deepTab === 'contribution' && (
                             <div className="rounded-xl border border-slate-100 p-4">
-                                <div className="mb-2 text-sm font-semibold text-slate-900">品类贡献瀑布图</div>
-                                <div className="mb-1 text-xs text-slate-500">{compareMeta.mode === 'none' ? '无对比模式下展示当前净销贡献（万）。' : `各品类 ${compareMeta.deltaLabel} 贡献，正值拉升、负值拖累。`}</div>
-                                <ReactECharts option={waterfallOption} onEvents={waterfallEvents} style={{ height: 300 }} notMerge />
-                                <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-2 text-xs text-slate-700">
-                                    <div>{waterfallSummary.headline}</div>
-                                    {waterfallSummary.bullets.map((b, i) => <div key={i} className="mt-0.5">{b}</div>)}
-                                </div>
+                                <div className="mb-2 text-sm font-semibold text-slate-900">贡献拆解</div>
+                                {categoryWaterfall.length > 0 ? (
+                                    <>
+                                        <div className="mb-1 text-xs text-slate-500">{compareMeta.mode === 'none' ? '无对比模式下展示当前净销贡献（万）。' : `各品类 ${compareMeta.deltaLabel} 贡献，正值拉升（绿）、负值拖累（红）。`}</div>
+                                        <ReactECharts option={waterfallOption} onEvents={waterfallEvents} style={{ height: 300 }} notMerge />
+                                        <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-2 text-xs text-slate-700">
+                                            <div>{waterfallSummary.headline}</div>
+                                            {waterfallSummary.bullets.map((b, i) => <div key={i} className="mt-0.5">{b}</div>)}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 py-10 text-center">
+                                        <div className="text-sm text-slate-500 mb-1">暂无对比数据</div>
+                                        <div className="text-xs text-slate-400">请在筛选器中选择对比模式（同比/环比），或确认当前筛选条件下有足够的历史销售数据</div>
+                                    </div>
+                                )}
                             </div>
                         )}
                         {deepTab === 'pareto' && (
@@ -2615,12 +2791,30 @@ export default function CategoryOpsPanel({
                         )}
                         {deepTab === 'supply' && (
                             <div className="rounded-xl border border-slate-100 p-4">
-                                <div className="mb-2 flex items-center justify-between">
-                                    <div className="text-sm font-semibold text-slate-900">供需比（销发比）排名</div>
+                                <div className="mb-3 flex items-center justify-between">
+                                    <div>
+                                        <div className="text-sm font-semibold text-slate-900">供需效率诊断</div>
+                                        <div className="text-xs text-slate-400 mt-0.5">销售占比 vs 库存占比 vs OTB占比 · 识别缺货/积压/超配/低效品类</div>
+                                    </div>
                                     <div className="inline-flex rounded-lg bg-slate-100 p-1 text-xs">
                                         <button onClick={() => setSupplyRankingDimension('category')} className={`rounded px-2 py-1 ${supplyRankingDimension === 'category' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}>品类</button>
                                         <button onClick={() => setSupplyRankingDimension('series')} className={`rounded px-2 py-1 ${supplyRankingDimension === 'series' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}>系列</button>
                                     </div>
+                                </div>
+                                {/* 诊断规则说明卡 */}
+                                <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-4 text-xs">
+                                    {[
+                                        { label: '销售 > 库存', badge: '缺货风险', bg: 'bg-amber-50 border-amber-200', text: 'text-amber-700', action: '建议补货/加深' },
+                                        { label: '销售 < 库存', badge: '积压风险', bg: 'bg-rose-50 border-rose-200', text: 'text-rose-700', action: '建议减单/清货' },
+                                        { label: 'OTB > 销售', badge: '采购超配', bg: 'bg-orange-50 border-orange-200', text: 'text-orange-700', action: '建议冻结OTB' },
+                                        { label: 'SKU多但销售低', badge: '款宽过宽', bg: 'bg-slate-50 border-slate-200', text: 'text-slate-600', action: '建议收窄款宽' },
+                                    ].map((rule) => (
+                                        <div key={rule.label} className={`rounded-lg border p-2 ${rule.bg}`}>
+                                            <div className={`font-semibold mb-0.5 ${rule.text}`}>{rule.badge}</div>
+                                            <div className="text-[10px] text-slate-500">{rule.label}</div>
+                                            <div className={`text-[10px] mt-0.5 ${rule.text}`}>{rule.action}</div>
+                                        </div>
+                                    ))}
                                 </div>
                                 {supplyRanking.rows.length > 0 ? (
                                     <ReactECharts option={supplyRankingOption} style={{ height: 280 }} notMerge />
@@ -2632,8 +2826,25 @@ export default function CategoryOpsPanel({
                         )}
                         {deepTab === 'sku' && (
                             <div className="rounded-xl border border-slate-100 p-4">
+                                <div className="mb-3">
+                                    <div className="text-sm font-semibold text-slate-900">款宽款深分析</div>
+                                    <div className="text-xs text-slate-400 mt-0.5">SKU宽度 · 平均款深 · 店均深度 · 四象限策略 · 核心尺码深度</div>
+                                </div>
+                                {/* 四象限说明 */}
+                                <div className="mb-4 grid grid-cols-2 gap-2 text-xs">
+                                    {[
+                                        { q: '深度不足 + 售罄高', action: '加深/补货', bg: 'bg-emerald-50 border-emerald-200', text: 'text-emerald-700' },
+                                        { q: '深度过大 + 售罄低', action: '减量/清货', bg: 'bg-rose-50 border-rose-200', text: 'text-rose-700' },
+                                        { q: '深度适中 + 售罄高', action: '下一波主推模板', bg: 'bg-sky-50 border-sky-200', text: 'text-sky-700' },
+                                        { q: '深度高 + 毛利低', action: '警惕折扣损失', bg: 'bg-amber-50 border-amber-200', text: 'text-amber-700' },
+                                    ].map((item) => (
+                                        <div key={item.q} className={`rounded-lg border p-2.5 ${item.bg}`}>
+                                            <div className="text-[10px] text-slate-500">{item.q}</div>
+                                            <div className={`font-semibold mt-0.5 ${item.text}`}>→ {item.action}</div>
+                                        </div>
+                                    ))}
+                                </div>
                                 <div className="mb-3 flex flex-wrap items-center gap-2">
-                                    <div className="text-sm font-semibold text-slate-900">单款深度策略</div>
                                     <div className="inline-flex rounded-lg bg-slate-100 p-1 text-xs">
                                         {([{ value: 'all' as const, label: '全部样本' }, { value: 'category' as const, label: '按品类' }, { value: 'price_band' as const, label: '按价格带' }, { value: 'lifecycle' as const, label: '按库龄' }]).map((opt) => (
                                             <button key={opt.value} onClick={() => { setDepthGroupBy(opt.value); setDepthGroupValue('all'); }} className={`px-2.5 py-1 rounded-md transition-colors ${depthGroupBy === opt.value ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-600'}`}>{opt.label}</button>
@@ -2663,6 +2874,32 @@ export default function CategoryOpsPanel({
                                 </div>
                             </div>
                         )}
+                        {deepTab === 'action' && (
+                            <div className="rounded-xl border border-slate-100 p-4">
+                                <div className="mb-3">
+                                    <div className="text-sm font-semibold text-slate-900">品类行动汇总</div>
+                                    <div className="text-xs text-slate-400 mt-0.5">本周全部品类行动项 · 可在 Action Center 完成闭环处理</div>
+                                </div>
+                                <div className="space-y-2">
+                                    {actionCenterV12.map((row) => {
+                                        const st = actionStatuses[row.id] ?? 'pending';
+                                        const prioStyle = row.priority === 'P0' ? 'bg-rose-100 text-rose-700' : row.priority === 'P1' ? 'bg-amber-100 text-amber-700' : 'bg-sky-100 text-sky-700';
+                                        const stStyle = st === 'done' ? 'text-emerald-600' : st === 'transferred' ? 'text-sky-600' : st === 'cancelled' ? 'text-slate-300 line-through' : 'text-slate-700';
+                                        return (
+                                            <div key={row.id} className="flex items-start gap-3 rounded-lg border border-slate-100 bg-white px-3 py-2.5">
+                                                <span className={`mt-0.5 shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold ${prioStyle}`}>{row.priority}</span>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className={`text-xs font-semibold ${stStyle}`}>{row.category} — {row.action}</div>
+                                                    <div className="text-[10px] text-slate-400 mt-0.5">{row.cause}</div>
+                                                </div>
+                                                {row.impactAmount > 0 && <div className="shrink-0 text-xs font-bold text-slate-800">{formatAmount(row.impactAmount)}</div>}
+                                            </div>
+                                        );
+                                    })}
+                                    {actionCenterV12.length === 0 && <div className="py-6 text-center text-xs text-slate-400">暂无行动项</div>}
+                                </div>
+                            </div>
+                        )}
                 </div>
             </section>
 
@@ -2672,14 +2909,16 @@ export default function CategoryOpsPanel({
                     <h3 className="text-sm font-bold text-slate-900">跨模块联动</h3>
                     <p className="text-xs text-slate-400 mt-0.5">品类运营与其他模块的双向联动入口 · 点击可直接跳转</p>
                 </div>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 mb-5">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8 mb-5">
                     {([
-                        { label: 'OTB预算', icon: '📦', desc: '下季备货计划', handler: onJumpToOtb, color: 'border-sky-200 hover:border-sky-400 hover:bg-sky-50' },
-                        { label: '波段企划', icon: '🗓', desc: '上新波次安排', handler: onJumpToPlanning, color: 'border-violet-200 hover:border-violet-400 hover:bg-violet-50' },
-                        { label: '销售预测', icon: '📈', desc: '预测修正建议', handler: onJumpToForecast, color: 'border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50' },
-                        { label: '损益分析', icon: '💹', desc: '毛利/费率追踪', handler: onJumpToProfitLoss, color: 'border-amber-200 hover:border-amber-400 hover:bg-amber-50' },
-                        { label: '库存健康', icon: '🏪', desc: '库存 & 售罄', handler: onJumpToInventory, color: 'border-rose-200 hover:border-rose-400 hover:bg-rose-50' },
-                        { label: '年度管控', icon: '🎯', desc: '年度目标达成', handler: undefined as (() => void) | undefined, color: 'border-slate-200 opacity-60 cursor-default' },
+                        { label: 'OTB预算', icon: '📦', desc: '调整品类采购预算、款宽款深和SKU深度', handler: onJumpToOtb, color: 'border-sky-200 hover:border-sky-400 hover:bg-sky-50' },
+                        { label: '波段企划', icon: '🗓', desc: '调整下一波品类结构、主推品类和上市节奏', handler: onJumpToPlanning, color: 'border-violet-200 hover:border-violet-400 hover:bg-violet-50' },
+                        { label: '销售预测', icon: '📈', desc: '查看品类未来增长、预测缺口和高风险SKU', handler: onJumpToForecast, color: 'border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50' },
+                        { label: '损益分析', icon: '💹', desc: '查看品类毛利、折扣损失和利润贡献', handler: onJumpToProfitLoss, color: 'border-amber-200 hover:border-amber-400 hover:bg-amber-50' },
+                        { label: '库存健康', icon: '🏪', desc: '查看品类库存、WOS、库龄和尺码完整率', handler: onJumpToInventory, color: 'border-rose-200 hover:border-rose-400 hover:bg-rose-50' },
+                        { label: '年度管控', icon: '🎯', desc: '年度目标达成与分季度拆解', handler: undefined as (() => void) | undefined, color: 'border-slate-200 opacity-60 cursor-default' },
+                        { label: '消费者画像', icon: '👥', desc: '查看目标人群偏好、购买场景和价格接受度', handler: undefined as (() => void) | undefined, color: 'border-slate-200 opacity-60 cursor-default' },
+                        { label: '竞品&趋势', icon: '🔍', desc: '查看竞品鞋型、颜色、材质和价格趋势', handler: undefined as (() => void) | undefined, color: 'border-slate-200 opacity-60 cursor-default' },
                     ] as Array<{ label: string; icon: string; desc: string; handler: (() => void) | undefined; color: string }>).map((card) => (
                         <button
                             key={card.label}

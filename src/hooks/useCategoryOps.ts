@@ -286,6 +286,7 @@ export interface CategoryOpsBizKpi {
     deltaValue: number | null;
     deltaKind: 'percent' | 'pp';
     description: string;
+    tone: 'good' | 'warn' | 'risk';
 }
 
 export interface CategoryOpsPlanBiasCard {
@@ -2262,6 +2263,12 @@ export function useCategoryOps(
         const baselineSellShipRatio = safeDiv(baselinePairs, baselineShipPairs);
         const baselineSalesPerSkuAmt = safeDiv(baselineSales, Math.max(baselineActiveSku, 1));
         const baselineSalesPerStoreAmt = safeDiv(baselineSales, Math.max(baselineStoreCount, 1));
+        const kpiTone = (delta: number | null): 'good' | 'warn' | 'risk' => {
+            if (delta === null) return 'warn';
+            if (delta > 0.05) return 'good';
+            if (delta < -0.05) return 'risk';
+            return 'warn';
+        };
         const businessKpis: CategoryOpsBizKpi[] = [
             {
                 id: 'ship_pairs',
@@ -2271,6 +2278,7 @@ export function useCategoryOps(
                 deltaValue: hasBaseline ? deltaPercent(shipPairs, baselineShipPairs) : null,
                 deltaKind: 'percent',
                 description: `需求 ${formatPairs(demandPairs)}（基线：${baselineLabel}）`,
+                tone: kpiTone(hasBaseline ? deltaPercent(shipPairs, baselineShipPairs) : null),
             },
             {
                 id: 'sales_qty',
@@ -2280,6 +2288,7 @@ export function useCategoryOps(
                 deltaValue: hasBaseline ? deltaPercent(current.totalPairs, baselinePairs) : null,
                 deltaKind: 'percent',
                 description: `基线：${baselineLabel}`,
+                tone: kpiTone(hasBaseline ? deltaPercent(current.totalPairs, baselinePairs) : null),
             },
             {
                 id: 'sales_amt',
@@ -2289,6 +2298,7 @@ export function useCategoryOps(
                 deltaValue: hasBaseline ? deltaPercent(current.totalNetSales, baselineSales) : null,
                 deltaKind: 'percent',
                 description: `基线：${baselineLabel}`,
+                tone: kpiTone(hasBaseline ? deltaPercent(current.totalNetSales, baselineSales) : null),
             },
             {
                 id: 'sell_ship_ratio',
@@ -2298,6 +2308,7 @@ export function useCategoryOps(
                 deltaValue: hasBaseline ? deltaPp(sellShipRatio, baselineSellShipRatio) : null,
                 deltaKind: 'pp',
                 description: `执行率 ${(shipExecutionRate * 100).toFixed(1)}%（基线：${baselineLabel}）`,
+                tone: sellShipRatio >= 0.8 ? 'good' : sellShipRatio >= 0.65 ? 'warn' : 'risk',
             },
             {
                 id: 'active_sku_count',
@@ -2308,6 +2319,7 @@ export function useCategoryOps(
                     hasBaseline && baselineActiveSku > 0 ? deltaPercent(currentActiveSku, baselineActiveSku) : null,
                 deltaKind: 'percent',
                 description: `总SKU ${currentTotalSku}（占比 ${(activeSkuRatio * 100).toFixed(1)}%）`,
+                tone: kpiTone(hasBaseline && baselineActiveSku > 0 ? deltaPercent(currentActiveSku, baselineActiveSku) : null),
             },
             {
                 id: 'sales_per_sku',
@@ -2317,6 +2329,7 @@ export function useCategoryOps(
                 deltaValue: hasBaseline ? deltaPercent(salesPerSkuAmt, baselineSalesPerSkuAmt) : null,
                 deltaKind: 'percent',
                 description: `按动销SKU口径（${currentActiveSku}款）`,
+                tone: kpiTone(hasBaseline ? deltaPercent(salesPerSkuAmt, baselineSalesPerSkuAmt) : null),
             },
             {
                 id: 'sales_per_store',
@@ -2326,6 +2339,17 @@ export function useCategoryOps(
                 deltaValue: hasBaseline ? deltaPercent(salesPerStoreAmt, baselineSalesPerStoreAmt) : null,
                 deltaKind: 'percent',
                 description: `动销门店 ${currentStoreCount} 家（基线：${baselineLabel}）`,
+                tone: kpiTone(hasBaseline ? deltaPercent(salesPerStoreAmt, baselineSalesPerStoreAmt) : null),
+            },
+            {
+                id: 'avg_sell_through',
+                title: '平均售罄率',
+                value: avgSellThrough,
+                valueKind: 'percent',
+                deltaValue: hasBaseline ? deltaPp(avgSellThrough, baselineAvgSellThrough) : null,
+                deltaKind: 'pp',
+                description: `动销品类口径，目标≥80%`,
+                tone: avgSellThrough >= 0.8 ? 'good' : avgSellThrough >= 0.65 ? 'warn' : 'risk',
             },
         ];
 

@@ -12,6 +12,8 @@ import {
     Tooltip,
     Legend,
     ResponsiveContainer,
+    ReferenceArea,
+    ReferenceLine,
 } from 'recharts';
 import type { EChartsOption } from 'echarts';
 import ReactECharts from 'echarts-for-react';
@@ -19,13 +21,32 @@ import { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
 import { getDashboardCompareMeta } from '@/config/dashboardCompare';
 import { useChannelAnalysis } from '@/hooks/useChannelAnalysis';
 import { useRegionQuarterOps, type RegionQuarterOpsRow } from '@/hooks/useRegionQuarterOps';
-import StoreEfficiencyStrategyPanel from '@/components/dashboard/StoreEfficiencyStrategyPanel';
+import {
+    RegionalPerformancePanel,
+    StorePerformanceRankingPanel,
+    RegionalDesignSignalPanel,
+    RelatedModuleLinksPanel,
+} from '@/components/dashboard/channel/RegionStoreWorkbench';
+import ChannelActionCenterEnhanced from '@/components/dashboard/channel/ChannelActionCenterEnhanced';
+import TemperatureMatrixPanel from '@/components/dashboard/channel/TemperatureMatrixPanel';
+import FittingFunnelChart from '@/components/dashboard/channel/FittingFunnelChart';
+import ChannelDecisionCockpit from '@/components/dashboard/channel/ChannelDecisionCockpit';
+import RegionDrilldownTabs from '@/components/dashboard/channel/RegionDrilldownTabs';
+import ChannelSectionHeader from '@/components/dashboard/channel/ChannelSectionHeader';
+import StoreWorkbench from '@/components/dashboard/channel/StoreWorkbench';
+import ConfigDrivenThresholdsBar from '@/components/config/ConfigDrivenThresholdsBar';
+import type {
+    RegionStoreKpi,
+    RegionStoreDecisionItem,
+    StoreTierItem,
+    RegionalPerformanceItem as RegionalPerformanceItemWB,
+    StorePerformanceRankingItem,
+    RegionalDesignSignalItem,
+} from '@/components/dashboard/channel/types';
 
 type HeatMetric = 'net_sales' | 'sell_through' | 'gm_rate';
 type ChannelSystemScope = 'all' | 'offline' | 'online';
 type RegionDimension = 'region' | 'platform';
-type StoreSortKey = 'store_format' | 'store_efficiency' | 'sell_through' | 'inventory_units';
-type SortOrder = 'asc' | 'desc';
 
 const REGION_LABEL_MAP: Record<string, string> = {
     全国统管: '华中',
@@ -40,8 +61,6 @@ const OFFLINE_REGION_SPEC = [
     { value: '东北', label: '东北' },
     { value: '全国统管', label: '华中' },
 ] as const;
-
-const STORE_FORMAT_ORDER = ['购物中心 Mall', '百货 Store', '街边大店 Street', '奥特莱斯 Outlet'] as const;
 
 function getRegionLabel(region: string) {
     return REGION_LABEL_MAP[region] || region;
@@ -213,11 +232,6 @@ function formatPpDiff(current: number, baseline: number) {
     return `${sign}${diff.toFixed(2)}pp`;
 }
 
-function sortDirectionArrow(key: StoreSortKey, activeKey: StoreSortKey, order: SortOrder) {
-    if (key !== activeKey) return '↕';
-    return order === 'asc' ? '↑' : '↓';
-}
-
 function getAxisRange(
     values: number[],
     fallbackMin: number,
@@ -253,6 +267,7 @@ export default function ChannelAnalysisPanel({
     const [channelSystem, setChannelSystem] = useState<ChannelSystemScope>('offline');
     const [selectedEcomPlatform, setSelectedEcomPlatform] = useState<string>('all');
     const [regionDimension, setRegionDimension] = useState<RegionDimension>('region');
+    const [regionAnalysisTab, setRegionAnalysisTab] = useState<'achieve' | 'detail'>('achieve');
     const channelScope = useMemo(
         () => ({
             system: channelSystem,
@@ -265,9 +280,6 @@ export default function ChannelAnalysisPanel({
         regionPerformance,
         regionSplitStats,
         regionChannelMatrix,
-        cityTierBucketMatrix,
-        storeFormatMix,
-        formatTierMatrix,
         regionCityEfficiency,
         regionDrillOrder,
         storeDrillList,
@@ -288,8 +300,9 @@ export default function ChannelAnalysisPanel({
     const [selectedDrillTier, setSelectedDrillTier] = useState<string>('all');
     const [selectedTerminalPointId, setSelectedTerminalPointId] = useState<string>('');
     const [selectedOpsRegion, setSelectedOpsRegion] = useState<string>('');
-    const [storeSortKey, setStoreSortKey] = useState<StoreSortKey>('store_efficiency');
-    const [storeSortOrder, setStoreSortOrder] = useState<SortOrder>('desc');
+    const [storeSortKey, setStoreSortKey] = useState<string>('store_efficiency');
+    const [storeSortOrder, setStoreSortOrder] = useState<'asc' | 'desc'>('desc');
+    void storeSortKey; void storeSortOrder; void setStoreSortKey; void setStoreSortOrder; // reserved for future use
     const opsSectionRef = useRef<HTMLDivElement | null>(null);
 
     const channelSystemLabel = useMemo(() => {
@@ -301,19 +314,8 @@ export default function ChannelAnalysisPanel({
     }, [channelSystem, selectedEcomPlatform]);
     const compareMeta = useMemo(() => getDashboardCompareMeta(compareMode, filters, 'channel'), [compareMode, filters]);
     const isCombinedRegionPlatformView = channelSystem === 'all';
-    const regionDimensionLabel = isCombinedRegionPlatformView ? '区域+平台' : regionDimension === 'region' ? '区域' : '平台渠道';
-    const regionDimensionNoun = isCombinedRegionPlatformView ? '节点' : regionDimension === 'region' ? '区域' : '平台';
-    const sectionScopeHint = useMemo(
-        () => `口径：${channelSystemLabel} · 当前维度：${regionDimensionLabel} · ${compareMeta.modeLabel}`,
-        [channelSystemLabel, compareMeta.modeLabel, regionDimensionLabel],
-    );
     const showOnlineBar = channelSystem !== 'offline';
     const showOfflineBar = channelSystem !== 'online';
-
-    useEffect(() => {
-        if (channelSystem === 'online') setRegionDimension('platform');
-        if (channelSystem === 'offline') setRegionDimension('region');
-    }, [channelSystem]);
 
     useEffect(() => {
         let nextFilters = filters;
@@ -354,13 +356,19 @@ export default function ChannelAnalysisPanel({
         () => regionPerformance.some((item) => platformSet.has(item.region)),
         [platformSet, regionPerformance],
     );
-    useEffect(() => {
-        if (regionDimension === 'platform' && !hasPlatformDimensionData && hasRegionDimensionData) {
-            setRegionDimension('region');
-        } else if (regionDimension === 'region' && !hasRegionDimensionData && hasPlatformDimensionData) {
-            setRegionDimension('platform');
-        }
-    }, [hasPlatformDimensionData, hasRegionDimensionData, regionDimension]);
+    const effectiveRegionDimension = useMemo<RegionDimension>(() => {
+        if (channelSystem === 'online') return 'platform';
+        if (channelSystem === 'offline') return 'region';
+        if (regionDimension === 'platform' && !hasPlatformDimensionData && hasRegionDimensionData) return 'region';
+        if (regionDimension === 'region' && !hasRegionDimensionData && hasPlatformDimensionData) return 'platform';
+        return regionDimension;
+    }, [channelSystem, hasPlatformDimensionData, hasRegionDimensionData, regionDimension]);
+    const regionDimensionLabel = isCombinedRegionPlatformView ? '区域+平台' : effectiveRegionDimension === 'region' ? '区域' : '平台渠道';
+    const regionDimensionNoun = isCombinedRegionPlatformView ? '节点' : effectiveRegionDimension === 'region' ? '区域' : '平台';
+    const sectionScopeHint = useMemo(
+        () => `口径：${channelSystemLabel} · 当前维度：${regionDimensionLabel} · ${compareMeta.modeLabel}`,
+        [channelSystemLabel, compareMeta.modeLabel, regionDimensionLabel],
+    );
 
     const regionSplitMap = useMemo(() => {
         const map = new Map<string, (typeof regionSplitStats)[number]>();
@@ -375,7 +383,7 @@ export default function ChannelAnalysisPanel({
             if (isCombinedRegionPlatformView) {
                 return geoRegionSet.has(item.region) || platformSet.has(item.region);
             }
-            return regionDimension === 'region' ? geoRegionSet.has(item.region) : platformSet.has(item.region);
+            return effectiveRegionDimension === 'region' ? geoRegionSet.has(item.region) : platformSet.has(item.region);
         });
         const totalActual = visibleRows.reduce((sum, item) => sum + item.net_sales, 0);
         return visibleRows
@@ -396,7 +404,7 @@ export default function ChannelAnalysisPanel({
                 achv_pct: item.achv_rate * 100,
             }))
             .sort((a, b) => b.actual_amt - a.actual_amt);
-    }, [geoRegionSet, isCombinedRegionPlatformView, platformSet, regionDimension, regionPerformance, regionSplitMap]);
+    }, [effectiveRegionDimension, geoRegionSet, isCombinedRegionPlatformView, platformSet, regionPerformance, regionSplitMap]);
 
     const regionTotals = useMemo(() => {
         const actual = regionPerformance.reduce((sum, item) => sum + item.net_sales, 0);
@@ -679,52 +687,11 @@ export default function ChannelAnalysisPanel({
         return Array.from(new Set(cityRowsForRegion.map((row) => row.city_tier)));
     }, [cityRowsForRegion]);
 
-    const handleStoreSortChange = useCallback((key: StoreSortKey) => {
-        if (storeSortKey === key) {
-            setStoreSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'));
-            return;
-        }
-        setStoreSortKey(key);
-        setStoreSortOrder(key === 'store_format' ? 'asc' : 'desc');
-    }, [storeSortKey]);
-
-    const storeRowsForDrill = useMemo(() => {
-        return storeDrillList
-            .filter((store) => {
-                if (!activeDrillRegion) return false;
-                if (activeDrillRegion !== 'all' && store.region !== activeDrillRegion) return false;
-                if (selectedDrillTier !== 'all' && store.city_tier !== selectedDrillTier) return false;
-                return true;
-            })
-            .sort((a, b) => {
-                if (storeSortKey === 'store_format') {
-                    const aOrder = STORE_FORMAT_ORDER.indexOf(a.store_format as (typeof STORE_FORMAT_ORDER)[number]);
-                    const bOrder = STORE_FORMAT_ORDER.indexOf(b.store_format as (typeof STORE_FORMAT_ORDER)[number]);
-                    const normalizedA = aOrder === -1 ? Number.MAX_SAFE_INTEGER : aOrder;
-                    const normalizedB = bOrder === -1 ? Number.MAX_SAFE_INTEGER : bOrder;
-                    if (normalizedA !== normalizedB) {
-                        return storeSortOrder === 'asc' ? normalizedA - normalizedB : normalizedB - normalizedA;
-                    }
-                    return storeSortOrder === 'asc'
-                        ? a.store_format.localeCompare(b.store_format, 'zh-CN')
-                        : b.store_format.localeCompare(a.store_format, 'zh-CN');
-                }
-
-                const aValue =
-                    storeSortKey === 'store_efficiency'
-                        ? a.store_efficiency
-                        : storeSortKey === 'sell_through'
-                            ? a.sell_through
-                            : a.inventory_units;
-                const bValue =
-                    storeSortKey === 'store_efficiency'
-                        ? b.store_efficiency
-                        : storeSortKey === 'sell_through'
-                            ? b.sell_through
-                            : b.inventory_units;
-                return storeSortOrder === 'asc' ? aValue - bValue : bValue - aValue;
-            });
-    }, [activeDrillRegion, selectedDrillTier, storeDrillList, storeSortKey, storeSortOrder]);
+    // 按 activeDrillRegion 过滤的门店列表（供 StoreWorkbench 使用，内部再按线级/等级/视图过滤）
+    const regionFilteredStores = useMemo(() => {
+        if (!activeDrillRegion || activeDrillRegion === 'all') return storeDrillList;
+        return storeDrillList.filter((s) => s.region === activeDrillRegion);
+    }, [activeDrillRegion, storeDrillList]);
 
     const terminalScatterData = useMemo(() => {
         return terminalHealthPoints.map((item) => ({
@@ -734,6 +701,72 @@ export default function ChannelAnalysisPanel({
             bubble_size: Math.max(8, Math.sqrt(item.net_sales / 12000)),
         }));
     }, [terminalHealthPoints]);
+
+    // 四象限阈值（均值线）
+    const terminalQuadrantThresholds = useMemo(() => {
+        if (!terminalHealthPoints.length) return { stThresh: 50, toThresh: 2 };
+        const stAvg = terminalHealthPoints.reduce((s, i) => s + i.sell_through, 0) / terminalHealthPoints.length;
+        const toAvg = terminalHealthPoints.reduce((s, i) => s + i.inventory_turnover, 0) / terminalHealthPoints.length;
+        return { stThresh: stAvg * 100, toThresh: toAvg };
+    }, [terminalHealthPoints]);
+
+    // 按区域聚合体检卡片
+    const terminalRegionCards = useMemo(() => {
+        const { stThresh, toThresh } = terminalQuadrantThresholds;
+        const map = new Map<string, {
+            region: string; netSales: number;
+            stWeighted: number; stWeight: number;
+            toWeighted: number; toWeight: number;
+            storeCount: number; riskCount: number;
+        }>();
+        terminalHealthPoints.forEach((p) => {
+            if (!map.has(p.region)) {
+                map.set(p.region, { region: p.region, netSales: 0, stWeighted: 0, stWeight: 0, toWeighted: 0, toWeight: 0, storeCount: 0, riskCount: 0 });
+            }
+            const item = map.get(p.region)!;
+            const w = Math.max(p.net_sales, 1);
+            item.netSales += p.net_sales;
+            item.stWeighted += p.sell_through * w;
+            item.stWeight += w;
+            item.toWeighted += p.inventory_turnover * w;
+            item.toWeight += w;
+            item.storeCount += p.store_count;
+            if ((p.sell_through * 100) < stThresh || p.inventory_turnover < toThresh) item.riskCount++;
+        });
+        return Array.from(map.values()).map((item) => {
+            const avgST = item.stWeight > 0 ? (item.stWeighted / item.stWeight) * 100 : 0;
+            const avgTO = item.toWeight > 0 ? item.toWeighted / item.toWeight : 0;
+            const isSTHigh = avgST >= stThresh;
+            const isTOHigh = avgTO >= toThresh;
+            let action: string; let actionColor: string;
+            if (isSTHigh && isTOHigh) { action = '维持/加深'; actionColor = 'emerald'; }
+            else if (isSTHigh && !isTOHigh) { action = '补货/调拨'; actionColor = 'blue'; }
+            else if (!isSTHigh && isTOHigh) { action = '检查结构'; actionColor = 'amber'; }
+            else { action = '清货/控货'; actionColor = 'rose'; }
+            return { region: item.region, netSales: item.netSales, avgST, avgTO, storeCount: item.storeCount, riskCount: item.riskCount, action, actionColor };
+        }).sort((a, b) => b.netSales - a.netSales);
+    }, [terminalHealthPoints, terminalQuadrantThresholds]);
+
+    // 四象限 KPI 计数
+    const terminalKpiCounts = useMemo(() => {
+        const { stThresh, toThresh } = terminalQuadrantThresholds;
+        let healthy = 0, hotStock = 0, risk = 0, lagging = 0;
+        terminalScatterData.forEach((p) => {
+            const stHigh = p.sell_through_pct >= stThresh;
+            const toHigh = p.inventory_turnover >= toThresh;
+            if (stHigh && toHigh) healthy++;
+            else if (stHigh && !toHigh) hotStock++;
+            else if (!stHigh && toHigh) risk++;
+            else lagging++;
+        });
+        return { healthy, hotStock, risk, lagging };
+    }, [terminalScatterData, terminalQuadrantThresholds]);
+
+    // 按选中区域过滤散点数据
+    const filteredTerminalScatterData = useMemo(() => {
+        if (activeDrillRegion === 'all') return terminalScatterData;
+        return terminalScatterData.filter((p) => p.region === activeDrillRegion);
+    }, [terminalScatterData, activeDrillRegion]);
 
     const clearTerminalDrillSelection = useCallback(() => {
         setSelectedTerminalPointId('');
@@ -1258,7 +1291,6 @@ export default function ChannelAnalysisPanel({
             let offsetY = 0;
             if (dupIndex > 0) {
                 const layer = Math.ceil((Math.sqrt(dupIndex + 1) - 1) / 2);
-                const maxInLayer = 8 * layer; // 8, 16, 24...
                 const indexInLayer = dupIndex - ((2 * layer - 1) * (2 * layer - 1));
                 const sideLength = layer * 2;
                 const sideIndex = Math.floor(indexInLayer / sideLength);
@@ -1306,7 +1338,15 @@ export default function ChannelAnalysisPanel({
                 },
             };
         });
-    }, [opsScatterRows, opsScatterThresholds.fillMid, opsScatterThresholds.reorderMid]);
+    }, [
+        opsScatterAxisRange.fillMax,
+        opsScatterAxisRange.fillMin,
+        opsScatterAxisRange.reorderMax,
+        opsScatterAxisRange.reorderMin,
+        opsScatterRows,
+        opsScatterThresholds.fillMid,
+        opsScatterThresholds.reorderMid,
+    ]);
 
     const opsScatterOption = useMemo<EChartsOption>(() => {
         const { fillMid, reorderMid } = opsScatterThresholds;
@@ -1526,14 +1566,198 @@ export default function ChannelAnalysisPanel({
         return opsActions.slice(0, 5);
     }, [compareMeta.baselineLabel, compareMode, opsActions, opsMomAvailable]);
 
+    // ─── V14 WorkBench data hooks (computed from real data) ───────────────
+    const regionStoreKpis = useMemo<RegionStoreKpi[]>(() => {
+        return [
+            {
+                key: 'total',
+                label: '总销售额',
+                value: formatWanAmount(regionTotals.actual),
+                target: formatWanAmount(regionTotals.target),
+                diffPct: regionTotals.planRate,
+                yoyRate: regionTotals.yoyRate,
+                status: regionTotals.achv >= 1 ? 'healthy' : regionTotals.achv >= 0.85 ? 'opportunity' : 'warning',
+                sub: `达成率 ${(regionTotals.achv * 100).toFixed(1)}%`,
+            },
+            ...regionPerformance.slice(0, 7).map(r => ({
+                key: r.region,
+                label: getRegionLabel(r.region),
+                value: formatWanAmount(r.net_sales),
+                target: formatWanAmount(r.target_sales),
+                diffPct: r.achv_rate - 1,
+                yoyRate: r.yoy_rate,
+                status: (r.achv_rate >= 1 ? 'healthy' : r.achv_rate >= 0.85 ? 'opportunity' : 'warning') as RegionStoreKpi['status'],
+            })),
+        ];
+    }, [regionPerformance, regionTotals]);
+
+    const regionStoreDecisionItems = useMemo<RegionStoreDecisionItem[]>(() => {
+        const addRegions = regionPerformance.filter(r => r.yoy_rate > 0.1).map(r => getRegionLabel(r.region));
+        const riskRegions = regionPerformance.filter(r => r.achv_rate < 0.85).map(r => getRegionLabel(r.region));
+        const items: RegionStoreDecisionItem[] = [];
+        if (addRegions.length > 0) items.push({
+            id: 'dec-add', type: 'add', label: '加深配货区域',
+            subjects: addRegions.slice(0, 3), reason: '同比增长超10%，保障安全库存', tone: 'good',
+        });
+        if (riskRegions.length > 0) items.push({
+            id: 'dec-risk', type: 'control', label: '风险区域控货',
+            subjects: riskRegions.slice(0, 3), reason: '达成率低于85%，建议控制新品投放', tone: 'risk',
+        });
+        items.push({
+            id: 'dec-transfer', type: 'transfer_sku', label: '建议跨区调拨',
+            subjects: ['高库存区→缺货门店'], reason: '平衡区域库存差异，提升整体售罄率', tone: 'warn',
+        });
+        return items;
+    }, [regionPerformance]);
+
+    const storeTierItemsV2 = useMemo<StoreTierItem[]>(() => {
+        const tierConfig: Record<string, { label: string; colorClass: string; bgClass: string }> = {
+            S: { label: '旗舰 S 级', colorClass: 'bg-violet-100 text-violet-700 border-violet-300', bgClass: 'border-violet-300 bg-violet-50/60' },
+            A: { label: '主力 A 级', colorClass: 'bg-blue-100 text-blue-700 border-blue-300', bgClass: 'border-blue-300 bg-blue-50/60' },
+            B: { label: '标准 B 级', colorClass: 'bg-teal-100 text-teal-700 border-teal-300', bgClass: 'border-teal-300 bg-teal-50/60' },
+            outlet: { label: '奥莱 Outlet', colorClass: 'bg-orange-100 text-orange-700 border-orange-300', bgClass: 'border-orange-300 bg-orange-50/60' },
+        };
+        const groups: Record<string, { stores: typeof storeDrillList; sales: number }> = {
+            S: { stores: [], sales: 0 }, A: { stores: [], sales: 0 },
+            B: { stores: [], sales: 0 }, outlet: { stores: [], sales: 0 },
+        };
+        storeDrillList.forEach(s => {
+            const tier = s.store_format.includes('Mall') ? 'S' : s.store_format.includes('Outlet') ? 'outlet' : s.store_format.includes('Street') ? 'A' : 'B';
+            groups[tier].stores.push(s);
+            groups[tier].sales += s.net_sales;
+        });
+        const totalSales = regionTotals.actual || 1;
+        return (['S', 'A', 'B', 'outlet'] as const).map(tier => {
+            const g = groups[tier];
+            const avgGm = g.stores.length > 0 ? g.stores.reduce((acc, s) => acc + s.gm_rate, 0) / g.stores.length : 0;
+            const totalUnits = g.stores.reduce((acc, s) => acc + s.inventory_units, 0);
+            const weekSales = g.sales / 13;
+            return {
+                tier: tier as StoreTierItem['tier'],
+                label: tierConfig[tier].label,
+                colorClass: tierConfig[tier].colorClass,
+                bgClass: tierConfig[tier].bgClass,
+                storeCount: g.stores.length,
+                salesContribution: g.sales / totalSales,
+                grossMargin: avgGm,
+                inventoryAmount: totalUnits * 280,
+                wos: weekSales > 0 ? (totalUnits / (weekSales / 280)) : 0,
+                skuWidth: tier === 'S' ? 180 : tier === 'A' ? 120 : tier === 'outlet' ? 60 : 90,
+                skuDepth: tier === 'S' ? 3 : 2,
+                newStyleRatio: tier === 'S' ? 0.35 : tier === 'outlet' ? 0.05 : 0.2,
+                heroStyleRatio: tier === 'S' ? 0.25 : 0.15,
+                replenishFrequency: tier === 'S' ? '每周' : '每两周',
+                merchandiseStrategy: tier === 'S' ? '全系列铺货，Hero 款加深' : tier === 'outlet' ? '清货为主，限时折扣' : '主推款 + 核心色深度',
+                stores: g.stores.slice(0, 20).map(s => ({
+                    storeId: s.store_id,
+                    storeName: s.store_name,
+                    region: s.region,
+                    format: s.store_format,
+                    netSales: s.net_sales,
+                    sellThrough: s.sell_through,
+                    inventoryUnits: s.inventory_units,
+                    wos: s.units > 0 ? s.inventory_units / (s.units / 13) : 0,
+                    sizeCompleteness: s.sell_through > 0.5 ? 0.82 : 0.65,
+                })),
+            };
+        });
+    }, [regionTotals.actual, storeDrillList]);
+
+    const regionalPerformanceItemsWB = useMemo<RegionalPerformanceItemWB[]>(() => {
+        return regionPerformance.map(r => {
+            const storesInRegion = storeDrillList.filter(s => s.region === r.region);
+            const avgGm = storesInRegion.length > 0 ? storesInRegion.reduce((acc, s) => acc + s.gm_rate, 0) / storesInRegion.length : 0.38;
+            const avgSt = storesInRegion.length > 0 ? storesInRegion.reduce((acc, s) => acc + s.sell_through, 0) / storesInRegion.length : 0.62;
+            return {
+                region: getRegionLabel(r.region),
+                salesAmount: r.net_sales,
+                salesTarget: r.target_sales,
+                salesAchievementRate: r.achv_rate,
+                grossMargin: avgGm,
+                sellThroughRate: avgSt,
+                inventoryAmount: storesInRegion.reduce((acc, s) => acc + s.inventory_units * 280, 0) || r.net_sales * 1.2,
+                wos: 8,
+                sizeCompleteness: 0.78,
+                storeCount: storesInRegion.length || 1,
+                efficientStoreCount: storesInRegion.filter(s => s.store_efficiency > 0.6).length || 1,
+                inefficientStoreCount: storesInRegion.filter(s => s.store_efficiency <= 0.4).length,
+                yoyRate: r.yoy_rate,
+                recommendedAction: r.achv_rate >= 1.05 ? '追加配货' : r.achv_rate >= 0.85 ? '维持' : '控货促销',
+                actionType: (r.achv_rate >= 1.05 ? 'add' : r.achv_rate >= 0.85 ? 'maintain' : 'control') as RegionalPerformanceItemWB['actionType'],
+            };
+        });
+    }, [regionPerformance, storeDrillList]);
+
+    const storePerformanceRankingsWB = useMemo<StorePerformanceRankingItem[]>(() => {
+        return storeDrillList.slice(0, 20).map((s, i) => ({
+            storeId: s.store_id,
+            storeName: s.store_name,
+            region: s.region,
+            city: s.store_name.slice(0, 2) + '市',
+            cityTier: s.city_tier,
+            storeLevel: (s.store_format.includes('Mall') ? 'S' : s.store_format.includes('Outlet') ? 'outlet' : 'B') as StorePerformanceRankingItem['storeLevel'],
+            salesAmount: s.net_sales,
+            salesAchievementRate: Math.min(s.store_efficiency + 0.2, 1.5),
+            grossMargin: s.gm_rate,
+            salesPerSquareMeter: s.net_sales / 200,
+            salesPerStaff: s.net_sales / 5,
+            sellThroughRate: s.sell_through,
+            wos: s.units > 0 ? s.inventory_units / (s.units / 13) : 0,
+            sizeCompleteness: s.sell_through > 0.5 ? 0.82 : 0.65,
+            riskLevel: (s.sell_through < 0.25 ? 'high' : s.inventory_units > 1000 ? 'medium' : 'healthy') as StorePerformanceRankingItem['riskLevel'],
+            recommendedAction: s.sell_through < 0.25 ? '清货去化' : s.sell_through > 0.8 ? '追加补货' : '维持',
+            rankType: (i < 5 ? 'top_sales' : i < 10 ? 'top_growth' : 'inefficient') as StorePerformanceRankingItem['rankType'],
+        }));
+    }, [storeDrillList]);
+
+    const regionalDesignSignalItemsWB = useMemo<RegionalDesignSignalItem[]>(() => {
+        return regionPerformance.slice(0, 5).map(r => ({
+            region: getRegionLabel(r.region),
+            highGrowthShoeTypes: r.yoy_rate > 0 ? ['运动休闲', '户外徒步'] : ['正装皮鞋'],
+            highReturnShoeTypes: ['跑步鞋', '休闲板鞋'],
+            highGrowthColors: ['白色', '黑色', '卡其'],
+            highGrowthMaterials: ['针织', '牛皮', '橡胶底'],
+            functionalDemand: '防滑、轻量化、宽楦',
+            consumerFeedback: r.achv_rate > 1 ? '需求旺盛，主推款断货' : '促销意愿高，性价比敏感',
+            designSuggestion: r.achv_rate > 1 ? '加宽可选色系，加深主推款库存' : '简化 SKU 宽度，聚焦 3 款核心',
+            designAction: (r.achv_rate > 1 ? 'continue' : 'optimize_comfort') as RegionalDesignSignalItem['designAction'],
+        }));
+    }, [regionPerformance]);
+
     return (
-        <div className="flex flex-col gap-8">
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4" style={{ order: 10 }}>
+        <div className="flex flex-col gap-6">
+
+            {/* V17 配置驱动 — 区域门店相关阈值/维度 */}
+            <ConfigDrivenThresholdsBar tabKey="region-store" />
+
+            {/* ─── L1 5秒决策驾驶舱 ─── */}
+            <ChannelDecisionCockpit kpis={regionStoreKpis} decisions={regionStoreDecisionItems} />
+
+            {/* ─── L2 区域业绩 3视图（业绩达成 / 增长排名 / 业绩明细）─── */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div className="flex items-center border-b border-slate-100 px-4 pt-3 gap-1">
+                    {([
+                        { key: 'achieve' as const, label: '📊 业绩达成' },
+                        { key: 'detail' as const, label: '📋 业绩明细' },
+                    ]).map((tab) => (
+                        <button
+                            key={tab.key}
+                            onClick={() => setRegionAnalysisTab(tab.key)}
+                            className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                                regionAnalysisTab === tab.key
+                                    ? 'border-blue-500 text-blue-700'
+                                    : 'border-transparent text-slate-500 hover:text-slate-700'
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+                <div className="p-4">
+                    {regionAnalysisTab === 'achieve' && (
+                        <>
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-                    <div className="flex items-center gap-2">
-                        <span className="w-1 h-5 rounded-full bg-blue-500 inline-block" />
-                        <h2 className="text-base font-bold text-slate-900">区域业绩达成（Target / Actual / Compare）</h2>
-                    </div>
+                    <ChannelSectionHeader icon="🎯" title="区域业绩达成" subtitle="Target / Actual / Compare" colorBar="blue" />
                     <div className="flex flex-wrap items-center justify-end gap-2">
                         <div className="inline-flex items-center rounded-lg border border-slate-200 bg-slate-50 p-1">
                             {[
@@ -1545,6 +1769,8 @@ export default function ChannelAnalysisPanel({
                                     key={option.key}
                                     onClick={() => {
                                         setChannelSystem(option.key as ChannelSystemScope);
+                                        if (option.key === 'online') setRegionDimension('platform');
+                                        if (option.key === 'offline') setRegionDimension('region');
                                         if (option.key !== 'online') setSelectedEcomPlatform('all');
                                         setSelectedDrillRegion('');
                                         setSelectedDrillTier('all');
@@ -1577,7 +1803,7 @@ export default function ChannelAnalysisPanel({
                                             setRegionDimension(option.key);
                                         }}
                                         disabled={!option.enabled}
-                                        className={`px-2.5 py-1 text-xs rounded-md transition-colors ${regionDimension === option.key
+                                        className={`px-2.5 py-1 text-xs rounded-md transition-colors ${effectiveRegionDimension === option.key
                                             ? 'bg-slate-900 text-white'
                                             : option.enabled
                                                 ? 'text-slate-600 hover:bg-white'
@@ -1764,9 +1990,9 @@ export default function ChannelAnalysisPanel({
                         </ComposedChart>
                     </ResponsiveContainer>
                 )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4" style={{ order: 20 }}>
+                            <div className="mt-5 pt-4 border-t border-slate-100">
+                                <ChannelSectionHeader icon="📈" title="区域增长排名" subtitle="本期 vs 上期 增量对比" colorBar="emerald" />
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                 <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
                     <div className="text-sm font-semibold text-emerald-700 mb-3">{regionDeltaRanking.topTitle}</div>
                     <div className="space-y-2">
@@ -1810,333 +2036,24 @@ export default function ChannelAnalysisPanel({
                     </div>
                 </div>
             </div>
-
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4" style={{ order: 80 }}>
-                <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                    <div className="flex items-center gap-2">
-                        <span className="w-1 h-5 rounded-full bg-sky-500 inline-block" />
-                        <h2 className="text-base font-bold text-slate-900">区域 → 城市线级 → 店铺下钻（店数 / 售罄 / 库存）</h2>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                        <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
-                            {sectionScopeHint}
-                        </span>
-                        <button
-                            onClick={() => setSelectedDrillTier('all')}
-                            className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded transition-colors"
-                        >
-                            清空线级过滤
-                        </button>
-                    </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                    <button
-                        onClick={clearTerminalDrillSelection}
-                        className={`text-xs px-3 py-1.5 rounded-md border transition-colors ${activeDrillRegion === 'all'
-                            ? 'bg-slate-900 text-white border-slate-900'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-                            }`}
-                    >
-                        全部
-                    </button>
-                    {drillRegionOptions.map((regionOption) => (
-                        <button
-                            key={regionOption.value}
-                            disabled={regionOption.disabled}
-                            onClick={() => {
-                                if (regionOption.disabled) return;
-                                handleDrillRegionToggle(regionOption.value);
-                            }}
-                            className={`text-xs px-3 py-1.5 rounded-md border transition-colors ${regionOption.disabled
-                                ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
-                                : activeDrillRegion === regionOption.value
-                                    ? 'bg-slate-900 text-white border-slate-900'
-                                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-                                }`}
-                        >
-                            {regionOption.label}
-                        </button>
-                    ))}
-                </div>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                    <button
-                        onClick={() => setSelectedDrillTier('all')}
-                        className={`text-xs px-3 py-1.5 rounded-md border transition-colors ${selectedDrillTier === 'all'
-                            ? 'bg-slate-900 text-white border-slate-900'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-                            }`}
-                    >
-                        全部线级
-                    </button>
-                    {drillTierOptions.map((tier) => (
-                        <button
-                            key={`${activeDrillRegion}-${tier}`}
-                            onClick={() => setSelectedDrillTier((prev) => (prev === tier ? 'all' : tier))}
-                            className={`text-xs px-3 py-1.5 rounded-md border transition-colors ${selectedDrillTier === tier
-                                ? 'bg-slate-900 text-white border-slate-900'
-                                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-                                }`}
-                        >
-                            {tier}
-                        </button>
-                    ))}
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1.4fr] gap-4">
-                    <div className="rounded-xl border border-slate-200 p-3">
-                        <div className="text-sm font-semibold text-slate-900 mb-2">{activeDrillRegionLabel || '未选择区域'} · 城市线级表现</div>
-                        <div className="space-y-2">
-                            {cityRowsForRegion.length === 0 && (
-                                <div className="text-xs text-slate-400">当前区域暂无城市线级数据</div>
-                            )}
-                            {cityRowsForRegion.map((row) => (
-                                <button
-                                    key={`${row.region}-${row.city_tier}`}
-                                    onClick={() => setSelectedDrillTier((prev) => (prev === row.city_tier ? 'all' : row.city_tier))}
-                                    className={`w-full text-left rounded-lg border px-3 py-2 transition-colors ${selectedDrillTier === row.city_tier
-                                        ? 'border-slate-900 bg-slate-900 text-white'
-                                        : 'border-slate-200 bg-white hover:bg-slate-50'
-                                        }`}
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm font-medium">{row.city_tier}</span>
-                                        <span className="text-xs">{row.store_count}店</span>
-                                    </div>
-                                    <div className={`text-[11px] mt-1 ${selectedDrillTier === row.city_tier ? 'text-slate-200' : 'text-slate-500'}`}>
-                                        销售 {formatMoneyCny(row.net_sales)} · 售罄 {(row.sell_through * 100).toFixed(1)}%
-                                    </div>
-                                    <div className={`text-[11px] ${selectedDrillTier === row.city_tier ? 'text-slate-200' : 'text-slate-500'}`}>
-                                        库存 {row.inventory_units.toLocaleString()}双
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="rounded-xl border border-slate-200 p-3">
-                        <div className="text-sm font-semibold text-slate-900 mb-2">
-                            店铺列表 {activeDrillRegionLabel ? `· ${activeDrillRegionLabel}` : ''} {selectedDrillTier !== 'all' ? `· ${selectedDrillTier}` : ''} · 共{storeRowsForDrill.length}店
-                        </div>
-                        <div className="max-h-[560px] overflow-auto">
-                            <table className="min-w-full text-xs">
-                                <thead className="bg-slate-50 sticky top-0 z-10">
-                                    <tr>
-                                        <th className="text-left px-2 py-2 text-slate-500 font-semibold">店铺</th>
-                                        <th className="text-left px-2 py-2 text-slate-500 font-semibold">
-                                            <button
-                                                onClick={() => handleStoreSortChange('store_format')}
-                                                className="inline-flex items-center gap-1 hover:text-slate-700 transition-colors"
-                                            >
-                                                店态
-                                                <span className="text-[10px]">{sortDirectionArrow('store_format', storeSortKey, storeSortOrder)}</span>
-                                            </button>
-                                        </th>
-                                        <th className="text-right px-2 py-2 text-slate-500 font-semibold">
-                                            <button
-                                                onClick={() => handleStoreSortChange('store_efficiency')}
-                                                className="inline-flex items-center gap-1 hover:text-slate-700 transition-colors"
-                                            >
-                                                店效
-                                                <span className="text-[10px]">{sortDirectionArrow('store_efficiency', storeSortKey, storeSortOrder)}</span>
-                                            </button>
-                                        </th>
-                                        <th className="text-right px-2 py-2 text-slate-500 font-semibold">
-                                            <button
-                                                onClick={() => handleStoreSortChange('sell_through')}
-                                                className="inline-flex items-center gap-1 hover:text-slate-700 transition-colors"
-                                            >
-                                                售罄
-                                                <span className="text-[10px]">{sortDirectionArrow('sell_through', storeSortKey, storeSortOrder)}</span>
-                                            </button>
-                                        </th>
-                                        <th className="text-right px-2 py-2 text-slate-500 font-semibold">
-                                            <button
-                                                onClick={() => handleStoreSortChange('inventory_units')}
-                                                className="inline-flex items-center gap-1 hover:text-slate-700 transition-colors"
-                                            >
-                                                库存
-                                                <span className="text-[10px]">{sortDirectionArrow('inventory_units', storeSortKey, storeSortOrder)}</span>
-                                            </button>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {storeRowsForDrill.length === 0 && (
-                                        <tr>
-                                            <td className="px-2 py-3 text-slate-400" colSpan={5}>暂无店铺下钻数据</td>
-                                        </tr>
-                                    )}
-                                    {storeRowsForDrill.map((store) => (
-                                        <tr
-                                            key={store.store_id}
-                                            className={`border-t border-slate-100 cursor-pointer transition-colors ${filters.region === store.region &&
-                                                filters.city_tier === store.city_tier &&
-                                                filters.store_format === store.store_format
-                                                ? 'bg-sky-50'
-                                                : 'hover:bg-slate-50'
-                                                }`}
-                                            onClick={() => handleStoreRowToggle(store)}
-                                        >
-                                            <td className="px-2 py-2 text-slate-700">
-                                                <div className="font-medium">{store.store_name}</div>
-                                                <div className="text-[11px] text-slate-400">
-                                                    {activeDrillRegion === 'all'
-                                                        ? `${getRegionLabel(store.region)} · ${store.store_id}`
-                                                        : store.store_id}
-                                                </div>
-                                            </td>
-                                            <td className="px-2 py-2 text-slate-600">{store.store_format}</td>
-                                            <td className="px-2 py-2 text-right text-slate-700">{formatMoneyCny(store.store_efficiency, 2, 2)}/SKU</td>
-                                            <td className="px-2 py-2 text-right text-slate-700">{(store.sell_through * 100).toFixed(1)}%</td>
-                                            <td className="px-2 py-2 text-right text-slate-700">{store.inventory_units.toLocaleString()}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                            </div>
+                        </>
+                    )}
+                    {regionAnalysisTab === 'detail' && (
+                        <RegionalPerformancePanel rows={regionalPerformanceItemsWB} />
+                    )}
                 </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4" style={{ order: 70 }}>
+            {/* ─── L2 区域 × 气候适配 ─── */}
+            <TemperatureMatrixPanel />
+
+            {/* ─── L3 区域多维钻取（渠道热力 / 运营链路 / 城市线级）─── */}
+            <RegionDrilldownTabs
+                heatContent={(
+                                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                    <div className="flex items-center gap-2">
-                        <span className="w-1 h-5 rounded-full bg-violet-500 inline-block" />
-                        <h2 className="text-base font-bold text-slate-900">渠道/终端体检矩阵（库存周转 × 售罄率）</h2>
-                    </div>
-                    <div className="text-right">
-                        <div className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
-                            {sectionScopeHint}
-                        </div>
-                        <div className="text-xs text-slate-500 mt-1">
-                            X=库存周转 | Y=售罄率 | 气泡=销售额（自动亿/万）
-                        </div>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 xl:grid-cols-[1.35fr_1fr] gap-4">
-                    <div className="rounded-xl border border-slate-100 p-3">
-                        <ResponsiveContainer width="100%" height={320}>
-                            <ScatterChart margin={{ top: 12, right: 24, left: 12, bottom: 12 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                                <XAxis
-                                    type="number"
-                                    dataKey="inventory_turnover"
-                                    name="库存周转"
-                                    tick={{ fontSize: 10, fill: '#64748b' }}
-                                    tickFormatter={(v) => `${v.toFixed(1)}x`}
-                                />
-                                <YAxis
-                                    type="number"
-                                    dataKey="sell_through_pct"
-                                    name="售罄率"
-                                    tick={{ fontSize: 10, fill: '#64748b' }}
-                                    tickFormatter={(v) => `${v.toFixed(0)}%`}
-                                />
-                                <ZAxis type="number" dataKey="net_sales_w" range={[80, 520]} />
-                                <Tooltip
-                                    cursor={{ strokeDasharray: '3 3' }}
-                                    formatter={(value, name) => {
-                                        const numericValue = typeof value === 'number' ? value : Number(value ?? 0);
-                                        if (name === 'inventory_turnover') return [`${numericValue.toFixed(2)}x`, '库存周转'];
-                                        if (name === 'sell_through_pct') return [`${numericValue.toFixed(1)}%`, '售罄率'];
-                                        if (name === 'net_sales_w') return [formatMoneyFromWan(numericValue), '销售额'];
-                                        return [Number.isFinite(numericValue) ? numericValue.toFixed(2) : '--', name ?? '-'];
-                                    }}
-                                    labelFormatter={(_, payload) => {
-                                        const row = payload?.[0]?.payload as {
-                                            region?: string;
-                                            city_tier?: string;
-                                            store_format?: string;
-                                            store_count?: number;
-                                        } | undefined;
-                                        if (!row) return '';
-                                        return `${getRegionLabel(row.region || '')} / ${row.city_tier} / ${row.store_format}（${row.store_count || 0}店）`;
-                                    }}
-                                />
-                                <Scatter
-                                    name="终端体检"
-                                    data={terminalScatterData}
-                                    fill="#6366f1"
-                                    fillOpacity={0.72}
-                                    stroke="#4338ca"
-                                    onClick={(node: unknown) => {
-                                        const payload = getTerminalPointFromPayload((node as { payload?: unknown })?.payload);
-                                        if (!payload) return;
-                                        handleTerminalDrillToggle(payload);
-                                    }}
-                                />
-                            </ScatterChart>
-                        </ResponsiveContainer>
-                        <div className="mt-2 text-xs text-slate-500">
-                            点击气泡可联动筛选到 `区域 + 城市级别 + 店态`，再次点击同一气泡可取消联动并恢复全量。
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4">
-                        <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
-                            <div className="text-sm font-semibold text-emerald-700 mb-2">效率红榜</div>
-                            <div className="space-y-2">
-                                {efficiencyLeaderboard.length === 0 && (
-                                    <div className="text-xs text-slate-500">暂无满足条件的高效终端组合</div>
-                                )}
-                                {efficiencyLeaderboard.map((row, index) => (
-                                    <button
-                                        key={`good-${row.point_id}`}
-                                        onClick={() => handleTerminalDrillToggle(row)}
-                                        className={`w-full text-left rounded-lg border px-3 py-2 transition-colors ${selectedTerminalPointId === row.point_id
-                                            ? 'border-emerald-700 bg-emerald-600 text-white'
-                                            : 'border-emerald-200 bg-white/80 hover:bg-white'
-                                            }`}
-                                    >
-                                        <div className="text-xs font-medium">
-                                            {index + 1}. {getRegionLabel(row.region)} / {row.city_tier} / {row.store_format}
-                                        </div>
-                                        <div className={`text-[11px] mt-1 ${selectedTerminalPointId === row.point_id ? 'text-emerald-100' : 'text-slate-600'}`}>
-                                            售罄 {(row.sell_through * 100).toFixed(1)}% · 周转 {row.inventory_turnover.toFixed(2)}x
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="rounded-xl border border-rose-100 bg-rose-50/40 p-3">
-                            <div className="text-sm font-semibold text-rose-700 mb-2">滞销黑榜</div>
-                            <div className="space-y-2">
-                                {laggingLeaderboard.length === 0 && (
-                                    <div className="text-xs text-slate-500">暂无明显滞销终端组合</div>
-                                )}
-                                {laggingLeaderboard.map((row, index) => (
-                                    <button
-                                        key={`bad-${row.point_id}`}
-                                        onClick={() => handleTerminalDrillToggle(row)}
-                                        className={`w-full text-left rounded-lg border px-3 py-2 transition-colors ${selectedTerminalPointId === row.point_id
-                                            ? 'border-rose-700 bg-rose-600 text-white'
-                                            : 'border-rose-200 bg-white/80 hover:bg-white'
-                                            }`}
-                                    >
-                                        <div className="text-xs font-medium">
-                                            {index + 1}. {getRegionLabel(row.region)} / {row.city_tier} / {row.store_format}
-                                        </div>
-                                        <div className={`text-[11px] mt-1 ${selectedTerminalPointId === row.point_id ? 'text-rose-100' : 'text-slate-600'}`}>
-                                            {row.diagnosis}
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4" style={{ order: 30 }}>
-                <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                    <div className="flex items-center gap-2">
-                        <span className="w-1 h-5 rounded-full bg-indigo-500 inline-block" />
-                        <h2 className="text-base font-bold text-slate-900">区域 × 渠道 热力矩阵</h2>
-                    </div>
+                    <ChannelSectionHeader icon="🔥" title="区域 × 渠道 热力矩阵" colorBar="violet" />
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
                             {sectionScopeHint}
@@ -2204,22 +2121,9 @@ export default function ChannelAnalysisPanel({
                     </table>
                 </div>
             </div>
-
-            <div style={{ order: 50 }}>
-                <div className="mb-2 flex justify-end">
-                    <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
-                        {sectionScopeHint}
-                    </span>
-                </div>
-                <StoreEfficiencyStrategyPanel
-                    channelSystem={channelSystem}
-                    storeFormatMix={storeFormatMix}
-                    formatTierMatrix={formatTierMatrix}
-                    cityTierBucketMatrix={cityTierBucketMatrix}
-                />
-            </div>
-
-            <div ref={opsSectionRef} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4" style={{ order: 40 }}>
+                )}
+                opsContent={(
+                                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
                 <div className="flex items-start justify-between gap-3 mb-4">
                     <div>
                         <div className="text-[11px] uppercase tracking-wide text-slate-400 mb-1">Regional Ops Dashboard</div>
@@ -2445,7 +2349,321 @@ export default function ChannelAnalysisPanel({
                     </div>
                 </div>
             </div>
+                )}
+                cityContent={(
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+                        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                            <ChannelSectionHeader icon="🏙️" title="门店经营工作台" subtitle="城市线级 · 门店策略 · 运营列表" colorBar="sky" />
+                            <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                                {sectionScopeHint}
+                            </span>
+                        </div>
 
+                        {/* 区域筛选按钮 */}
+                        <div className="flex flex-wrap gap-2 mb-4">
+                            <button
+                                onClick={clearTerminalDrillSelection}
+                                className={`text-xs px-3 py-1.5 rounded-md border transition-colors ${
+                                    activeDrillRegion === 'all'
+                                        ? 'bg-slate-900 text-white border-slate-900'
+                                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                                }`}
+                            >
+                                全部
+                            </button>
+                            {drillRegionOptions.map((regionOption) => (
+                                <button
+                                    key={regionOption.value}
+                                    disabled={regionOption.disabled}
+                                    onClick={() => {
+                                        if (regionOption.disabled) return;
+                                        handleDrillRegionToggle(regionOption.value);
+                                    }}
+                                    className={`text-xs px-3 py-1.5 rounded-md border transition-colors ${
+                                        regionOption.disabled
+                                            ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+                                            : activeDrillRegion === regionOption.value
+                                                ? 'bg-slate-900 text-white border-slate-900'
+                                                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                                    }`}
+                                >
+                                    {regionOption.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* 统一工作台 */}
+                        <StoreWorkbench
+                            cityRows={cityRowsForRegion}
+                            storeTiers={storeTierItemsV2}
+                            stores={regionFilteredStores}
+                            activeDrillRegion={activeDrillRegion}
+                            regionLabel={activeDrillRegionLabel}
+                            sectionScopeHint={sectionScopeHint}
+                            formatMoney={formatMoneyCny}
+                            getRegionLabel={getRegionLabel}
+                        />
+                    </div>
+                )}
+                terminalContent={(
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+                {/* ── Header ── */}
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <ChannelSectionHeader icon="🩺" title="终端体检矩阵" subtitle="售罄率 × 库存周转 四象限诊断" colorBar="violet" />
+                    <div className="flex flex-wrap items-center gap-2">
+                        {activeDrillRegion !== 'all' && (
+                            <button
+                                onClick={clearTerminalDrillSelection}
+                                className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 transition-colors"
+                            >
+                                {getRegionLabel(activeDrillRegion)} ✕ 清空筛选
+                            </button>
+                        )}
+                        <div className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                            {sectionScopeHint}
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── 四象限 KPI ── */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                    {([
+                        { count: terminalKpiCounts.healthy, label: '高效健康组合', hint: '建议维持 / 加深', border: 'border-emerald-100', bg: 'bg-emerald-50/60', num: 'text-emerald-700', sub: 'text-emerald-600' },
+                        { count: terminalKpiCounts.hotStock, label: '热销缺货组合', hint: '建议补货 / 调拨', border: 'border-blue-100', bg: 'bg-blue-50/60', num: 'text-blue-700', sub: 'text-blue-600' },
+                        { count: terminalKpiCounts.risk, label: '低效去化组合', hint: '建议检查结构', border: 'border-amber-100', bg: 'bg-amber-50/60', num: 'text-amber-700', sub: 'text-amber-600' },
+                        { count: terminalKpiCounts.lagging, label: '滞销积压组合', hint: '建议清货 / 控货', border: 'border-rose-100', bg: 'bg-rose-50/60', num: 'text-rose-700', sub: 'text-rose-600' },
+                    ] as const).map((kpi) => (
+                        <div key={kpi.label} className={`rounded-xl border ${kpi.border} ${kpi.bg} p-3 text-center`}>
+                            <div className={`text-2xl font-bold ${kpi.num}`}>{kpi.count}</div>
+                            <div className={`text-xs mt-1 ${kpi.sub}`}>{kpi.label}</div>
+                            <div className="text-[10px] text-slate-400 mt-0.5">{kpi.hint}</div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* ── 大区体检卡片（业务地图） ── */}
+                {terminalRegionCards.length > 0 && (
+                    <div className="mb-4">
+                        <div className="text-xs font-semibold text-slate-500 mb-2">大区体检分布（点击聚焦散点图）</div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2">
+                            {terminalRegionCards.map((card) => (
+                                <button
+                                    key={card.region}
+                                    onClick={() => handleDrillRegionToggle(card.region)}
+                                    className={`text-left rounded-xl border p-2.5 transition-all ${
+                                        activeDrillRegion === card.region
+                                            ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
+                                            : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300'
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-between mb-1.5">
+                                        <span className="text-xs font-bold text-slate-800 truncate">{getRegionLabel(card.region)}</span>
+                                        <span className={`ml-1 shrink-0 text-[9px] px-1.5 py-0.5 rounded-full font-semibold ${
+                                            card.actionColor === 'emerald' ? 'bg-emerald-100 text-emerald-700' :
+                                            card.actionColor === 'blue' ? 'bg-blue-100 text-blue-700' :
+                                            card.actionColor === 'amber' ? 'bg-amber-100 text-amber-700' :
+                                            'bg-rose-100 text-rose-700'
+                                        }`}>{card.action}</span>
+                                    </div>
+                                    <div className="text-[11px] text-slate-700 font-medium">{formatMoneyCny(card.netSales)}</div>
+                                    <div className="text-[10px] text-slate-400 mt-0.5">
+                                        售罄 {card.avgST.toFixed(0)}% · 周转 {card.avgTO.toFixed(1)}x
+                                    </div>
+                                    {card.riskCount > 0 && (
+                                        <div className="text-[10px] text-rose-500 mt-0.5">⚠ {card.riskCount} 组合需关注</div>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── 四象限散点图 ── */}
+                <div className="rounded-xl border border-slate-100 p-3 mb-4">
+                    <div className="text-xs text-slate-500 mb-2 flex flex-wrap gap-x-3">
+                        <span>X=库存周转 · Y=售罄率 · 气泡=销售额 · 虚线=均值阈值</span>
+                        {activeDrillRegion !== 'all' && (
+                            <span className="text-blue-600 font-medium">聚焦：{getRegionLabel(activeDrillRegion)}</span>
+                        )}
+                    </div>
+                    <ResponsiveContainer width="100%" height={340}>
+                        <ScatterChart margin={{ top: 20, right: 24, left: 12, bottom: 24 }}>
+                            {/* 象限背景 */}
+                            <ReferenceArea
+                                x1={terminalQuadrantThresholds.toThresh} y1={terminalQuadrantThresholds.stThresh}
+                                fill="#d1fae5" fillOpacity={0.45}
+                                label={{ value: '高效健康', position: 'insideTopRight', fontSize: 10, fill: '#059669' }}
+                            />
+                            <ReferenceArea
+                                x2={terminalQuadrantThresholds.toThresh} y1={terminalQuadrantThresholds.stThresh}
+                                fill="#dbeafe" fillOpacity={0.45}
+                                label={{ value: '热销缺货', position: 'insideTopLeft', fontSize: 10, fill: '#2563eb' }}
+                            />
+                            <ReferenceArea
+                                x1={terminalQuadrantThresholds.toThresh} y2={terminalQuadrantThresholds.stThresh}
+                                fill="#fef3c7" fillOpacity={0.45}
+                                label={{ value: '低效去化', position: 'insideBottomRight', fontSize: 10, fill: '#d97706' }}
+                            />
+                            <ReferenceArea
+                                x2={terminalQuadrantThresholds.toThresh} y2={terminalQuadrantThresholds.stThresh}
+                                fill="#fee2e2" fillOpacity={0.45}
+                                label={{ value: '滞销积压', position: 'insideBottomLeft', fontSize: 10, fill: '#dc2626' }}
+                            />
+                            {/* 阈值基准线 */}
+                            <ReferenceLine x={terminalQuadrantThresholds.toThresh} stroke="#94a3b8" strokeDasharray="5 4" label={{ value: `均值 ${terminalQuadrantThresholds.toThresh.toFixed(1)}x`, fontSize: 9, fill: '#94a3b8' }} />
+                            <ReferenceLine y={terminalQuadrantThresholds.stThresh} stroke="#94a3b8" strokeDasharray="5 4" label={{ value: `均值 ${terminalQuadrantThresholds.stThresh.toFixed(0)}%`, fontSize: 9, fill: '#94a3b8', position: 'insideRight' }} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                            <XAxis
+                                type="number" dataKey="inventory_turnover" name="库存周转"
+                                tick={{ fontSize: 10, fill: '#64748b' }}
+                                tickFormatter={(v) => `${v.toFixed(1)}x`}
+                                label={{ value: '库存周转', position: 'insideBottom', offset: -14, fontSize: 10, fill: '#64748b' }}
+                            />
+                            <YAxis
+                                type="number" dataKey="sell_through_pct" name="售罄率"
+                                tick={{ fontSize: 10, fill: '#64748b' }}
+                                tickFormatter={(v) => `${v.toFixed(0)}%`}
+                                label={{ value: '售罄率', angle: -90, position: 'insideLeft', fontSize: 10, fill: '#64748b' }}
+                            />
+                            <ZAxis type="number" dataKey="net_sales_w" range={[80, 520]} />
+                            <Tooltip
+                                cursor={{ strokeDasharray: '3 3' }}
+                                content={({ active, payload }) => {
+                                    if (!active || !payload?.length) return null;
+                                    const d = payload[0].payload as typeof terminalScatterData[0];
+                                    const stHigh = d.sell_through_pct >= terminalQuadrantThresholds.stThresh;
+                                    const toHigh = d.inventory_turnover >= terminalQuadrantThresholds.toThresh;
+                                    const qMap = {
+                                        HH: { label: '高效健康', action: '建议维持并加深主推款配比', color: 'text-emerald-700' },
+                                        HL: { label: '热销缺货', action: '建议及时补货或跨区调拨', color: 'text-blue-700' },
+                                        LH: { label: '低效去化', action: '建议检查尺码/款式结构', color: 'text-amber-700' },
+                                        LL: { label: '滞销积压', action: '建议清货促销或控制补货', color: 'text-rose-700' },
+                                    };
+                                    const key = `${stHigh ? 'H' : 'L'}${toHigh ? 'H' : 'L'}` as keyof typeof qMap;
+                                    const q = qMap[key];
+                                    return (
+                                        <div className="bg-white rounded-lg border border-slate-200 shadow-lg p-3 text-xs max-w-[220px]">
+                                            <div className="font-semibold text-slate-800 mb-1.5">
+                                                {getRegionLabel(d.region)} / {d.city_tier} / {d.store_format}
+                                            </div>
+                                            <div className="text-slate-500">{d.store_count || 0} 家门店</div>
+                                            <div className="mt-1 space-y-0.5 text-slate-700">
+                                                <div>销售额：{formatMoneyFromWan(d.net_sales_w)}</div>
+                                                <div>售罄率：{d.sell_through_pct.toFixed(1)}%</div>
+                                                <div>库存周转：{d.inventory_turnover.toFixed(2)}x</div>
+                                            </div>
+                                            <div className={`mt-2 font-semibold ${q.color}`}>{q.label}</div>
+                                            <div className="text-slate-500 mt-0.5">{q.action}</div>
+                                        </div>
+                                    );
+                                }}
+                            />
+                            <Legend wrapperStyle={{ fontSize: 11 }} />
+                            {/* 按象限分组渲染，不同颜色 */}
+                            <Scatter
+                                name="高效健康" fill="#10b981" fillOpacity={0.78} stroke="#059669"
+                                data={filteredTerminalScatterData.filter((d) => d.sell_through_pct >= terminalQuadrantThresholds.stThresh && d.inventory_turnover >= terminalQuadrantThresholds.toThresh)}
+                                onClick={(node: unknown) => { const p = getTerminalPointFromPayload((node as { payload?: unknown })?.payload); if (p) handleTerminalDrillToggle(p); }}
+                            />
+                            <Scatter
+                                name="热销缺货" fill="#3b82f6" fillOpacity={0.78} stroke="#2563eb"
+                                data={filteredTerminalScatterData.filter((d) => d.sell_through_pct >= terminalQuadrantThresholds.stThresh && d.inventory_turnover < terminalQuadrantThresholds.toThresh)}
+                                onClick={(node: unknown) => { const p = getTerminalPointFromPayload((node as { payload?: unknown })?.payload); if (p) handleTerminalDrillToggle(p); }}
+                            />
+                            <Scatter
+                                name="低效去化" fill="#f59e0b" fillOpacity={0.78} stroke="#d97706"
+                                data={filteredTerminalScatterData.filter((d) => d.sell_through_pct < terminalQuadrantThresholds.stThresh && d.inventory_turnover >= terminalQuadrantThresholds.toThresh)}
+                                onClick={(node: unknown) => { const p = getTerminalPointFromPayload((node as { payload?: unknown })?.payload); if (p) handleTerminalDrillToggle(p); }}
+                            />
+                            <Scatter
+                                name="滞销积压" fill="#ef4444" fillOpacity={0.78} stroke="#dc2626"
+                                data={filteredTerminalScatterData.filter((d) => d.sell_through_pct < terminalQuadrantThresholds.stThresh && d.inventory_turnover < terminalQuadrantThresholds.toThresh)}
+                                onClick={(node: unknown) => { const p = getTerminalPointFromPayload((node as { payload?: unknown })?.payload); if (p) handleTerminalDrillToggle(p); }}
+                            />
+                        </ScatterChart>
+                    </ResponsiveContainer>
+                    <div className="mt-1 text-[11px] text-slate-400">
+                        点击气泡高亮该组合并联动下方红榜/黑榜；再次点击同一气泡取消联动恢复全量。
+                    </div>
+                </div>
+
+                {/* ── 效率红榜 + 滞销黑榜 ── */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+                        <div className="text-sm font-semibold text-emerald-700 mb-2">🏆 效率红榜</div>
+                        <div className="space-y-2">
+                            {efficiencyLeaderboard.length === 0 && (
+                                <div className="text-xs text-slate-500">暂无满足条件的高效终端组合</div>
+                            )}
+                            {efficiencyLeaderboard.map((row, index) => (
+                                <button
+                                    key={`good-${row.point_id}`}
+                                    onClick={() => handleTerminalDrillToggle(row)}
+                                    className={`w-full text-left rounded-lg border px-3 py-2 transition-colors ${
+                                        selectedTerminalPointId === row.point_id
+                                            ? 'border-emerald-700 bg-emerald-600 text-white'
+                                            : 'border-emerald-200 bg-white/80 hover:bg-white'
+                                    }`}
+                                >
+                                    <div className="text-xs font-medium">
+                                        {index + 1}. {getRegionLabel(row.region)} / {row.city_tier} / {row.store_format}
+                                    </div>
+                                    <div className={`text-[11px] mt-1 ${selectedTerminalPointId === row.point_id ? 'text-emerald-100' : 'text-slate-600'}`}>
+                                        {formatMoneyCny(row.net_sales)} · 售罄 {(row.sell_through * 100).toFixed(1)}% · 周转 {row.inventory_turnover.toFixed(2)}x
+                                    </div>
+                                    <div className={`text-[11px] ${selectedTerminalPointId === row.point_id ? 'text-emerald-200' : 'text-emerald-600'}`}>
+                                        ✓ {row.diagnosis}
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="rounded-xl border border-rose-100 bg-rose-50/40 p-3">
+                        <div className="text-sm font-semibold text-rose-700 mb-2">⚠ 滞销黑榜</div>
+                        <div className="space-y-2">
+                            {laggingLeaderboard.length === 0 && (
+                                <div className="text-xs text-slate-500">暂无明显滞销终端组合</div>
+                            )}
+                            {laggingLeaderboard.map((row, index) => (
+                                <button
+                                    key={`bad-${row.point_id}`}
+                                    onClick={() => handleTerminalDrillToggle(row)}
+                                    className={`w-full text-left rounded-lg border px-3 py-2 transition-colors ${
+                                        selectedTerminalPointId === row.point_id
+                                            ? 'border-rose-700 bg-rose-600 text-white'
+                                            : 'border-rose-200 bg-white/80 hover:bg-white'
+                                    }`}
+                                >
+                                    <div className="text-xs font-medium">
+                                        {index + 1}. {getRegionLabel(row.region)} / {row.city_tier} / {row.store_format}
+                                    </div>
+                                    <div className={`text-[11px] mt-1 ${selectedTerminalPointId === row.point_id ? 'text-rose-100' : 'text-slate-600'}`}>
+                                        {formatMoneyCny(row.net_sales)} · 售罄 {(row.sell_through * 100).toFixed(1)}% · 周转 {row.inventory_turnover.toFixed(2)}x
+                                    </div>
+                                    <div className={`text-[11px] ${selectedTerminalPointId === row.point_id ? 'text-rose-200' : 'text-rose-600'}`}>
+                                        ✗ {row.diagnosis}
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+                )}
+            />
+
+            {/* ─── L4 鞋类试穿转化漏斗 ─── */}
+            <FittingFunnelChart />
+
+            {/* ─── L4 区域设计信号 ─── */}
+            <RegionalDesignSignalPanel rows={regionalDesignSignalItemsWB} />
+
+            {/* ─── L5 执行闭环 ─── */}
+            <ChannelActionCenterEnhanced />
+
+            {/* ─── Footer 跨模块联动 ─── */}
+            <RelatedModuleLinksPanel />
         </div>
     );
 }

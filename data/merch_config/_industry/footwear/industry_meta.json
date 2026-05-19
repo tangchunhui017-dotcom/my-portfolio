@@ -3,6 +3,6 @@
   "label": "鞋类",
   "version": "1.0.0",
   "description": "鞋类商品企划行业模板",
-  "supportedTabs": ["overview","annual-control","region-store","consumer","category-ops","wave-planning","otb","cashflow","forecast","pnl","competitor-trend","inventory-health"],
+  "supportedTabs": ["overview","annual-control","brand-positioning","region-store","consumer","category-ops","wave-planning","otb","cashflow","forecast","pnl","competitor-trend","inventory-health"],
   "createdAt": "2026-05-14"
 }

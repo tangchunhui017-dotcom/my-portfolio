@@ -23,6 +23,7 @@ const UNIT_LABEL: Record<MetricUnit, string> = {
 const TAB_LABEL: Record<TabKey, string> = {
     overview: '总览',
     'annual-control': '年度总控',
+    'brand-positioning': '品牌定位',
     'region-store': '区域&门店',
     consumer: '消费者画像',
     'category-ops': '品类运营',

@@ -27,6 +27,7 @@ const industryMeta = FOOTWEAR_INDUSTRY_DATA.industryMeta as unknown as IndustryM
 const INDUSTRY_TABS: Record<TabKey, TabConfig> = {
     'overview': FOOTWEAR_INDUSTRY_DATA.tabs.overview as unknown as TabConfig,
     'annual-control': FOOTWEAR_INDUSTRY_DATA.tabs.annual_control as unknown as TabConfig,
+    'brand-positioning': FOOTWEAR_INDUSTRY_DATA.tabs.brand_positioning as unknown as TabConfig,
     'region-store': FOOTWEAR_INDUSTRY_DATA.tabs.region_store as unknown as TabConfig,
     'consumer': FOOTWEAR_INDUSTRY_DATA.tabs.consumer as unknown as TabConfig,
     'category-ops': FOOTWEAR_INDUSTRY_DATA.tabs.category_ops as unknown as TabConfig,

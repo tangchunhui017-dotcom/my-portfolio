@@ -11,7 +11,7 @@ const feedback = fbData as FbData;
 type Signal = FbData['signals'][number];
 
 interface Props {
-  targetModule: 'otb' | 'planning' | 'forecast' | 'category';
+  targetModule: 'otb' | 'planning' | 'forecast' | 'category' | 'channel';
   onJumpToPnl?: () => void;
 }
 

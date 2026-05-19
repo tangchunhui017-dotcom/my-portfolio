@@ -1174,6 +1174,92 @@ function WaveDecisionKpis({ wave, master, devProgressMap, today }: {
     );
 }
 
+// ── WAVE DECISION SUMMARY CARD ────────────────────────────────────────────────
+
+function WaveDecisionSummaryCard({ wave, master, devProgressMap, today, footwearRisks, onJumpToOtb }: {
+    wave: WaveSummary; master: WaveMasterRecord|undefined;
+    devProgressMap: Map<string,WaveDevProgress>; today: Date;
+    footwearRisks: FootwearRisk[]; onJumpToOtb?: ()=>void;
+}) {
+    const daysLeft = daysTo(wave.launch_date, today);
+    const landingRate = safeDiv(wave.sku_actual, wave.sku_plan);
+    const otbBudget = master?.planOtbBudget ?? 0;
+    const salesTarget = master?.planSalesAmount ?? 0;
+    const devData = devProgressMap.get(wave.id);
+    const tasks = devData?.tasks ?? [];
+    const doneTasks = tasks.filter(t => t.status === 'done').length;
+    const readinessPct = tasks.length > 0 ? Math.round((doneTasks / tasks.length) * 100) : (daysLeft > 60 ? 45 : 72);
+    const atRiskTasks = tasks.filter(t => t.status === 'at_risk');
+
+    const issues: { tag: string; detail: string; sev: 'high' | 'mid' | 'low' }[] = [];
+    if (wave.sku_plan > 0 && landingRate < 0.8 && daysLeft > 0 && daysLeft < 60)
+        issues.push({ tag: 'SKU落地不足', detail: `落地率 ${fmt(landingRate)}，距上市 ${daysLeft}天仍有 ${wave.sku_plan - wave.sku_actual} 款未确认`, sev: 'high' });
+    if (otbBudget === 0 && salesTarget > 0)
+        issues.push({ tag: 'OTB未生成', detail: `销售目标 ${formatMoneyCny(salesTarget)} 缺少对应 OTB 预算`, sev: 'high' });
+    if (wave.new_ratio < 0.5)
+        issues.push({ tag: '新品占比偏低', detail: `新品 ${fmt(wave.new_ratio)}（建议 ≥50%），清货压力较大`, sev: 'mid' });
+    if (atRiskTasks.length > 0)
+        issues.push({ tag: '开发节点风险', detail: `${atRiskTasks.length} 个开发任务存在阻塞：${atRiskTasks.map(t => t.label).slice(0, 2).join('、')}`, sev: 'mid' });
+    if (readinessPct < 70 && daysLeft > 0 && daysLeft < 45)
+        issues.push({ tag: '上市准备不足', detail: `准备度 ${readinessPct}%，距上市 ${daysLeft}天`, sev: readinessPct < 50 ? 'high' : 'mid' });
+    if (footwearRisks.filter(r => r.priority === 'P0').length > 0)
+        issues.push({ tag: '鞋类P0风险', detail: footwearRisks.filter(r => r.priority === 'P0').map(r => r.title).slice(0, 2).join('；'), sev: 'high' });
+
+    const highCount = issues.filter(i => i.sev === 'high').length;
+    const midCount = issues.filter(i => i.sev === 'mid').length;
+    const overallStatus = highCount > 0 ? '高风险' : midCount > 0 ? '需调整' : '可推进';
+    const statusBg = highCount > 0 ? 'bg-rose-500' : midCount > 0 ? 'bg-amber-500' : 'bg-emerald-500';
+    const cardBg = highCount > 0 ? 'bg-rose-50/60 border-rose-100' : midCount > 0 ? 'bg-amber-50/60 border-amber-100' : 'bg-emerald-50/60 border-emerald-100';
+
+    const impacts = [
+        { icon: '📈', label: '销售影响', value: salesTarget > 0 ? (highCount > 0 ? `风险缺口 ~¥${((salesTarget * 0.1) / 10000).toFixed(0)}万` : '目标可达成') : '--' },
+        { icon: '💰', label: 'OTB影响', value: otbBudget > 0 ? `余额 ¥${((otbBudget * 0.15) / 10000).toFixed(0)}万` : '⚠ 预算未生成' },
+        { icon: '📅', label: '上市时间', value: daysLeft > 0 ? `距上市 ${daysLeft}天` : `已上市 ${Math.abs(daysLeft)}天` },
+        { icon: '📦', label: '库存影响', value: readinessPct >= 80 ? '入仓风险可控' : `准备度 ${readinessPct}%` },
+    ];
+
+    return (
+        <div className={`rounded-2xl border px-5 py-4 shadow-sm ${cardBg}`}>
+            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-sm font-bold text-slate-900">波段决策摘要</h3>
+                    <span className={`text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full ${statusBg}`}>{overallStatus}</span>
+                    {issues.length > 0 && <span className="text-[11px] text-slate-500">{issues.length} 个关注点</span>}
+                </div>
+                {onJumpToOtb && <button onClick={onJumpToOtb} className="text-[11px] text-sky-600 hover:underline">→ OTB 预算</button>}
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-3">
+                {impacts.map(imp => (
+                    <div key={imp.label} className="rounded-xl border border-white/80 bg-white/70 px-3 py-2.5">
+                        <div className="text-[10px] text-slate-400 mb-1">{imp.icon} {imp.label}</div>
+                        <div className="text-[12px] font-bold text-slate-800 leading-tight">{imp.value}</div>
+                    </div>
+                ))}
+            </div>
+            {issues.length > 0 ? (
+                <div className="space-y-1.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1.5">主要关注点</div>
+                    {issues.slice(0, 4).map((iss, i) => (
+                        <div key={i} className={`flex items-start gap-2 text-[11px] rounded-lg px-3 py-2 ${iss.sev === 'high' ? 'bg-rose-100/80 text-rose-800' : iss.sev === 'mid' ? 'bg-amber-100/80 text-amber-800' : 'bg-slate-100/80 text-slate-700'}`}>
+                            <span className={`shrink-0 mt-0.5 text-[9px] font-bold px-1.5 py-0.5 rounded ${iss.sev === 'high' ? 'bg-rose-500 text-white' : iss.sev === 'mid' ? 'bg-amber-500 text-white' : 'bg-slate-400 text-white'}`}>{iss.tag}</span>
+                            <span className="leading-snug">{iss.detail}</span>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="space-y-1">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1">建议动作</div>
+                    {['当前波段各项指标健康，可按计划推进', '建议确认下单截止节点和入仓时间', '同步波段数据至 OTB / 销售预测 / 库存'].map((a, i) => (
+                        <div key={i} className="text-[11px] text-emerald-700 flex items-start gap-1.5">
+                            <span className="shrink-0">{i === 0 ? '✓' : '·'}</span><span>{a}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
 // ── WAVE POSITIONING PANEL ────────────────────────────────────────────────────
 
 const WAVE_POS_MAP: Record<string, { label:string; color:string }> = {
@@ -1235,6 +1321,8 @@ interface DesignCard {
     theme:string; shoeType:string; colorStory:string; material:string;
     functionBenefit:string; scene:string; skuTarget:number; budgetShare:string;
     salesTarget:string; risk?:string;
+    lastType?:string; soleStructure?:string; footFeel?:string; targetAudience?:string;
+    competitorRef?:string; designAction?:string;
 }
 
 function deriveDesignCards(brief: WaveBriefRecord|undefined, master: WaveMasterRecord|undefined): DesignCard[] {
@@ -1254,6 +1342,12 @@ function deriveDesignCards(brief: WaveBriefRecord|undefined, master: WaveMasterR
             skuTarget: Math.round(totalSkus * 0.4), budgetShare: '40%',
             salesTarget: formatMoneyCny(totalSales * 0.45),
             risk: '核心SKU，确认颜色和尺码深度',
+            lastType: cats[0]?.includes('跑') ? '标准竞技楦' : '标准 E 楦/宽头',
+            soleStructure: cats[0]?.includes('跑') ? '碳板+EVA中底' : 'EVA+橡胶大底',
+            footFeel: '轻量回弹 · 落地缓冲',
+            targetAudience: brief.targetAudience,
+            competitorRef: '参考主流运动品牌同价位款式',
+            designAction: '确认主推色 + 建议加深度至 350 双/款',
         });
     }
     cards.push({
@@ -1263,6 +1357,12 @@ function deriveDesignCards(brief: WaveBriefRecord|undefined, master: WaveMasterR
         functionBenefit: '性价比高 · 耐穿 · 基础款', scene: '日常通勤/日常穿着',
         skuTarget: Math.round(totalSkus * 0.35), budgetShare: '35%',
         salesTarget: formatMoneyCny(totalSales * 0.30),
+        lastType: '标准 E 楦',
+        soleStructure: 'TPR 一体底',
+        footFeel: '轻便舒适 · 全天穿着',
+        targetAudience: '大众消费群体',
+        competitorRef: '参考走量款同价位竞品',
+        designAction: '维持计划，追踪售罄率',
     });
     if (roles.includes('test') || roles.includes('image')) {
         cards.push({
@@ -1273,6 +1373,12 @@ function deriveDesignCards(brief: WaveBriefRecord|undefined, master: WaveMasterR
             skuTarget: Math.round(totalSkus * 0.15), budgetShare: '15%',
             salesTarget: formatMoneyCny(totalSales * 0.15),
             risk: '测试款，控制深度，快反备货',
+            lastType: cats[0]?.includes('跑') ? '竞速窄楦' : '设计楦型',
+            soleStructure: '特种材质底材',
+            footFeel: '专业竞技 · 视觉冲击',
+            targetAudience: '时尚消费者/专业运动者',
+            competitorRef: '参考高端设计师品牌',
+            designAction: '控制深度，快反备货方案就绪',
         });
     }
     cards.push({
@@ -1282,6 +1388,12 @@ function deriveDesignCards(brief: WaveBriefRecord|undefined, master: WaveMasterR
         functionBenefit: '稳定销售 · 降低风险', scene: '补货维护',
         skuTarget: Math.round(totalSkus * 0.10), budgetShare: '10%',
         salesTarget: formatMoneyCny(totalSales * 0.10),
+        lastType: '延续上季楦型',
+        soleStructure: '延续上季底材',
+        footFeel: '成熟稳定',
+        targetAudience: '老顾客/品牌忠诚群体',
+        competitorRef: '无需参考竞品',
+        designAction: '延续上季设计，无需大改',
     });
     return cards.slice(0, 5);
 }
@@ -1326,19 +1438,23 @@ function DesignDirectionBoard({ brief, master }: { brief: WaveBriefRecord|undefi
                 {(expanded ? cards : cards.slice(0, 4)).map((card, i) => (
                     <div key={i} className="rounded-xl border border-slate-200 bg-slate-50 p-3.5">
                         <div className="text-[10px] font-bold text-slate-700 mb-2 leading-tight">{card.theme}</div>
-                        <div className="space-y-1 text-[10px]">
-                            {[['鞋型', card.shoeType], ['配色', card.colorStory], ['材质', card.material], ['功能', card.functionBenefit]].map(([l,v]) => (
-                                <div key={l} className="flex gap-1.5">
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[10px] mb-2">
+                            {[['鞋型', card.shoeType], ['楦型', card.lastType??'--'], ['鞋底', card.soleStructure??'--'], ['脚感', card.footFeel??'--'], ['配色', card.colorStory], ['场景', card.scene], ['材质', card.material], ['功能', card.functionBenefit]].map(([l,v]) => (
+                                <div key={l} className="flex gap-1">
                                     <span className="text-slate-400 w-8 shrink-0">{l}</span>
-                                    <span className="text-slate-700">{v}</span>
+                                    <span className="text-slate-700 leading-snug truncate" title={v}>{v}</span>
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-2 pt-2 border-t border-slate-200 flex justify-between text-[10px] text-slate-500">
-                            <span>{card.skuTarget} SKU</span><span>预算 {card.budgetShare}</span>
+                        {card.targetAudience && (
+                            <div className="text-[10px] text-slate-500 mb-1.5 bg-white/70 rounded px-1.5 py-0.5 truncate">👥 {card.targetAudience}</div>
+                        )}
+                        <div className="mt-1 pt-1.5 border-t border-slate-200 flex justify-between text-[10px] text-slate-500">
+                            <span>{card.skuTarget} SKU · 预算 {card.budgetShare}</span><span>目标 {card.salesTarget}</span>
                         </div>
-                        <div className="text-[10px] text-slate-500 mt-0.5">目标销售 {card.salesTarget}</div>
-                        {card.risk && <div className="mt-1.5 text-[10px] text-amber-600 bg-amber-50 rounded px-1.5 py-0.5">⚠ {card.risk}</div>}
+                        {card.designAction && <div className="mt-1 text-[10px] text-sky-600 font-medium">→ {card.designAction}</div>}
+                        {card.risk && <div className="mt-1 text-[10px] text-amber-600 bg-amber-50 rounded px-1.5 py-0.5">⚠ {card.risk}</div>}
+                        {card.competitorRef && <div className="mt-0.5 text-[9px] text-slate-400">{card.competitorRef}</div>}
                     </div>
                 ))}
             </div>
@@ -1462,20 +1578,31 @@ function ForecastOtbFitPanel({ wave, master, onJumpToOtb, onJumpToForecast }: {
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
             <div className="flex items-start justify-between mb-4 flex-wrap gap-2">
                 <div>
-                    <h3 className="text-sm font-bold text-slate-900">销售预测与OTB匹配</h3>
-                    <p className="text-[11px] text-slate-400 mt-0.5">预测销售 × OTB预算 · 判断波段是否可以推进</p>
+                    <h3 className="text-sm font-bold text-slate-900">OTB 预算摘要</h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">波段预算 · 占用 · 剩余 · SKU支撑 · 建议动作</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                     <span className={`px-3 py-1 rounded-full border text-[11px] font-bold ${sc.bg} ${sc.text}`}>{data.status}</span>
-                    {onJumpToOtb && <button onClick={onJumpToOtb} className="text-[11px] text-sky-600 hover:underline">→ OTB预算</button>}
-                    {onJumpToForecast && <button onClick={onJumpToForecast} className="text-[11px] text-sky-600 hover:underline">→ 销售预测</button>}
+                    {onJumpToOtb && (
+                        <button onClick={onJumpToOtb} className="text-[11px] px-2.5 py-1 border border-sky-200 text-sky-600 hover:bg-sky-50 rounded-lg transition-colors">查看 OTB 波段预算</button>
+                    )}
+                    {onJumpToOtb && (
+                        <button onClick={onJumpToOtb} className="text-[11px] px-2.5 py-1 bg-sky-600 text-white hover:bg-sky-700 rounded-lg transition-colors">提交 OTB 调整</button>
+                    )}
                 </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4">
-                {metrics.map(m => (
-                    <div key={m.label} className={`rounded-xl border px-3 py-2.5 ${m.warn?'border-rose-200 bg-rose-50':'border-slate-100 bg-slate-50'}`}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-4">
+                {[
+                    { label: '波段 OTB 预算', value: formatMoneyCny(data.otbBudget), warn: data.otbBudget === 0 },
+                    { label: '已占用 OTB', value: formatMoneyCny(data.otbUsed), warn: false },
+                    { label: '剩余 OTB', value: formatMoneyCny(data.otbRemaining), warn: data.otbRemaining < 0 },
+                    { label: '预算状态', value: data.status, warn: data.status !== '预算充足' },
+                    { label: 'OTB 支撑 SKU 计划', value: data.otbFitsSkuPlan ? '✓ 支撑' : '✗ 不足', warn: !data.otbFitsSkuPlan },
+                    { label: '建议增减 SKU', value: data.status === '预算紧张' ? '减少 5-8 个低优先级 SKU' : data.status === '预算超配' ? '冻结 Test 类 SKU' : data.status === '预测不足' ? '重评上市节奏' : '维持计划', warn: data.status !== '预算充足' },
+                ].map(m => (
+                    <div key={m.label} className={`rounded-xl border px-3 py-2.5 ${m.warn ? 'border-rose-200 bg-rose-50' : 'border-slate-100 bg-slate-50'}`}>
                         <div className="text-[10px] text-slate-400 mb-1">{m.label}</div>
-                        <div className={`text-sm font-bold leading-tight ${m.warn?'text-rose-700':m.emphasis?'text-slate-900':'text-slate-700'}`}>{m.value}</div>
+                        <div className={`text-sm font-bold leading-tight ${m.warn ? 'text-rose-700' : 'text-slate-800'}`}>{m.value}</div>
                     </div>
                 ))}
             </div>
@@ -1484,7 +1611,7 @@ function ForecastOtbFitPanel({ wave, master, onJumpToOtb, onJumpToForecast }: {
                 <div className="space-y-1">
                     {data.adjustments.map((a, i) => (
                         <div key={i} className={`text-[11px] ${sc.text} flex items-start gap-1.5`}>
-                            <span className="shrink-0 mt-0.5">{i===0?'→':'·'}</span><span>{a}</span>
+                            <span className="shrink-0 mt-0.5">{i === 0 ? '→' : '·'}</span><span>{a}</span>
                         </div>
                     ))}
                 </div>
@@ -1738,12 +1865,37 @@ function WaveActionCenter({ wave, master, today, onJumpToOtb, onJumpToForecast, 
                             </div>
                             <div className={`text-[11px] ${tx} mb-1.5 leading-snug`}>{a.reason}</div>
                             <div className="text-[11px] text-slate-700 font-medium mb-2">→ {a.action}</div>
-                            <div className="flex flex-wrap gap-2 text-[10px] text-slate-500">
-                                {a.salesImpact && <span>销售：{a.salesImpact}</span>}
-                                {a.otbImpact && <span>OTB：{a.otbImpact}</span>}
-                                {a.inventoryImpact && <span>库存：{a.inventoryImpact}</span>}
+                            <div className="border-t border-white/30 pt-2 mt-2">
+                                <div className="flex flex-wrap gap-3 text-[10px] text-slate-500 mb-2">
+                                    <span>📈 {a.salesImpact || '--'}</span>
+                                    {a.otbImpact && <span>💰 {a.otbImpact}</span>}
+                                    {a.inventoryImpact && <span>📦 {a.inventoryImpact}</span>}
+                                    <span>⏱ {a.status}</span>
+                                </div>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {(a.riskTag.includes('OTB') || a.actionType.includes('OTB') || a.id === 'otb-miss') && (
+                                        <button onClick={onJumpToOtb} className="text-[10px] px-2 py-0.5 rounded border border-sky-200 bg-sky-50 text-sky-600 hover:bg-sky-100">调整 OTB</button>
+                                    )}
+                                    {(a.id === 'sku-land' || a.riskTag.includes('SKU')) && (
+                                        <button className="text-[10px] px-2 py-0.5 rounded border border-sky-200 bg-sky-50 text-sky-600 hover:bg-sky-100">调整 SKU 结构</button>
+                                    )}
+                                    {(a.riskTag.includes('预测') || a.id === 'forecast-gap') && (
+                                        <button onClick={onJumpToForecast} className="text-[10px] px-2 py-0.5 rounded border border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100">查看销售预测</button>
+                                    )}
+                                    {(a.riskTag.includes('库存') || a.riskTag.includes('尺码') || a.id === 'size-depth') && (
+                                        <button onClick={onJumpToInventory} className="text-[10px] px-2 py-0.5 rounded border border-violet-200 bg-violet-50 text-violet-600 hover:bg-violet-100">查看库存冲突</button>
+                                    )}
+                                    {a.id === 'new-ratio' && (
+                                        <button className="text-[10px] px-2 py-0.5 rounded border border-violet-200 bg-violet-50 text-violet-600 hover:bg-violet-100">生成设计 Brief</button>
+                                    )}
+                                    {a.id === 'urgent' && (
+                                        <button className="text-[10px] px-2 py-0.5 rounded border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100">更新上市准备</button>
+                                    )}
+                                    {(a.id === 'sync' || (!['sku-land','otb-miss','new-ratio','urgent','forecast-gap','size-depth'].includes(a.id) && !a.riskTag.includes('OTB') && !a.riskTag.includes('SKU') && !a.riskTag.includes('预测') && !a.riskTag.includes('库存') && !a.riskTag.includes('尺码'))) && (
+                                        <button onClick={() => handleJump(a)} className="text-[10px] px-2 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100">查看关联模块</button>
+                                    )}
+                                </div>
                             </div>
-                            <button onClick={() => handleJump(a)} className="mt-2 text-[10px] text-sky-600 hover:underline">→ 查看关联模块</button>
                         </div>
                     );
                 })}
@@ -1754,81 +1906,128 @@ function WaveActionCenter({ wave, master, today, onJumpToOtb, onJumpToForecast, 
 
 // ── SKU LINE LIST ─────────────────────────────────────────────────────────────
 
-function WaveSkuLineList({ wave }: { wave: WaveSummary }) {
+const SHOE_TYPE_MAP: Record<string, string> = {
+    '运动休闲': '休闲鞋', '跑步': '跑鞋', '篮球': '篮球鞋', '训练': '训练鞋',
+    '高跟': '高跟鞋', '凉鞋': '凉鞋', '靴': '短靴', '板鞋': '板鞋',
+};
+function deriveShoeType(category: string): string {
+    for (const [key, val] of Object.entries(SHOE_TYPE_MAP)) {
+        if (category.includes(key)) return val;
+    }
+    return '休闲鞋';
+}
+
+const PRIORITY_CATS = [
+    { key: 'hero'        as const, label: 'Hero主推款', color: 'bg-sky-800 text-white border-sky-800' },
+    { key: 'risk'        as const, label: '高风险款',   color: 'bg-rose-700 text-white border-rose-700' },
+    { key: 'opportunity' as const, label: '高机会款',   color: 'bg-emerald-700 text-white border-emerald-700' },
+    { key: 'pending'     as const, label: '待确认款',   color: 'bg-amber-700 text-white border-amber-700' },
+    { key: 'blocked'     as const, label: '上市阻塞款', color: 'bg-slate-700 text-white border-slate-700' },
+];
+
+function WaveSkuLineList({ wave, master }: { wave: WaveSummary; master?: WaveMasterRecord }) {
     const [open, setOpen] = useState(false);
     const [showAll, setShowAll] = useState(false);
-    const [filter, setFilter] = useState<'hero'|'risk'|'opportunity'|'pending'>('hero');
+    const [filter, setFilter] = useState<'hero'|'risk'|'opportunity'|'pending'|'blocked'>('hero');
     const [search, setSearch] = useState('');
     const [sortBy, setSortBy] = useState<'forecast_sales'|'suggested_depth'|'forecast_units'>('forecast_sales');
     const [sortAsc, setSortAsc] = useState(false);
+
+    const otbPerSku = master && master.planOtbBudget > 0 && master.targetSkuCount > 0
+        ? Math.round(master.planOtbBudget / master.targetSkuCount)
+        : 0;
+
+    const filterFn = useCallback((r: typeof wave.drill_rows[0], key: typeof filter) => {
+        if (key === 'hero') return resolvePlanningRole(r.suggestion) === 'Hero/Core';
+        if (key === 'risk') return resolvePlanningRole(r.suggestion) === 'Clearance' || (r.suggestion?.includes('⚠') ?? false);
+        if (key === 'opportunity') return (r.suggestion?.includes('补货') || r.suggestion?.includes('加深')) ?? false;
+        if (key === 'pending') return resolvePlanningRole(r.suggestion) === 'Test';
+        if (key === 'blocked') return (r.suggestion?.includes('阻塞') || r.suggestion?.includes('延迟')) ?? false;
+        return false;
+    }, []);
+
     const filtered = useMemo(() => {
-        let rows = wave.drill_rows.filter(r => {
-            if (showAll) return true;
-            const role = resolvePlanningRole(r.suggestion);
-            if (filter==='hero') return role==='Hero/Core';
-            if (filter==='risk') return role==='Clearance' || r.suggestion?.includes('⚠') || r.suggestion?.includes('风险');
-            if (filter==='opportunity') return r.suggestion?.includes('补货') || r.suggestion?.includes('加深');
-            if (filter==='pending') return role==='Test' || !r.suggestion;
-            return true;
-        });
+        let rows = wave.drill_rows.filter(r => showAll ? true : filterFn(r, filter));
         if (search) rows = rows.filter(r => r.style_id.toLowerCase().includes(search.toLowerCase()) || r.category.toLowerCase().includes(search.toLowerCase()));
-        return [...rows].sort((a,b) => {
-            const av = (a as unknown as Record<string,number>)[sortBy] ?? 0;
-            const bv = (b as unknown as Record<string,number>)[sortBy] ?? 0;
-            return sortAsc ? av-bv : bv-av;
+        return [...rows].sort((a, b) => {
+            const av = (a as unknown as Record<string, number>)[sortBy] ?? 0;
+            const bv = (b as unknown as Record<string, number>)[sortBy] ?? 0;
+            return sortAsc ? av - bv : bv - av;
         });
-    }, [wave, filter, search, sortBy, sortAsc, showAll]);
+    }, [wave, filter, search, sortBy, sortAsc, showAll, filterFn]);
+
     const counts = {
-        hero: wave.drill_rows.filter(r=>resolvePlanningRole(r.suggestion)==='Hero/Core').length,
-        risk: wave.drill_rows.filter(r=>resolvePlanningRole(r.suggestion)==='Clearance').length,
-        opportunity: wave.drill_rows.filter(r=>r.suggestion?.includes('补货')||r.suggestion?.includes('加深')).length,
-        pending: wave.drill_rows.filter(r=>resolvePlanningRole(r.suggestion)==='Test').length,
+        hero:        wave.drill_rows.filter(r => filterFn(r, 'hero')).length,
+        risk:        wave.drill_rows.filter(r => filterFn(r, 'risk')).length,
+        opportunity: wave.drill_rows.filter(r => filterFn(r, 'opportunity')).length,
+        pending:     wave.drill_rows.filter(r => filterFn(r, 'pending')).length,
+        blocked:     wave.drill_rows.filter(r => filterFn(r, 'blocked')).length,
     };
+
     const toggleSort = useCallback((col: typeof sortBy) => {
-        if (sortBy===col) setSortAsc(v=>!v); else { setSortBy(col); setSortAsc(false); }
+        if (sortBy === col) setSortAsc(v => !v); else { setSortBy(col); setSortAsc(false); }
     }, [sortBy]);
+
     return (
-        <CollapsibleSection title={`款式明细表（${wave.drill_rows.length} 款）`} subtitle="默认主推/高风险 · 含搜索/排序 · 点击查看全部" open={open} onToggle={() => setOpen(v=>!v)}>
+        <CollapsibleSection title={`款式明细表（${wave.drill_rows.length} 款）`} subtitle="默认主推/高风险 · 含搜索/排序 · 点击查看全部" open={open} onToggle={() => setOpen(v => !v)}>
             <div className="px-5 py-3 border-b border-slate-50 flex flex-wrap items-center gap-2">
-                <input placeholder="搜索款号/品类…" value={search} onChange={e=>setSearch(e.target.value)} className="text-[11px] border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-700 w-40 focus:outline-none focus:border-sky-400" />
-                {!showAll && ([
-                    { key:'hero', label:`主推款(${counts.hero})` },
-                    { key:'risk', label:`高风险(${counts.risk})` },
-                    { key:'opportunity', label:`高机会(${counts.opportunity})` },
-                    { key:'pending', label:`待确认(${counts.pending})` },
-                ] as const).map(f => (
-                    <button key={f.key} onClick={() => setFilter(f.key)} className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${filter===f.key?'bg-slate-800 text-white border-slate-800':'text-slate-500 border-slate-200 hover:border-slate-400'}`}>{f.label}</button>
+                <input placeholder="搜索款号/品类…" value={search} onChange={e => setSearch(e.target.value)} className="text-[11px] border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-700 w-40 focus:outline-none focus:border-sky-400" />
+                {!showAll && PRIORITY_CATS.map(cat => (
+                    <button key={cat.key} onClick={() => setFilter(cat.key)}
+                        className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${filter === cat.key ? cat.color : 'text-slate-500 border-slate-200 hover:border-slate-400'}`}>
+                        {cat.label}({counts[cat.key]})
+                    </button>
                 ))}
-                <button onClick={() => setShowAll(v=>!v)} className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ml-auto ${showAll?'bg-sky-700 text-white border-sky-700':'text-sky-600 border-sky-200 hover:border-sky-400'}`}>{showAll?'收起精选':`查看全部(${wave.drill_rows.length})`}</button>
+                <button onClick={() => setShowAll(v => !v)} className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ml-auto ${showAll ? 'bg-sky-700 text-white border-sky-700' : 'text-sky-600 border-sky-200 hover:border-sky-400'}`}>
+                    {showAll ? '收起精选' : `查看全部(${wave.drill_rows.length})`}
+                </button>
             </div>
             {!wave.drill_rows.length ? <div className="px-5 py-6 text-[11px] text-slate-400 text-center">暂无款式数据</div> : (
                 <div className="overflow-x-auto">
                     <table className="min-w-full text-xs">
                         <thead className="bg-slate-50">
                             <tr>
-                                {[{l:'款号',col:null,a:'left'},{l:'品类',col:null,a:'left'},{l:'SKU角色',col:null,a:'left'},{l:'价格带',col:null,a:'left'},{l:'建议深度',col:'suggested_depth' as const,a:'right'},{l:'预估销量',col:'forecast_units' as const,a:'right'},{l:'预估销额',col:'forecast_sales' as const,a:'right'},{l:'目标毛利',col:null,a:'right'},{l:'上市状态',col:null,a:'center'},{l:'风险',col:null,a:'center'},{l:'建议动作',col:null,a:'left'}].map(h => (
-                                    <th key={h.l} className={`py-2 px-3 font-medium text-slate-500 whitespace-nowrap ${h.a==='right'?'text-right':h.a==='center'?'text-center':'text-left'} ${h.col?'cursor-pointer hover:text-slate-700':''}`} onClick={h.col?()=>toggleSort(h.col!):undefined}>{h.l}{h.col&&sortBy===h.col?(sortAsc?' ↑':' ↓'):''}</th>
+                                {[
+                                    { l: '款号', col: null, a: 'left' }, { l: '品类', col: null, a: 'left' },
+                                    { l: '鞋型', col: null, a: 'left' }, { l: 'SKU角色', col: null, a: 'left' },
+                                    { l: '价格带', col: null, a: 'left' }, { l: '上市日期', col: null, a: 'center' },
+                                    { l: 'OTB预算', col: null, a: 'right' },
+                                    { l: '预估销量', col: 'forecast_units' as const, a: 'right' },
+                                    { l: '预估销额', col: 'forecast_sales' as const, a: 'right' },
+                                    { l: '目标毛利', col: null, a: 'right' },
+                                    { l: '上市状态', col: null, a: 'center' }, { l: '风险等级', col: null, a: 'center' },
+                                    { l: '建议动作', col: null, a: 'left' },
+                                ].map(h => (
+                                    <th key={h.l} className={`py-2 px-3 font-medium text-slate-500 whitespace-nowrap ${h.a === 'right' ? 'text-right' : h.a === 'center' ? 'text-center' : 'text-left'} ${h.col ? 'cursor-pointer hover:text-slate-700' : ''}`} onClick={h.col ? () => toggleSort(h.col!) : undefined}>
+                                        {h.l}{h.col && sortBy === h.col ? (sortAsc ? ' ↑' : ' ↓') : ''}
+                                    </th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody>
                             {filtered.map((row, i) => {
                                 const role = resolvePlanningRole(row.suggestion);
-                                const estGm = row.price_band==='image'?0.58:row.price_band==='profit'?0.48:row.price_band==='volume'?0.42:0.35;
-                                const riskC = role==='Clearance'?'text-rose-600 bg-rose-50':role==='Test'?'text-amber-600 bg-amber-50':'text-emerald-600 bg-emerald-50';
-                                const stBadge = role==='Hero/Core'?'bg-sky-100 text-sky-700':role==='Clearance'?'bg-rose-100 text-rose-700':'bg-slate-100 text-slate-600';
+                                const shoeType = deriveShoeType(row.category);
+                                const estGm = row.price_band === 'image' ? 0.58 : row.price_band === 'profit' ? 0.48 : row.price_band === 'volume' ? 0.42 : 0.35;
+                                const riskLevel = role === 'Clearance' ? '高风险' : role === 'Test' ? '观察' : '正常';
+                                const riskColor = role === 'Clearance' ? 'bg-rose-50 text-rose-600' : role === 'Test' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600';
+                                const stBadge = role === 'Hero/Core' ? 'bg-sky-100 text-sky-700' : role === 'Clearance' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-600';
+                                const launchStatus = role === 'Hero/Core' ? '待上市' : role === 'Clearance' ? '待清货' : '企划中';
+                                const launchColor = role === 'Hero/Core' ? 'bg-sky-50 text-sky-600' : role === 'Clearance' ? 'bg-rose-50 text-rose-600' : 'bg-slate-50 text-slate-400';
                                 return (
                                     <tr key={`${wave.id}-${row.style_id}-${i}`} className="border-t border-slate-50 hover:bg-slate-50">
                                         <td className="py-2 px-3 text-slate-700 font-mono text-[11px]">{row.style_id}</td>
                                         <td className="py-2 px-3 text-slate-700">{row.category}</td>
+                                        <td className="py-2 px-3 text-slate-600 text-[11px]">{shoeType}</td>
                                         <td className="py-2 px-3"><span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${stBadge}`}>{role}</span></td>
                                         <td className="py-2 px-3 text-slate-600">{row.price_band}</td>
-                                        <td className="py-2 px-3 text-right text-slate-700">{row.suggested_depth}</td>
+                                        <td className="py-2 px-3 text-center text-slate-500 text-[11px]">{wave.launch_date.slice(0, 10)}</td>
+                                        <td className="py-2 px-3 text-right text-slate-600 text-[11px]">{otbPerSku > 0 ? formatMoneyCny(otbPerSku) : '--'}</td>
                                         <td className="py-2 px-3 text-right text-slate-700">{row.forecast_units.toLocaleString()}</td>
                                         <td className="py-2 px-3 text-right text-slate-700">{formatMoneyCny(row.forecast_sales)}</td>
                                         <td className="py-2 px-3 text-right text-slate-600">{fmt(estGm)}</td>
-                                        <td className="py-2 px-3 text-center"><span className={`text-[9px] px-1.5 py-0.5 rounded-full ${role==='Hero/Core'?'bg-sky-50 text-sky-600':'bg-slate-50 text-slate-400'}`}>{role==='Hero/Core'?'待上市':'企划中'}</span></td>
-                                        <td className="py-2 px-3 text-center"><span className={`text-[9px] px-1.5 py-0.5 rounded-full ${riskC}`}>{role==='Clearance'?'高风险':role==='Test'?'观察':'正常'}</span></td>
+                                        <td className="py-2 px-3 text-center"><span className={`text-[9px] px-1.5 py-0.5 rounded-full ${launchColor}`}>{launchStatus}</span></td>
+                                        <td className="py-2 px-3 text-center"><span className={`text-[9px] px-1.5 py-0.5 rounded-full ${riskColor}`}>{riskLevel}</span></td>
                                         <td className="py-2 px-3 text-slate-600 text-[11px]">{row.suggestion}</td>
                                     </tr>
                                 );
@@ -1841,7 +2040,6 @@ function WaveSkuLineList({ wave }: { wave: WaveSummary }) {
         </CollapsibleSection>
     );
 }
-
 // ── RELATED MODULE LINKS ──────────────────────────────────────────────────────
 
 function RelatedModuleLinks({ wave, master, onJumpToOtb, onJumpToForecast, onJumpToInventory, onJumpToCashflow, onJumpToProfitLoss, onJumpToChannel, onJumpToCategory }: {
@@ -2271,6 +2469,9 @@ export default function WavePlanningPanel({ compareMode='none', filters, onJumpT
             {/* 2. Wave Decision Summary — 8 KPI cards */}
             <WaveDecisionKpis wave={activeWave} master={activeMaster} devProgressMap={devProgressMap} today={today} />
 
+            {/* 2.5. Wave Decision Summary */}
+            <WaveDecisionSummaryCard wave={activeWave} master={activeMaster} devProgressMap={devProgressMap} today={today} footwearRisks={footwearRisks} onJumpToOtb={onJumpToOtb} />
+
             {/* 3. Wave Timeline */}
             <WaveTimeline waves={waveSummaries} masterMap={masterMap} activeId={effectiveWaveId} autoId={autoWaveId} today={today} onSelect={setSelectedWaveId} />
 
@@ -2300,7 +2501,7 @@ export default function WavePlanningPanel({ compareMode='none', filters, onJumpT
             <WaveActionCenter wave={activeWave} master={activeMaster} today={today} onJumpToOtb={onJumpToOtb} onJumpToForecast={onJumpToForecast} onJumpToInventory={onJumpToInventory} />
 
             {/* 12. SKU Line List */}
-            <WaveSkuLineList wave={activeWave} />
+            <WaveSkuLineList wave={activeWave} master={activeMaster} />
 
             {/* 13. Related Module Links */}
             <RelatedModuleLinks wave={activeWave} master={activeMaster} onJumpToOtb={onJumpToOtb} onJumpToForecast={onJumpToForecast} onJumpToInventory={onJumpToInventory} onJumpToCashflow={onJumpToCashflow} onJumpToProfitLoss={onJumpToProfitLoss} onJumpToChannel={onJumpToChannel} onJumpToCategory={onJumpToCategory} />

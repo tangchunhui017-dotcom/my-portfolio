@@ -1,0 +1,102 @@
+{
+  "generatedAt": "2026-05-13",
+  "weekSummary": {
+    "total": 12,
+    "completed": 4,
+    "transferred": 2,
+    "pending": 6,
+    "totalImpactAmount": 8600000
+  },
+  "actions": [
+    {
+      "id": "ACT-001",
+      "priority": "high",
+      "riskTag": "库存积压",
+      "subject": "华北大区凉鞋",
+      "reason": "华北凉鞋库存积压¥320万，WOS 18周，远超正常值8周",
+      "action": "立即启动华北凉鞋清仓促销，定价7折，并将剩余库存调拨至华南",
+      "salesImpact": "+¥120万",
+      "inventoryImpact": "WOS 18→9周",
+      "cashImpact": "释放¥200万",
+      "relatedModule": "库存健康",
+      "status": "pending",
+      "impactAmount": 3200000,
+      "aiGenerated": false
+    },
+    {
+      "id": "ACT-002",
+      "priority": "high",
+      "riskTag": "目标缺口",
+      "subject": "西北大区 Q3 目标",
+      "reason": "西北大区 Q3 销售完成率 81%，低于目标 19%，预计全年缺口¥500万",
+      "action": "追加西北区域双11大促资源，联合核心加盟商开展特价清仓活动",
+      "salesImpact": "+¥280万",
+      "inventoryImpact": "降低库存深度",
+      "cashImpact": "+¥180万",
+      "relatedModule": "销售预测",
+      "status": "transferred",
+      "impactAmount": 2800000,
+      "aiGenerated": true
+    },
+    {
+      "id": "ACT-003",
+      "priority": "medium",
+      "riskTag": "渠道风险",
+      "subject": "经销渠道贡献利润",
+      "reason": "经销渠道贡献利润率 12%，持续低于盈亏平衡线，Q3 出现负贡献",
+      "action": "启动低效经销商退出程序，涉及 20 家门店，Q4 完成过渡",
+      "salesImpact": "短期-¥300万（长期改善）",
+      "inventoryImpact": "释放经销库存¥500万",
+      "cashImpact": "+¥200万",
+      "relatedModule": "损益分析",
+      "status": "pending",
+      "impactAmount": 2000000,
+      "aiGenerated": false
+    },
+    {
+      "id": "ACT-004",
+      "priority": "high",
+      "riskTag": "选款问题",
+      "subject": "东北棉鞋转化率",
+      "reason": "东北棉鞋试穿率 45% 但转化率仅 20%，判断为选款问题",
+      "action": "更换东北棉鞋陈列主推款，调入华北畅销款 3 个 SKU，Q4 前到位",
+      "salesImpact": "+¥120万",
+      "inventoryImpact": "降低断码率",
+      "cashImpact": "+¥80万",
+      "relatedModule": "品类运营",
+      "status": "completed",
+      "impactAmount": 1200000,
+      "aiGenerated": true
+    },
+    {
+      "id": "ACT-005",
+      "priority": "medium",
+      "riskTag": "配货优化",
+      "subject": "华南凉鞋补货",
+      "reason": "华南凉鞋 Q2 断货率 18%，损失销售额估计¥180万",
+      "action": "紧急追单华南凉鞋 36-38 码，预计 2 周到货，优先铺货 A 级门店",
+      "salesImpact": "+¥180万",
+      "inventoryImpact": "减少缺货率",
+      "cashImpact": "持平",
+      "relatedModule": "OTB",
+      "status": "completed",
+      "impactAmount": 1800000,
+      "aiGenerated": false
+    },
+    {
+      "id": "ACT-006",
+      "priority": "low",
+      "riskTag": "增长机会",
+      "subject": "电商自营渠道",
+      "reason": "电商 Q1-Q3 持续超目标 15%+，当前资源配置未充分利用增长势头",
+      "action": "加大电商专供款开发，Q4 增加 5 款直播专属 SKU",
+      "salesImpact": "+¥350万",
+      "inventoryImpact": "增加电商备货",
+      "cashImpact": "+¥200万",
+      "relatedModule": "波段企划",
+      "status": "completed",
+      "impactAmount": 3500000,
+      "aiGenerated": true
+    }
+  ]
+}

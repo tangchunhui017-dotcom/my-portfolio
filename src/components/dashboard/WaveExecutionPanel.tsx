@@ -6,6 +6,11 @@ import type { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
 import { useMonthlyAchievementData } from '@/hooks/useMonthlyAchievementData';
 import { useWavePlanning } from '@/hooks/useWavePlanning';
 import { formatMoneyCny } from '@/config/numberFormat';
+import {
+    CHART_INK, CHART_TEXT_MUTED, CHART_TEXT_FAINT,
+    CHART_LINE_DASHED, CHART_HIGHLIGHT_LIGHT,
+} from '@/config/chartTheme';
+import ChartCard from '@/components/charts/ChartCard';
 
 const fmtAmt = (v: number) => formatMoneyCny(v);
 const fmtAxisAmt = (v: number) => `${Math.round(v / 10000)}万`;
@@ -101,15 +106,12 @@ export default function WaveExecutionPanel({ filters, compareMode, onJumpToPlann
 
         {/* 左：新品起量曲线 */}
         {hasRampData ? (
-          <div className="rounded-panel border border-slate-200/80 bg-white p-5 shadow-[0_4px_12px_rgba(15,23,42,0.04)]">
-            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-              <div className="w-1.5 h-4 bg-gradient-to-b from-sky-400 to-blue-600 rounded-full" />
-              新品起量曲线（New Product Ramp-up）
-            </h3>
-            <p className="mt-1 text-xs text-slate-500">
-              当年全新款从上市当月起按月净销售额走势；反映新品放量速度与承接健康度。
-            </p>
-            <div className="mt-4 h-[240px]">
+          <ChartCard
+            title="新品起量曲线"
+            subtitle="当年全新款从上市当月起按月净销售额走势；反映新品放量速度与承接健康度。"
+            showMenu={false}
+          >
+            <div className="h-[240px]">
               {!mounted ? <ChartPlaceholder /> : (
                 <ReactECharts
                   option={{
@@ -133,23 +135,23 @@ export default function WaveExecutionPanel({ filters, compareMode, onJumpToPlann
                         ].filter(Boolean).join('<br/>');
                       },
                     },
-                    legend: { data: ['当月销售', '累计销售'], right: 0, top: 0, textStyle: { color: '#64748B', fontSize: 12 } },
+                    legend: { data: ['当月销售', '累计销售'], right: 0, top: 0, textStyle: { color: CHART_TEXT_MUTED, fontSize: 12 } },
                     grid: { top: 36, right: 16, bottom: 20, left: 16, containLabel: true },
                     xAxis: {
                       type: 'category',
                       data: newProductRampData.map((d) => d.monthLabel),
                       axisLine: { show: false },
                       axisTick: { show: false },
-                      axisLabel: { color: '#94A3B8', fontSize: 11 },
+                      axisLabel: { color: CHART_TEXT_FAINT, fontSize: 11 },
                     },
                     yAxis: {
                       type: 'value',
-                      splitLine: { lineStyle: { type: 'dashed', color: '#F1F5F9' } },
-                      axisLabel: { color: '#94A3B8', fontSize: 11, formatter: (v: number) => fmtAxisAmt(v) },
+                      splitLine: { lineStyle: { type: 'dashed', color: CHART_LINE_DASHED } },
+                      axisLabel: { color: CHART_TEXT_FAINT, fontSize: 11, formatter: (v: number) => fmtAxisAmt(v) },
                     },
                     series: [
-                      { name: '当月销售', type: 'bar', data: newProductRampData.map((d) => d.salesAmt), itemStyle: { color: '#38BDF8', borderRadius: [4, 4, 0, 0] }, barMaxWidth: 36 },
-                      { name: '累计销售', type: 'line', data: newProductRampData.map((d) => d.cumulativeAmt), lineStyle: { color: '#0F172A', width: 2 }, itemStyle: { color: '#0F172A' }, symbol: 'circle', symbolSize: 6 },
+                      { name: '当月销售', type: 'bar', data: newProductRampData.map((d) => d.salesAmt), itemStyle: { color: CHART_HIGHLIGHT_LIGHT, borderRadius: [4, 4, 0, 0] }, barMaxWidth: 36 },
+                      { name: '累计销售', type: 'line', data: newProductRampData.map((d) => d.cumulativeAmt), lineStyle: { color: CHART_INK, width: 2 }, itemStyle: { color: CHART_INK }, symbol: 'circle', symbolSize: 6 },
                     ],
                   }}
                   style={{ height: '100%', width: '100%' }}
@@ -157,9 +159,9 @@ export default function WaveExecutionPanel({ filters, compareMode, onJumpToPlann
                 />
               )}
             </div>
-          </div>
+          </ChartCard>
         ) : (
-          <div className="rounded-panel border border-dashed border-slate-200 bg-slate-50/60 p-5 flex items-center justify-center text-sm text-slate-400">
+          <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/60 p-5 flex items-center justify-center text-sm text-slate-400">
             当前筛选下暂无新品销售数据
           </div>
         )}

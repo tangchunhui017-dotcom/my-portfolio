@@ -1,0 +1,95 @@
+{
+  "generatedAt": "2026-05-13",
+  "regions": [
+    {
+      "region": "华东",
+      "quarters": [
+        { "quarter": "Q1", "actual": 38500000, "target": 36000000, "achievementRate": 1.069 },
+        { "quarter": "Q2", "actual": 42000000, "target": 40000000, "achievementRate": 1.05 },
+        { "quarter": "Q3", "actual": 35000000, "target": 38000000, "achievementRate": 0.921 },
+        { "quarter": "Q4", "actual": 41000000, "target": 40000000, "achievementRate": 1.025 }
+      ],
+      "ytdActual": 156500000,
+      "ytdTarget": 154000000,
+      "ytdRate": 1.016
+    },
+    {
+      "region": "华南",
+      "quarters": [
+        { "quarter": "Q1", "actual": 28000000, "target": 26000000, "achievementRate": 1.077 },
+        { "quarter": "Q2", "actual": 35000000, "target": 32000000, "achievementRate": 1.094 },
+        { "quarter": "Q3", "actual": 30000000, "target": 28000000, "achievementRate": 1.071 },
+        { "quarter": "Q4", "actual": 27000000, "target": 26000000, "achievementRate": 1.038 }
+      ],
+      "ytdActual": 120000000,
+      "ytdTarget": 112000000,
+      "ytdRate": 1.071
+    },
+    {
+      "region": "华北",
+      "quarters": [
+        { "quarter": "Q1", "actual": 22000000, "target": 26000000, "achievementRate": 0.846 },
+        { "quarter": "Q2", "actual": 18000000, "target": 22000000, "achievementRate": 0.818 },
+        { "quarter": "Q3", "actual": 24000000, "target": 26000000, "achievementRate": 0.923 },
+        { "quarter": "Q4", "actual": 28000000, "target": 28000000, "achievementRate": 1.0 }
+      ],
+      "ytdActual": 92000000,
+      "ytdTarget": 102000000,
+      "ytdRate": 0.902
+    },
+    {
+      "region": "西南",
+      "quarters": [
+        { "quarter": "Q1", "actual": 18000000, "target": 18000000, "achievementRate": 1.0 },
+        { "quarter": "Q2", "actual": 20000000, "target": 19000000, "achievementRate": 1.053 },
+        { "quarter": "Q3", "actual": 17000000, "target": 18000000, "achievementRate": 0.944 },
+        { "quarter": "Q4", "actual": 19000000, "target": 18000000, "achievementRate": 1.056 }
+      ],
+      "ytdActual": 74000000,
+      "ytdTarget": 73000000,
+      "ytdRate": 1.014
+    },
+    {
+      "region": "西北",
+      "quarters": [
+        { "quarter": "Q1", "actual": 9000000, "target": 11000000, "achievementRate": 0.818 },
+        { "quarter": "Q2", "actual": 8000000, "target": 10000000, "achievementRate": 0.8 },
+        { "quarter": "Q3", "actual": 10000000, "target": 11000000, "achievementRate": 0.909 },
+        { "quarter": "Q4", "actual": 12000000, "target": 12000000, "achievementRate": 1.0 }
+      ],
+      "ytdActual": 39000000,
+      "ytdTarget": 44000000,
+      "ytdRate": 0.886
+    },
+    {
+      "region": "东北",
+      "quarters": [
+        { "quarter": "Q1", "actual": 10000000, "target": 11000000, "achievementRate": 0.909 },
+        { "quarter": "Q2", "actual": 8000000, "target": 9000000, "achievementRate": 0.889 },
+        { "quarter": "Q3", "actual": 9000000, "target": 10000000, "achievementRate": 0.9 },
+        { "quarter": "Q4", "actual": 13000000, "target": 12000000, "achievementRate": 1.083 }
+      ],
+      "ytdActual": 40000000,
+      "ytdTarget": 42000000,
+      "ytdRate": 0.952
+    },
+    {
+      "region": "华中",
+      "quarters": [
+        { "quarter": "Q1", "actual": 16000000, "target": 16000000, "achievementRate": 1.0 },
+        { "quarter": "Q2", "actual": 17000000, "target": 17000000, "achievementRate": 1.0 },
+        { "quarter": "Q3", "actual": 15000000, "target": 16000000, "achievementRate": 0.9375 },
+        { "quarter": "Q4", "actual": 18000000, "target": 17000000, "achievementRate": 1.059 }
+      ],
+      "ytdActual": 66000000,
+      "ytdTarget": 66000000,
+      "ytdRate": 1.0
+    }
+  ],
+  "laggingRegions": ["华北", "西北", "东北"],
+  "sprintSuggestions": [
+    "华北 Q3 凉鞋减配已执行，Q4 重点冲刺棉鞋/短靴节点",
+    "西北建议 11-12 月启动大促活动，争取 Q4 达标",
+    "东北 Q4 棉鞋旺季，建议额外铺货 +10% 抢占市场份额"
+  ]
+}

@@ -57,6 +57,24 @@
       "detail": "凉鞋38-40码段断码，建议下季备货深度+5%，女38-40为重点",
       "impact": "改善尺码满足率",
       "status": "pending"
+    },
+    {
+      "id": "SIG007",
+      "targetModule": "channel",
+      "priority": "P0",
+      "title": "华北凉鞋库存积压 → 渠道需启动清仓",
+      "detail": "华北凉鞋库存 WOS 18周，积压¥320万。建议区域&门店模块立即启动华北凉鞋清仓行动，并做跨区调拨至华南。",
+      "impact": "释放库存现金约¥200万",
+      "status": "pending"
+    },
+    {
+      "id": "SIG008",
+      "targetModule": "channel",
+      "priority": "P1",
+      "title": "华南凉鞋断货 → 区域需加急补货",
+      "detail": "华南凉鞋 Q2 断货率 18%，损失销售额估计¥180万。建议区域&门店协调紧急追单，优先 36-38 码女凉鞋。",
+      "impact": "恢复华南凉鞋销售约¥180万",
+      "status": "pending"
     }
   ]
 }

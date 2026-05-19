@@ -21,18 +21,19 @@ interface Props {
 
 // 12 Tab 的中文标题映射
 const TAB_LABELS: Record<TabKey, { label: string; icon: string; desc: string }> = {
-    'overview':         { label: '总览',       icon: '📊', desc: '品牌经营总览面板' },
-    'annual-control':   { label: '年度总控',   icon: '🗺️', desc: '年度计划与目标拆分' },
-    'region-store':     { label: '区域&门店',  icon: '🏪', desc: '区域销售、门店分层与执行' },
-    'consumer':         { label: '消费者画像', icon: '🧑‍🤝‍🧑', desc: '会员、客群、偏好维度' },
-    'category-ops':     { label: '品类运营',   icon: '📋', desc: '品类、价格带、生命周期' },
-    'wave-planning':    { label: '波段企划',   icon: '📅', desc: '波段、季节、上市节奏' },
-    'otb':              { label: 'OTB 预算',   icon: '💰', desc: 'OTB 计算规则与审批流' },
-    'cashflow':         { label: '现金流',     icon: '💧', desc: '回款/支出/清货模拟' },
-    'forecast':         { label: '销售预测',   icon: '📈', desc: '预测模型与情景参数' },
-    'pnl':              { label: '损益表',     icon: '💹', desc: '毛利/税费/折扣规则' },
-    'competitor-trend': { label: '竞品&趋势',  icon: '🧭', desc: '竞品对标维度' },
-    'inventory-health': { label: '库存健康',   icon: '📦', desc: '库龄/调拨/计提规则' },
+    'overview':          { label: '总览',       icon: '📊', desc: '品牌经营总览面板' },
+    'annual-control':    { label: '年度总控',   icon: '🗺️', desc: '年度计划与目标拆分' },
+    'brand-positioning': { label: '品牌定位',   icon: '🧬', desc: '品牌身份/DNA/层级/系列结构/价格架构' },
+    'region-store':      { label: '区域&门店',  icon: '🏪', desc: '区域销售、门店分层与执行' },
+    'consumer':          { label: '消费者画像', icon: '🧑‍🤝‍🧑', desc: '会员、客群、偏好维度' },
+    'category-ops':      { label: '品类运营',   icon: '📋', desc: '品类、价格带、生命周期' },
+    'wave-planning':     { label: '波段企划',   icon: '📅', desc: '波段、季节、上市节奏' },
+    'otb':               { label: 'OTB 预算',   icon: '💰', desc: 'OTB 计算规则与审批流' },
+    'cashflow':          { label: '现金流',     icon: '💧', desc: '回款/支出/清货模拟' },
+    'forecast':          { label: '销售预测',   icon: '📈', desc: '预测模型与情景参数' },
+    'pnl':               { label: '损益表',     icon: '💹', desc: '毛利/税费/折扣规则' },
+    'competitor-trend':  { label: '竞品&趋势',  icon: '🧭', desc: '竞品对标维度' },
+    'inventory-health':  { label: '库存健康',   icon: '📦', desc: '库龄/调拨/计提规则' },
 };
 
 // 来源中文化

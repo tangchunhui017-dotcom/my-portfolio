@@ -1,0 +1,95 @@
+{
+  "generatedAt": "2026-05-13",
+  "signals": [
+    {
+      "id": "CH_FB_001",
+      "targetModule": "otb",
+      "priority": "P0",
+      "title": "华北凉鞋积压 → 下季 OTB 减 12%",
+      "detail": "华北大区凉鞋库存积压¥320万，售罄率仅 42%，低于全国均值 22pp。建议 SS27 华北凉鞋 OTB 削减 12%（约¥180万），资源转移至棉鞋/短靴。",
+      "impact": "预计减少华北凉鞋超买风险¥180万",
+      "status": "open"
+    },
+    {
+      "id": "CH_FB_002",
+      "targetModule": "otb",
+      "priority": "P1",
+      "title": "华南凉鞋 SKU 不足 → 下季 OTB 增配 +15%",
+      "detail": "华南大区凉鞋售罄率 88%，供不应求，Q2-Q3 频繁断货。建议 SS27 华南凉鞋 OTB 增加 15%，优先补充 36-38 码女凉鞋。",
+      "impact": "预计华南凉鞋销售额提升¥240万",
+      "status": "open"
+    },
+    {
+      "id": "CH_FB_003",
+      "targetModule": "planning",
+      "priority": "P0",
+      "title": "AW24-3B 加盟渠道差 → AW25-3B 缩减加盟首铺",
+      "detail": "AW24-3B 波段加盟渠道净销售额仅完成目标 72%，库存积压¥210万。建议 AW25-3B 波段缩减加盟首铺数量 30%，转向直营深度运营。",
+      "impact": "预计减少加盟渠道滞销风险¥180万",
+      "status": "open"
+    },
+    {
+      "id": "CH_FB_004",
+      "targetModule": "planning",
+      "priority": "P1",
+      "title": "电商渠道超预期 → SS26 波段电商配比提升",
+      "detail": "电商渠道连续 3 季超目标，Q1-Q3 YTD 超额 18%。建议 SS26 波段电商配比从 28% 提升至 33%，同步加强直播场景款式开发。",
+      "impact": "预计额外贡献电商销售额¥350万",
+      "status": "open"
+    },
+    {
+      "id": "CH_FB_005",
+      "targetModule": "forecast",
+      "priority": "P1",
+      "title": "华东电商超预测 +15% → 下季调升电商预测基线",
+      "detail": "华东电商 YTD 实际销售超预测 15.2%，主要来自天猫旗舰店和抖音直播。建议下季华东电商销售预测基线上调 12%，减少备货不足风险。",
+      "impact": "提升预测准确率，减少缺货损失约¥180万",
+      "status": "open"
+    },
+    {
+      "id": "CH_FB_006",
+      "targetModule": "forecast",
+      "priority": "P2",
+      "title": "西北大区季节性销售低于预测 → 调低秋冬基线",
+      "detail": "西北大区 AW24 销售完成率 81%，连续 2 季低于目标。建议下季西北大区预测基线调低 8%，并引入当地气温修正系数。",
+      "impact": "避免西北区域过度备货¥90万",
+      "status": "open"
+    },
+    {
+      "id": "CH_FB_007",
+      "targetModule": "profit-loss",
+      "priority": "P0",
+      "title": "经销渠道贡献利润仅 12% → 缩减或退出低效经销商",
+      "detail": "经销渠道净收入¥1,500万但贡献利润率仅 12%（直营 34%、加盟 22%）。建议缩减低效经销商 20 家，预计改善综合贡献利润率 2pp。",
+      "impact": "预计提升贡献利润¥180万",
+      "status": "open"
+    },
+    {
+      "id": "CH_FB_008",
+      "targetModule": "profit-loss",
+      "priority": "P1",
+      "title": "加盟渠道折扣倒挂 → 加盟政策需调整",
+      "detail": "加盟商平均折扣已滑至 6.2 折，低于盈亏平衡点 6.5 折。建议修订加盟折扣政策，设置最低折扣下限，防止利润进一步侵蚀。",
+      "impact": "预计改善加盟渠道毛利率 3pp",
+      "status": "open"
+    },
+    {
+      "id": "CH_FB_009",
+      "targetModule": "category",
+      "priority": "P1",
+      "title": "华南凉鞋 SKU 数不足 → 下季 SKU 数 +20%",
+      "detail": "华南大区凉鞋 SKU 宽度仅 24 款，同类竞品达 38 款。建议下季扩充华南区域凉鞋 SKU 至 29 款（+20%），重点补充时尚凉拖和户外凉鞋。",
+      "impact": "预计华南凉鞋增量销售额¥160万",
+      "status": "open"
+    },
+    {
+      "id": "CH_FB_010",
+      "targetModule": "category",
+      "priority": "P2",
+      "title": "东北大区棉鞋试穿转化率低 → 选款结构需调整",
+      "detail": "东北大区棉鞋试穿率 38% 但转化率仅 19%（行业健康值 25-35%），判断为选款问题。建议下季优先调整东北棉鞋款式结构，增加保暖功能款占比。",
+      "impact": "预计东北棉鞋转化率提升 6pp，增量¥80万",
+      "status": "open"
+    }
+  ]
+}

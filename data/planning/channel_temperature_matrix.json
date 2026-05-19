@@ -1,0 +1,97 @@
+{
+  "generatedAt": "2026-05-13",
+  "categories": ["凉鞋", "凉拖", "板鞋", "休闲", "跑鞋", "棉鞋", "短靴"],
+  "regions": ["华东", "华南", "华北", "西南", "西北", "东北", "华中"],
+  "matrix": [
+    {
+      "region": "华东",
+      "data": [
+        { "category": "凉鞋", "salesContrib": 0.22, "climateMatch": 0.82, "suggestion": null },
+        { "category": "凉拖", "salesContrib": 0.12, "climateMatch": 0.75, "suggestion": null },
+        { "category": "板鞋", "salesContrib": 0.18, "climateMatch": 0.90, "suggestion": null },
+        { "category": "休闲", "salesContrib": 0.20, "climateMatch": 0.88, "suggestion": null },
+        { "category": "跑鞋", "salesContrib": 0.15, "climateMatch": 0.92, "suggestion": null },
+        { "category": "棉鞋", "salesContrib": 0.08, "climateMatch": 0.55, "suggestion": "棉鞋配比偏高，建议转移至东北/西北" },
+        { "category": "短靴", "salesContrib": 0.05, "climateMatch": 0.60, "suggestion": null }
+      ]
+    },
+    {
+      "region": "华南",
+      "data": [
+        { "category": "凉鞋", "salesContrib": 0.15, "climateMatch": 0.98, "suggestion": "凉鞋占比偏低→SS26建议增配+15%" },
+        { "category": "凉拖", "salesContrib": 0.10, "climateMatch": 0.96, "suggestion": "凉拖供不应求，建议增配" },
+        { "category": "板鞋", "salesContrib": 0.22, "climateMatch": 0.93, "suggestion": null },
+        { "category": "休闲", "salesContrib": 0.24, "climateMatch": 0.91, "suggestion": null },
+        { "category": "跑鞋", "salesContrib": 0.18, "climateMatch": 0.88, "suggestion": null },
+        { "category": "棉鞋", "salesContrib": 0.06, "climateMatch": 0.20, "suggestion": "棉鞋与华南气候严重不匹配，建议大幅削减" },
+        { "category": "短靴", "salesContrib": 0.05, "climateMatch": 0.18, "suggestion": "短靴不适合华南气候" }
+      ]
+    },
+    {
+      "region": "华北",
+      "data": [
+        { "category": "凉鞋", "salesContrib": 0.18, "climateMatch": 0.42, "suggestion": "凉鞋占比过高→应转移到华南/西南" },
+        { "category": "凉拖", "salesContrib": 0.08, "climateMatch": 0.38, "suggestion": "凉拖适配度低，建议削减" },
+        { "category": "板鞋", "salesContrib": 0.20, "climateMatch": 0.85, "suggestion": null },
+        { "category": "休闲", "salesContrib": 0.18, "climateMatch": 0.82, "suggestion": null },
+        { "category": "跑鞋", "salesContrib": 0.12, "climateMatch": 0.78, "suggestion": null },
+        { "category": "棉鞋", "salesContrib": 0.14, "climateMatch": 0.90, "suggestion": null },
+        { "category": "短靴", "salesContrib": 0.10, "climateMatch": 0.88, "suggestion": null }
+      ]
+    },
+    {
+      "region": "西南",
+      "data": [
+        { "category": "凉鞋", "salesContrib": 0.20, "climateMatch": 0.85, "suggestion": null },
+        { "category": "凉拖", "salesContrib": 0.12, "climateMatch": 0.80, "suggestion": null },
+        { "category": "板鞋", "salesContrib": 0.20, "climateMatch": 0.88, "suggestion": null },
+        { "category": "休闲", "salesContrib": 0.22, "climateMatch": 0.86, "suggestion": null },
+        { "category": "跑鞋", "salesContrib": 0.15, "climateMatch": 0.84, "suggestion": null },
+        { "category": "棉鞋", "salesContrib": 0.06, "climateMatch": 0.50, "suggestion": null },
+        { "category": "短靴", "salesContrib": 0.05, "climateMatch": 0.48, "suggestion": null }
+      ]
+    },
+    {
+      "region": "西北",
+      "data": [
+        { "category": "凉鞋", "salesContrib": 0.10, "climateMatch": 0.55, "suggestion": null },
+        { "category": "凉拖", "salesContrib": 0.05, "climateMatch": 0.45, "suggestion": null },
+        { "category": "板鞋", "salesContrib": 0.18, "climateMatch": 0.80, "suggestion": null },
+        { "category": "休闲", "salesContrib": 0.20, "climateMatch": 0.78, "suggestion": null },
+        { "category": "跑鞋", "salesContrib": 0.12, "climateMatch": 0.72, "suggestion": null },
+        { "category": "棉鞋", "salesContrib": 0.20, "climateMatch": 0.92, "suggestion": "西北棉鞋需求强劲，建议增配" },
+        { "category": "短靴", "salesContrib": 0.15, "climateMatch": 0.88, "suggestion": null }
+      ]
+    },
+    {
+      "region": "东北",
+      "data": [
+        { "category": "凉鞋", "salesContrib": 0.08, "climateMatch": 0.40, "suggestion": "凉鞋不适合东北气候，建议减少配置" },
+        { "category": "凉拖", "salesContrib": 0.05, "climateMatch": 0.35, "suggestion": null },
+        { "category": "板鞋", "salesContrib": 0.15, "climateMatch": 0.75, "suggestion": null },
+        { "category": "休闲", "salesContrib": 0.18, "climateMatch": 0.72, "suggestion": null },
+        { "category": "跑鞋", "salesContrib": 0.10, "climateMatch": 0.68, "suggestion": null },
+        { "category": "棉鞋", "salesContrib": 0.28, "climateMatch": 0.95, "suggestion": null },
+        { "category": "短靴", "salesContrib": 0.16, "climateMatch": 0.92, "suggestion": null }
+      ]
+    },
+    {
+      "region": "华中",
+      "data": [
+        { "category": "凉鞋", "salesContrib": 0.18, "climateMatch": 0.72, "suggestion": null },
+        { "category": "凉拖", "salesContrib": 0.10, "climateMatch": 0.68, "suggestion": null },
+        { "category": "板鞋", "salesContrib": 0.20, "climateMatch": 0.85, "suggestion": null },
+        { "category": "休闲", "salesContrib": 0.22, "climateMatch": 0.84, "suggestion": null },
+        { "category": "跑鞋", "salesContrib": 0.14, "climateMatch": 0.80, "suggestion": null },
+        { "category": "棉鞋", "salesContrib": 0.10, "climateMatch": 0.68, "suggestion": null },
+        { "category": "短靴", "salesContrib": 0.06, "climateMatch": 0.65, "suggestion": null }
+      ]
+    }
+  ],
+  "autoSuggestions": [
+    "华南凉鞋占比偏低 → SS26 建议增配 +15%",
+    "华北凉鞋占比过高 → 应转移到华南/西南",
+    "西北棉鞋需求强劲 → AW26 建议增配 +20%",
+    "东北棉鞋选款偏差 → 调整选款结构，增加保暖功能款"
+  ]
+}

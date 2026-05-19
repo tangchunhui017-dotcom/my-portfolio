@@ -7,6 +7,18 @@ import ReactECharts from 'echarts-for-react';
 import { useCompetitorAnalysis, type CompetitorBubblePoint } from '@/hooks/useCompetitorAnalysis';
 import type { CompareMode } from '@/hooks/useDashboardFilter';
 import { formatMoneyCny } from '@/config/numberFormat';
+import { useCompetitorTrendData } from '@/hooks/useCompetitorTrendData';
+import CompetitorTrendKpiStrip from '@/components/dashboard/competitor/CompetitorTrendKpiStrip';
+import TrendDecisionSummaryPanel from '@/components/dashboard/competitor/TrendDecisionSummaryPanel';
+import TrendActionCenter from '@/components/dashboard/competitor/TrendActionCenter';
+import RisingCategoryTrendPanel from '@/components/dashboard/competitor/RisingCategoryTrendPanel';
+import CompetitorDesignDnaPanel from '@/components/dashboard/competitor/CompetitorDesignDnaPanel';
+import CompetitorLaunchCalendarPanel from '@/components/dashboard/competitor/CompetitorLaunchCalendarPanel';
+import CompetitorGapAnalysisPanel from '@/components/dashboard/competitor/CompetitorGapAnalysisPanel';
+import TrendPlanningRecommendationPanel from '@/components/dashboard/competitor/TrendPlanningRecommendationPanel';
+import CompetitorMaterialGallery from '@/components/dashboard/competitor/CompetitorMaterialGallery';
+import RelatedModuleLinks from '@/components/dashboard/competitor/RelatedModuleLinks';
+import type { CompetitorDesignDna, CompetitorMaterialItem, TrendPlanningRecommendation } from '@/types/competitorTrendTypes';
 
 type CompareContext = {
     point: CompetitorBubblePoint;
@@ -334,13 +346,13 @@ export default function CompetitorTrendPanel({
                     const row = (payload as { data?: Record<string, unknown> })?.data || {};
                     return [
                         `<div style="font-weight:600;margin-bottom:4px;">${row.compBrand || '-'}</div>`,
-                        `品类：${row.category || '-'}`,
-                        `价格带：${row.priceBandName || '-'}`,
-                        `SKU火力：${fmtInt(Number(row.skuCnt || 0))}`,
-                        `销量热度：${fmtInt(Number(row.heat || 0))}`,
-                        `品牌内品类占比：${fmtPct(Number(row.categoryShare || 0))}`,
-                        `同价带份额：${fmtPct(Number(row.bandCategoryShare || 0))}`,
-                        `估算销额：${fmtWan(Number(row.netSales || 0))}`,
+                        `品类：${row.category ?? '-'}`,
+                        `价格带：${row.priceBandName ?? '-'}`,
+                        `SKU火力：${Number(row.skuCnt ?? 0).toLocaleString()}`,
+                        `销量热度：${Number(row.heat ?? 0).toFixed(1)}`,
+                        `品牌内品类占比：${(Number(row.categoryShare ?? 0) * 100).toFixed(1)}%`,
+                        `同价带份额：${(Number(row.bandCategoryShare ?? 0) * 100).toFixed(1)}%`,
+                        `估算销售额：${formatMoneyCny(Number(row.netSales ?? 0))}`,
                     ].join('<br/>');
                 },
             },
@@ -352,13 +364,13 @@ export default function CompetitorTrendPanel({
                 axisLine: { lineStyle: { color: '#E5E7EB' } },
                 axisLabel: {
                     color: '#6B7280',
-                    formatter: (value: number) => `¥${Math.round(value)}`,
+                    formatter: (value: number) => `¥${value}`,
                 },
                 splitLine: { lineStyle: { color: '#E5E7EB', type: 'dashed' } },
             },
             yAxis: {
                 type: 'value',
-                name: 'SKU数量',
+                name: 'SKU 数量',
                 axisLine: { lineStyle: { color: '#E5E7EB' } },
                 axisLabel: { color: '#6B7280' },
                 splitLine: { lineStyle: { color: '#E5E7EB', type: 'dashed' } },
@@ -470,7 +482,7 @@ export default function CompetitorTrendPanel({
                     const axisLabel = items[0]?.axisValueLabel || '';
                     const lines = [`<div style="font-weight:600;margin-bottom:4px;">${axisLabel}</div>`];
                     items.forEach((item) => {
-                        lines.push(`${item.marker || ''} ${item.seriesName || ''}：${Number(item.value || 0).toFixed(1)}%`);
+                        lines.push(`${item.marker ?? ''}${item.seriesName ?? '-'}：${item.value ?? 0}%`);
                     });
                     return lines.join('<br/>');
                 },
@@ -535,7 +547,7 @@ export default function CompetitorTrendPanel({
             return {
                 conclusion: '当前筛选暂无可用竞品点位。',
                 risk: '无法判断防御薄弱点，请放宽筛选后再观察。',
-                action: '建议先恢复“全部品牌”，再按价格带逐段查看。',
+                action: '建议先恢复"全部品牌"，再按价格带逐步查看。',
             };
         }
 
@@ -553,11 +565,11 @@ export default function CompetitorTrendPanel({
 
         const actionText =
             skuGap > 0
-                ? '建议在“波段&企划”补该价带SKU宽度，并在“区域&门店”优先投放高动销店态。'
-                : '建议维持SKU宽度，转去“总览”观察毛利与折扣，避免无效扩款。';
+                ? '建议在"波段·企划"补该价带SKU宽度，并在"区域·门店"优先投放高动销店型。'
+                : '建议维持SKU宽度，转看"总览"观察毛利与折扣，避免无效扩款。';
 
         return {
-            conclusion: `${point.comp_brand} 在 ${point.price_band_name}×${point.category} 布局 ${point.sku_cnt} 款，热度 ${point.heat}；${leadText}。`,
+            conclusion: `${point.comp_brand} 在 ${point.price_band_name}×${point.category} 布局 ${point.sku_cnt} 款，热度 ${point.heat}，${leadText}。`,
             risk: `${riskText} 品牌内品类占比差 ${fmtPP(categoryShareGap)}，同价带份额差 ${fmtPP(bandShareGap)}。`,
             action: actionText,
         };
@@ -572,107 +584,172 @@ export default function CompetitorTrendPanel({
         });
     }, [galleryItems, selectedBrand, selectedRegion, selectedWave]);
 
+    // ── New V2 data ──────────────────────────────────────────────────────────
+    const [v2CompetitorBrand, setV2CompetitorBrand] = useState('all');
+    const [v2Category, setV2Category] = useState('all');
+    const [v2ShoeType, setV2ShoeType] = useState('all');
+    const [v2PriceBand, setV2PriceBand] = useState('all');
+
+    const trendData = useCompetitorTrendData({
+        competitorBrand: v2CompetitorBrand,
+        category: v2Category,
+        shoeType: v2ShoeType,
+        priceBand: v2PriceBand,
+    });
+
+    // 跳转处理器
+    const handleJumpToDesign = (_item: CompetitorDesignDna | CompetitorMaterialItem | TrendPlanningRecommendation) => {
+        window.location.assign('/design-review-center');
+    };
+    const handleJumpToPlanningWithWave = (_waveId: string) => {
+        onJumpToPlanning?.();
+    };
+    const handleJumpToModuleByName = (moduleRef: string) => {
+        if (moduleRef.includes('波段') || moduleRef.includes('planning')) onJumpToPlanning?.();
+    };
+
     return (
         <div className="space-y-8">
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* Page Header & Filters                                           */}
+            {/* ─────────────────────────────────────────────────────────────── */}
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-                <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
-                    <div>
-                        <h2 className="text-xl font-semibold tracking-wide text-slate-900 flex items-center gap-3">
-                            <div className="w-1.5 h-6 bg-gradient-to-b from-blue-500 to-cyan-400 rounded-full" />
-                            竞品防御沙盘（价格带 × SKU火力 × 热度）
-                            <span className="text-[10px] font-mono tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 uppercase">
-                                COMPETITOR MIX
-                            </span>
-                        </h2>
-                        <div className="mt-2 text-xs text-slate-500">
-                            口径：竞品品牌 / 二级品类 / 价格带 / SKU数量 / 热度指数（Demo）
+                <div className="mb-4">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 mb-1">
+                        COMPETITOR &amp; TREND
+                    </div>
+                    <h2 className="text-2xl font-semibold text-slate-900 flex items-center gap-3">
+                        <div className="w-1.5 h-7 bg-gradient-to-b from-blue-500 to-violet-500 rounded-full" />
+                        竞品&amp;趋势决策工作台
+                    </h2>
+                    <p className="mt-1 text-xs text-slate-500 max-w-3xl">
+                        发现竞品价格、品类、鞋型、设计、上市节奏和热度机会；判断本品与竞品的差距；输出到波段企划、OTB预算、设计计划和品类运营。
+                    </p>
+                </div>
+
+                {/* 筛选器 */}
+                <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-100">
+                    <span className="text-xs text-slate-400 flex-shrink-0">筛选：</span>
+                    {[
+                        {
+                            label: '竞品品牌', value: v2CompetitorBrand, setter: setV2CompetitorBrand,
+                            options: [['all', '全部竞品'], ...trendData.competitorBrandOptions.map((b) => [b, b])],
+                        },
+                        {
+                            label: '品类', value: v2Category, setter: setV2Category,
+                            options: [['all', '全部品类'], ...trendData.categoryOptions.map((c) => [c, c])],
+                        },
+                        {
+                            label: '鞋型', value: v2ShoeType, setter: setV2ShoeType,
+                            options: [['all', '全部鞋型'], ...trendData.shoeTypeOptions.map((s) => [s, s])],
+                        },
+                        {
+                            label: '价格带', value: v2PriceBand, setter: setV2PriceBand,
+                            options: [['all', '全部价格带'], ...trendData.priceBandOptions.map((p) => [p, p])],
+                        },
+                        {
+                            label: '品牌', value: selectedBrand, setter: setSelectedBrand,
+                            options: [['all', '全部品牌'], ...brands.map((b) => [b, b])],
+                        },
+                        {
+                            label: '品类结构', value: selectedCategory, setter: setSelectedCategory,
+                            options: [['all', '全部'], ...categories.map((c) => [c, c])],
+                        },
+                        {
+                            label: '价格带结构', value: selectedPriceBand, setter: setSelectedPriceBand,
+                            options: [['all', '全部'], ...priceBandOptions.map((p) => [p, p])],
+                        },
+                    ].map(({ label, value, setter, options }) => (
+                        <div key={label} className="flex items-center gap-1">
+                            <span className="text-[11px] text-slate-400">{label}</span>
+                            <select
+                                value={value}
+                                onChange={(e) => setter(e.target.value)}
+                                className="text-xs border border-slate-200 rounded-md px-2 py-1 bg-white text-slate-700"
+                            >
+                                {options.map(([val, lbl]) => (
+                                    <option key={val} value={val}>{lbl}</option>
+                                ))}
+                            </select>
                         </div>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                        <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
-                            {sectionScopeHint}
-                        </span>
-                        <select
-                            value={selectedBrand}
-                            onChange={(event) => setSelectedBrand(event.target.value)}
-                            className="text-xs border border-slate-200 rounded-md px-2 py-1.5 bg-white text-slate-700"
-                        >
-                            <option value="all">全部品牌</option>
-                            {brands.map((brand) => (
-                                <option key={brand} value={brand}>
-                                    {brand}
-                                </option>
-                            ))}
-                        </select>
-                        <select
-                            value={selectedCategory}
-                            onChange={(event) => setSelectedCategory(event.target.value)}
-                            className="text-xs border border-slate-200 rounded-md px-2 py-1.5 bg-white text-slate-700"
-                        >
-                            <option value="all">全部品类</option>
-                            {categories.map((category) => (
-                                <option key={category} value={category}>
-                                    {category}
-                                </option>
-                            ))}
-                        </select>
-                        <select
-                            value={selectedPriceBand}
-                            onChange={(event) => setSelectedPriceBand(event.target.value)}
-                            className="text-xs border border-slate-200 rounded-md px-2 py-1.5 bg-white text-slate-700"
-                        >
-                            <option value="all">全部价格带</option>
-                            {priceBandOptions.map((band) => (
-                                <option key={band} value={band}>
-                                    {band}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 1. KPI Strip                                                    */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <SectionCard
+                label="01 EXECUTIVE SUMMARY"
+                title="竞品趋势总览"
+                description="8个核心KPI快速判断哪些趋势值得跟进、哪些价格带有机会、哪些有风险。"
+            >
+                <CompetitorTrendKpiStrip kpis={trendData.kpis} />
+            </SectionCard>
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 2. Decision Summary                                             */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <SectionCard
+                label="02 DECISION SUMMARY"
+                title="趋势决策摘要"
+                description="本月最值得跟进、不建议跟进、最有机会价格带、需进入设计计划和波段企划的趋势。"
+            >
+                <TrendDecisionSummaryPanel summary={trendData.decisionSummary} />
+            </SectionCard>
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 3. Action Center                                                */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <SectionCard
+                label="03 ACTION CENTER"
+                title="趋势行动中心"
+                description="按优先级排列的6-8条高价值建议，每条包含趋势证据、建议动作和预计商业影响。"
+                badge="优先处理"
+                badgeColor="emerald"
+            >
+                <TrendActionCenter
+                    actions={trendData.actions}
+                    onJumpToPlanning={handleJumpToPlanningWithWave}
+                    onJumpToDesign={() => handleJumpToDesign(trendData.designDnaList[0])}
+                    onJumpToOtb={onJumpToPlanning}
+                />
+            </SectionCard>
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 4. Price × SKU Heat Map (original ECharts section)             */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                <div className="mb-4">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 mb-1">04 PRICE × SKU HEAT MAP</div>
+                    <h3 className="text-lg font-semibold text-slate-900">价格 × SKU火力 × 热度散点图</h3>
+                    <p className="text-xs text-slate-500 mt-0.5">气泡大小=热度，X轴=价格带中位价，Y轴=SKU数量。高热+低SKU为机会区；高热+高SKU为红海区。</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3 mb-4">
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                        <div className="flex items-center text-xs text-slate-500">
-                            市场领跑品牌
-                            <InfoTip text="按市场份额（market_share）排序，展示当前份额最高的竞品品牌。" />
-                        </div>
-                        <div className="mt-1 text-base font-semibold text-slate-900">
-                            {leadingCompetitor?.comp_brand || '-'}
-                        </div>
+                        <div className="text-xs text-slate-500">市场领跑品牌</div>
+                        <div className="mt-1 text-base font-semibold text-slate-900">{leadingCompetitor?.comp_brand || '-'}</div>
                         <div className="text-xs text-slate-500 mt-1">份额 {fmtPct(leadingCompetitor?.market_share || 0)}</div>
                     </div>
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                        <div className="flex items-center text-xs text-slate-500">
-                            本品牌SKU总量
-                            <InfoTip text="本品牌SKU总量=本品牌各品类SKU数量汇总；支持较计划（sku_plan_gap）/较前周期（sku_mom）/同比（sku_yoy）三种口径。" />
-                        </div>
+                        <div className="text-xs text-slate-500">本品SKU总量</div>
                         <div className="mt-1 text-base font-semibold text-slate-900">{fmtInt(ourSummary?.sku_total || 0)}</div>
-                        <div className="text-xs text-slate-500 mt-1">
-                            {ourSkuDeltaRate === null ? `${compareDeltaLabel} —` : `${compareDeltaLabel} ${fmtPct(ourSkuDeltaRate)}`}
-                        </div>
+                        <div className="text-xs text-slate-500 mt-1">{compareDeltaLabel} {ourSkuDeltaRate === null ? '—' : fmtPct(ourSkuDeltaRate)}</div>
+                    </div>
+                    <div className="rounded-xl border border-rose-100 bg-rose-50 p-3">
+                        <div className="text-xs text-rose-600">竞品压制品类</div>
+                        <div className="mt-1 text-base font-semibold text-rose-700">{suppressedCategories.length} 个</div>
+                        <div className="text-xs text-slate-500 mt-1">竞品占比 &gt;60%</div>
+                    </div>
+                    <div className="rounded-xl border border-amber-100 bg-amber-50 p-3">
+                        <div className="text-xs text-amber-600">防御薄弱价格带</div>
+                        <div className="mt-1 text-base font-semibold text-amber-700">{weakPriceBands.length} 个</div>
+                        <div className="text-xs text-slate-500 mt-1">竞品SKU明显高于本品</div>
                     </div>
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                        <div className="flex items-center text-xs text-slate-500">
-                            竞品压制品类
-                            <InfoTip text="压制规则：竞品在某品类的SKU占比 > 60%，用于识别需优先防御的品类。" />
-                        </div>
-                        <div className="mt-1 text-base font-semibold text-rose-600">{suppressedCategories.length} 个</div>
-                        <div className="text-xs text-slate-500 mt-1">规则：竞品SKU占比 &gt; 60%</div>
-                    </div>
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                        <div className="flex items-center text-xs text-slate-500">
-                            防御薄弱价格带
-                            <InfoTip text="薄弱规则：同价格带内竞品SKU数量明显高于本品牌，且差值为正。" />
-                        </div>
-                        <div className="mt-1 text-base font-semibold text-amber-600">{weakPriceBands.length} 个</div>
-                        <div className="text-xs text-slate-500 mt-1">规则：竞品SKU明显高于本品</div>
-                    </div>
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                        <div className="flex items-center text-xs text-slate-500">
-                            当前点位占比差
-                            <InfoTip text="占比差=竞品占比-本品牌占比；含品牌内品类占比差与同价带份额差（pp）。" />
-                        </div>
+                        <div className="text-xs text-slate-500">当前点位占比差</div>
                         <div className="mt-1 text-base font-semibold text-slate-900">
                             {compareContext ? fmtPP(compareContext.categoryShareGap) : '-'}
                         </div>
@@ -684,224 +761,276 @@ export default function CompetitorTrendPanel({
 
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
                     <div className="xl:col-span-7 rounded-xl border border-slate-100 p-4">
-                        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                            <div className="text-sm font-semibold text-slate-900">核心图1：竞品气泡散点（点击气泡联动洞察）</div>
-                            <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
-                                {sectionScopeHint}
-                            </span>
-                        </div>
+                        <div className="text-sm font-semibold text-slate-900 mb-2">竞品气泡散点（点击气泡联动洞察）</div>
                         <ReactECharts option={bubbleOption} onEvents={bubbleEvents} style={{ height: 360 }} notMerge />
                     </div>
-
                     <div className="xl:col-span-5 space-y-4">
                         <div className="rounded-xl border border-slate-100 p-4">
-                            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                                <div className="text-sm font-semibold text-slate-900">核心图2：STEPIC 市调雷达</div>
-                                <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
-                                    {sectionScopeHint}
-                                </span>
-                            </div>
-                            <ReactECharts option={radarOption} style={{ height: 340 }} notMerge />
+                            <div className="text-sm font-semibold text-slate-900 mb-2">EPIC 竞品雷达（预览）</div>
+                            <ReactECharts option={radarOption} style={{ height: 280 }} notMerge />
                         </div>
-
                         <div className="rounded-xl border border-slate-100 p-4 bg-slate-50">
-                            <div className="text-sm font-semibold text-slate-900">联动洞察（结论 / 风险 / 建议）</div>
+                            <div className="text-sm font-semibold text-slate-900">联动洞察</div>
                             <div className="mt-3 space-y-2 text-xs text-slate-700 leading-5">
-                                <div>
-                                    <span className="text-slate-500">结论：</span>
-                                    {insight.conclusion}
-                                </div>
-                                <div>
-                                    <span className="text-slate-500">风险：</span>
-                                    {insight.risk}
-                                </div>
-                                <div>
-                                    <span className="text-slate-500">建议：</span>
-                                    {insight.action}
-                                </div>
+                                <div><span className="text-slate-500">结论：</span>{insight.conclusion}</div>
+                                <div><span className="text-slate-500">风险：</span>{insight.risk}</div>
+                                <div><span className="text-slate-500">建议：</span>{insight.action}</div>
                             </div>
                             <div className="mt-3 flex flex-wrap gap-2">
                                 {onJumpToPlanning && (
-                                    <button
-                                        onClick={onJumpToPlanning}
-                                        className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-50"
-                                    >
-                                        去波段&企划补位
-                                    </button>
-                                )}
-                                {onJumpToChannel && (
-                                    <button
-                                        onClick={onJumpToChannel}
-                                        className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-50"
-                                    >
-                                        去区域&门店执行
-                                    </button>
+                                    <button onClick={onJumpToPlanning} className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50">去波段企划补位</button>
                                 )}
                                 {onJumpToSkuRisk && (
-                                    <button
-                                        onClick={onJumpToSkuRisk}
-                                        className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-50"
-                                    >
-                                        去 SKU 风险列表
-                                    </button>
-                                )}
-                            </div>
-
-                            <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3">
-                                <div className="text-xs font-semibold text-slate-700 mb-2">当前点位占比比较</div>
-                                {compareContext ? (
-                                    <div className="space-y-1.5 text-xs text-slate-600">
-                                        <div className="flex items-center justify-between">
-                                            <span>{compareContext.point.comp_brand} 品牌内品类占比</span>
-                                            <span className="font-medium text-slate-900">{fmtPct(compareContext.pointCategoryShare)}</span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <span>{ourBrandName} 品牌内品类占比</span>
-                                            <span className="font-medium text-slate-900">{fmtPct(compareContext.ourCategoryShare)}</span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <span>品牌内占比差</span>
-                                            <span className="font-medium text-slate-900">{fmtPP(compareContext.categoryShareGap)}</span>
-                                        </div>
-                                        <div className="h-px bg-slate-200 my-1" />
-                                        <div className="flex items-center justify-between">
-                                            <span>{compareContext.point.comp_brand} 同价带份额</span>
-                                            <span className="font-medium text-slate-900">{fmtPct(compareContext.pointBandShare)}</span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <span>{ourBrandName} 同价带份额</span>
-                                            <span className="font-medium text-slate-900">{fmtPct(compareContext.ourBandShare)}</span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <span>同价带份额差</span>
-                                            <span className="font-medium text-slate-900">{fmtPP(compareContext.bandShareGap)}</span>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="text-xs text-slate-400">点击气泡后显示本品与竞品的占比差异</div>
+                                    <button onClick={onJumpToSkuRisk} className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50">去 SKU 风险列表</button>
                                 )}
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {[
+                        { zone: '机会区', rule: '高热度 + 低SKU', action: '建议小批量切入', color: 'bg-emerald-50 border-emerald-200 text-emerald-700' },
+                        { zone: '红海区', rule: '高热度 + 高SKU', action: '谨慎进入，差异化切入', color: 'bg-rose-50 border-rose-200 text-rose-700' },
+                        { zone: '风险区', rule: '低热度 + 高SKU', action: '避免加码', color: 'bg-amber-50 border-amber-200 text-amber-700' },
+                        { zone: '观察区', rule: '中热度 + 中SKU', action: '结合品牌定位判断', color: 'bg-slate-50 border-slate-200 text-slate-600' },
+                    ].map(({ zone, rule, action, color }) => (
+                        <div key={zone} className={`rounded-lg border p-3 ${color}`}>
+                            <div className="text-xs font-semibold mb-1">{zone}</div>
+                            <div className="text-[11px]">{rule}</div>
+                            <div className="text-[11px] mt-1 opacity-80">{action}</div>
+                        </div>
+                    ))}
+                </div>
+
                 <div className="mt-4 rounded-xl border border-slate-100 p-4">
-                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                        <div className="text-sm font-semibold text-slate-900">补充图：品牌 × 品类结构占比（100%堆叠）</div>
-                        <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
-                            {sectionScopeHint}
-                        </span>
-                    </div>
-                    <div className="text-xs text-slate-500 mb-2">
-                        {showSkuDeltaLine
-                            ? '柱子看结构占比，黑线看SKU同比，便于判断“结构偏移 + 扩款节奏”是否一致。'
-                            : competitorCompareHint}
-                    </div>
-                    <ReactECharts option={shareStackOption} style={{ height: 320 }} notMerge />
+                    <div className="text-sm font-semibold text-slate-900 mb-2">品牌 × 品类结构占比（100%堆叠）</div>
+                    <ReactECharts option={shareStackOption} style={{ height: 300 }} notMerge />
                 </div>
 
                 <div className="mt-4 grid grid-cols-1 xl:grid-cols-2 gap-3">
                     <div className="rounded-xl border border-rose-100 bg-rose-50 p-3">
-                        <div className="text-xs font-semibold text-rose-700 mb-2">压制品类 Top3（需优先防御）</div>
+                        <div className="text-xs font-semibold text-rose-700 mb-2">压制品类（需优先防御）</div>
                         <div className="space-y-1.5 text-xs text-slate-700">
-                            {suppressedCategories.length > 0 ? (
-                                suppressedCategories.map((row) => (
-                                    <div key={`${row.category}-${row.comp_brand}`}>
-                                        {row.category}：{row.comp_brand} 占比 {fmtPct(row.comp_share)}，本品 {fmtPct(row.our_share)}
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="text-slate-400">当前无绝对压制品类</div>
-                            )}
+                            {suppressedCategories.length > 0 ? suppressedCategories.map((row) => (
+                                <div key={`${row.category}-${row.comp_brand}`}>
+                                    {row.category}：{row.comp_brand} 占比 {fmtPct(row.comp_share)}，本品 {fmtPct(row.our_share)}
+                                </div>
+                            )) : <div className="text-slate-400">当前无绝对压制品类</div>}
                         </div>
                     </div>
                     <div className="rounded-xl border border-amber-100 bg-amber-50 p-3">
-                        <div className="text-xs font-semibold text-amber-700 mb-2">薄弱价格带 Top3（需补位）</div>
+                        <div className="text-xs font-semibold text-amber-700 mb-2">薄弱价格带（需补位）</div>
                         <div className="space-y-1.5 text-xs text-slate-700">
-                            {weakPriceBands.length > 0 ? (
-                                weakPriceBands.map((row) => (
-                                    <div key={`${row.price_band_name}-${row.top_brand}`}>
-                                        {row.price_band_name}：{row.top_brand} {row.top_sku_cnt} 款，本品 {row.our_sku_cnt} 款
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="text-slate-400">当前无明显薄弱价格带</div>
-                            )}
+                            {weakPriceBands.length > 0 ? weakPriceBands.map((row) => (
+                                <div key={`${row.price_band_name}-${row.top_brand}`}>
+                                    {row.price_band_name}：{row.top_brand} {row.top_sku_cnt} 款，本品 {row.our_sku_cnt} 款
+                                </div>
+                            )) : <div className="text-slate-400">当前无明显薄弱价格带</div>}
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-                <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
-                    <div>
-                        <div className="text-xs uppercase tracking-wide text-slate-400">市调画廊沉淀</div>
-                        <h3 className="text-base font-bold text-slate-900">竞品波段素材（品牌 / 波段 / 区域）</h3>
-                        <div className="mt-1 text-xs text-slate-500">用于沉淀主推 Look、陈列策略与温度带打法。</div>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                        <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
-                            口径：素材标签 / 波段 / 区域（Demo）
-                        </span>
-                        <select
-                            value={selectedWave}
-                            onChange={(event) => setSelectedWave(event.target.value)}
-                            className="text-xs border border-slate-200 rounded-md px-2 py-1.5 bg-white text-slate-700"
-                        >
-                            <option value="all">全部波段</option>
-                            {waveOptions.map((wave) => (
-                                <option key={wave} value={wave}>
-                                    {wave}
-                                </option>
-                            ))}
-                        </select>
-                        <select
-                            value={selectedRegion}
-                            onChange={(event) => setSelectedRegion(event.target.value)}
-                            className="text-xs border border-slate-200 rounded-md px-2 py-1.5 bg-white text-slate-700"
-                        >
-                            <option value="all">全部区域</option>
-                            {regionOptions.map((region) => (
-                                <option key={region} value={region}>
-                                    {region}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {filteredGallery.map((item) => (
-                        <div key={item.id} className="rounded-xl border border-slate-200 bg-white overflow-hidden">
-                            <div className="h-32 px-3 py-2 flex items-end justify-between text-white" style={galleryBackground(item.image_url)}>
-                                <span className="text-xs bg-white/20 backdrop-blur px-2 py-1 rounded-full">{item.comp_brand}</span>
-                                <span className="text-xs bg-black/25 px-2 py-1 rounded-full">{item.wave}</span>
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 5. EPIC Competitor Radar                                        */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <SectionCard
+                label="05 EPIC COMPETITOR RADAR"
+                title="EPIC 竞品雷达"
+                description="E=情绪吸引力 · P=产品力 · I=社媒影响力 · C=商业效率。每个竞品的EPIC总分与可借鉴点。"
+            >
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                    {trendData.epicRadars.map((radar) => (
+                        <div key={radar.id} className="rounded-xl border border-slate-200 bg-white p-4">
+                            <div className="flex items-start justify-between mb-3">
+                                <div>
+                                    <div className="text-sm font-semibold text-slate-800">{radar.competitorBrand}</div>
+                                    <div className="text-[11px] text-slate-400 mt-0.5">{radar.competitorSeries}</div>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-xl font-bold text-blue-600">{radar.epicTotalScore}</div>
+                                    <div className="text-[10px] text-slate-400">EPIC总分</div>
+                                </div>
                             </div>
-                            <div className="p-3">
-                                <div className="text-sm font-semibold text-slate-900 line-clamp-1">{item.title}</div>
-                                <div className="text-xs text-slate-500 mt-1">
-                                    {item.region} / {item.temp_range} / {item.category}
-                                </div>
-                                <div className="mt-2 flex items-center justify-between text-xs">
-                                    <span className="text-slate-500">售罄</span>
-                                    <span className="font-semibold text-emerald-600">{fmtPct(item.sell_through)}</span>
-                                </div>
-                                <div className="flex items-center justify-between text-xs mt-1">
-                                    <span className="text-slate-500">热度分</span>
-                                    <span className="font-semibold text-slate-700">{fmtInt(item.buzz_score)}</span>
-                                </div>
-                                <div className="mt-2 flex flex-wrap gap-1.5">
-                                    {item.tags.map((tag) => (
-                                        <span key={`${item.id}-${tag}`} className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                                            #{tag}
-                                        </span>
-                                    ))}
-                                </div>
+                            <div className="grid grid-cols-4 gap-1.5 mb-3">
+                                {[
+                                    { label: 'E', value: radar.epicEmotionScore, color: 'bg-rose-100 text-rose-700' },
+                                    { label: 'P', value: radar.epicProductScore, color: 'bg-blue-100 text-blue-700' },
+                                    { label: 'I', value: radar.epicInfluenceScore, color: 'bg-violet-100 text-violet-700' },
+                                    { label: 'C', value: radar.epicCommercialScore, color: 'bg-emerald-100 text-emerald-700' },
+                                ].map(({ label, value, color }) => (
+                                    <div key={label} className={`rounded text-center py-1.5 ${color}`}>
+                                        <div className="text-[10px] font-semibold">{label}</div>
+                                        <div className="text-sm font-bold">{value}</div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="space-y-1.5 text-[11px]">
+                                <div><span className="text-slate-400">强项：</span><span className="text-emerald-600">{radar.strengths.join('、')}</span></div>
+                                <div><span className="text-slate-400">弱项：</span><span className="text-rose-500">{radar.weaknesses.join('、')}</span></div>
+                                <div><span className="text-slate-400">可借鉴：</span><span className="text-blue-600">{radar.learnable.join('、')}</span></div>
                             </div>
                         </div>
                     ))}
                 </div>
+            </SectionCard>
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 6. Rising Category & Style Trend                               */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <SectionCard
+                label="06 RISING CATEGORY & STYLE"
+                title="升量品类与鞋型趋势"
+                description="品类和鞋型增长率、热度变化、SKU变化、竞品品牌和建议动作。"
+                badge="趋势上升"
+                badgeColor="blue"
+            >
+                <RisingCategoryTrendPanel trends={trendData.risingTrends} />
+            </SectionCard>
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 7. Competitor Design DNA                                        */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <SectionCard
+                label="07 COMPETITOR DESIGN DNA"
+                title="竞品设计DNA"
+                description="廓形、楦型、鞋底结构、鞋面材质、颜色故事、工艺细节、功能卖点和可借鉴点。"
+                badge="设计机会"
+                badgeColor="purple"
+            >
+                <CompetitorDesignDnaPanel
+                    dnaList={trendData.designDnaList}
+                    onJumpToDesign={handleJumpToDesign}
+                />
+            </SectionCard>
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 8. Competitor Launch Calendar                                   */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <SectionCard
+                label="08 LAUNCH CALENDAR"
+                title="竞品上市节奏"
+                description="竞品品牌上市月份、波段、价格带、主推渠道、折扣节点和对本品影响。"
+            >
+                <CompetitorLaunchCalendarPanel
+                    items={trendData.launchCalendar}
+                    onJumpToPlanning={handleJumpToPlanningWithWave}
+                />
+            </SectionCard>
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 9. Gap Analysis                                                 */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <SectionCard
+                label="09 GAP ANALYSIS"
+                title="本品 vs 竞品差距分析"
+                description="价格带、SKU数量、鞋型、功能卖点、上市节奏、社媒热度等维度的差距和建议动作。"
+                badge="高优先级"
+                badgeColor="rose"
+            >
+                <CompetitorGapAnalysisPanel
+                    items={trendData.gapAnalysis}
+                    onJumpToModule={handleJumpToModuleByName}
+                />
+            </SectionCard>
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 10. Trend → Planning Recommendation                            */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <SectionCard
+                label="10 TREND → PLANNING"
+                title="趋势到企划建议"
+                description="每个趋势的适合品类、鞋型、价格带、SKU数、波段、渠道、设计建议和OTB影响。"
+            >
+                <TrendPlanningRecommendationPanel
+                    recommendations={trendData.planningRecs}
+                    onJumpToPlanning={(rec) => handleJumpToPlanningWithWave(rec.recommendedWaveId)}
+                    onJumpToOtb={onJumpToPlanning}
+                    onJumpToDesign={handleJumpToDesign}
+                />
+            </SectionCard>
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 11. Competitor Material Gallery                                */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <SectionCard
+                label="11 MATERIAL GALLERY"
+                title="竞品素材库"
+                description="默认展示Top 12素材，按分类过滤。每张素材包含可借鉴点、风险点和一键跳转按钮。"
+            >
+                <CompetitorMaterialGallery
+                    materials={trendData.materials}
+                    onJumpToDesign={handleJumpToDesign}
+                    onJumpToPlanning={() => onJumpToPlanning?.()}
+                />
+            </SectionCard>
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 12. Related Module Links                                        */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <SectionCard
+                label="12 CROSS-MODULE LINKS"
+                title="跨模块联动入口"
+                description="竞品趋势发现之后，下一步要在哪个模块执行？点击直达对应功能。"
+            >
+                <RelatedModuleLinks
+                    links={trendData.relatedLinks}
+                    onJumpToModule={(tab) => {
+                        if (tab === 'planning') onJumpToPlanning?.();
+                        else if (tab === 'channel') onJumpToChannel?.();
+                        else if (tab === 'inventory') onJumpToSkuRisk?.();
+                        else if (tab === 'design') window.location.assign('/design-review-center');
+                    }}
+                />
+            </SectionCard>
+
+        </div>
+    );
+}
+
+
+function SectionCard({
+    label,
+    title,
+    description,
+    badge,
+    badgeColor,
+    children,
+}: {
+    label: string;
+    title: string;
+    description: string;
+    badge?: string;
+    badgeColor?: 'emerald' | 'blue' | 'purple' | 'rose' | 'amber';
+    children: React.ReactNode;
+}) {
+    const badgeStyles: Record<string, string> = {
+        emerald: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        blue:    'bg-blue-50 text-blue-700 border-blue-200',
+        purple:  'bg-violet-50 text-violet-700 border-violet-200',
+        rose:    'bg-rose-50 text-rose-700 border-rose-200',
+        amber:   'bg-amber-50 text-amber-700 border-amber-200',
+    };
+
+    return (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
+                <div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 mb-1">{label}</div>
+                    <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+                        <div className="w-1 h-5 bg-gradient-to-b from-blue-400 to-violet-400 rounded-full" />
+                        {title}
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5 max-w-2xl">{description}</p>
+                </div>
+                {badge && badgeColor && (
+                    <span className={`text-[11px] px-2.5 py-1 rounded-full border font-medium ${badgeStyles[badgeColor]}`}>
+                        {badge}
+                    </span>
+                )}
             </div>
+            {children}
         </div>
     );
 }

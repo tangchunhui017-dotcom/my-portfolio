@@ -9,18 +9,19 @@ import { ALL_TABS, type TabKey } from '@/types/merchConfig';
 
 // 必须使用 TabKey 体系（与 metric.usedBy 一致），不要混入 dashboard key（category/profit-loss/competitor/inventory）
 const TAB_LABEL: Record<TabKey, string> = {
-    'overview':         '总览',
-    'annual-control':   '年度总控',
-    'region-store':     '区域&门店',
-    'consumer':         '消费者画像',
-    'category-ops':     '品类运营',
-    'wave-planning':    '波段企划',
-    'otb':              'OTB预算',
-    'cashflow':         '现金流',
-    'forecast':         '销售预测',
-    'pnl':              '损益表',
-    'competitor-trend': '竞品&趋势',
-    'inventory-health': '库存健康',
+    'overview':          '总览',
+    'annual-control':    '年度总控',
+    'brand-positioning': '品牌定位',
+    'region-store':      '区域&门店',
+    'consumer':          '消费者画像',
+    'category-ops':      '品类运营',
+    'wave-planning':     '波段企划',
+    'otb':               'OTB预算',
+    'cashflow':          '现金流',
+    'forecast':          '销售预测',
+    'pnl':               '损益表',
+    'competitor-trend':  '竞品&趋势',
+    'inventory-health':  '库存健康',
 };
 
 const ALL_TABS_LIST: TabKey[] = ALL_TABS;

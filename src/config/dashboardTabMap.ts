@@ -13,6 +13,7 @@ import type { TabKey } from '@/types/merchConfig';
 export type DashboardTab =
     | 'overview'
     | 'annual-control'
+    | 'brand-positioning'
     | 'channel'
     | 'consumer'
     | 'category'
@@ -25,33 +26,35 @@ export type DashboardTab =
     | 'inventory';
 
 export const DASHBOARD_TAB_TO_CONFIG_TAB: Record<DashboardTab, TabKey> = {
-    'overview':       'overview',
-    'annual-control': 'annual-control',
-    'channel':        'region-store',
-    'consumer':       'consumer',
-    'category':       'category-ops',
-    'planning':       'wave-planning',
-    'otb':            'otb',
-    'cashflow':       'cashflow',
-    'forecast':       'forecast',
-    'profit-loss':    'pnl',
-    'competitor':     'competitor-trend',
-    'inventory':      'inventory-health',
+    'overview':          'overview',
+    'annual-control':    'annual-control',
+    'brand-positioning': 'brand-positioning',
+    'channel':           'region-store',
+    'consumer':          'consumer',
+    'category':          'category-ops',
+    'planning':          'wave-planning',
+    'otb':               'otb',
+    'cashflow':          'cashflow',
+    'forecast':          'forecast',
+    'profit-loss':       'pnl',
+    'competitor':        'competitor-trend',
+    'inventory':         'inventory-health',
 };
 
 export const CONFIG_TAB_TO_DASHBOARD_TAB: Record<TabKey, DashboardTab> = {
-    'overview':         'overview',
-    'annual-control':   'annual-control',
-    'region-store':     'channel',
-    'consumer':         'consumer',
-    'category-ops':     'category',
-    'wave-planning':    'planning',
-    'otb':              'otb',
-    'cashflow':         'cashflow',
-    'forecast':         'forecast',
-    'pnl':              'profit-loss',
-    'competitor-trend': 'competitor',
-    'inventory-health': 'inventory',
+    'overview':          'overview',
+    'annual-control':    'annual-control',
+    'brand-positioning': 'brand-positioning',
+    'region-store':      'channel',
+    'consumer':          'consumer',
+    'category-ops':      'category',
+    'wave-planning':     'planning',
+    'otb':               'otb',
+    'cashflow':          'cashflow',
+    'forecast':          'forecast',
+    'pnl':               'profit-loss',
+    'competitor-trend':  'competitor',
+    'inventory-health':  'inventory',
 };
 
 export function toConfigTab(tab: DashboardTab): TabKey {

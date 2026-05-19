@@ -6,6 +6,12 @@ import { THRESHOLDS } from '@/config/thresholds';
 import { FOOTWEAR_CATEGORY_CORE_ORDER } from '@/config/categoryMapping';
 import { PRICE_BANDS, PRICE_BAND_LABELS } from '@/config/priceBand';
 import { DASHBOARD_LIFECYCLE_OPTIONS, type DashboardLifecycleLabel } from '@/config/dashboardLifecycle';
+import {
+    CHART_INK, CHART_TEXT, CHART_TEXT_MUTED, CHART_TEXT_FAINT,
+    CHART_LINE, CHART_LINE_DASHED,
+    CHART_POSITIVE, CHART_WARNING, CHART_DANGER, CHART_ACCENT,
+    CHART_HIGHLIGHT, CHART_PALETTE,
+} from '@/config/chartTheme';
 
 export type SellThroughCaliber = 'cohort' | 'active' | 'stage';
 
@@ -50,7 +56,7 @@ const PRICE_BAND_NAMES: Record<string, string> = PRICE_BANDS.reduce((acc, band) 
 }, {} as Record<string, string>);
 const PRICE_BAND_LABEL_LIST = PRICE_BANDS.map((band) => band.label);
 
-const CHART_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+const CHART_COLORS = CHART_PALETTE;
 
 export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku', onSkuClick, compareMode = 'category', sellThroughCaliber, onSellThroughCaliberChange }: DashboardChartProps) {
     const chartRef = useRef<HTMLDivElement>(null);
@@ -68,8 +74,8 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
 
         if (!kpis) {
             chart.setOption({
-                title: { text: title, left: 'center', top: 'center', textStyle: { color: '#94a3b8', fontSize: 14 } },
-                graphic: [{ type: 'text', left: 'center', top: '55%', style: { text: '暂无数据', fill: '#94a3b8' } }],
+                title: { text: title, left: 'center', top: 'center', textStyle: { color: CHART_TEXT_FAINT, fontSize: 14 } },
+                graphic: [{ type: 'text', left: 'center', top: '55%', style: { text: '暂无数据', fill: CHART_TEXT_FAINT } }],
             });
             return () => chart.dispose();
         }
@@ -92,7 +98,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                 const onHandArr = bands.map(b => kpis.priceBandSales[b]?.onHandUnits ?? 0);
 
                 option = {
-                    title: { text: title, left: 'center', textStyle: { fontSize: 13, fontWeight: 'bold', color: '#1e293b' } },
+                    title: { text: title, left: 'center', textStyle: { fontSize: 13, fontWeight: 'bold', color: CHART_INK } },
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: { type: 'shadow' },
@@ -105,7 +111,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                             const gap = actual - planned;
                             const margin = marginRates[idx];
                             const onHand = onHandArr[idx];
-                            const gapColor = gap > 0 ? '#10b981' : '#ef4444';
+                            const gapColor = gap > 0 ? CHART_POSITIVE : CHART_DANGER;
                             return [
                                 `<div style="font-weight:bold;margin-bottom:6px">${bandName}</div>`,
                                 `<div>实际占比: <b>${actual}%</b> &nbsp; 计划: ${planned}%</div>`,
@@ -121,13 +127,13 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                     series: [
                         {
                             name: '实际占比%', type: 'bar', data: actualPct, barMaxWidth: 30,
-                            itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#3b82f6' }, { offset: 1, color: '#93c5fd' }]) },
+                            itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: CHART_HIGHLIGHT }, { offset: 1, color: '#7DD3FC' }]) },
                             label: { show: true, position: 'top', formatter: '{c}%', fontSize: 10 },
                         },
                         {
                             name: '计划占比%', type: 'bar', data: plannedPct, barMaxWidth: 30,
-                            itemStyle: { color: '#e2e8f0' },
-                            label: { show: true, position: 'top', formatter: '{c}%', fontSize: 10, color: '#94a3b8' },
+                            itemStyle: { color: CHART_LINE },
+                            label: { show: true, position: 'top', formatter: '{c}%', fontSize: 10, color: CHART_TEXT_FAINT },
                         },
                     ],
                 };
@@ -186,8 +192,8 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                             ? `口径: ${currentCaliber.label} · 自然波段 W1-W12（Q1春 / Q2夏 / Q3秋 / Q4冬；每季含 新品 / 在售 / 折扣）`
                             : `口径: ${currentCaliber.label} · 上市后相对波段（W1-W12）`,
                         left: 'center',
-                        textStyle: { fontSize: 13, fontWeight: 'bold', color: '#1e293b' },
-                        subtextStyle: { fontSize: 10, color: '#64748b' },
+                        textStyle: { fontSize: 13, fontWeight: 'bold', color: CHART_INK },
+                        subtextStyle: { fontSize: 10, color: CHART_TEXT_MUTED },
                     },
                     tooltip: {
                         trigger: 'axis',
@@ -221,11 +227,11 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                                     return meta ? `{wave|W${wave}}\n{phase|${meta.short}}` : `{wave|W${wave}}`;
                                 },
                                 rich: {
-                                    wave: { fontSize: 11, color: '#475569', lineHeight: 18 },
-                                    phase: { fontSize: 10, color: '#94a3b8', lineHeight: 14 },
+                                    wave: { fontSize: 11, color: CHART_TEXT, lineHeight: 18 },
+                                    phase: { fontSize: 10, color: CHART_TEXT_FAINT, lineHeight: 14 },
                                 },
                             }
-                            : { fontSize: 11, color: '#475569' },
+                            : { fontSize: 11, color: CHART_TEXT },
                     },
                     yAxis: { type: 'value', name: '售罄率 %', max: 100 },
                     series: [
@@ -236,7 +242,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                             smooth: true,
                             connectNulls: false,
                             z: 3,
-                            itemStyle: { color: '#10b981' },
+                            itemStyle: { color: CHART_POSITIVE },
                             areaStyle: {
                                 color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                                     { offset: 0, color: 'rgba(16,185,129,0.20)' },
@@ -246,8 +252,8 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                             markLine: {
                                 silent: true,
                                 symbol: 'none',
-                                lineStyle: { color: '#94a3b8', type: 'dashed', width: 1.5 },
-                                data: [{ yAxis: targetPct, name: '总览目标', label: { formatter: `总览目标 ${targetPct}%`, color: '#64748b', fontSize: 10 } }],
+                                lineStyle: { color: CHART_TEXT_FAINT, type: 'dashed', width: 1.5 },
+                                data: [{ yAxis: targetPct, name: '总览目标', label: { formatter: `总览目标 ${targetPct}%`, color: CHART_TEXT_MUTED, fontSize: 10 } }],
                             },
                             markArea: isCalendarView
                                 ? {
@@ -256,7 +262,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                                         {
                                             xAxis: `W${band.start}`,
                                             itemStyle: { color: 'rgba(148,163,184,0.05)' },
-                                            label: { show: true, position: 'insideTopLeft', formatter: band.label, color: '#64748b', fontSize: 10 },
+                                            label: { show: true, position: 'insideTopLeft', formatter: band.label, color: CHART_TEXT_MUTED, fontSize: 10 },
                                         },
                                         { xAxis: `W${band.end}` },
                                     ])) as any,
@@ -288,8 +294,8 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                         text: title,
                         subtext: '计划 vs 实际（售罄率%）',
                         left: 'center',
-                        textStyle: { fontSize: 13, fontWeight: 'bold', color: '#1e293b' },
-                        subtextStyle: { fontSize: 10, color: '#64748b' },
+                        textStyle: { fontSize: 13, fontWeight: 'bold', color: CHART_INK },
+                        subtextStyle: { fontSize: 10, color: CHART_TEXT_MUTED },
                     },
                     tooltip: {
                         trigger: 'axis',
@@ -301,7 +307,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                             const achST = actualST[idx];
                             const planSTVal = planST[idx];
                             const gap = achST - planSTVal;
-                            const gapColor = gap >= 0 ? '#10b981' : '#ef4444';
+                            const gapColor = gap >= 0 ? CHART_POSITIVE : CHART_DANGER;
                             return [
                                 `<div style="font-weight:bold;margin-bottom:6px">${label}</div>`,
                                 `<div>售罄率: 实际 <b>${achST}%</b> vs 计划 ${planSTVal}% <b style="color:${gapColor}">${gap >= 0 ? '+' : ''}${gap}pp</b></div>`,
@@ -318,13 +324,13 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                     series: [
                         {
                             name: '实际售罄率%', type: 'bar', data: actualST, barMaxWidth: 32,
-                            itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#3b82f6' }, { offset: 1, color: '#93c5fd' }]), borderRadius: [4, 4, 0, 0] },
+                            itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: CHART_HIGHLIGHT }, { offset: 1, color: '#7DD3FC' }]), borderRadius: [4, 4, 0, 0] },
                             label: { show: true, position: 'top', formatter: '{c}%', fontSize: 10 },
                         },
                         {
                             name: '计划售罄率%', type: 'bar', data: planST, barMaxWidth: 32,
-                            itemStyle: { color: '#e2e8f0', borderRadius: [4, 4, 0, 0] },
-                            label: { show: true, position: 'top', formatter: '{c}%', fontSize: 10, color: '#94a3b8' },
+                            itemStyle: { color: CHART_LINE, borderRadius: [4, 4, 0, 0] },
+                            label: { show: true, position: 'top', formatter: '{c}%', fontSize: 10, color: CHART_TEXT_FAINT },
                         },
                     ],
                 };
@@ -375,7 +381,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                         center: ['50%', '50%'],
                         avoidLabelOverlap: true,
                         itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
-                        label: { show: true, formatter: '{d}%', fontSize: 10, color: '#334155' },
+                        label: { show: true, formatter: '{d}%', fontSize: 10, color: CHART_TEXT },
                         labelLine: { show: true, length: 5, length2: 6, lineStyle: { width: 1 } },
                         data: catPieData,
                         animationType: 'scale', animationEasing: 'elasticOut',
@@ -400,7 +406,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                 const label = heatmapMetric === 'sales' ? '销售额' : heatmapMetric === 'st' ? '售罄率' : 'SKU数';
 
                 option = {
-                    title: { text: title, left: 'center', textStyle: { fontSize: 13, fontWeight: 'bold', color: '#1e293b' } },
+                    title: { text: title, left: 'center', textStyle: { fontSize: 13, fontWeight: 'bold', color: CHART_INK } },
                     tooltip: {
                         position: 'top',
                         formatter: (p: any) => `${categories[p.data[1]]} × ${bands[p.data[0]]}<br/>${label}: ${p.data[2]}${unit}`
@@ -415,7 +421,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                         orient: 'horizontal',
                         left: 'center',
                         bottom: '3%',
-                        inRange: { color: ['#f0f9ff', '#3b82f6', '#1d4ed8'] },
+                        inRange: { color: ['#f0f9ff', CHART_HIGHLIGHT, '#1d4ed8'] },
                     },
                     series: [{
                         name: label, type: 'heatmap', data: data,
@@ -441,7 +447,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                     s.lifecycle,
                 ]);
 
-                const LIFECYCLE_COLORS: Record<DashboardLifecycleLabel, string> = { '新品': '#3b82f6', '次新品': '#f59e0b', '老品': '#10b981' };
+                const LIFECYCLE_COLORS: Record<DashboardLifecycleLabel, string> = { '新品': CHART_HIGHLIGHT, '次新品': CHART_WARNING, '老品': CHART_POSITIVE };
 
                 // 动态计算坐标轴范围
                 const prices = rawScatter.map(s => s.price);
@@ -453,13 +459,13 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                         text: title,
                         subtext: `${atRiskCount} 款需关注 / 共 ${totalCount} 款`,
                         left: 'center',
-                        textStyle: { fontSize: 13, fontWeight: 'bold', color: '#1e293b' },
-                        subtextStyle: { fontSize: 11, color: '#64748b' },
+                        textStyle: { fontSize: 13, fontWeight: 'bold', color: CHART_INK },
+                        subtextStyle: { fontSize: 11, color: CHART_TEXT_MUTED },
                     },
                     tooltip: {
                         formatter: (p: any) => {
                             const d = p.data;
-                            const stColor = d[1] < 70 ? '#ef4444' : d[1] > 92 ? '#10b981' : '#f59e0b';
+                            const stColor = d[1] < 70 ? CHART_DANGER : d[1] > 92 ? CHART_POSITIVE : CHART_WARNING;
                             return `<b>${d[3]}</b><br/>` +
                                 `价格: ¥${d[0]}<br/>` +
                                 `售罄率: <span style="color:${stColor};font-weight:bold">${d[1]}%</span><br/>` +
@@ -480,7 +486,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                             markLine: {
                                 silent: true,
                                 symbol: ['none', 'none'],
-                                lineStyle: { type: 'dashed', color: '#94a3b8', width: 1 },
+                                lineStyle: { type: 'dashed', color: CHART_TEXT_FAINT, width: 1 },
                                 label: { show: false },
                                 data: [
                                     { xAxis: 500 },
@@ -496,10 +502,10 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
             case 'gauge': {
                 const stPct = Math.round(kpis.avgSellThrough * 100);
                 const gap = stPct - 80; // 距目标差距
-                const progressColor = stPct >= 80 ? '#10b981' : stPct >= 65 ? '#f59e0b' : '#ef4444';
+                const progressColor = stPct >= 80 ? CHART_POSITIVE : stPct >= 65 ? CHART_WARNING : CHART_DANGER;
 
                 option = {
-                    title: { text: title, left: 'center', textStyle: { fontSize: 13, fontWeight: 'bold', color: '#1e293b' } },
+                    title: { text: title, left: 'center', textStyle: { fontSize: 13, fontWeight: 'bold', color: CHART_INK } },
                     // 目标差距标注
                     graphic: [{
                         type: 'text',
@@ -509,7 +515,7 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                             text: gap >= 0
                                 ? `✅ 超出目标 +${gap}pp`
                                 : `目标 80% 差 ${Math.abs(gap)}pp`,
-                            fill: gap >= 0 ? '#10b981' : '#f59e0b',
+                            fill: gap >= 0 ? CHART_POSITIVE : CHART_WARNING,
                             fontSize: 12,
                             fontWeight: 'bold',
                         },
@@ -551,18 +557,18 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
                             show: true,
                             distance: -22,
                             length: 10,
-                            lineStyle: { width: 2, color: '#94a3b8' },
+                            lineStyle: { width: 2, color: CHART_TEXT_FAINT },
                         },
                         axisLabel: {
                             distance: -35,
-                            color: '#94a3b8',
+                            color: CHART_TEXT_FAINT,
                             fontSize: 11,
                             formatter: (val: number) => {
                                 if (val === 80) return '{target|80\u76ee标}';
                                 return String(val);
                             },
                             rich: {
-                                target: { color: '#3b82f6', fontWeight: 'bold', fontSize: 11 },
+                                target: { color: CHART_HIGHLIGHT, fontWeight: 'bold', fontSize: 11 },
                             },
                         },
                         anchor: {
@@ -655,10 +661,10 @@ export default function DashboardChart({ title, type, kpis, heatmapMetric = 'sku
         const PRICE_MID = 500;  // 价格分界线
         const ST_MID = 75;      // 售罄率分界线（%）
         const q = [
-            { label: '⭐ 明星区', desc: '高价高售罄', color: '#10b981', skus: skus.filter(s => s.price >= PRICE_MID && s.sellThrough * 100 >= ST_MID) },
-            { label: '🔥 走量区', desc: '低价高售罄', color: '#3b82f6', skus: skus.filter(s => s.price < PRICE_MID && s.sellThrough * 100 >= ST_MID) },
-            { label: '⚠️ 风险区', desc: '高价低售罄', color: '#ef4444', skus: skus.filter(s => s.price >= PRICE_MID && s.sellThrough * 100 < ST_MID) },
-            { label: '📦 滞销区', desc: '低价低售罄', color: '#f59e0b', skus: skus.filter(s => s.price < PRICE_MID && s.sellThrough * 100 < ST_MID) },
+            { label: '⭐ 明星区', desc: '高价高售罄', color: CHART_POSITIVE, skus: skus.filter(s => s.price >= PRICE_MID && s.sellThrough * 100 >= ST_MID) },
+            { label: '🔥 走量区', desc: '低价高售罄', color: CHART_HIGHLIGHT, skus: skus.filter(s => s.price < PRICE_MID && s.sellThrough * 100 >= ST_MID) },
+            { label: '⚠️ 风险区', desc: '高价低售罄', color: CHART_DANGER, skus: skus.filter(s => s.price >= PRICE_MID && s.sellThrough * 100 < ST_MID) },
+            { label: '📦 滞销区', desc: '低价低售罄', color: CHART_WARNING, skus: skus.filter(s => s.price < PRICE_MID && s.sellThrough * 100 < ST_MID) },
         ];
         const totalUnits = skus.reduce((s, r) => s + r.units, 0);
         return q.map(quad => ({

@@ -8,18 +8,19 @@ import { useMerchConfig } from '@/context/MerchConfigContext';
 import type { TabKey } from '@/types/merchConfig';
 
 const TAB_LABEL: Record<TabKey, string> = {
-    'overview':         '总览',
-    'annual-control':   '年度总控',
-    'region-store':     '区域&门店',
-    'consumer':         '消费者画像',
-    'category-ops':     '品类运营',
-    'wave-planning':    '波段企划',
-    'otb':              'OTB预算',
-    'cashflow':         '现金流',
-    'forecast':         '销售预测',
-    'pnl':              '损益表',
-    'competitor-trend': '竞品&趋势',
-    'inventory-health': '库存健康',
+    'overview':          '总览',
+    'annual-control':    '年度总控',
+    'brand-positioning': '品牌定位',
+    'region-store':      '区域&门店',
+    'consumer':          '消费者画像',
+    'category-ops':      '品类运营',
+    'wave-planning':     '波段企划',
+    'otb':               'OTB预算',
+    'cashflow':          '现金流',
+    'forecast':          '销售预测',
+    'pnl':               '损益表',
+    'competitor-trend':  '竞品&趋势',
+    'inventory-health':  '库存健康',
 };
 
 export default function BrandOverviewPanel() {

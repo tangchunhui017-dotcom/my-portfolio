@@ -60,6 +60,26 @@
       "recommendation": "控制清货折扣力度，建议最低折扣不低于 7 折，保护毛利空间",
       "impactAmount": 680000,
       "source": "品类运营"
+    },
+    {
+      "id": "cat-fb-007",
+      "targetModule": "channel",
+      "priority": "P0",
+      "category": "凉鞋",
+      "finding": "华南大区凉鞋 SKU 宽度仅 24 款，供不应求断货率 18%",
+      "recommendation": "下季扩充华南凉鞋 SKU 至 29 款（+20%），区域&门店协调紧急补货",
+      "impactAmount": 1600000,
+      "source": "品类运营"
+    },
+    {
+      "id": "cat-fb-008",
+      "targetModule": "channel",
+      "priority": "P1",
+      "category": "棉鞋",
+      "finding": "东北大区棉鞋试穿率 45% 但转化率仅 20%，判断为选款问题",
+      "recommendation": "区域&门店模块调整东北棉鞋选款结构，增加保暖功能款比例，减少纯时尚款",
+      "impactAmount": 800000,
+      "source": "品类运营"
     }
   ]
 }

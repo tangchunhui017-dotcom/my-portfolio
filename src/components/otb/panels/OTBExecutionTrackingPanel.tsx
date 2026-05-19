@@ -1838,7 +1838,7 @@ function HelpModal({ onClose }: { onClose: () => void }) {
                     <p>• <strong>售罄率</strong> = 已售出件数 ÷ 总到货件数（已上市波段录入）</p>
 
                     <h4 className="font-semibold text-slate-700 text-sm pt-2">时间状态</h4>
-                    <p>• <strong>已上市</strong>：上市日期 &lt; 业务日期（2026-05-09）</p>
+                    <p>• <strong>已上市</strong>：上市日期 &lt; 业务日期（{`${BUSINESS_DATE.getFullYear()}-${String(BUSINESS_DATE.getMonth()+1).padStart(2,'0')}-${String(BUSINESS_DATE.getDate()).padStart(2,'0')}`}）</p>
                     <p>• <strong>当前执行</strong>：上市日期距今 ≤ 120 天</p>
                     <p>• <strong>未来计划</strong>：上市日期距今 &gt; 120 天</p>
 

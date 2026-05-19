@@ -1,0 +1,80 @@
+[
+  {
+    "category": "运动休闲鞋",
+    "currentOtb": 4200000,
+    "recommendedOtb": 5100000,
+    "adjustment": 900000,
+    "adjustmentReason": "售罄率82%远超健康线，库存偏低，预测需求持续增长，建议追加OTB补充供给",
+    "expectedSalesImpact": 1200000,
+    "expectedInventoryImpact": -300000,
+    "expectedMarginImpact": 480000,
+    "expectedCashImpact": -900000,
+    "recommendedAction": "增加品类OTB",
+    "riskLevel": "opportunity"
+  },
+  {
+    "category": "板鞋",
+    "currentOtb": 3100000,
+    "recommendedOtb": 3700000,
+    "adjustment": 600000,
+    "adjustmentReason": "联名款带动整体热度，销售增长61%，建议适度加大主推系列OTB，同时收紧长尾款数量",
+    "expectedSalesImpact": 850000,
+    "expectedInventoryImpact": -200000,
+    "expectedMarginImpact": 390000,
+    "expectedCashImpact": -600000,
+    "recommendedAction": "增加品类OTB",
+    "riskLevel": "healthy"
+  },
+  {
+    "category": "高跟鞋",
+    "currentOtb": 2800000,
+    "recommendedOtb": 1900000,
+    "adjustment": -900000,
+    "adjustmentReason": "售罄率仅33%，退货率14%，库存积压严重，需大幅削减下一波采购预算",
+    "expectedSalesImpact": -200000,
+    "expectedInventoryImpact": 900000,
+    "expectedMarginImpact": 120000,
+    "expectedCashImpact": 900000,
+    "recommendedAction": "冻结品类OTB",
+    "riskLevel": "high"
+  },
+  {
+    "category": "跑步鞋",
+    "currentOtb": 3600000,
+    "recommendedOtb": 3200000,
+    "adjustment": -400000,
+    "adjustmentReason": "售罄率偏低，价格竞争力不足，建议减少SKU数量并聚焦碳板主力款深度",
+    "expectedSalesImpact": -180000,
+    "expectedInventoryImpact": 450000,
+    "expectedMarginImpact": 80000,
+    "expectedCashImpact": 400000,
+    "recommendedAction": "减少低效SKU",
+    "riskLevel": "warning"
+  },
+  {
+    "category": "厚底鞋",
+    "currentOtb": 2200000,
+    "recommendedOtb": 2800000,
+    "adjustment": 600000,
+    "adjustmentReason": "Z世代需求旺盛，销售增长45%，下一季应提前备货主推色系，提升店均深度",
+    "expectedSalesImpact": 720000,
+    "expectedInventoryImpact": -150000,
+    "expectedMarginImpact": 290000,
+    "expectedCashImpact": -600000,
+    "recommendedAction": "加深主推款",
+    "riskLevel": "healthy"
+  },
+  {
+    "category": "凉鞋",
+    "currentOtb": 1800000,
+    "recommendedOtb": 1400000,
+    "adjustment": -400000,
+    "adjustmentReason": "销售下滑12%，风格偏小众，应收窄款宽，聚焦1-2个高毛利工艺款",
+    "expectedSalesImpact": -120000,
+    "expectedInventoryImpact": 400000,
+    "expectedMarginImpact": 60000,
+    "expectedCashImpact": 400000,
+    "recommendedAction": "清理长尾SKU",
+    "riskLevel": "observe"
+  }
+]

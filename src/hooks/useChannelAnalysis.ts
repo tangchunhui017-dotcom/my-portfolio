@@ -389,9 +389,9 @@ export function useChannelAnalysis(
     const { data: factSalesData } = useFactSalesForDashboard(filters.season_year);
     const { data: dimChannelData } = useDimChannel();
     const { data: dimSkuData } = useDimSku();
-    const salesRecords = (factSalesData ?? []) as FactSalesRecord[];
-    const channels = (dimChannelData ?? []) as DimChannel[];
-    const skus = (dimSkuData ?? []) as DimSku[];
+    const salesRecords = useMemo(() => (factSalesData ?? []) as FactSalesRecord[], [factSalesData]);
+    const channels = useMemo(() => (dimChannelData ?? []) as DimChannel[], [dimChannelData]);
+    const skus = useMemo(() => (dimSkuData ?? []) as DimSku[], [dimSkuData]);
 
     const channelMap = useMemo(() => {
         const map: Record<string, DimChannel> = {};
@@ -999,6 +999,6 @@ export function useChannelAnalysis(
             laggingLeaderboard,
             ecomPlatforms,
         };
-    }, [channelMap, filters, salesRecords, scope, skuMap]);
+    }, [channelMap, channels, filters, salesRecords, scope, skuMap]);
 }
 

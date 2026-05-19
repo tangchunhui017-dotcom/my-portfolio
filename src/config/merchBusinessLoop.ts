@@ -76,6 +76,34 @@ const annualControl: MerchBusinessModule = {
     healthChecks: ['年度目标 > 0', '至少有一个季节/品类拆分维度被填充'],
 };
 
+const brandPositioning: MerchBusinessModule = {
+    tabKey: 'brand-positioning',
+    dashboardKey: 'brand-positioning',
+    label: '品牌定位',
+    icon: '🧬',
+    role: '品牌身份、DNA 关键词、层级、系列结构、价格架构 → 输出企划判断边界',
+    requiredMetrics: [
+        'categorySalesRatio', 'priceBandSalesRatio', 'grossMarginRate', 'discountRate',
+        'avgSellingPrice', 'newProductRatio',
+    ],
+    outputMetrics: [],
+    requiredDimensions: ['category', 'price_band', 'consumer_persona'],
+    upstreamTabs: ['annual-control'],
+    downstreamTabs: [
+        'consumer', 'competitor-trend', 'category-ops', 'wave-planning', 'otb', 'pnl',
+    ],
+    businessQuestions: [
+        '品牌定位是否清晰？商品企划/波段/OTB 是否偏离品牌 DNA？',
+        '系列结构（创意先锋 / 当季流行 / 经典舒适）的目标占比是否匹配？',
+        '价格架构是否守住品牌层级底线？',
+    ],
+    healthChecks: [
+        '品牌 DNA 关键词 ≥ 3 个',
+        '系列结构占比合计在 95%-105% 区间',
+        '主力价格带与品牌层级对齐',
+    ],
+};
+
 const regionStore: MerchBusinessModule = {
     tabKey: 'region-store',
     dashboardKey: 'channel',
@@ -317,23 +345,24 @@ const inventoryHealth: MerchBusinessModule = {
 };
 
 export const MERCH_BUSINESS_MODULES: Record<TabKey, MerchBusinessModule> = {
-    'overview':         overview,
-    'annual-control':   annualControl,
-    'region-store':     regionStore,
-    'consumer':         consumer,
-    'category-ops':     categoryOps,
-    'wave-planning':    wavePlanning,
-    'otb':              otb,
-    'cashflow':         cashflow,
-    'forecast':         forecast,
-    'pnl':              pnl,
-    'competitor-trend': competitorTrend,
-    'inventory-health': inventoryHealth,
+    'overview':          overview,
+    'annual-control':    annualControl,
+    'brand-positioning': brandPositioning,
+    'region-store':      regionStore,
+    'consumer':          consumer,
+    'category-ops':      categoryOps,
+    'wave-planning':     wavePlanning,
+    'otb':               otb,
+    'cashflow':          cashflow,
+    'forecast':          forecast,
+    'pnl':               pnl,
+    'competitor-trend':  competitorTrend,
+    'inventory-health':  inventoryHealth,
 };
 
 export const MERCH_BUSINESS_MODULE_LIST: MerchBusinessModule[] = [
-    overview, annualControl, regionStore, consumer, categoryOps, wavePlanning,
-    otb, cashflow, forecast, pnl, competitorTrend, inventoryHealth,
+    overview, annualControl, brandPositioning, regionStore, consumer, categoryOps,
+    wavePlanning, otb, cashflow, forecast, pnl, competitorTrend, inventoryHealth,
 ];
 
 export function getModule(tabKey: TabKey): MerchBusinessModule {

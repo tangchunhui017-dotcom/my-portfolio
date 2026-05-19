@@ -21,7 +21,7 @@ type Signal = {
 const feedback = fbData as { generatedAt: string; signals: Signal[] };
 
 interface Props {
-    targetModule: 'otb' | 'planning' | 'forecast' | 'profit-loss';
+    targetModule: 'otb' | 'planning' | 'forecast' | 'profit-loss' | 'channel';
     onJumpToCategory?: () => void;
 }
 

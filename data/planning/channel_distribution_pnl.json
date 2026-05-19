@@ -1,0 +1,55 @@
+{
+  "generatedAt": "2026-05-13",
+  "channels": [
+    {
+      "channel": "直营",
+      "storeCount": 50,
+      "netRevenue": 45000000,
+      "grossMarginRate": 0.52,
+      "contributionProfit": 8300000,
+      "inventoryTurnover": 5.2,
+      "judgment": "add",
+      "judgmentLabel": "✅ 主战场加码",
+      "detail": "直营渠道盈利能力强，毛利率 52%，贡献利润率 18.4%。建议加大直营门店面积升级投入，提升门店坪效。"
+    },
+    {
+      "channel": "加盟",
+      "storeCount": 120,
+      "netRevenue": 28000000,
+      "grossMarginRate": 0.35,
+      "contributionProfit": 4200000,
+      "inventoryTurnover": 3.8,
+      "judgment": "control",
+      "judgmentLabel": "⚠ 控宽",
+      "detail": "加盟渠道毛利率偏低（35%），折扣倒挂风险高。建议控制新增加盟商，现有加盟商重点做提质减量，提升单店效率。"
+    },
+    {
+      "channel": "经销",
+      "storeCount": 80,
+      "netRevenue": 15000000,
+      "grossMarginRate": 0.28,
+      "contributionProfit": 1800000,
+      "inventoryTurnover": 2.5,
+      "judgment": "clear",
+      "judgmentLabel": "🔴 风险",
+      "detail": "经销渠道贡献利润率仅 12%，库存周转率 2.5x 严重低于健康值（4x+）。建议制定退出计划，逐步压缩经销渠道，释放库存现金。"
+    },
+    {
+      "channel": "电商自营",
+      "storeCount": null,
+      "netRevenue": 32000000,
+      "grossMarginRate": 0.38,
+      "contributionProfit": 5300000,
+      "inventoryTurnover": 6.0,
+      "judgment": "add",
+      "judgmentLabel": "✅ 加深",
+      "detail": "电商渠道周转率最高（6.0x），贡献利润率 16.6%。建议加大直播电商投入，扩充专供电商款 SKU，拉动整体销售增量。"
+    }
+  ],
+  "summary": {
+    "totalRevenue": 120000000,
+    "totalContributionProfit": 19600000,
+    "blendedGrossMarginRate": 0.41,
+    "keyInsight": "直营和电商贡献利润占比合计 70%，经销渠道贡献利润仅 9%，应重点优化渠道结构"
+  }
+}
