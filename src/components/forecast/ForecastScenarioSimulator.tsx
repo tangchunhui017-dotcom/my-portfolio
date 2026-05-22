@@ -6,6 +6,7 @@
 import { useState, useMemo } from 'react';
 import { formatMoneyCny } from '@/config/numberFormat';
 import type { ForecastChannel } from '@/hooks/useForecast';
+import { useOtbParams } from '@/context/MerchConfigContext';
 
 type ScenarioKey = 'conservative' | 'base' | 'optimistic' | 'highDiscount' | 'stockout' | 'overstock';
 
@@ -20,32 +21,6 @@ interface SimInput {
   otbBudget: number;
 }
 
-const SCENARIO_PRESETS: Record<ScenarioKey, { label: string; color: string; inputs: SimInput }> = {
-  conservative: {
-    label: '保守场景', color: 'text-amber-700 bg-amber-50 border-amber-300',
-    inputs: { growthRate: -0.05, conversionRate: 0.22, avgOrderValue: 480, discountRate: 0.42, returnRate: 0.28, inventoryAvailability: 0.80, newProductShare: 0.45, otbBudget: 1800000 },
-  },
-  base: {
-    label: '基准场景', color: 'text-sky-700 bg-sky-50 border-sky-300',
-    inputs: { growthRate: 0.08, conversionRate: 0.26, avgOrderValue: 520, discountRate: 0.38, returnRate: 0.24, inventoryAvailability: 0.88, newProductShare: 0.52, otbBudget: 2200000 },
-  },
-  optimistic: {
-    label: '乐观场景', color: 'text-emerald-700 bg-emerald-50 border-emerald-300',
-    inputs: { growthRate: 0.18, conversionRate: 0.30, avgOrderValue: 560, discountRate: 0.35, returnRate: 0.20, inventoryAvailability: 0.95, newProductShare: 0.60, otbBudget: 2800000 },
-  },
-  highDiscount: {
-    label: '高折扣场景', color: 'text-purple-700 bg-purple-50 border-purple-300',
-    inputs: { growthRate: 0.12, conversionRate: 0.32, avgOrderValue: 420, discountRate: 0.52, returnRate: 0.30, inventoryAvailability: 0.85, newProductShare: 0.40, otbBudget: 2000000 },
-  },
-  stockout: {
-    label: '缺货场景', color: 'text-rose-700 bg-rose-50 border-rose-300',
-    inputs: { growthRate: 0.05, conversionRate: 0.20, avgOrderValue: 530, discountRate: 0.36, returnRate: 0.22, inventoryAvailability: 0.68, newProductShare: 0.55, otbBudget: 1600000 },
-  },
-  overstock: {
-    label: '积压场景', color: 'text-orange-700 bg-orange-50 border-orange-300',
-    inputs: { growthRate: -0.08, conversionRate: 0.18, avgOrderValue: 490, discountRate: 0.48, returnRate: 0.26, inventoryAvailability: 1.00, newProductShare: 0.38, otbBudget: 2600000 },
-  },
-};
 
 function calcOutput(inputs: SimInput, baseRevenue = 1200000) {
   const grossSales = baseRevenue * (1 + inputs.growthRate) * (inputs.conversionRate / 0.26) * (inputs.avgOrderValue / 520);
@@ -74,6 +49,39 @@ const PARAM_CONFIGS = [
 interface Props { channel: ForecastChannel; }
 
 export default function ForecastScenarioSimulator({ channel }: Props) {
+  const otbParams = useOtbParams();
+  const _p0 = otbParams.otbScenarioPresets[0] ?? { discountRate: 0.82, returnRate: 0.10, sellThroughRate: 0.70, markupRate: 3.8 };
+  const _p1 = otbParams.otbScenarioPresets[1] ?? { discountRate: 0.88, returnRate: 0.07, sellThroughRate: 0.80, markupRate: 4.0 };
+  const _p2 = otbParams.otbScenarioPresets[2] ?? { discountRate: 0.92, returnRate: 0.04, sellThroughRate: 0.90, markupRate: 4.2 };
+  const _otbApprovedBudget = otbParams.approvedBudget;
+
+  const SCENARIO_PRESETS: Record<ScenarioKey, { label: string; color: string; inputs: SimInput }> = {
+    conservative: {
+      label: '保守场景', color: 'text-amber-700 bg-amber-50 border-amber-300',
+      inputs: { growthRate: -0.05, conversionRate: 0.22, avgOrderValue: 480, discountRate: _p0.discountRate, returnRate: _p0.returnRate, inventoryAvailability: 0.80, newProductShare: 0.45, otbBudget: Math.round(_otbApprovedBudget * 0.85) },
+    },
+    base: {
+      label: '基准场景', color: 'text-sky-700 bg-sky-50 border-sky-300',
+      inputs: { growthRate: 0.08, conversionRate: 0.26, avgOrderValue: 520, discountRate: _p1.discountRate, returnRate: _p1.returnRate, inventoryAvailability: 0.88, newProductShare: 0.52, otbBudget: _otbApprovedBudget },
+    },
+    optimistic: {
+      label: '乐观场景', color: 'text-emerald-700 bg-emerald-50 border-emerald-300',
+      inputs: { growthRate: 0.18, conversionRate: 0.30, avgOrderValue: 560, discountRate: _p2.discountRate, returnRate: _p2.returnRate, inventoryAvailability: 0.95, newProductShare: 0.60, otbBudget: Math.round(_otbApprovedBudget * 1.15) },
+    },
+    highDiscount: {
+      label: '高折扣场景', color: 'text-purple-700 bg-purple-50 border-purple-300',
+      inputs: { growthRate: 0.12, conversionRate: 0.32, avgOrderValue: 420, discountRate: 0.52, returnRate: 0.30, inventoryAvailability: 0.85, newProductShare: 0.40, otbBudget: 2000000 },
+    },
+    stockout: {
+      label: '缺货场景', color: 'text-rose-700 bg-rose-50 border-rose-300',
+      inputs: { growthRate: 0.05, conversionRate: 0.20, avgOrderValue: 530, discountRate: 0.36, returnRate: 0.22, inventoryAvailability: 0.68, newProductShare: 0.55, otbBudget: 1600000 },
+    },
+    overstock: {
+      label: '积压场景', color: 'text-orange-700 bg-orange-50 border-orange-300',
+      inputs: { growthRate: -0.08, conversionRate: 0.18, avgOrderValue: 490, discountRate: 0.48, returnRate: 0.26, inventoryAvailability: 1.00, newProductShare: 0.38, otbBudget: 2600000 },
+    },
+  };
+
   const [activeScenario, setActiveScenario] = useState<ScenarioKey>('base');
   const [customInputs, setCustomInputs] = useState<SimInput>(SCENARIO_PRESETS.base.inputs);
 

@@ -12,11 +12,14 @@ import CompetitorTrendKpiStrip from '@/components/dashboard/competitor/Competito
 import TrendDecisionSummaryPanel from '@/components/dashboard/competitor/TrendDecisionSummaryPanel';
 import TrendActionCenter from '@/components/dashboard/competitor/TrendActionCenter';
 import RisingCategoryTrendPanel from '@/components/dashboard/competitor/RisingCategoryTrendPanel';
+import CategoryStrategyMatrixPanel from '@/components/dashboard/competitor/CategoryStrategyMatrixPanel';
 import CompetitorDesignDnaPanel from '@/components/dashboard/competitor/CompetitorDesignDnaPanel';
 import CompetitorLaunchCalendarPanel from '@/components/dashboard/competitor/CompetitorLaunchCalendarPanel';
+import FieldVisitRecordPanel from '@/components/dashboard/competitor/FieldVisitRecordPanel';
 import CompetitorGapAnalysisPanel from '@/components/dashboard/competitor/CompetitorGapAnalysisPanel';
 import TrendPlanningRecommendationPanel from '@/components/dashboard/competitor/TrendPlanningRecommendationPanel';
 import CompetitorMaterialGallery from '@/components/dashboard/competitor/CompetitorMaterialGallery';
+import ResearchConclusionPanel from '@/components/dashboard/competitor/ResearchConclusionPanel';
 import RelatedModuleLinks from '@/components/dashboard/competitor/RelatedModuleLinks';
 import type { CompetitorDesignDna, CompetitorMaterialItem, TrendPlanningRecommendation } from '@/types/competitorTrendTypes';
 
@@ -890,10 +893,23 @@ export default function CompetitorTrendPanel({
             </SectionCard>
 
             {/* ─────────────────────────────────────────────────────────────── */}
-            {/* 7. Competitor Design DNA                                        */}
+            {/* 7. [NEW] Category Strategy Matrix                               */}
             {/* ─────────────────────────────────────────────────────────────── */}
             <SectionCard
-                label="07 COMPETITOR DESIGN DNA"
+                label="07 CATEGORY STRATEGY MATRIX"
+                title="鞋型品类策略矩阵"
+                description="回答核心战略问题：哪些鞋型应该守住/跟进/切入/观望/退出？CORE核心品类 × MORE延伸品类 × 成熟度四列布局。"
+                badge="品类战略"
+                badgeColor="purple"
+            >
+                <CategoryStrategyMatrixPanel cells={trendData.categoryMatrix} />
+            </SectionCard>
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 8. Competitor Design DNA                                        */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <SectionCard
+                label="08 COMPETITOR DESIGN DNA"
                 title="竞品设计DNA"
                 description="廓形、楦型、鞋底结构、鞋面材质、颜色故事、工艺细节、功能卖点和可借鉴点。"
                 badge="设计机会"
@@ -906,12 +922,12 @@ export default function CompetitorTrendPanel({
             </SectionCard>
 
             {/* ─────────────────────────────────────────────────────────────── */}
-            {/* 8. Competitor Launch Calendar                                   */}
+            {/* 9. Competitor Launch Calendar                                   */}
             {/* ─────────────────────────────────────────────────────────────── */}
             <SectionCard
-                label="08 LAUNCH CALENDAR"
+                label="09 LAUNCH CALENDAR"
                 title="竞品上市节奏"
-                description="竞品品牌上市月份、波段、价格带、主推渠道、折扣节点和对本品影响。"
+                description="竞品品牌上市月份、波段、价格带、主推渠道、折扣节点、完成率、促销类型和对本品影响。"
             >
                 <CompetitorLaunchCalendarPanel
                     items={trendData.launchCalendar}
@@ -920,10 +936,23 @@ export default function CompetitorTrendPanel({
             </SectionCard>
 
             {/* ─────────────────────────────────────────────────────────────── */}
-            {/* 9. Gap Analysis                                                 */}
+            {/* 10. [NEW] Field Visit Records                                   */}
             {/* ─────────────────────────────────────────────────────────────── */}
             <SectionCard
-                label="09 GAP ANALYSIS"
+                label="10 FIELD VISIT RECORDS"
+                title="走访记录表"
+                description="团队商圈走访记录库：录入橱窗主推、货品结构、促销、店员话术和核心发现，沉淀每季竞品观察。"
+                badge="数据采集"
+                badgeColor="amber"
+            >
+                <FieldVisitRecordPanel />
+            </SectionCard>
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 11. Gap Analysis                                                 */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <SectionCard
+                label="11 GAP ANALYSIS"
                 title="本品 vs 竞品差距分析"
                 description="价格带、SKU数量、鞋型、功能卖点、上市节奏、社媒热度等维度的差距和建议动作。"
                 badge="高优先级"
@@ -936,10 +965,10 @@ export default function CompetitorTrendPanel({
             </SectionCard>
 
             {/* ─────────────────────────────────────────────────────────────── */}
-            {/* 10. Trend → Planning Recommendation                            */}
+            {/* 12. Trend → Planning Recommendation                            */}
             {/* ─────────────────────────────────────────────────────────────── */}
             <SectionCard
-                label="10 TREND → PLANNING"
+                label="12 TREND → PLANNING"
                 title="趋势到企划建议"
                 description="每个趋势的适合品类、鞋型、价格带、SKU数、波段、渠道、设计建议和OTB影响。"
             >
@@ -952,10 +981,10 @@ export default function CompetitorTrendPanel({
             </SectionCard>
 
             {/* ─────────────────────────────────────────────────────────────── */}
-            {/* 11. Competitor Material Gallery                                */}
+            {/* 13. Competitor Material Gallery                                */}
             {/* ─────────────────────────────────────────────────────────────── */}
             <SectionCard
-                label="11 MATERIAL GALLERY"
+                label="13 MATERIAL GALLERY"
                 title="竞品素材库"
                 description="默认展示Top 12素材，按分类过滤。每张素材包含可借鉴点、风险点和一键跳转按钮。"
             >
@@ -967,10 +996,23 @@ export default function CompetitorTrendPanel({
             </SectionCard>
 
             {/* ─────────────────────────────────────────────────────────────── */}
-            {/* 12. Related Module Links                                        */}
+            {/* 14. [NEW] Research Conclusion Report                            */}
             {/* ─────────────────────────────────────────────────────────────── */}
             <SectionCard
-                label="12 CROSS-MODULE LINKS"
+                label="14 RESEARCH CONCLUSION REPORT"
+                title="调研结论报告"
+                description="将本TAB所有分析模块聚合为标准化结论报告，输出核心发现、机会鞋型、风险提示和各部门行动建议。"
+                badge="可交付"
+                badgeColor="emerald"
+            >
+                <ResearchConclusionPanel report={trendData.conclusionReport} />
+            </SectionCard>
+
+            {/* ─────────────────────────────────────────────────────────────── */}
+            {/* 15. Related Module Links                                        */}
+            {/* ─────────────────────────────────────────────────────────────── */}
+            <SectionCard
+                label="15 CROSS-MODULE LINKS"
                 title="跨模块联动入口"
                 description="竞品趋势发现之后，下一步要在哪个模块执行？点击直达对应功能。"
             >

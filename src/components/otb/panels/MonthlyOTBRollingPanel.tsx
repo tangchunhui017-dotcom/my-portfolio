@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { getDashboardMonthByWave } from '@/config/dashboardTime';
 import { useOtbVirtualSalesLoop } from '@/hooks/useOtbVirtualSalesLoop';
 import type { DashboardFilters } from '@/hooks/useDashboardFilter';
+import otbAssumptionsRaw from '../../../../data/otb/otb_assumptions.json';
 import {
     formatCurrency,
     formatPct,
@@ -495,6 +496,17 @@ function MonthlyOTBEditableTable({
     const [showAdvanced, setShowAdvanced] = useState(false);
     const riskByMonth = primaryRiskMap(risks);
 
+    // 历史均值基准（来自otb_assumptions.json historicalMonthlyShareBenchmark）
+    type HistBenchmark = { SS: Record<string, number[]>; AW: Record<string, number[]> };
+    const histBenchmark = (otbAssumptionsRaw as unknown as { historicalMonthlyShareBenchmark?: HistBenchmark }).historicalMonthlyShareBenchmark;
+    function getHistAvg(month: number): number | null {
+        if (!histBenchmark) return null;
+        const season = month <= 6 ? 'SS' : 'AW';
+        const arr = histBenchmark[season]?.[String(month)];
+        if (!arr || arr.length === 0) return null;
+        return arr.reduce((a, b) => a + b, 0) / arr.length;
+    }
+
     return (
         <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
             <div className="px-5 py-3.5 border-b border-slate-100 space-y-2">
@@ -532,6 +544,7 @@ function MonthlyOTBEditableTable({
                             <th className="px-2.5 py-2 text-right">销售预测</th>
                             {/* actual 月显示实际 vs 计划 */}
                             <th className="px-2.5 py-2 text-right">实际/达成</th>
+                            <th className="px-2.5 py-2 text-right text-violet-600 bg-violet-50/50">历史均值</th>
                             <th className="px-2.5 py-2 text-right">销售成本</th>
                             <th className="px-2.5 py-2 text-right">月末目标库存</th>
                             <th className="px-2.5 py-2 text-right">实际所需采购</th>
@@ -559,6 +572,10 @@ function MonthlyOTBEditableTable({
                             const diffTone = row.budgetDiff > 0 ? 'text-rose-600' : row.budgetDiff < 0 ? 'text-emerald-600' : 'text-slate-500';
                             const fact = factSalesByMonth?.[row.month - 1];
                             const achRate = typeof fact === 'number' && row.salesForecast > 0 ? fact / row.salesForecast : null;
+                            const totalForecast = rows.reduce((s, r) => s + r.salesForecast, 0);
+                            const currentShare = totalForecast > 0 ? row.salesForecast / totalForecast : null;
+                            const histAvg = getHistAvg(row.month);
+                            const deviation = currentShare !== null && histAvg !== null ? currentShare - histAvg : null;
 
                             const healthPct = Math.max(0, Math.min(100, 100 - (Math.abs(row.budgetDiff) / Math.max(1, row.originalPurchaseBudget)) * 100));
                             const healthTone = healthPct >= 90 ? 'text-emerald-600' : healthPct >= 70 ? 'text-amber-600' : 'text-rose-600';
@@ -590,6 +607,22 @@ function MonthlyOTBEditableTable({
                                                 <div className={`text-[10px] ${achRate! >= 1 ? 'text-emerald-600' : achRate! < 0.9 ? 'text-rose-600' : 'text-amber-600'}`}>
                                                     {(achRate! * 100).toFixed(1)}%
                                                 </div>
+                                            </div>
+                                        ) : (
+                                            <span className="text-slate-300">--</span>
+                                        )}
+                                    </td>
+                                    <td className="px-2.5 py-2 text-right text-[11px] bg-violet-50/20">
+                                        {histAvg !== null ? (
+                                            <div>
+                                                <div className="text-violet-600">{(histAvg * 100).toFixed(1)}%</div>
+                                                {deviation !== null && Math.abs(deviation) >= 0.03 ? (
+                                                    <div className={`text-[10px] ${deviation > 0 ? 'text-rose-500' : 'text-emerald-500'}`}>
+                                                        {deviation > 0 ? '⚠ 偏高' : '⚠ 偏低'}{(deviation * 100).toFixed(1)}pp
+                                                    </div>
+                                                ) : currentShare !== null ? (
+                                                    <div className="text-[10px] text-slate-400">{(currentShare * 100).toFixed(1)}%</div>
+                                                ) : null}
                                             </div>
                                         ) : (
                                             <span className="text-slate-300">--</span>

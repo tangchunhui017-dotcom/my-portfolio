@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
 import { useMerchMetricConfig } from '@/hooks/useMerchMetricConfig';
@@ -22,6 +22,7 @@ import AnnualOTBDecisionSummary from './annual/AnnualOTBDecisionSummary';
 import AnnualOTBDownstreamStatus from './annual/AnnualOTBDownstreamStatus';
 import AnnualOTBGapAttribution from './annual/AnnualOTBGapAttribution';
 import OtbFormulaBreakdown from '../OtbFormulaBreakdown';
+import { useOtbParams } from '@/context/MerchConfigContext';
 import defaultData from '../../../../data/otb/otb_assumptions.json';
 
 interface Props {
@@ -92,6 +93,27 @@ function buildInitialInputs(saved: Partial<Inputs> | null): Inputs {
         maxCarryoverRatio: saved?.maxCarryoverRatio ?? defaultData.maxCarryoverRatio,
         defaultStockToSalesRatio: saved?.defaultStockToSalesRatio ?? defaultData.defaultStockToSalesRatio,
         defaultArrivalRate: saved?.defaultArrivalRate ?? defaultData.defaultArrivalRate,
+        // 成本侧参数
+        springMarkupRate: saved?.springMarkupRate ?? defaultData.springMarkupRate,
+        summerMarkupRate: saved?.summerMarkupRate ?? defaultData.summerMarkupRate,
+        autumnMarkupRate: saved?.autumnMarkupRate ?? defaultData.autumnMarkupRate,
+        winterMarkupRate: saved?.winterMarkupRate ?? defaultData.winterMarkupRate,
+        springDiscountRate: saved?.springDiscountRate ?? defaultData.springDiscountRate,
+        summerDiscountRate: saved?.summerDiscountRate ?? defaultData.summerDiscountRate,
+        autumnDiscountRate: saved?.autumnDiscountRate ?? defaultData.autumnDiscountRate,
+        winterDiscountRate: saved?.winterDiscountRate ?? defaultData.winterDiscountRate,
+        springReturnRate: saved?.springReturnRate ?? defaultData.springReturnRate,
+        summerReturnRate: saved?.summerReturnRate ?? defaultData.summerReturnRate,
+        autumnReturnRate: saved?.autumnReturnRate ?? defaultData.autumnReturnRate,
+        winterReturnRate: saved?.winterReturnRate ?? defaultData.winterReturnRate,
+        springAvgRetailPrice: saved?.springAvgRetailPrice ?? defaultData.springAvgRetailPrice,
+        summerAvgRetailPrice: saved?.summerAvgRetailPrice ?? defaultData.summerAvgRetailPrice,
+        autumnAvgRetailPrice: saved?.autumnAvgRetailPrice ?? defaultData.autumnAvgRetailPrice,
+        winterAvgRetailPrice: saved?.winterAvgRetailPrice ?? defaultData.winterAvgRetailPrice,
+        springAvgCost: saved?.springAvgCost ?? defaultData.springAvgCost,
+        summerAvgCost: saved?.summerAvgCost ?? defaultData.summerAvgCost,
+        autumnAvgCost: saved?.autumnAvgCost ?? defaultData.autumnAvgCost,
+        winterAvgCost: saved?.winterAvgCost ?? defaultData.winterAvgCost,
     };
 }
 
@@ -120,6 +142,7 @@ export default function AnnualOTBControlPanel({
     isLocked = false,
     compareMode = 'none',
 }: Props) {
+    const otbParams = useOtbParams();
     const saved = useMemo(() => loadSaved(), []);
     const initialInputs = useMemo(() => buildInitialInputs(saved), [saved]);
 
@@ -131,6 +154,46 @@ export default function AnnualOTBControlPanel({
     const [sensitivityCarryover, setSensitivityCarryover] = useState(0);
     const [sensitivitySales, setSensitivitySales] = useState(0);
     const [showSensitivity, setShowSensitivity] = useState(false);
+    const [costParamsOpen, setCostParamsOpen] = useState<Partial<Record<SeasonKey, boolean>>>({});
+    const [showScenarios, setShowScenarios] = useState(false);
+    type OTBScenario = {
+        label: string;
+        sellThroughRate: number;
+        discountRate: number;
+        returnRate: number;
+        markupRate: number;
+    };
+    const [scenarios, setScenarios] = useState<[OTBScenario, OTBScenario, OTBScenario]>(() => {
+        const presets = otbParams.otbScenarioPresets;
+        const fallback: [OTBScenario, OTBScenario, OTBScenario] = [
+            { label: '保守版', sellThroughRate: 0.70, discountRate: 0.82, returnRate: 0.10, markupRate: 3.8 },
+            { label: '标准版', sellThroughRate: 0.80, discountRate: 0.88, returnRate: 0.07, markupRate: 4.0 },
+            { label: '乐观版', sellThroughRate: 0.90, discountRate: 0.92, returnRate: 0.04, markupRate: 4.2 },
+        ];
+        if (presets.length < 3) return fallback;
+        return presets.slice(0, 3).map(p => ({
+            label: p.label,
+            sellThroughRate: p.sellThroughRate,
+            discountRate: p.discountRate,
+            returnRate: p.returnRate,
+            markupRate: p.markupRate,
+        })) as [OTBScenario, OTBScenario, OTBScenario];
+    });
+
+    useEffect(() => {
+        const presets = otbParams.otbScenarioPresets;
+        if (presets.length < 3) return;
+        const timeoutId = setTimeout(() => {
+            setScenarios(presets.slice(0, 3).map(p => ({
+                label: p.label,
+                sellThroughRate: p.sellThroughRate,
+                discountRate: p.discountRate,
+                returnRate: p.returnRate,
+                markupRate: p.markupRate,
+            })) as [OTBScenario, OTBScenario, OTBScenario]);
+        }, 0);
+        return () => clearTimeout(timeoutId);
+    }, [otbParams.otbScenarioPresets]);
 
     const merchMetricConfig = useMerchMetricConfig();
     const sellThroughThreshold = resolveBusinessThreshold('sellThroughRate', merchMetricConfig).value;
@@ -191,6 +254,20 @@ export default function AnnualOTBControlPanel({
         carryover: sensitivityCarryover / 100,
         salesTarget: sensitivitySales / 100,
     }), [inputs, sensitivityST, sensitivityCarryover, sensitivitySales]);
+
+    // 版本对比成本OTB计算
+    function calcScenarioCostOTB(target: number, st: number, returnRate: number, discountRate: number, markupRate: number): number | null {
+        const netST = st - returnRate;
+        if (netST <= 0 || discountRate <= 0 || markupRate <= 0) return null;
+        return target / netST / discountRate / markupRate;
+    }
+    const annualTarget = inputs.annualSalesTarget;
+    const scenarioResults = scenarios.map(s => {
+        const costOTB = calcScenarioCostOTB(annualTarget, s.sellThroughRate, s.returnRate, s.discountRate, s.markupRate);
+        const avgCostAll = ((inputs.springAvgCost ?? 125) + (inputs.summerAvgCost ?? 105) + (inputs.autumnAvgCost ?? 143) + (inputs.winterAvgCost ?? 156)) / 4;
+        const pairs = costOTB !== null && avgCostAll > 0 ? Math.round(costOTB / avgCostAll) : null;
+        return { ...s, costOTB, pairs };
+    });
 
     const diagnoses: Array<{ level: 'warn' | 'danger'; message: string }> = [];
     if (!seasonRatioOk) {
@@ -445,6 +522,8 @@ export default function AnnualOTBControlPanel({
                                     '销售占比',
                                     '销售目标',
                                     '净OTB成本预算',
+                                    '成本侧OTB',
+                                    '投入双数',
                                     '售罄目标',
                                     '新品占比',
                                     '新品销售目标',
@@ -487,7 +566,8 @@ export default function AnnualOTBControlPanel({
                                 const hasRatioDeviation = lyRatio !== null && Math.abs(currentRatio - lyRatio) > 0.05;
 
                                 return (
-                                    <tr key={item.key} className="border-b border-slate-50 hover:bg-slate-50/40 transition-colors">
+                                    <React.Fragment key={item.key}>
+                                    <tr className="border-b border-slate-50 hover:bg-slate-50/40 transition-colors">
                                         <td className="py-3 px-4">
                                             <span className={`inline-flex items-center gap-1.5 font-bold text-sm ${item.color}`}>
                                                 <span className="w-2 h-2 rounded-full bg-current" />
@@ -507,6 +587,18 @@ export default function AnnualOTBControlPanel({
                                         </td>
                                         <td className="py-3 px-4 text-right font-semibold text-slate-700">{fc(seasonTarget)}</td>
                                         <td className={`py-3 px-4 text-right font-bold text-base ${item.color}`}>{fc(seasonOTB)}</td>
+                                        <td className="py-3 px-4 text-right text-violet-700 font-medium text-sm">
+                                            {(() => {
+                                                const costOTB = result[`${item.key}CostOTB` as keyof typeof result] as number | null;
+                                                return costOTB !== null ? fc(costOTB) : '-';
+                                            })()}
+                                        </td>
+                                        <td className="py-3 px-4 text-right text-violet-600 text-sm">
+                                            {(() => {
+                                                const pairs = result[`${item.key}PairsOTB` as keyof typeof result] as number | null;
+                                                return pairs !== null ? pairs.toLocaleString() + ' 双' : '-';
+                                            })()}
+                                        </td>
                                         <td className="py-2.5 px-3 text-right">
                                             <PercentInput
                                                 value={inputs[stKey] as number}
@@ -559,6 +651,49 @@ export default function AnnualOTBControlPanel({
                                             </>
                                         )}
                                     </tr>
+                                    {/* 成本参数展开行 (Part 1.3B) */}
+                                    <tr key={`${item.key}-cost`} className={`transition-all ${costParamsOpen[item.key as SeasonKey] ? '' : 'hidden'}`}>
+                                        <td colSpan={2} className="py-1.5 px-4 text-[10px] text-violet-500 font-medium">
+                                            ▸ {item.label}成本参数
+                                        </td>
+                                        <td colSpan={10} className="py-1.5 px-2">
+                                            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                                                {[
+                                                    { label: '平均倍率', fieldKey: `${item.key}MarkupRate` as keyof Inputs, step: 0.1, suffix: 'x' },
+                                                    { label: '折扣率', fieldKey: `${item.key}DiscountRate` as keyof Inputs, step: 0.01, suffix: '' },
+                                                    { label: '退货率', fieldKey: `${item.key}ReturnRate` as keyof Inputs, step: 0.01, suffix: '' },
+                                                    { label: '零售均价', fieldKey: `${item.key}AvgRetailPrice` as keyof Inputs, step: 1, suffix: '元' },
+                                                    { label: '平均成本', fieldKey: `${item.key}AvgCost` as keyof Inputs, step: 1, suffix: '元' },
+                                                ].map(f => (
+                                                    <label key={String(f.fieldKey)} className="flex items-center gap-1 text-slate-500">
+                                                        <span className="text-[10px]">{f.label}</span>
+                                                        <input
+                                                            type="number"
+                                                            step={f.step}
+                                                            value={inputs[f.fieldKey] as number ?? 0}
+                                                            disabled={isLocked}
+                                                            onChange={e => set(f.fieldKey, Number(e.target.value))}
+                                                            className="w-16 text-right text-[11px] border border-violet-200 rounded px-1 py-0.5 focus:outline-none focus:border-violet-400"
+                                                        />
+                                                        {f.suffix && <span className="text-[10px] text-slate-400">{f.suffix}</span>}
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {/* 成本参数展开 toggle button row */}
+                                    <tr key={`${item.key}-cost-toggle`}>
+                                        <td colSpan={12} className="pb-1 px-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => setCostParamsOpen(prev => ({ ...prev, [item.key]: !prev[item.key as SeasonKey] }))}
+                                                className={`text-[10px] ${item.color} opacity-60 hover:opacity-100`}
+                                            >
+                                                {costParamsOpen[item.key as SeasonKey] ? '▴ 收起成本参数' : '▾ 展开成本参数'}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </React.Fragment>
                                 );
                             })}
                         </tbody>
@@ -568,6 +703,10 @@ export default function AnnualOTBControlPanel({
                                 <td className="py-3 px-3 text-right font-semibold text-slate-700">{formatPct(seasonRatioSum)}</td>
                                 <td className="py-3 px-4 text-right font-bold text-slate-800">{fc(inputs.annualSalesTarget)}</td>
                                 <td className="py-3 px-4 text-right font-bold text-slate-800 text-base">{fc(result.annualNewProductInvestmentBudget)}</td>
+                                <td className="py-3 px-4 text-right font-bold text-violet-700">{fc(result.annualCostOTB)}</td>
+                                <td className="py-3 px-4 text-right font-bold text-violet-600">
+                                    {result.annualPairsOTB !== null ? result.annualPairsOTB.toLocaleString() + ' 双' : '-'}
+                                </td>
                                 <td className="py-3 px-3 text-right text-slate-400">-</td>
                                 <td className="py-3 px-3 text-right font-semibold text-slate-700">{formatPct(annualNewProductRatio)}</td>
                                 <td className="py-3 px-4 text-right font-semibold text-slate-700">{fc(result.springNPSales + result.summerNPSales + result.autumnNPSales + result.winterNPSales)}</td>
@@ -656,68 +795,80 @@ export default function AnnualOTBControlPanel({
                 </div>
             )}
 
-            {/* Sensitivity analysis (collapsible) */}
+            {/* 版本对比分析 (replaces sensitivity sliders) */}
             <div className="bg-white rounded-xl border border-slate-100 shadow-sm">
                 <button
                     type="button"
-                    onClick={() => setShowSensitivity(prev => !prev)}
+                    onClick={() => setShowScenarios(prev => !prev)}
                     className="w-full px-5 py-3.5 flex items-center justify-between text-left"
                 >
                     <div className="flex items-center gap-3">
-                        <h3 className="font-semibold text-slate-800">敏感度分析</h3>
-                        <span className="text-[10px] text-slate-400">调整参数查看净OTB变化</span>
+                        <h3 className="font-semibold text-slate-800">预算版本对比</h3>
+                        <span className="text-[10px] text-slate-400">保守 / 标准 / 乐观 三版成本OTB</span>
                     </div>
-                    <span className="text-slate-400 text-sm">{showSensitivity ? '▲' : '▼'}</span>
+                    <span className="text-slate-400 text-sm">{showScenarios ? '▲' : '▼'}</span>
                 </button>
-                {showSensitivity && (
-                    <div className="border-t border-slate-100 px-5 py-4 space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <p className="text-[10px] text-slate-500 mb-1">售罄率 ± pp</p>
-                                <div className="flex items-center gap-2">
-                                    <input type="range" min={-15} max={15} step={1} value={sensitivityST}
-                                        onChange={e => setSensitivityST(Number(e.target.value))}
-                                        className="flex-1 accent-sky-500" />
-                                    <span className="text-xs font-mono w-8 text-right">{sensitivityST > 0 ? '+' : ''}{sensitivityST}pp</span>
-                                </div>
-                            </div>
-                            <div>
-                                <p className="text-[10px] text-slate-500 mb-1">过季占比 ± pp</p>
-                                <div className="flex items-center gap-2">
-                                    <input type="range" min={-15} max={15} step={1} value={sensitivityCarryover}
-                                        onChange={e => setSensitivityCarryover(Number(e.target.value))}
-                                        className="flex-1 accent-amber-500" />
-                                    <span className="text-xs font-mono w-8 text-right">{sensitivityCarryover > 0 ? '+' : ''}{sensitivityCarryover}pp</span>
-                                </div>
-                            </div>
-                            <div>
-                                <p className="text-[10px] text-slate-500 mb-1">销售目标 ± %</p>
-                                <div className="flex items-center gap-2">
-                                    <input type="range" min={-20} max={20} step={1} value={sensitivitySales}
-                                        onChange={e => setSensitivitySales(Number(e.target.value))}
-                                        className="flex-1 accent-emerald-500" />
-                                    <span className="text-xs font-mono w-8 text-right">{sensitivitySales > 0 ? '+' : ''}{sensitivitySales}%</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
-                            <div className="px-3 py-2 rounded-lg bg-slate-50 border border-slate-100">
-                                <p className="text-[10px] text-slate-400">调整后净OTB</p>
-                                <p className="text-sm font-bold text-slate-800">{fc(sensitivityResult.netOtb)}</p>
-                                <p className="text-[10px] text-slate-400 mt-0.5">
-                                    vs 当前 {fc(netOtb)} &nbsp;
-                                    <span className={sensitivityResult.netOtb > netOtb ? 'text-rose-500' : 'text-emerald-500'}>
-                                        ({sensitivityResult.netOtb > netOtb ? '+' : ''}{fc(sensitivityResult.netOtb - netOtb)})
-                                    </span>
-                                </p>
-                            </div>
-                            <div className={`px-3 py-2 rounded-lg border ${sensitivityResult.budgetGap > 0 ? 'bg-rose-50 border-rose-100' : 'bg-emerald-50 border-emerald-100'}`}>
-                                <p className="text-[10px] text-slate-400">预算缺口 / 冗余</p>
-                                <p className={`text-sm font-bold ${sensitivityResult.budgetGap > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
-                                    {sensitivityResult.budgetGap > 0 ? '▲' : '▼'} {fc(Math.abs(sensitivityResult.budgetGap))}
-                                </p>
-                            </div>
-                        </div>
+                {showScenarios && (
+                    <div className="border-t border-slate-100 px-5 py-4">
+                        <table className="w-full text-xs border-collapse">
+                            <thead>
+                                <tr className="border-b border-slate-100">
+                                    <th className="py-2 text-left text-slate-500 font-medium w-28">参数</th>
+                                    {scenarioResults.map((s, i) => (
+                                        <th key={i} className={`py-2 text-right font-semibold ${i === 1 ? 'text-sky-700 bg-sky-50' : 'text-slate-600'}`}>
+                                            {s.label}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-50">
+                                {[
+                                    { key: 'sellThroughRate' as const, label: '投入售罄率', fmt: (v: number) => formatPct(v) },
+                                    { key: 'discountRate' as const, label: '折扣率', fmt: (v: number) => formatPct(v) },
+                                    { key: 'returnRate' as const, label: '退货率', fmt: (v: number) => formatPct(v) },
+                                    { key: 'markupRate' as const, label: '平均倍率', fmt: (v: number) => v.toFixed(1) + 'x' },
+                                ].map(row => (
+                                    <tr key={row.key}>
+                                        <td className="py-2 text-slate-500">{row.label}</td>
+                                        {scenarioResults.map((s, i) => (
+                                            <td key={i} className={`py-2 text-right ${i === 1 ? 'font-bold text-sky-700 bg-sky-50' : 'text-slate-700'}`}>
+                                                <input
+                                                    type="number"
+                                                    step={row.key === 'markupRate' ? 0.1 : 0.01}
+                                                    value={s[row.key]}
+                                                    onChange={e => {
+                                                        const val = Number(e.target.value);
+                                                        setScenarios(prev => {
+                                                            const next = [...prev] as [OTBScenario, OTBScenario, OTBScenario];
+                                                            next[i] = { ...next[i], [row.key]: val };
+                                                            return next;
+                                                        });
+                                                    }}
+                                                    className="w-20 text-right text-xs border border-slate-200 rounded px-1 py-0.5 focus:outline-none focus:border-sky-300"
+                                                    disabled={isLocked}
+                                                />
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                                <tr className="border-t-2 border-slate-200 bg-violet-50/40">
+                                    <td className="py-2 font-semibold text-violet-700">成本OTB</td>
+                                    {scenarioResults.map((s, i) => (
+                                        <td key={i} className={`py-2 text-right font-bold ${i === 1 ? 'text-sky-700 bg-sky-50' : 'text-violet-700'}`}>
+                                            {s.costOTB !== null ? fc(s.costOTB) : '-'}
+                                        </td>
+                                    ))}
+                                </tr>
+                                <tr className="bg-violet-50/20">
+                                    <td className="py-2 font-semibold text-violet-600">投入双数</td>
+                                    {scenarioResults.map((s, i) => (
+                                        <td key={i} className={`py-2 text-right font-bold ${i === 1 ? 'text-sky-700 bg-sky-50' : 'text-violet-600'}`}>
+                                            {s.pairs !== null ? s.pairs.toLocaleString() + ' 双' : '-'}
+                                        </td>
+                                    ))}
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 )}
             </div>

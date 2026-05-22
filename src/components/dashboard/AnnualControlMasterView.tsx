@@ -13,6 +13,20 @@ import {
     type AnnualControlMonthAxisItem,
     type AnnualControlTone,
 } from '@/config/annualControl';
+import {
+    DEPT_LABELS,
+    STAGE_LABELS,
+    WORKFLOW_NODES,
+    type Department,
+    type NodeStatus,
+    type RiskLevel,
+    type Season,
+    type WorkflowFilter,
+    type WorkflowNodeDef,
+    type WorkflowStage,
+} from '@/config/bigMerchWorkflow';
+import StageGateBar from '@/components/dashboard/workflow/StageGateBar';
+import RiskAlertStrip from '@/components/dashboard/workflow/RiskAlertStrip';
 
 const LANE_LABEL_WIDTH = 208;
 const LANE_GAP = 8; // matches Tailwind gap-2 = 8px
@@ -22,6 +36,182 @@ type TemporalState = 'past' | 'current' | 'future';
 
 interface AnnualControlMasterViewProps {
     model: AnnualControlMasterViewModel;
+    workflow?: AnnualControlWorkflowOverlay;
+}
+
+interface AnnualControlWorkflowOverlay {
+    activeSeason: Season;
+    activeYear: number;
+    currentNodes: WorkflowNodeDef[];
+    nodeStatuses: Record<string, NodeStatus>;
+    nodeRisks: Record<string, RiskLevel>;
+    gateStatuses: Record<string, { passed: boolean; canPass: boolean; reason?: string }>;
+    activeView: 'timeline' | 'by_dept';
+    activeFilter: WorkflowFilter | null;
+    onSelectNode: (node: WorkflowNodeDef) => void;
+    onSetView: (view: 'timeline' | 'by_dept') => void;
+    onSetFilter: (filter: WorkflowFilter | null) => void;
+    onPassGate: (gateId: string, passedBy: string, notes?: string) => void;
+}
+
+const ALL_STAGES: WorkflowStage[] = ['startup', 'revise', 'form', 'launch', 'review'];
+const DEPT_ORDER: Department[] = [
+    'merch',
+    'design',
+    'material',
+    'merch_ops',
+    'brand',
+    'finance',
+    'supply',
+    'display_market',
+    'customer',
+    'agent_vip',
+    'channel',
+];
+
+// 每个企划周期由 6 个生命周期阶段构成，年份偏移用于跨年场景（如冬季清尾跨到次年）
+type LifecyclePhase = {
+    startMonth: number;
+    startDay: number;
+    startYearOffset?: number;   // -1=去年, 0=当前年, 1=次年
+    endMonth: number;
+    endDay?: number;
+    endYearOffset?: number;
+};
+
+type CyclePhaseKey = 'planning' | 'production' | 'launch' | 'mainSale' | 'clearance' | 'review';
+
+type SeasonalWorkflowCycle = {
+    id: 'autumn' | 'winter' | 'spring' | 'summer';
+    label: string;
+    shortLabel: string;
+    targetSeason: 'Q1' | 'Q2' | 'Q3' | 'Q4';
+    orderMonth: number;     // 订货月（同时是 planning 末月）
+    otbLabel: string;
+    toneClass: string;
+    activeClass: string;
+    phases: Record<CyclePhaseKey, LifecyclePhase>;
+};
+
+function buildSeasonalWorkflowCycles(): SeasonalWorkflowCycle[] {
+    return [
+        {
+            id: 'autumn',
+            label: '秋季企划',
+            shortLabel: '秋',
+            targetSeason: 'Q3',
+            orderMonth: 3,
+            otbLabel: 'Q3 OTB / 3月订货',
+            toneClass: 'border-amber-200 bg-amber-50 text-amber-700',
+            activeClass: 'bg-amber-100 text-amber-800 shadow-sm',
+            phases: {
+                planning:   { startMonth: 1,  startDay: 1,  endMonth: 3,  endDay: 31 },
+                production: { startMonth: 4,  startDay: 1,  endMonth: 6,  endDay: 24 },
+                launch:     { startMonth: 6,  startDay: 25, endMonth: 7,  endDay: 31 },
+                mainSale:   { startMonth: 8,  startDay: 1,  endMonth: 10, endDay: 10 },
+                clearance:  { startMonth: 10, startDay: 11, endMonth: 11 },
+                review:     { startMonth: 12, startDay: 1,  endMonth: 12 },
+            },
+        },
+        {
+            id: 'winter',
+            label: '冬季企划',
+            shortLabel: '冬',
+            targetSeason: 'Q4',
+            orderMonth: 6,
+            otbLabel: 'Q4 SOTB / 6月订货',
+            toneClass: 'border-rose-200 bg-rose-50 text-rose-700',
+            activeClass: 'bg-rose-100 text-rose-800 shadow-sm',
+            phases: {
+                planning:   { startMonth: 4,  startDay: 1,  endMonth: 6,  endDay: 30 },
+                production: { startMonth: 7,  startDay: 1,  endMonth: 9,  endDay: 29 },
+                launch:     { startMonth: 9,  startDay: 30, endMonth: 11, endDay: 10 },
+                mainSale:   { startMonth: 11, startDay: 11, endMonth: 12, endDay: 25 },
+                clearance:  { startMonth: 12, startDay: 26, endMonth: 3,  endYearOffset: 1 },
+                review:     { startMonth: 4,  startDay: 1,  endMonth: 4, startYearOffset: 1, endYearOffset: 1 },
+            },
+        },
+        {
+            id: 'spring',
+            label: '春季企划',
+            shortLabel: '春',
+            targetSeason: 'Q1',
+            orderMonth: 9,
+            otbLabel: 'Q1 OTB / 9月订货',
+            toneClass: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+            activeClass: 'bg-emerald-100 text-emerald-800 shadow-sm',
+            phases: {
+                // 春季产品：当前年 7月启动企划 → 次年 6月复盘收尾（即「企划次年春装」）
+                planning:   { startMonth: 7,  startDay: 1,  endMonth: 9,  endDay: 30 },
+                production: { startMonth: 10, startDay: 1,  endMonth: 12, endDay: 9 },
+                launch:     { startMonth: 12, startDay: 10, endMonth: 2,  endDay: 10, endYearOffset: 1 },
+                mainSale:   { startMonth: 2,  startDay: 11, endMonth: 3,  endDay: 31, startYearOffset: 1, endYearOffset: 1 },
+                clearance:  { startMonth: 4,  startDay: 1,  endMonth: 5, startYearOffset: 1, endYearOffset: 1 },
+                review:     { startMonth: 6, startDay: 1, endMonth: 6, startYearOffset: 1, endYearOffset: 1 },
+            },
+        },
+        {
+            id: 'summer',
+            label: '夏季企划',
+            shortLabel: '夏',
+            targetSeason: 'Q2',
+            orderMonth: 12,
+            otbLabel: 'Q2 OTB / 12月订货',
+            toneClass: 'border-sky-200 bg-sky-50 text-sky-700',
+            activeClass: 'bg-sky-100 text-sky-800 shadow-sm',
+            phases: {
+                // 夏季产品：当前年 10月启动企划 → 次年 10月复盘（即「企划次年夏装」）
+                planning:   { startMonth: 10, startDay: 1,  endMonth: 12, endDay: 31 },
+                production: { startMonth: 1,  startDay: 1,  endMonth: 3,  endDay: 4,  startYearOffset: 1, endYearOffset: 1 },
+                launch:     { startMonth: 3,  startDay: 5,  endMonth: 4,  endDay: 25, startYearOffset: 1, endYearOffset: 1 },
+                mainSale:   { startMonth: 4,  startDay: 26, endMonth: 7,  endDay: 31, startYearOffset: 1, endYearOffset: 1 },
+                clearance:  { startMonth: 8,  startDay: 1,  endMonth: 9, startYearOffset: 1, endYearOffset: 1 },
+                review:     { startMonth: 10, startDay: 1,  endMonth: 10, startYearOffset: 1, endYearOffset: 1 },
+            },
+        },
+    ];
+}
+
+function getDefaultWorkflowCycleId(month: number): SeasonalWorkflowCycle['id'] {
+    if (month <= 3) return 'autumn';
+    if (month <= 6) return 'winter';
+    if (month <= 9) return 'spring';
+    return 'summer';
+}
+
+function getLastDayOfMonth(year: number, month: number) {
+    return new Date(year, month, 0).getDate();
+}
+
+// 把 LifecyclePhase 解算成绝对日期
+function resolvePhaseRange(phase: LifecyclePhase, year: number): { start: Date; end: Date } {
+    const startYear = year + (phase.startYearOffset ?? 0);
+    const endYear = year + (phase.endYearOffset ?? 0);
+    const endDay = phase.endDay ?? getLastDayOfMonth(endYear, phase.endMonth);
+    return {
+        start: new Date(startYear, phase.startMonth - 1, phase.startDay),
+        end: new Date(endYear, phase.endMonth - 1, endDay, 23, 59, 59, 999),
+    };
+}
+
+// 节点 ID → 所属生命周期阶段
+function getNodePhase(nodeId: string, stage: WorkflowStage): CyclePhaseKey {
+    if (nodeId === 'N17a') return 'production';
+    if (nodeId === 'N18') return 'launch';
+    if (nodeId === 'N19') return 'mainSale';
+    if (nodeId === 'N20') return 'clearance';
+    if (stage === 'review') return 'review';
+    // 其它 startup/revise/form 都属 planning
+    return 'planning';
+}
+
+function getWorkflowDisplayStartMonth(phaseKey: CyclePhaseKey, phase: LifecyclePhase, start: Date) {
+    const startYearOffset = phase.startYearOffset ?? 0;
+    const endYearOffset = phase.endYearOffset ?? startYearOffset;
+    if (phaseKey === 'clearance' && phase.startMonth === 12 && endYearOffset > startYearOffset) {
+        return 1;
+    }
+    return start.getMonth() + 1;
 }
 
 function TonePill({ tone, children }: { tone: AnnualControlTone | 'pink'; children: ReactNode }) {
@@ -574,6 +764,429 @@ function GanttRow({ title, detail, accent, bars, model, scopeSet }: { title: str
                 </div>
             </TrackSurface>
         </MatrixRow>
+    );
+}
+
+const WORKFLOW_STATUS_CLASS: Record<NodeStatus, string> = {
+    '未开始': 'border-slate-200 bg-white text-slate-500',
+    '进行中': 'border-sky-300 bg-sky-50 text-sky-700',
+    '待协同': 'border-amber-300 bg-amber-50 text-amber-700',
+    '已完成': 'border-emerald-300 bg-emerald-50 text-emerald-700',
+    '延期': 'border-rose-300 bg-rose-50 text-rose-700',
+    '预警': 'border-rose-300 bg-rose-50 text-rose-700',
+};
+
+const WORKFLOW_RISK_DOT_CLASS: Record<RiskLevel, string> = {
+    '低': 'bg-emerald-400',
+    '中': 'bg-amber-400',
+    '高': 'bg-rose-500',
+};
+
+function getWorkflowNodeMonthSpanForCycle(node: WorkflowNodeDef, cycle: SeasonalWorkflowCycle, year: number) {
+    const phaseKey = getNodePhase(node.id, node.stage);
+    const phase = cycle.phases[phaseKey];
+    const { start: phaseStart, end: phaseEnd } = resolvePhaseRange(phase, year);
+
+    // 同阶段节点按 index 排序，本节点的位置决定它在阶段窗口内的切片
+    const phaseNodes = [...WORKFLOW_NODES]
+        .filter((n) => getNodePhase(n.id, n.stage) === phaseKey)
+        .sort((a, b) => a.index - b.index);
+    const idx = phaseNodes.findIndex((n) => n.id === node.id);
+    const total = phaseNodes.length;
+    if (idx < 0 || total === 0) return null;
+
+    // 单节点阶段：节点占整个阶段窗口（如 N17a 大货生产 / N18 上市 / N19 主销 / N20 清尾）
+    if (total === 1) {
+        return {
+            startMonth: getWorkflowDisplayStartMonth(phaseKey, phase, phaseStart),
+            endMonth: phaseEnd.getMonth() + 1,
+            span: 1,
+            start: phaseStart,
+            end: phaseEnd,
+            baseYear: year,
+        };
+    }
+
+    // 多节点阶段：按 index 等分切片（如 planning 18 个节点切到 90 天里）
+    const phaseDurationMs = phaseEnd.getTime() - phaseStart.getTime();
+    const slotMs = phaseDurationMs / total;
+    const start = new Date(phaseStart.getTime() + idx * slotMs);
+    const end = new Date(phaseStart.getTime() + (idx + 1) * slotMs - 1);
+
+    return {
+        startMonth: start.getMonth() + 1,
+        endMonth: end.getMonth() + 1,
+        span: 1,
+        start,
+        end,
+        baseYear: year,
+    };
+}
+
+function formatWorkflowDateRange(start: Date, end: Date, baseYear: number) {
+    const fmt = (date: Date) => `${date.getMonth() + 1}/${date.getDate()}`;
+    const startInNextYear = start.getFullYear() > baseYear;
+    const endInNextYear = end.getFullYear() > baseYear;
+    if (startInNextYear && endInNextYear) {
+        return `次年${fmt(start)}-${fmt(end)}`;
+    }
+    if (startInNextYear) {
+        return `次年${fmt(start)}-${fmt(end)}`;
+    }
+    if (endInNextYear) {
+        return `次年${fmt(start)}-${fmt(end)}`;
+    }
+    return `${fmt(start)}-${fmt(end)}`;
+}
+
+function workflowNodeMatchesFilter(
+    node: WorkflowNodeDef,
+    workflow: AnnualControlWorkflowOverlay,
+) {
+    const filter = workflow.activeFilter;
+    if (!filter) return true;
+    if (filter.stage && !filter.stage.includes(node.stage)) return false;
+    if (filter.status && !filter.status.includes(workflow.nodeStatuses[node.id] ?? '未开始')) return false;
+    if (filter.riskLevel && !filter.riskLevel.includes(workflow.nodeRisks[node.id] ?? '低')) return false;
+    if (
+        filter.dept &&
+        !filter.dept.includes(node.ownerDept) &&
+        !filter.dept.some((dept) => node.collaboratorDepts.includes(dept))
+    ) {
+        return false;
+    }
+    return true;
+}
+
+function WorkflowNodeCard({
+    node,
+    span,
+    workflow,
+    isCurrent,
+    overflow = null,
+    hideOverflowBadge = false,
+    statusOverride,
+    riskOverride,
+}: {
+    node: WorkflowNodeDef;
+    span: NonNullable<ReturnType<typeof getWorkflowNodeMonthSpanForCycle>>;
+    workflow: AnnualControlWorkflowOverlay;
+    isCurrent: boolean;
+    overflow?: 'prior' | 'next' | null;
+    hideOverflowBadge?: boolean;
+    statusOverride?: NodeStatus;
+    riskOverride?: RiskLevel;
+}) {
+    const status = statusOverride ?? workflow.nodeStatuses[node.id] ?? '未开始';
+    const risk = riskOverride ?? workflow.nodeRisks[node.id] ?? '低';
+    const dateLabel = formatWorkflowDateRange(span.start, span.end, span.baseYear);
+    const isNextYearSpan = span.start.getFullYear() > span.baseYear || span.end.getFullYear() > span.baseYear;
+    const dateLabelClass = isNextYearSpan
+        ? 'bg-violet-100 text-violet-700 ring-1 ring-inset ring-violet-200'
+        : 'text-slate-400';
+    const tooltip = `${node.id} ${node.title} · ${STAGE_LABELS[node.stage]} · ${dateLabel}${
+        overflow === 'prior' ? ' · 前置工作' : overflow === 'next' ? ' · 后续延续' : ''
+    } · 主责 ${DEPT_LABELS[node.ownerDept]}`;
+    return (
+        <button
+            type="button"
+            onClick={() => workflow.onSelectNode(node)}
+            title={tooltip}
+            className={`group flex min-h-[52px] w-full flex-col justify-center gap-0.5 rounded-md border px-1.5 py-1 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow ${WORKFLOW_STATUS_CLASS[status]} ${
+                isCurrent ? 'ring-2 ring-pink-300 ring-offset-1' : ''
+            } ${overflow ? 'border-dashed' : ''}`}
+        >
+            {/* 第一行：风险点 + N号 + 日期 + 状态（全部 meta） */}
+            <div className="flex items-center gap-1 min-w-0">
+                <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${WORKFLOW_RISK_DOT_CLASS[risk]}`} />
+                <span className="shrink-0 text-[10px] font-black tabular-nums text-slate-700">{node.id}</span>
+                <span className={`min-w-0 flex-1 truncate rounded-full px-1 text-[9px] font-bold tabular-nums ${dateLabelClass}`}>{dateLabel}</span>
+                <span className="shrink-0 text-[9px] font-bold text-slate-500">{status}</span>
+            </div>
+            {/* 第二行：动作标题 + 前置/延续/当前徽章 */}
+            <div className="flex items-center gap-1 min-w-0">
+                <span className="min-w-0 flex-1 truncate text-[11px] font-bold leading-tight text-slate-900">{node.title}</span>
+                {isCurrent ? (
+                    <span className="shrink-0 rounded-full bg-pink-100 px-1 py-0 text-[8px] font-black text-pink-600">当前</span>
+                ) : overflow === 'prior' && !hideOverflowBadge ? (
+                    <span className="shrink-0 rounded-full bg-slate-200/80 px-1 py-0 text-[8px] font-bold text-slate-600">前</span>
+                ) : overflow === 'next' && !hideOverflowBadge ? (
+                    <span className="shrink-0 rounded-full bg-purple-100 px-1 py-0 text-[8px] font-bold text-purple-600">续</span>
+                ) : null}
+            </div>
+        </button>
+    );
+}
+
+const STAGE_BADGE: Record<WorkflowStage, { badgeClass: string; owner: string; label: string }> = {
+    startup: { badgeClass: 'bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-200', owner: '启', label: '启动期' },
+    revise: { badgeClass: 'bg-sky-50 text-sky-600 ring-1 ring-inset ring-sky-200', owner: '修', label: '修正期' },
+    form: { badgeClass: 'bg-amber-50 text-amber-600 ring-1 ring-inset ring-amber-200', owner: '形', label: '形成期' },
+    launch: { badgeClass: 'bg-emerald-50 text-emerald-600 ring-1 ring-inset ring-emerald-200', owner: '上', label: '上市期' },
+    review: { badgeClass: 'bg-purple-50 text-purple-600 ring-1 ring-inset ring-purple-200', owner: '盘', label: '复盘期' },
+};
+
+function getCycleTemporalStatus(span: NonNullable<ReturnType<typeof getWorkflowNodeMonthSpanForCycle>>, currentDate: Date): NodeStatus {
+    if (currentDate > span.end) return '已完成';
+    if (currentDate < span.start) return '未开始';
+    return '进行中';
+}
+
+function WorkflowNodeLaneRow({
+    model,
+    scopeSet,
+    workflow,
+}: {
+    model: AnnualControlMasterViewModel;
+    scopeSet: Set<number>;
+    workflow: AnnualControlWorkflowOverlay;
+}) {
+    const cycles = buildSeasonalWorkflowCycles();
+    const defaultCycleId = getDefaultWorkflowCycleId(model.currentMonth);
+    const [manualCycleId, setManualCycleId] = useState<SeasonalWorkflowCycle['id'] | null>(null);
+
+    const selectedCycleId = manualCycleId ?? defaultCycleId;
+    const selectedCycle = cycles.find((cycle) => cycle.id === selectedCycleId) ?? cycles[0];
+    const today = new Date();
+    const currentMarkerDay =
+        model.year === today.getFullYear() && model.currentMonth === today.getMonth() + 1
+            ? today.getDate()
+            : 15;
+    const currentMarkerDate = new Date(model.year, model.currentMonth - 1, currentMarkerDay);
+    const currentNodeIds = new Set(
+        WORKFLOW_NODES.filter((node) => {
+            const span = getWorkflowNodeMonthSpanForCycle(node, selectedCycle, model.year);
+            return Boolean(span && currentMarkerDate >= span.start && currentMarkerDate <= span.end);
+        }).map((node) => node.id),
+    );
+
+    // N01-N17 是订货前企划链路；N17a-N22 跟随货盘切换层的生产、上市、主销、清尾、复盘窗口。
+    type LaneItem = {
+        node: WorkflowNodeDef;
+        span: NonNullable<ReturnType<typeof getWorkflowNodeMonthSpanForCycle>>;
+        overflow: 'prior' | 'next' | null;
+    };
+
+    const yearNodes: LaneItem[] = WORKFLOW_NODES.flatMap((node): LaneItem[] => {
+        const span = getWorkflowNodeMonthSpanForCycle(node, selectedCycle, model.year);
+        if (!span) return [];
+        return [{ node, span, overflow: null }];
+    });
+    const visibleYearNodes = yearNodes.filter(({ node }) => workflowNodeMatchesFilter(node, workflow));
+
+    const mode = workflow.activeView ?? 'timeline';
+    const isDeptMode = mode === 'by_dept';
+    const hasActiveFilter = Boolean(workflow.activeFilter);
+
+    // 按阶段分组
+    const nodesByStage = new Map<WorkflowStage, LaneItem[]>();
+    ALL_STAGES.forEach((s) => nodesByStage.set(s, []));
+    visibleYearNodes.forEach((item) => nodesByStage.get(item.node.stage)?.push(item));
+
+    // 按部门（仅主责）分组
+    const nodesByDept = new Map<Department, LaneItem[]>();
+    DEPT_ORDER.forEach((d) => nodesByDept.set(d, []));
+    visibleYearNodes.forEach((item) => {
+        const dept = item.node.ownerDept;
+        if (!nodesByDept.has(dept)) nodesByDept.set(dept, []);
+        nodesByDept.get(dept)!.push(item);
+    });
+
+    type RowDef = { key: string; label: string; owner: string; badgeClass: string; items: LaneItem[] };
+    const rows: RowDef[] = isDeptMode
+        ? Array.from(nodesByDept.entries())
+              .filter(([, list]) => list.length > 0)
+              .map(([dept, list]) => ({
+                  key: `dept-${dept}`,
+                  label: DEPT_LABELS[dept],
+                  owner: DEPT_LABELS[dept].slice(0, 1),
+                  badgeClass: 'bg-slate-50 text-slate-700 ring-1 ring-inset ring-slate-200',
+                  items: list,
+              }))
+        : ALL_STAGES.map((stage) => ({
+            key: `stage-${stage}`,
+            label: STAGE_BADGE[stage].label,
+            owner: STAGE_BADGE[stage].owner,
+            badgeClass: STAGE_BADGE[stage].badgeClass,
+            items: nodesByStage.get(stage) ?? [],
+        })).filter((row) => !hasActiveFilter || row.items.length > 0);
+
+    const description = isDeptMode
+        ? `${selectedCycle.label} · ${selectedCycle.otbLabel} · 按部门主责推进`
+        : `${selectedCycle.label} · ${selectedCycle.otbLabel} · 按企划阶段推进`;
+
+    const HEADER_ROW_H = 96;
+    const DATA_ROW_MIN_H = 56;
+    const CARD_STACK_HEIGHT = 58;
+    const getRowHeight = (row: RowDef) => {
+        const monthCounts = new Map<number, number>();
+        row.items.forEach(({ span }) => {
+            monthCounts.set(span.startMonth, (monthCounts.get(span.startMonth) ?? 0) + 1);
+        });
+        const maxStack = Math.max(1, ...monthCounts.values());
+        return Math.max(DATA_ROW_MIN_H, maxStack * CARD_STACK_HEIGHT);
+    };
+
+    return (
+        <div
+            className="grid items-stretch gap-2"
+            style={{ gridTemplateColumns: String(LANE_LABEL_WIDTH) + 'px minmax(0,1fr)' }}
+        >
+            {/* ─── 左 Panel: 管理线 + 阶段/部门 toggle + 徽章列 ─── */}
+            <div className="sticky left-0 z-30 overflow-hidden rounded-panel border border-slate-200/70 bg-slate-50/62 shadow-[10px_0_18px_rgba(248,250,252,0.95)] backdrop-blur-sm">
+                <div className="grid h-full grid-cols-[1fr_88px]">
+                    {/* 管理线主标签 */}
+                    <div className="relative flex items-center px-4 py-4">
+                        <span className="absolute left-3 top-5 bottom-5 w-1 rounded-full opacity-80 bg-sky-400" />
+                        <div>
+                            <div className="pl-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">管理线</div>
+                            <div className="mt-1 pl-3 text-sm font-semibold text-slate-900">商品企划流程节点</div>
+                            <div className="mt-1 pl-3 text-xs leading-5 text-slate-500">{description}</div>
+                        </div>
+                    </div>
+                    {/* 88px 列：toggle（顶部） + 徽章（数据行） */}
+                    <div className="flex flex-col border-l border-slate-200/80 bg-white/72">
+                        {/* 表头行：toggle */}
+                        <div
+                            style={{ height: HEADER_ROW_H }}
+                            className="flex items-center justify-center px-1 border-b border-slate-200/80"
+                        >
+                            <div className="flex w-full items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 p-1">
+                                <button
+                                    type="button"
+                                    onClick={() => workflow.onSetView('timeline')}
+                                    className={`flex-1 rounded-lg px-2 py-1.5 text-[11px] font-bold transition ${
+                                        !isDeptMode ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                                    }`}
+                                    title="按企划阶段拆行展示"
+                                >
+                                    阶段
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => workflow.onSetView('by_dept')}
+                                    className={`flex-1 rounded-lg px-2 py-1.5 text-[11px] font-bold transition ${
+                                        isDeptMode ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                                    }`}
+                                    title="按部门主责拆行展示"
+                                >
+                                    部门
+                                </button>
+                            </div>
+                        </div>
+                        {/* 数据行徽章 */}
+                        {rows.map((row, i) => (
+                            <div
+                                key={`label-${row.key}`}
+                                style={{ height: getRowHeight(row) }}
+                                className={`flex items-center justify-center gap-1.5 px-1 text-center ${i > 0 ? 'border-t border-slate-200/80' : ''}`}
+                            >
+                                <span className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-semibold ${row.badgeClass}`}>{row.owner}</span>
+                                <div className="text-[11px] font-semibold leading-tight text-slate-700">{row.label}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* ─── 右 Panel: 控制条 + 12 月数据行 ─── */}
+            <div className="min-w-0 overflow-hidden rounded-panel border border-slate-200/85 bg-white/78 shadow-[inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-sm">
+                {/* 表头行：企划周期 + 风险条 + Gate */}
+                <div
+                    style={{ height: HEADER_ROW_H }}
+                    className="border-b border-slate-200/80 bg-white/92 px-4 py-3 overflow-hidden"
+                >
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">企划周期</span>
+                            {cycles.map((cycle) => {
+                                const active = cycle.id === selectedCycle.id;
+                                return (
+                                    <button
+                                        key={cycle.id}
+                                        type="button"
+                                        onClick={() => setManualCycleId(cycle.id)}
+                                        className={`rounded-full border px-3 py-1 text-xs font-bold transition ${
+                                            active ? cycle.activeClass : `${cycle.toneClass} hover:bg-white`
+                                        }`}
+                                        title={`${cycle.label} · ${cycle.otbLabel}`}
+                                    >
+                                        {cycle.shortLabel} · {cycle.orderMonth}月订货
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <RiskAlertStrip
+                            nodes={WORKFLOW_NODES}
+                            nodeStatuses={workflow.nodeStatuses}
+                            nodeRisks={workflow.nodeRisks}
+                            activeFilter={workflow.activeFilter}
+                            onFilter={workflow.onSetFilter}
+                        />
+                    </div>
+                    <div className="mt-2">
+                        <StageGateBar gateStatuses={workflow.gateStatuses} onPassGate={workflow.onPassGate} />
+                    </div>
+                </div>
+
+                {/* 空态 */}
+                {rows.length === 0 ? (
+                    <div
+                        style={{ height: DATA_ROW_MIN_H }}
+                        className="flex items-center justify-center px-3"
+                    >
+                        <div className="rounded-[16px] border border-dashed border-slate-200 bg-white/60 px-4 py-2 text-sm font-medium text-slate-400">
+                            当前筛选条件下暂无商品企划流程节点
+                        </div>
+                    </div>
+                ) : null}
+
+                {/* 数据行：每行固定高度，与左 panel 对齐 */}
+                {rows.map((row, i) => (
+                    <div
+                        key={`row-${row.key}`}
+                        style={{ height: getRowHeight(row) }}
+                        className={`relative bg-white/78 ${i > 0 ? 'border-t border-slate-200/80' : ''}`}
+                    >
+                        {/* 12 月底纹 */}
+                        <div className="pointer-events-none absolute inset-0 grid grid-cols-12">
+                            {model.months.map((month) => {
+                                const state = getTemporalState(month.month, model.currentMonth);
+                                return (
+                                    <div
+                                        key={`row-${row.key}-bg-${month.month}`}
+                                        className={`border-l border-slate-200/70 first:border-l-0 ${getTemporalSurfaceClass(state, scopeSet.has(month.month))}`}
+                                    />
+                                );
+                            })}
+                        </div>
+                        {/* 节点卡片：同月节点在格子内纵向流式排布，行高随内容撑开 */}
+                        <div className="relative grid h-full grid-cols-12">
+                            {model.months.map((month) => {
+                                const monthItems = row.items.filter(({ span }) => span.startMonth === month.month);
+                                return (
+                                    <div key={`row-${row.key}-month-${month.month}`} className="space-y-1 px-0.5 py-0.5">
+                                        {monthItems.map(({ node, span, overflow }) => (
+                                            <WorkflowNodeCard
+                                                key={node.id}
+                                                node={node}
+                                                span={span}
+                                                workflow={workflow}
+                                                isCurrent={currentNodeIds.has(node.id)}
+                                                overflow={overflow}
+                                                hideOverflowBadge={isDeptMode}
+                                                statusOverride={getCycleTemporalStatus(span, currentMarkerDate)}
+                                                riskOverride={node.baselineRisk}
+                                            />
+                                        ))}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
     );
 }
 
@@ -1478,7 +2091,7 @@ function MonthWorkBriefRow({ lane, model, scopeSet }: { lane: AnnualControlMaste
                                             season === 'Q3' ? 'text-amber-200/30 group-hover:text-amber-300/50' :
                                                 season === 'Q4' ? 'text-rose-200/30 group-hover:text-rose-300/50' :
                                                     'text-slate-300/30 group-hover:text-slate-400/50'
-                                        }`}>"</div>
+                                        }`}>&quot;</div>
 
                                     <div className="relative z-10 flex h-full flex-col">
                                         <div className="mb-2.5 flex items-start gap-1.5">
@@ -1510,7 +2123,15 @@ const ACTION_TEAM_LAYOUT = [
     { key: 'display', label: '品牌陈列', owner: '陈', badgeClass: 'bg-emerald-50 text-emerald-600 ring-1 ring-inset ring-emerald-200' },
 ] as const;
 
-function DepartmentActionLaneRow({ lane, model, scopeSet }: { lane: AnnualControlMasterLane; model: AnnualControlMasterViewModel; scopeSet: Set<number> }) {
+function DepartmentActionLaneRow({
+    lane,
+    model,
+    scopeSet,
+}: {
+    lane: AnnualControlMasterLane;
+    model: AnnualControlMasterViewModel;
+    scopeSet: Set<number>;
+}) {
     return (
         <div className="grid items-stretch gap-2" style={{ gridTemplateColumns: String(LANE_LABEL_WIDTH) + 'px minmax(0,1fr)' }}>
             <div className="sticky left-0 z-30 overflow-hidden rounded-panel border border-slate-200/70 bg-slate-50/62 shadow-[10px_0_18px_rgba(248,250,252,0.95)] backdrop-blur-sm">
@@ -1557,7 +2178,7 @@ function DepartmentActionLaneRow({ lane, model, scopeSet }: { lane: AnnualContro
                                 return (
                                     <div key={`${cell.month}-${team.key}`} className={`group border-l border-slate-200/70 p-2 first:border-l-0 ${surfaceClass}`}>
                                         {track ? (
-                                            <div className={`relative h-full rounded-[14px] border border-slate-200/50 border-l-[3px] ${seasonAccent} bg-[rgba(255,255,255,0.5)] px-3.5 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-all hover:bg-[rgba(255,255,255,0.88)] hover:shadow-[0_6px_20px_rgba(15,23,42,0.04)]`}>
+                                            <div className={`relative flex h-full flex-col rounded-[14px] border border-slate-200/50 border-l-[3px] ${seasonAccent} bg-[rgba(255,255,255,0.5)] px-3.5 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-all hover:bg-[rgba(255,255,255,0.88)] hover:shadow-[0_6px_20px_rgba(15,23,42,0.04)]`}>
                                                 <div className="flex items-start justify-between gap-1.5">
                                                     <span className="text-[14px] font-bold tracking-tight text-slate-800 leading-snug">{track.title}</span>
                                                     <span className={`shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-bold ring-1 ring-inset ${statusStyle}`}>{track.statusLabel}</span>
@@ -1588,7 +2209,7 @@ function getScopeLabel(scopeMonths: number[]) {
     return '全年主盘';
 }
 
-export default function AnnualControlMasterView({ model }: AnnualControlMasterViewProps) {
+export default function AnnualControlMasterView({ model, workflow }: AnnualControlMasterViewProps) {
     const scopeSet = new Set(model.scopeMonths);
     const topScrollRef = useRef<HTMLDivElement | null>(null);
     const mainScrollRef = useRef<HTMLDivElement | null>(null);
@@ -1597,6 +2218,8 @@ export default function AnnualControlMasterView({ model }: AnnualControlMasterVi
     const compactPriceBand = model.footwearFocus ? model.footwearFocus.priceBandRange + ' ' + (model.footwearFocus.priceBandLabel.includes('核心') ? '走量' : model.footwearFocus.priceBandLabel.replace('价格带', '').replace('带', '')) : '399-599 走量';
     const compactRole = model.footwearFocus?.keyRole || '核心角色';
     const focusDependency = model.dependencies.find((item) => item.severity === 'high') || model.dependencies[0] || null;
+    const primaryWorkflowNode = workflow?.currentNodes[0] ?? null;
+    const primaryWorkflowStatus = primaryWorkflowNode ? workflow?.nodeStatuses[primaryWorkflowNode.id] ?? '未开始' : null;
     const environmentLane = model.lanes.find((lane) => lane.id === 'environment') || null;
     const transitionLane = model.lanes.find((lane) => lane.id === 'transition') || null;
     const riskLane = model.lanes.find((lane) => lane.id === 'risk') || null;
@@ -1635,6 +2258,9 @@ export default function AnnualControlMasterView({ model }: AnnualControlMasterVi
                     <div className="mt-4 flex flex-wrap items-center gap-2">
                         <TonePill tone="pink">当前节点 {model.currentNodeLabel}</TonePill>
                         <TonePill tone="sky">{String(model.currentMonth).padStart(2, '0')}月 / {model.currentWave}</TonePill>
+                        {workflow?.currentNodes[0] ? (
+                            <TonePill tone="emerald">企划流程 {workflow.currentNodes[0].id}</TonePill>
+                        ) : null}
                         <TonePill tone="slate">{getScopeLabel(model.scopeMonths)}</TonePill>
                     </div>
                 </div>
@@ -1671,6 +2297,34 @@ export default function AnnualControlMasterView({ model }: AnnualControlMasterVi
                                     <div className="text-[12px] font-medium text-slate-600 leading-relaxed">
                                         {model.footwearFocus.scene} · {compactCategories} · {compactPriceBand} · {compactRole}
                                     </div>
+                                </div>
+                            ) : null}
+
+                            {primaryWorkflowNode ? (
+                                <div className="border-t border-dashed border-[#e8e0c8]/80 pt-3">
+                                    <div className="mb-1.5 text-[9px] font-bold uppercase tracking-widest text-[#b8a88a]">商品企划推进</div>
+                                    <button
+                                        type="button"
+                                        onClick={() => workflow?.onSelectNode(primaryWorkflowNode)}
+                                        className="w-full rounded-[12px] bg-white/62 px-3 py-2 text-left ring-1 ring-inset ring-[#ece3c8] transition hover:bg-white"
+                                    >
+                                        <div className="flex items-center justify-between gap-2">
+                                            <span className="truncate text-[12px] font-black text-slate-800">
+                                                {primaryWorkflowNode.id} {primaryWorkflowNode.title}
+                                            </span>
+                                            <span className="shrink-0 rounded-full bg-sky-100 px-2 py-0.5 text-[9px] font-black text-sky-700">
+                                                {primaryWorkflowStatus}
+                                            </span>
+                                        </div>
+                                        <div className="mt-1.5 text-[11px] leading-5 text-slate-500">
+                                            {STAGE_LABELS[primaryWorkflowNode.stage]} · 主责 {DEPT_LABELS[primaryWorkflowNode.ownerDept]}
+                                        </div>
+                                        {primaryWorkflowNode.nextNodeIds.length > 0 ? (
+                                            <div className="mt-1 truncate text-[11px] leading-5 text-slate-500">
+                                                下一节点 {primaryWorkflowNode.nextNodeIds.join(' / ')}
+                                            </div>
+                                        ) : null}
+                                    </button>
                                 </div>
                             ) : null}
 
@@ -1725,6 +2379,7 @@ export default function AnnualControlMasterView({ model }: AnnualControlMasterVi
                     {riskLane ? <FestivalWeekLaneRow lane={riskLane} model={model} scopeSet={scopeSet} /> : null}
                     {marketingLane ? <LaneRow lane={marketingLane} model={model} scopeSet={scopeSet} /> : null}
                     {actionLane ? <MonthWorkBriefRow lane={actionLane} model={model} scopeSet={scopeSet} /> : null}
+                    {workflow ? <WorkflowNodeLaneRow model={model} scopeSet={scopeSet} workflow={workflow} /> : null}
                     {actionLane ? <DepartmentActionLaneRow lane={actionLane} model={model} scopeSet={scopeSet} /> : null}
                     {remainingLanes.map((lane) => (
                         <LaneRow key={lane.id} lane={lane} model={model} scopeSet={scopeSet} />
@@ -1738,14 +2393,6 @@ export default function AnnualControlMasterView({ model }: AnnualControlMasterVi
         </section>
     );
 }
-
-
-
-
-
-
-
-
 
 
 

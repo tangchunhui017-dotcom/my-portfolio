@@ -248,6 +248,9 @@ function WavePlanningTable({
                             <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">企划色数</th>
                             <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">企划SKU</th>
                             <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">均深</th>
+                            <th className="py-2 px-2 font-medium text-violet-600 text-right whitespace-nowrap bg-violet-50">零售均价</th>
+                            <th className="py-2 px-2 font-medium text-violet-600 text-right whitespace-nowrap bg-violet-50">投入双数</th>
+                            <th className="py-2 px-2 font-medium text-violet-600 text-right whitespace-nowrap bg-violet-50">款均深度</th>
                             <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">OTB预算</th>
                             <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">预算差异</th>
                             <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">健康度</th>
@@ -255,6 +258,8 @@ function WavePlanningTable({
                             <th className="py-2 px-2 font-medium text-slate-600 text-right whitespace-nowrap">动作</th>
                             {/* 高级列 */}
                             {showAdvancedCols && <>
+                                <th className="py-2 px-2 font-medium text-violet-600 text-right whitespace-nowrap bg-violet-50">成本OTB</th>
+                                <th className="py-2 px-2 font-medium text-violet-600 text-right whitespace-nowrap bg-violet-50">首单可买双数</th>
                                 <th className="py-2 px-2 font-medium text-purple-600 text-right whitespace-nowrap bg-purple-50">定位</th>
                                 <th className="py-2 px-2 font-medium text-purple-600 text-right whitespace-nowrap bg-purple-50">阶段</th>
                                 <th className="py-2 px-2 font-medium text-purple-600 text-right whitespace-nowrap bg-purple-50">节日推广</th>
@@ -317,6 +322,15 @@ function WavePlanningTable({
                                     <td className="py-2 px-2 text-right">
                                         <WaveNumberInput value={safeNumber(row.averageDepth) ?? 0} step={10} onChange={v => updateWave(row.sourceIndex, 'averageDepth', Math.max(0, Math.round(v)))} width="w-14" disabled={isLocked} />
                                     </td>
+                                    <td className="py-2 px-2 text-right text-violet-600 bg-violet-50/30 text-xs">
+                                        {row.averageRetailPrice ? `¥${row.averageRetailPrice}` : '-'}
+                                    </td>
+                                    <td className="py-2 px-2 text-right text-violet-700 bg-violet-50/30 font-medium text-xs">
+                                        {row.plannedPairs !== null ? row.plannedPairs.toLocaleString() + '双' : '-'}
+                                    </td>
+                                    <td className="py-2 px-2 text-right text-violet-600 bg-violet-50/30 text-xs">
+                                        {row.styleDepthPairs !== null ? row.styleDepthPairs + '双/款' : '-'}
+                                    </td>
                                     <td className="py-2 px-2 text-right font-semibold text-sky-700">{fc(row.forecastOtbBudget)}</td>
                                     <td className={`py-2 px-2 text-right font-medium ${row.otbDiff > 0 ? 'text-rose-600' : row.otbDiff < 0 ? 'text-emerald-600' : 'text-slate-500'}`}>{fc(row.otbDiff)}</td>
                                     {/* 健康度评分 */}
@@ -341,6 +355,8 @@ function WavePlanningTable({
                                     <td className="py-2 px-2 text-right text-slate-600 whitespace-nowrap">{primaryAction?.action ?? '--'}</td>
                                     {/* 高级列 */}
                                     {showAdvancedCols && <>
+                                        <td className="py-2 px-2 text-right text-violet-700 bg-violet-50/30">{row.costOtbBudget !== null ? fc(row.costOtbBudget) : '-'}</td>
+                                        <td className="py-2 px-2 text-right text-violet-700 bg-violet-50/30">{row.firstOrderPairs !== null ? row.firstOrderPairs.toLocaleString() + '双' : '-'}</td>
                                         <td className="py-2 px-2 text-right text-slate-600 bg-purple-50/30">{row.waveRole ? WAVE_ROLES[row.waveRole] : '--'}</td>
                                         <td className="py-2 px-2 text-right text-slate-600 bg-purple-50/30">{row.phaseLabel}</td>
                                         <td className="py-2 px-2 text-right text-slate-600 bg-purple-50/30">{row.promotion || '--'}</td>
@@ -358,7 +374,36 @@ function WavePlanningTable({
                             );
                         })}
                     </tbody>
-                </table>
+                    <tfoot>
+                        {(() => {
+                            const totalForecast = rows.reduce((s, r) => s + (r.forecastSalesAmount ?? 0), 0);
+                            const totalOtb = rows.reduce((s, r) => s + (r.forecastOtbBudget ?? 0), 0);
+                            const totalPlannedPairs = rows.reduce((s, r) => s + (r.plannedPairs ?? 0), 0);
+                            const totalStyles = rows.reduce((s, r) => s + (safeNumber(r.plannedStyleCount) ?? 0), 0);
+                            const colSpanBefore = 4 + 4 + (showVsPlan ? 1 : 0) + (showYoy ? 1 : 0) + (showMom ? 1 : 0) + 4;
+                            return (
+                                <tr className="border-t border-slate-200 bg-slate-50 font-semibold text-xs">
+                                    <td colSpan={colSpanBefore} className="sticky left-0 z-10 bg-slate-50 py-2 px-3 text-slate-700 whitespace-nowrap">
+                                        合计（{rows.length} 波段）
+                                    </td>
+                                    <td className="py-2 px-2 text-right text-violet-700 bg-violet-50/30">
+                                        {totalPlannedPairs > 0 ? totalPlannedPairs.toLocaleString() + '双' : '-'}
+                                    </td>
+                                    <td className="py-2 px-2 text-right text-slate-500 bg-violet-50/30">
+                                        {totalStyles > 0 ? totalStyles + '款' : '-'}
+                                    </td>
+                                    <td className="py-2 px-2 text-right text-sky-700">
+                                        {fc(totalOtb)}
+                                    </td>
+                                    <td className="py-2 px-2 text-right text-slate-500">
+                                        {fc(totalForecast)}
+                                    </td>
+                                    <td colSpan={showAdvancedCols ? 13 : 3} />
+                                </tr>
+                            );
+                        })()}
+                    </tfoot>
+                    </table>
             </div>
         </div>
     );

@@ -5,7 +5,7 @@
  */
 import { useState } from 'react';
 import type { ForecastChannel } from '@/hooks/useForecast';
-import { formatMoneyCny } from '@/config/numberFormat';
+import { useOtbParams } from '@/context/MerchConfigContext';
 
 interface DownstreamOutputProps {
     channel: ForecastChannel;
@@ -24,10 +24,6 @@ const STATUS_CFG: Record<SyncStatus, { icon: string; label: string; cls: string 
     locked:  { icon: '🔒', label: '已冻结', cls: 'text-slate-600 bg-slate-100 border-slate-200' },
 };
 
-const CHANNEL_MARKUP: Record<ForecastChannel, number> = { physical: 3.8, ecommerce: 3.5, new_store: 3.8 };
-const CHANNEL_DISCOUNT: Record<ForecastChannel, number> = { physical: 0.72, ecommerce: 0.68, new_store: 0.75 };
-const CHANNEL_SELL_THROUGH: Record<ForecastChannel, number> = { physical: 0.82, ecommerce: 0.78, new_store: 0.75 };
-
 function fmtCny(v: number) {
     return v >= 1e8 ? `¥${(v / 1e8).toFixed(2)}亿` : v >= 1e7 ? `¥${(v / 1e7).toFixed(2)}千万` : v >= 1e4 ? `¥${(v / 1e4).toFixed(1)}万` : `¥${v}`;
 }
@@ -36,18 +32,21 @@ function pct(v: number) { return (v * 100).toFixed(1) + '%'; }
 export default function SalesForecastDownstreamOutputV2({
     channel, annualForecast, grossMarginRate = 0.46, refundRate = 0, forecastVersion = 'forecast_2026_base_v1',
 }: DownstreamOutputProps) {
+    const otbParams = useOtbParams();
     const [statuses, setStatuses] = useState<Record<string, SyncStatus>>({
         otb: 'pending', cashflow: 'pending', pnl: 'pending', inventory: 'pending',
     });
     const [isFrozen, setIsFrozen] = useState(false);
     const [isPushing, setIsPushing] = useState(false);
 
-    const markup = CHANNEL_MARKUP[channel];
-    const discount = CHANNEL_DISCOUNT[channel];
-    const sellThrough = CHANNEL_SELL_THROUGH[channel];
-    const netSales = channel === 'ecommerce' ? annualForecast * (1 - refundRate) : annualForecast;
+    const cp = otbParams.channelCostParams[channel] ?? otbParams.channelCostParams['physical'] ?? { markupRate: 4.2, discountRate: 0.90, returnRate: 0.04, sellThroughTarget: 0.82 };
+    const markup = cp.markupRate;
+    const discount = cp.discountRate;
+    const sellThrough = cp.sellThroughTarget;
+    const effectiveRefundRate = (refundRate ?? 0) > 0 ? (refundRate ?? 0) : cp.returnRate;
+    const netSales = channel === 'ecommerce' ? annualForecast * (1 - effectiveRefundRate) : annualForecast;
     const grossProfit = netSales * grossMarginRate;
-    const reqRetailInventory = netSales / Math.max(sellThrough - (channel === 'ecommerce' ? refundRate : 0), 0.1);
+    const reqRetailInventory = netSales / Math.max(sellThrough - (channel === 'ecommerce' ? effectiveRefundRate : 0), 0.1);
     const reqCostInventory = reqRetailInventory / Math.max(discount, 0.1) / Math.max(markup, 1);
     const targetEndingInventory = reqRetailInventory * (1 - sellThrough);
     const cashflowPayable = reqCostInventory * 0.65;
@@ -72,6 +71,7 @@ export default function SalesForecastDownstreamOutputV2({
                 { l: '目标售罄率', v: pct(sellThrough) },
                 { l: '所需成本货值', v: fmtCny(reqCostInventory), bold: true },
                 { l: '加价倍率', v: `${markup}×` },
+                { l: channel === 'ecommerce' ? '退货率（渠道）' : '退货率', v: pct(effectiveRefundRate) },
             ],
         },
         {

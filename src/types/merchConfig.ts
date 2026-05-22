@@ -144,3 +144,24 @@ export interface MergedMerchConfig {
     tabs: Set<TabKey>;
   };
 }
+
+export interface OtbChannelParams {
+  markupRate: number;
+  discountRate: number;
+  returnRate: number;
+  sellThroughTarget: number;
+}
+
+export interface OtbScenarioPreset {
+  label: string;
+  sellThroughRate: number;
+  discountRate: number;
+  returnRate: number;
+  markupRate: number;
+}
+
+export interface OtbParamsConfig {
+  channelCostParams: Record<string, OtbChannelParams>;
+  otbScenarioPresets: OtbScenarioPreset[];
+  approvedBudget: number;
+}

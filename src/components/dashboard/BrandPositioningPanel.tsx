@@ -54,33 +54,112 @@ interface Props {
 export default function BrandPositioningPanel({ onJumpToTab }: Props) {
     return (
         <div className="space-y-10">
-            <KpiStatusBar kpis={snapshot.kpis} />
-            <HeroAndIdentity identity={snapshot.identity} philosophy={snapshot.philosophy} />
+            <ChapterNav />
 
-            <ChapterDivider chapter="01" title="品牌之眼" subtitle="品牌理念 · 品牌风格" />
-            <BrandPhilosophySection philosophy={snapshot.philosophy} />
-            <BrandStyleSection keywords={snapshot.dnaKeywords} />
+            <section id="chapter-00" className="scroll-mt-20">
+                <HeroAndIdentity identity={snapshot.identity} />
+            </section>
 
-            <ChapterDivider chapter="02" title="商业判断台" subtitle="品牌层级 · 系列结构 · 价格 · 客群 · 生活方式" />
-            <BrandTierSection />
-            <SeriesPortfolioSection items={snapshot.seriesPortfolio} onJumpToTab={onJumpToTab} />
-            <PriceArchitectureSection items={snapshot.priceArchitecture} />
-            <TargetConsumerSection overview={snapshot.consumerOverview} segments={snapshot.targetConsumers} />
-            <LifestyleScenarioSection overview={snapshot.lifestyleOverview} items={snapshot.lifestyleScenarios} />
+            <section id="chapter-01" className="scroll-mt-20 space-y-10">
+                <ChapterDivider chapter="01" title="品牌之眼" subtitle="品牌理念 · 品牌风格" />
+                <BrandPhilosophySection philosophy={snapshot.philosophy} />
+                <BrandStyleSection keywords={snapshot.dnaKeywords} />
+            </section>
 
-            <ChapterDivider chapter="03" title="企划行动" subtitle="策略矩阵 · 健康度 · 企划输出 · 跨模块入口" />
-            <div className="rounded-2xl bg-slate-50/70 border border-slate-100 px-5 py-8 lg:px-8 lg:py-10 space-y-10">
-                <StrategyMatrixSection items={snapshot.strategyMatrix} />
-                <PositioningHealthCheckSection items={snapshot.healthChecks} onJumpToTab={onJumpToTab} />
-                <PlanningOutputSection items={snapshot.planningOutputs} />
-                <RelatedModuleLinksSection items={snapshot.relatedModuleLinks} onJumpToTab={onJumpToTab} />
-            </div>
+            <section id="chapter-02" className="scroll-mt-20 space-y-10">
+                <ChapterDivider chapter="02" title="商业判断台" subtitle="品牌层级 · 系列结构 · 价格 · 客群 · 生活方式" />
+                <BrandTierSection />
+                <SeriesPortfolioSection items={snapshot.seriesPortfolio} onJumpToTab={onJumpToTab} />
+                <PriceArchitectureSection items={snapshot.priceArchitecture} />
+                <TargetConsumerSection overview={snapshot.consumerOverview} segments={snapshot.targetConsumers} />
+                <LifestyleScenarioSection overview={snapshot.lifestyleOverview} items={snapshot.lifestyleScenarios} />
+            </section>
+
+            <section id="chapter-03" className="scroll-mt-20 space-y-10">
+                <ChapterDivider chapter="03" title="企划行动" subtitle="策略矩阵 · 健康度 · 企划输出 · 跨模块入口" />
+                <div className="rounded-2xl bg-slate-50/70 border border-slate-100 px-5 py-8 lg:px-8 lg:py-10 space-y-10">
+                    <KpiStatusBar kpis={snapshot.kpis} />
+                    <StrategyMatrixSection items={snapshot.strategyMatrix} />
+                    <PositioningHealthCheckSection items={snapshot.healthChecks} onJumpToTab={onJumpToTab} />
+                    <PlanningOutputSection items={snapshot.planningOutputs} />
+                    <RelatedModuleLinksSection items={snapshot.relatedModuleLinks} onJumpToTab={onJumpToTab} />
+                </div>
+            </section>
         </div>
     );
 }
 
+/* ─── Chapter Nav (sticky) ───────────────────────────────────────────── */
+const CHAPTER_NAV: Array<{ id: string; chapter: string; label: string }> = [
+    { id: 'chapter-00', chapter: '00', label: '名片' },
+    { id: 'chapter-01', chapter: '01', label: '品牌之眼' },
+    { id: 'chapter-02', chapter: '02', label: '商业判断台' },
+    { id: 'chapter-03', chapter: '03', label: '企划行动' },
+];
+
+function ChapterNav() {
+    const [activeId, setActiveId] = useState<string>('chapter-00');
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const targets = CHAPTER_NAV
+            .map((c) => document.getElementById(c.id))
+            .filter((el): el is HTMLElement => el !== null);
+        if (targets.length === 0) return;
+        const observer = new IntersectionObserver(
+            (entries) => {
+                // 取最靠近顶部的可见 entry
+                const visible = entries
+                    .filter((e) => e.isIntersecting)
+                    .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+                if (visible[0]) setActiveId(visible[0].target.id);
+            },
+            { rootMargin: '-80px 0px -60% 0px', threshold: 0 },
+        );
+        targets.forEach((t) => observer.observe(t));
+        return () => observer.disconnect();
+    }, []);
+
+    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+        e.preventDefault();
+        const el = document.getElementById(id);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setActiveId(id);
+        }
+    };
+
+    return (
+        <nav className="sticky top-0 z-30 -mx-4 lg:-mx-6 px-4 lg:px-6 py-2 bg-white/85 backdrop-blur border-b border-slate-100">
+            <ul className="flex items-center gap-1 overflow-x-auto">
+                {CHAPTER_NAV.map((c) => {
+                    const isActive = c.id === activeId;
+                    return (
+                        <li key={c.id} className="flex-shrink-0">
+                            <a
+                                href={`#${c.id}`}
+                                onClick={(e) => handleClick(e, c.id)}
+                                className={`flex items-baseline gap-1.5 px-3 py-1.5 rounded-full text-xs transition-colors whitespace-nowrap ${
+                                    isActive
+                                        ? 'bg-slate-900 text-white'
+                                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
+                                }`}
+                            >
+                                <span className={`font-mono tabular-nums text-[10px] tracking-wider ${isActive ? 'text-white/70' : 'text-slate-400'}`}>
+                                    {c.chapter}
+                                </span>
+                                <span className="font-medium">{c.label}</span>
+                            </a>
+                        </li>
+                    );
+                })}
+            </ul>
+        </nav>
+    );
+}
+
 /* ─── Hero + 品牌简介（合并） ─────────────────────────────────────────── */
-function HeroAndIdentity({ identity, philosophy }: { identity: BrandIdentity; philosophy: BrandPhilosophy }) {
+function HeroAndIdentity({ identity }: { identity: BrandIdentity }) {
     const { positioningVersion, positioningStatus, updatedAt, year, season } = snapshot;
     const heritage = `自 ${identity.foundedYear}${identity.country ? ` · ${identity.country}` : ''}${identity.enterChinaYear ? ` · ${identity.enterChinaYear} 年进入中国` : ''}`;
     const fields: Array<{ label: string; value: string }> = [
@@ -104,27 +183,8 @@ function HeroAndIdentity({ identity, philosophy }: { identity: BrandIdentity; ph
                         <div className="mt-2 text-[11px] text-slate-500 tracking-wide">{heritage}</div>
                     </div>
 
-                    {/* Slogan */}
-                    <div>
-                        <p className="text-xl text-slate-700 leading-snug tracking-tight">{philosophy.slogan}</p>
-                        <p className="mt-1 text-sm text-slate-400 italic">{philosophy.sloganEnglish}</p>
-                    </div>
-
-                    {/* 主题关键词 chip */}
-                    {philosophy.themeKeywords && philosophy.themeKeywords.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5">
-                            {philosophy.themeKeywords.map((k) => (
-                                <span
-                                    key={k}
-                                    className="px-3 py-1 rounded-full text-xs text-slate-700 border border-slate-200 bg-white"
-                                >
-                                    {k}
-                                </span>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* 品牌简介字段（创始人、经营方向、品类） */}
+                    {/* 品牌简介字段（创始人、经营方向、品类）
+                        Slogan + 主题关键词已在 Chapter 01 · 品牌理念 中呈现，此处不重复 */}
                     <ul className="space-y-2.5 pt-5 border-t border-slate-100">
                         {fields.map((f) => (
                             <li key={f.label} className="grid grid-cols-[88px_1fr] gap-4 items-baseline">
@@ -469,22 +529,20 @@ function ImageSlot({
 
 /* ─── 03 品牌理念 ────────────────────────────────────────────────────── */
 function BrandPhilosophySection({ philosophy }: { philosophy: BrandPhilosophy }) {
+    const keywordCount = philosophy.themeKeywords.length;
     return (
         <section className="rounded-2xl border border-amber-100 bg-amber-50/40 shadow-sm px-6 lg:px-8 py-8 lg:py-10">
             <SectionTitle index="03" label="品牌理念" hint="精神内核 · 设计精髓 · 价值观" />
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-8 mt-6">
                 <div className="space-y-6">
-                    <div>
-                        <p className="text-2xl font-medium text-slate-800 leading-snug tracking-tight">{philosophy.slogan}</p>
-                        <p className="text-base text-slate-400 italic mt-1.5">{philosophy.sloganEnglish}</p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        {philosophy.themeKeywords.map((k) => (
-                            <span key={k} className="px-3 py-1 rounded-full bg-slate-50 text-slate-700 text-sm border border-slate-100">
+                    <p className="text-3xl font-medium text-slate-800 leading-snug tracking-wide">
+                        {philosophy.themeKeywords.map((k, i) => (
+                            <span key={k}>
                                 {k}
+                                {i < keywordCount - 1 && <span className="text-slate-300 mx-2.5">·</span>}
                             </span>
                         ))}
-                    </div>
+                    </p>
                     <div className="pt-4 border-t border-slate-100 space-y-2">
                         {philosophy.manifesto.map((line, i) => (
                             <p key={i} className="text-sm text-slate-600 leading-7">{line}</p>
@@ -677,7 +735,7 @@ function SeriesPortfolioSection({ items, onJumpToTab }: { items: SeriesPortfolio
             />
             <div className="mt-6 space-y-12">
                 {items.map((s, i) => (
-                    <SeriesRow key={s.seriesId} series={s} accent={i === 1} onJumpToTab={onJumpToTab} />
+                    <SeriesRow key={s.seriesId} series={s} accent={i === 1} flipped={i === 1} onJumpToTab={onJumpToTab} />
                 ))}
             </div>
         </section>
@@ -685,8 +743,8 @@ function SeriesPortfolioSection({ items, onJumpToTab }: { items: SeriesPortfolio
 }
 
 function SeriesRow({
-    series: s, accent = false, onJumpToTab,
-}: { series: SeriesPortfolioItem; accent?: boolean; onJumpToTab?: (tab: DashboardTab) => void }) {
+    series: s, accent = false, flipped = false, onJumpToTab,
+}: { series: SeriesPortfolioItem; accent?: boolean; flipped?: boolean; onJumpToTab?: (tab: DashboardTab) => void }) {
     const style = STATUS_STYLE[s.riskLevel];
     const off = s.currentShare < s.targetShareMin
         ? `偏低 ${(s.targetShareMin - s.currentShare).toFixed(0)}pp`
@@ -697,7 +755,7 @@ function SeriesRow({
         <article className={`grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-8 ${
             accent ? 'rounded-2xl bg-amber-50/40 px-6 lg:px-10 py-10 lg:py-12' : ''
         }`}>
-            <div className="space-y-5">
+            <div className={`space-y-5 ${flipped ? 'lg:order-2' : ''}`}>
                 <div>
                     <div className="flex items-baseline gap-3 flex-wrap">
                         <h4 className="text-2xl font-semibold text-slate-900 tracking-tight">{s.seriesName}</h4>
@@ -961,23 +1019,23 @@ function TargetConsumerSection({
         <section className="rounded-2xl border border-slate-100 bg-white shadow-sm px-6 lg:px-8 py-8 lg:py-10">
             <SectionTitle index="08" label="客群定位" hint="生活方式 · 年龄分层 · 心理画像" />
 
-            {/* Overview 杂志层：生活方式诗意 + 5 portrait 拼图 */}
-            <div className="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-8">
-                <div className="space-y-5">
-                    <div>
-                        <div className="text-[10px] uppercase tracking-[0.3em] text-slate-400">Central Age</div>
-                        <div className="mt-1 flex items-baseline gap-4 flex-wrap">
-                            <div>
-                                <div className="text-[11px] text-slate-400">中心年龄层</div>
-                                <div className="text-xl font-semibold text-slate-900 font-mono tabular-nums">{overview.centralAgeRange}</div>
-                            </div>
-                            <div>
-                                <div className="text-[11px] text-slate-400">心理年龄层</div>
-                                <div className="text-xl font-semibold text-slate-900 font-mono tabular-nums">{overview.mentalAgeRange}</div>
-                            </div>
+            {/* Overview 杂志层：年龄数据 + 诗意文案上层 → portrait 横排带下层
+                （堆叠以打破"左文右图"复读机感，与品牌理念/系列/生活方式形成节奏对比） */}
+            <div className="mt-6 space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-x-10 gap-y-4 items-start">
+                    <div className="flex items-baseline gap-6 flex-wrap">
+                        <div>
+                            <div className="text-[10px] uppercase tracking-[0.3em] text-slate-400">Central Age</div>
+                            <div className="mt-1 text-[11px] text-slate-400">中心年龄层</div>
+                            <div className="text-xl font-semibold text-slate-900 font-mono tabular-nums">{overview.centralAgeRange}</div>
+                        </div>
+                        <div>
+                            <div className="text-[10px] uppercase tracking-[0.3em] text-slate-400">Mental Age</div>
+                            <div className="mt-1 text-[11px] text-slate-400">心理年龄层</div>
+                            <div className="text-xl font-semibold text-slate-900 font-mono tabular-nums">{overview.mentalAgeRange}</div>
                         </div>
                     </div>
-                    <div className="space-y-1.5 pt-4 border-t border-slate-100 max-w-xl">
+                    <div className="space-y-1.5 lg:border-l lg:border-slate-100 lg:pl-10 max-w-2xl">
                         {overview.poeticSummary.map((line, i) => (
                             <p key={i} className="text-sm text-slate-600 leading-7">{line}</p>
                         ))}
@@ -985,7 +1043,7 @@ function TargetConsumerSection({
                 </div>
                 <MoodCollage
                     images={overview.portraitImages}
-                    variant="tall-left"
+                    variant="row"
                     storagePrefix="bp:consumer-portrait"
                     label="Portrait"
                     renderImageSlot={(p) => <ImageSlot {...p} />}

@@ -21,6 +21,8 @@ import type {
 } from '@/types/merchConfig';
 import { loadMergedConfig, listAvailableBrands } from '@/utils/configLoader';
 import type { BrandMeta } from '@/types/merchConfig';
+import type { OtbParamsConfig, OtbChannelParams, OtbScenarioPreset } from '@/types/merchConfig';
+import otbAssumptionsRaw from '../../data/otb/otb_assumptions.json';
 
 // ─── Context 类型 ─────────────────────────────────────────────────────────────
 
@@ -36,6 +38,9 @@ interface MerchConfigContextValue extends MergedMerchConfig {
     resetThresholdOverride: (thresholdId: string) => void;
     saveTabOverride: (tabKey: TabKey, override: Partial<TabConfig>) => void;
     resetTabOverride: (tabKey: TabKey) => void;
+    otbParams: OtbParamsConfig;
+    saveOtbParamsOverride: (params: Partial<OtbParamsConfig>) => void;
+    resetOtbParamsOverride: () => void;
 }
 
 const MerchConfigContext = createContext<MerchConfigContextValue | null>(null);
@@ -45,6 +50,22 @@ const METRIC_OVERRIDES_LS_KEY = 'merch_config_metric_overrides';
 const DIMENSION_OVERRIDES_LS_KEY = 'merch_config_dimension_overrides';
 const THRESHOLD_OVERRIDES_LS_KEY = 'merch_config_threshold_overrides';
 const TAB_OVERRIDES_LS_KEY = 'merch_config_tab_overrides';
+const OTB_PARAMS_OVERRIDES_LS_KEY = 'merch_config_otb_params_overrides';
+
+const OTB_DEFAULTS: OtbParamsConfig = {
+    channelCostParams: (otbAssumptionsRaw as unknown as { channelCostParams?: Record<string, OtbChannelParams> }).channelCostParams ?? {
+        physical:  { markupRate: 4.2, discountRate: 0.90, returnRate: 0.04, sellThroughTarget: 0.82 },
+        ecommerce: { markupRate: 3.8, discountRate: 0.78, returnRate: 0.22, sellThroughTarget: 0.75 },
+        new_store: { markupRate: 4.0, discountRate: 0.88, returnRate: 0.05, sellThroughTarget: 0.78 },
+    },
+    otbScenarioPresets: (otbAssumptionsRaw as unknown as { otbScenarioPresets?: OtbScenarioPreset[] }).otbScenarioPresets ?? [
+        { label: '保守版', sellThroughRate: 0.70, discountRate: 0.82, returnRate: 0.10, markupRate: 3.8 },
+        { label: '标准版', sellThroughRate: 0.80, discountRate: 0.88, returnRate: 0.07, markupRate: 4.0 },
+        { label: '乐观版', sellThroughRate: 0.90, discountRate: 0.92, returnRate: 0.04, markupRate: 4.2 },
+    ],
+    approvedBudget: (otbAssumptionsRaw as unknown as { approvedBudget?: number }).approvedBudget ?? 22000000,
+};
+type StoredOtbParamsOverrides = Record<string, Partial<OtbParamsConfig>>;
 
 type StoredMetricOverride = Partial<MetricDefinition> & { metricId: string };
 type StoredMetricOverrides = Record<string, Record<string, StoredMetricOverride>>;
@@ -97,6 +118,22 @@ function loadTabOverrides(): StoredTabOverrides {
     } catch {
         return {};
     }
+}
+
+function loadOtbParamsOverrides(): StoredOtbParamsOverrides {
+    if (typeof window === 'undefined') return {};
+    try {
+        const raw = localStorage.getItem(OTB_PARAMS_OVERRIDES_LS_KEY);
+        if (!raw) return {};
+        return JSON.parse(raw) as StoredOtbParamsOverrides;
+    } catch { return {}; }
+}
+
+function persistOtbParamsOverrides(overrides: StoredOtbParamsOverrides) {
+    if (typeof window === 'undefined') return;
+    try {
+        localStorage.setItem(OTB_PARAMS_OVERRIDES_LS_KEY, JSON.stringify(overrides));
+    } catch {}
 }
 
 function persistMetricOverrides(overrides: StoredMetricOverrides) {
@@ -152,6 +189,7 @@ export function MerchConfigProvider({
     const [dimensionOverrides, setDimensionOverrides] = useState<StoredDimensionOverrides>(() => loadDimensionOverrides());
     const [thresholdOverrides, setThresholdOverrides] = useState<StoredThresholdOverrides>(() => loadThresholdOverrides());
     const [tabOverrides, setTabOverrides] = useState<StoredTabOverrides>(() => loadTabOverrides());
+    const [otbParamsOverrides, setOtbParamsOverrides] = useState<StoredOtbParamsOverrides>(() => loadOtbParamsOverrides());
 
     const merged = useMemo(() => {
         const base = loadMergedConfig(brandId);
@@ -242,6 +280,16 @@ export function MerchConfigProvider({
             },
         };
     }, [brandId, metricOverrides, dimensionOverrides, thresholdOverrides, tabOverrides]);
+
+    const otbParams: OtbParamsConfig = useMemo(() => {
+        const brandOverride = otbParamsOverrides[brandId];
+        if (!brandOverride) return OTB_DEFAULTS;
+        return {
+            channelCostParams: brandOverride.channelCostParams ?? OTB_DEFAULTS.channelCostParams,
+            otbScenarioPresets: brandOverride.otbScenarioPresets ?? OTB_DEFAULTS.otbScenarioPresets,
+            approvedBudget: brandOverride.approvedBudget ?? OTB_DEFAULTS.approvedBudget,
+        };
+    }, [brandId, otbParamsOverrides]);
 
     const switchBrand = useCallback((next: string) => {
         if (typeof window !== 'undefined') {
@@ -413,6 +461,26 @@ export function MerchConfigProvider({
         });
     }, [brandId]);
 
+    const saveOtbParamsOverride = useCallback((params: Partial<OtbParamsConfig>) => {
+        setOtbParamsOverrides((prev) => {
+            const next: StoredOtbParamsOverrides = {
+                ...prev,
+                [brandId]: { ...(prev[brandId] ?? {}), ...params },
+            };
+            persistOtbParamsOverrides(next);
+            return next;
+        });
+    }, [brandId]);
+
+    const resetOtbParamsOverride = useCallback(() => {
+        setOtbParamsOverrides((prev) => {
+            const next = { ...prev };
+            delete next[brandId];
+            persistOtbParamsOverrides(next);
+            return next;
+        });
+    }, [brandId]);
+
     const value: MerchConfigContextValue = {
         ...merged,
         currentBrandId: brandId,
@@ -426,6 +494,9 @@ export function MerchConfigProvider({
         resetThresholdOverride,
         saveTabOverride,
         resetTabOverride,
+        otbParams,
+        saveOtbParamsOverride,
+        resetOtbParamsOverride,
     };
 
     return (
@@ -461,6 +532,10 @@ export function useThreshold(id: string): ThresholdDefinition | undefined {
 
 export function useTabConfig(tab: TabKey): TabConfig | undefined {
     return useMerchConfig().tabs.get(tab);
+}
+
+export function useOtbParams(): OtbParamsConfig {
+    return useMerchConfig().otbParams;
 }
 
 /**

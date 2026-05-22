@@ -88,6 +88,36 @@ export interface AnnualOTBInputs {
     maxCarryoverRatio?: number;
     defaultStockToSalesRatio?: number;
     defaultArrivalRate?: number;
+
+    // 各季：平均倍率（零售价/出厂成本，鞋类典型 3.5–4.5）
+    springMarkupRate?: number;
+    summerMarkupRate?: number;
+    autumnMarkupRate?: number;
+    winterMarkupRate?: number;
+
+    // 各季：平均折扣率（计划促销折扣加权均值，0~1小数）
+    springDiscountRate?: number;
+    summerDiscountRate?: number;
+    autumnDiscountRate?: number;
+    winterDiscountRate?: number;
+
+    // 各季：退货率（电商~0.20，线下~0.04，各季可不同）
+    springReturnRate?: number;
+    summerReturnRate?: number;
+    autumnReturnRate?: number;
+    winterReturnRate?: number;
+
+    // 各季：零售均价（元/双，用于显示和验证倍率一致性）
+    springAvgRetailPrice?: number;
+    summerAvgRetailPrice?: number;
+    autumnAvgRetailPrice?: number;
+    winterAvgRetailPrice?: number;
+
+    // 各季：平均成本（元/双，计算投入双数的除数）
+    springAvgCost?: number;
+    summerAvgCost?: number;
+    autumnAvgCost?: number;
+    winterAvgCost?: number;
 }
 
 export interface AnnualOTBResult {
@@ -117,6 +147,24 @@ export interface AnnualOTBResult {
     budgetGap: number | null;
     ssSeasonSalesTarget: number;
     awSeasonSalesTarget: number;
+
+    // 成本侧OTB（实际需要花的采购预算，元）
+    springCostOTB: number | null;
+    summerCostOTB: number | null;
+    autumnCostOTB: number | null;
+    winterCostOTB: number | null;
+
+    // 投入双数（双）
+    springPairsOTB: number | null;
+    summerPairsOTB: number | null;
+    autumnPairsOTB: number | null;
+    winterPairsOTB: number | null;
+
+    // 大季汇总
+    ssCostOTB: number | null;
+    awCostOTB: number | null;
+    annualCostOTB: number | null;
+    annualPairsOTB: number | null;
 }
 
 export function calcAnnualOTB(inputs: AnnualOTBInputs): AnnualOTBResult {
@@ -159,6 +207,70 @@ export function calcAnnualOTB(inputs: AnnualOTBInputs): AnnualOTBResult {
     const approved = safeNumber(inputs.approvedBudget) ?? 0;
     const gap = annualInv !== null ? annualInv - approved : null;
 
+    // PDF公式: 投入金额(成本) = 季度目标 / (售罄率-退货率) / 折扣率 / 倍率
+    function calcCostOTBForSeason(
+        target: number,
+        st: number | null,
+        returnRate: number,
+        discountRate: number,
+        markupRate: number,
+    ): number | null {
+        const netST = (st ?? 0) - returnRate;
+        if (netST <= 0 || discountRate <= 0 || markupRate <= 0) return null;
+        return target / netST / discountRate / markupRate;
+    }
+
+    const springCostOTB = calcCostOTBForSeason(
+        springTarget,
+        springST,
+        inputs.springReturnRate ?? 0,
+        inputs.springDiscountRate ?? 1,
+        inputs.springMarkupRate ?? 1,
+    );
+    const summerCostOTB = calcCostOTBForSeason(
+        summerTarget,
+        summerST,
+        inputs.summerReturnRate ?? 0,
+        inputs.summerDiscountRate ?? 1,
+        inputs.summerMarkupRate ?? 1,
+    );
+    const autumnCostOTB = calcCostOTBForSeason(
+        autumnTarget,
+        autumnST,
+        inputs.autumnReturnRate ?? 0,
+        inputs.autumnDiscountRate ?? 1,
+        inputs.autumnMarkupRate ?? 1,
+    );
+    const winterCostOTB = calcCostOTBForSeason(
+        winterTarget,
+        winterST,
+        inputs.winterReturnRate ?? 0,
+        inputs.winterDiscountRate ?? 1,
+        inputs.winterMarkupRate ?? 1,
+    );
+
+    const springPairsOTB = springCostOTB !== null && (inputs.springAvgCost ?? 0) > 0
+        ? Math.round(springCostOTB / inputs.springAvgCost!)
+        : null;
+    const summerPairsOTB = summerCostOTB !== null && (inputs.summerAvgCost ?? 0) > 0
+        ? Math.round(summerCostOTB / inputs.summerAvgCost!)
+        : null;
+    const autumnPairsOTB = autumnCostOTB !== null && (inputs.autumnAvgCost ?? 0) > 0
+        ? Math.round(autumnCostOTB / inputs.autumnAvgCost!)
+        : null;
+    const winterPairsOTB = winterCostOTB !== null && (inputs.winterAvgCost ?? 0) > 0
+        ? Math.round(winterCostOTB / inputs.winterAvgCost!)
+        : null;
+
+    const ssCostOTB = springCostOTB !== null && summerCostOTB !== null
+        ? springCostOTB + summerCostOTB : null;
+    const awCostOTB = autumnCostOTB !== null && winterCostOTB !== null
+        ? autumnCostOTB + winterCostOTB : null;
+    const annualCostOTB = ssCostOTB !== null && awCostOTB !== null
+        ? ssCostOTB + awCostOTB : null;
+    const annualPairsOTB = (springPairsOTB ?? 0) + (summerPairsOTB ?? 0)
+        + (autumnPairsOTB ?? 0) + (winterPairsOTB ?? 0) || null;
+
     return {
         springTarget, summerTarget, autumnTarget, winterTarget,
         springNPSales, summerNPSales, autumnNPSales, winterNPSales,
@@ -171,6 +283,9 @@ export function calcAnnualOTB(inputs: AnnualOTBInputs): AnnualOTBResult {
         budgetGap: gap,
         ssSeasonSalesTarget: ssSalesTarget,
         awSeasonSalesTarget: awSalesTarget,
+        springCostOTB, summerCostOTB, autumnCostOTB, winterCostOTB,
+        springPairsOTB, summerPairsOTB, autumnPairsOTB, winterPairsOTB,
+        ssCostOTB, awCostOTB, annualCostOTB, annualPairsOTB,
     };
 }
 
@@ -381,6 +496,13 @@ export interface WaveOTBInput {
     arrivalMonth?: number;
     arrivalSuggestion?: string;
     planOtbBudget?: number;
+
+    averageRetailPrice?: number;  // 波段零售均价（元/双）
+    averageCost?: number;         // 波段平均成本（元/双）
+    markupRate?: number;          // 波段倍率（可覆盖年度默认值）
+    discountRate?: number;        // 波段折扣率
+    returnRate?: number;          // 波段退货率
+    firstOrderBudget?: number;    // 首单投入预算（元），用于“用首单业绩预估新款量”
 }
 
 export interface WaveOTBRow extends WaveOTBInput {
@@ -390,6 +512,11 @@ export interface WaveOTBRow extends WaveOTBInput {
     repeatOrderAmount: number;
     carryoverAmount: number;
     otbBudget: number | null;
+
+    costOtbBudget: number | null;   // 成本OTB = otbBudget / markupRate
+    plannedPairs: number | null;    // 投入双数 = costOtbBudget / averageCost
+    styleDepthPairs: number | null; // 款均深度(双/款) = plannedPairs / plannedStyleCount
+    firstOrderPairs: number | null; // 首单可买双数 = firstOrderBudget / averageCost
 }
 
 export function calcWaveOTB(
@@ -404,6 +531,20 @@ export function calcWaveOTB(
         const planned = seasonST * (safeNumber(w.salesRatio) ?? 0);
         const st = safeNumber(w.sellThroughTarget);
         const newAmt = planned * (safeNumber(w.newProductRatio) ?? 0);
+        const otbBudget = st && st > 0 ? newAmt / st : null;
+
+        const markup = safeNumber(w.markupRate) ?? 4.0;
+        const avgCost = safeNumber(w.averageCost);
+        const costOtbBudget = otbBudget !== null && markup > 0 ? otbBudget / markup : null;
+        const plannedPairs = costOtbBudget !== null && avgCost && avgCost > 0
+            ? Math.round(costOtbBudget / avgCost) : null;
+        const styleCount = safeNumber(w.plannedStyleCount);
+        const styleDepthPairs = plannedPairs !== null && styleCount && styleCount > 0
+            ? Math.round(plannedPairs / styleCount) : null;
+        const fob = safeNumber(w.firstOrderBudget);
+        const firstOrderPairs = fob !== null && avgCost && avgCost > 0
+            ? Math.round(fob / avgCost) : null;
+
         return {
             ...w,
             seasonSalesTarget: seasonST,
@@ -411,7 +552,11 @@ export function calcWaveOTB(
             newProductAmount: newAmt,
             repeatOrderAmount: planned * (safeNumber(w.repeatOrderRatio) ?? 0),
             carryoverAmount: planned * (safeNumber(w.carryoverRatio) ?? 0),
-            otbBudget: st && st > 0 ? newAmt / st : null,
+            otbBudget,
+            costOtbBudget,
+            plannedPairs,
+            styleDepthPairs,
+            firstOrderPairs,
         };
     });
 }

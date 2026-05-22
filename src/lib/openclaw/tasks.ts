@@ -1,14 +1,6 @@
 ﻿import type { RiskLevel } from '@/config/design-review-center/enums';
 import type { DesignPhase } from '@/lib/design-review-center/types';
 
-export interface OpenClawTask {
-  id: string;
-  type: 'competitor-analysis' | 'design-review' | 'wave-review' | 'weekly-summary';
-  status: 'pending' | 'processing' | 'done';
-  created_at: string;
-  params: Record<string, string>;
-}
-
 export interface DesignReviewTaskDraft {
   title: string;
   description: string;
@@ -85,13 +77,6 @@ export type DesignReviewActionIntent =
 
 export const DESIGN_REVIEW_ACTION_STORAGE_KEY = 'openclaw-design-review-intents-v1';
 
-const TASK_LABELS: Record<OpenClawTask['type'], string> = {
-  'competitor-analysis': 'Run competitor analysis',
-  'design-review': 'Run design review',
-  'wave-review': 'Run wave review',
-  'weekly-summary': 'Run weekly summary',
-};
-
 const DESIGN_REVIEW_ACTION_LABELS: Record<DesignReviewActionIntent['type'], string> = {
   'batch-phase-transition': 'Batch phase transition',
   'batch-owner-assignment': 'Batch owner assignment',
@@ -111,16 +96,6 @@ const DESIGN_REVIEW_ACTION_TYPES: DesignReviewActionIntent['type'][] = [
   'batch-next-review-date',
   'batch-task-generation',
 ];
-
-export function createTask(type: OpenClawTask['type'], params: Record<string, string> = {}): OpenClawTask {
-  return {
-    id: `task-${Date.now()}`,
-    type,
-    status: 'pending',
-    created_at: new Date().toISOString(),
-    params,
-  };
-}
 
 function createBaseIntent(itemIds: string[], createdBy: string): DesignReviewBaseActionIntent {
   return {
@@ -268,10 +243,6 @@ export function getDesignReviewActionCounts(queue: DesignReviewActionIntent[]) {
       error: 0,
     } as Record<DesignReviewActionIntentStatus, number>,
   );
-}
-
-export function getTaskLabel(type: OpenClawTask['type']): string {
-  return TASK_LABELS[type] ?? type;
 }
 
 export function getDesignReviewActionLabel(intent: DesignReviewActionIntent): string {

@@ -6,6 +6,7 @@ import { useGlobalConfig } from '@/context/GlobalConfigContext';
 import type { ForecastResult, ForecastChannel } from '@/hooks/useForecast';
 import seasonalRaw from '../../../data/planning/sales_forecast_seasonal_index.json';
 import lifecycleRaw from '../../../data/planning/sales_forecast_lifecycle_stage.json';
+import otbAssumptionsRaw from '../../../data/otb/otb_assumptions.json';
 
 type SeasonalData = Record<string, number[] | unknown> & {
     physical: number[]; ecommerce: number[]; new_store: number[]; anomalyThreshold: number;
@@ -20,6 +21,19 @@ const FOOTWEAR_BENCHMARK: Record<ForecastChannel, { sizeCoverage: number; pairsP
     ecommerce: { sizeCoverage: 0.88, pairsPerOrder: 1.45 },
     new_store: { sizeCoverage: 0.88, pairsPerOrder: 1.70 },
 };
+
+interface HistBenchmark { SS: Record<string, number[]>; AW: Record<string, number[]> }
+const histBenchmark = (otbAssumptionsRaw as unknown as { historicalMonthlyShareBenchmark?: HistBenchmark })
+    .historicalMonthlyShareBenchmark;
+
+function getHistMedian(month: number): number | null {
+    if (!histBenchmark) return null;
+    const seasonKey = month <= 6 ? 'SS' : 'AW';
+    const arr = histBenchmark[seasonKey]?.[String(month)];
+    if (!arr || arr.length === 0) return null;
+    const sorted = [...arr].sort((a, b) => a - b);
+    return sorted[Math.floor(sorted.length / 2)];
+}
 
 interface Props {
     result: ForecastResult;
@@ -128,6 +142,7 @@ export default function ForecastMonthlyTable({ result, channel: channelProp }: P
     const seasonal = seasonalIdx[channel] as number[] | undefined ?? [];
     const benchmark = FOOTWEAR_BENCHMARK[channel];
     const anomalyThreshold = seasonalIdx.anomalyThreshold ?? 0.15;
+    const annualTotal = result.monthly.reduce((s, m) => s + m.forecastRevenue, 0);
 
     if (result.channel === 'new_store') {
         return <NewStoreMonthlyTable result={result} />;
@@ -148,6 +163,7 @@ export default function ForecastMonthlyTable({ result, channel: channelProp }: P
                         {showDriverCol && <th className="px-3 py-2 text-right">驱动预测</th>}
                         <th className="px-3 py-2 text-right font-semibold text-slate-700">最终预测</th>
                         <th className="px-3 py-2 text-right">YoY</th>
+                        <th className="px-3 py-2 text-right text-teal-600" title="近3年同月销售额占年度比均値，偏差≥3pp标黄">历史占比</th>
                         <th className="px-3 py-2 text-right text-amber-600" title="鞋类月度销售季节系数（1.0=年均）">季节系数</th>
                         <th className="px-3 py-2 text-right text-sky-600" title="预测期内核心尺码段可售比例">尺码完整率</th>
                         <th className="px-3 py-2 text-right text-violet-600" title="预测期每单平均买双数">连带率</th>
@@ -217,6 +233,26 @@ export default function ForecastMonthlyTable({ result, channel: channelProp }: P
                                 <td className={`px-3 py-2 text-right text-xs ${(m.yoyVsLastYear ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                                     {pct(m.yoyVsLastYear)}
                                 </td>
+                                {(() => {
+                                    const histMedian = getHistMedian(m.month);
+                                    if (histMedian === null) return <td className="px-3 py-2 text-right text-slate-400 text-xs">—</td>;
+                                    const currentShare = annualTotal > 0 ? m.forecastRevenue / annualTotal : 0;
+                                    const deviation = currentShare - histMedian;
+                                    const isDeviant = Math.abs(deviation) >= 0.03;
+                                    return (
+                                        <td
+                                            className={`px-3 py-2 text-right text-xs ${isDeviant ? 'text-amber-600 font-semibold' : 'text-teal-600'}`}
+                                            title={`历史均値 ${(histMedian * 100).toFixed(1)}%，当前预测占比 ${(currentShare * 100).toFixed(1)}%`}
+                                        >
+                                            {(histMedian * 100).toFixed(1)}%
+                                            {isDeviant && (
+                                                <span className="ml-0.5">
+                                                    {deviation > 0 ? '▲' : '▼'}{(Math.abs(deviation) * 100).toFixed(1)}pp
+                                                </span>
+                                            )}
+                                        </td>
+                                    );
+                                })()}
                                 <td className={`px-3 py-2 text-right text-xs ${isSeasonAnomaly ? 'text-rose-600 font-semibold' : 'text-slate-500'}`}
                                     title={isSeasonAnomaly ? `偏离季节系数 ${(seasonDeviation * 100).toFixed(1)}%` : '季节基准内'}>
                                     {seasonCoef.toFixed(2)}{isSeasonAnomaly && ' ⚠'}

@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from 'next';
 import type { CSSProperties } from 'react';
 import Navigation from '@/components/Navigation';
-import OpenClawEntryButton from '@/components/business/OpenClawEntryButton';
+import BackToTopButton from '@/components/business/BackToTopButton';
 import './globals.css';
 
 const offlineFontVars = {
@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className="antialiased" style={offlineFontVars} suppressHydrationWarning>
         <Navigation />
         {children}
-        <OpenClawEntryButton />
+        <BackToTopButton />
       </body>
     </html>
   );

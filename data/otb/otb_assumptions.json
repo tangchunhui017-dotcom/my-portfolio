@@ -18,5 +18,53 @@
   "winterSellThroughTarget": 0.78,
   "maxCarryoverRatio": 0.35,
   "defaultStockToSalesRatio": 3,
-  "defaultArrivalRate": 0.95
+  "defaultArrivalRate": 0.95,
+  "springMarkupRate": 4.0,
+  "summerMarkupRate": 3.8,
+  "autumnMarkupRate": 4.2,
+  "winterMarkupRate": 4.5,
+  "springDiscountRate": 0.88,
+  "summerDiscountRate": 0.85,
+  "autumnDiscountRate": 0.90,
+  "winterDiscountRate": 0.88,
+  "springReturnRate": 0.07,
+  "summerReturnRate": 0.10,
+  "autumnReturnRate": 0.07,
+  "winterReturnRate": 0.07,
+  "springAvgRetailPrice": 499,
+  "summerAvgRetailPrice": 399,
+  "autumnAvgRetailPrice": 599,
+  "winterAvgRetailPrice": 699,
+  "springAvgCost": 125,
+  "summerAvgCost": 105,
+  "autumnAvgCost": 143,
+  "winterAvgCost": 156,
+  "historicalMonthlyShareBenchmark": {
+    "SS": {
+      "1": [0.09, 0.08, 0.09],
+      "2": [0.08, 0.07, 0.08],
+      "3": [0.07, 0.07, 0.07],
+      "4": [0.10, 0.09, 0.10],
+      "5": [0.11, 0.10, 0.10],
+      "6": [0.09, 0.09, 0.08]
+    },
+    "AW": {
+      "7": [0.07, 0.07, 0.07],
+      "8": [0.08, 0.08, 0.08],
+      "9": [0.10, 0.09, 0.10],
+      "10": [0.12, 0.11, 0.11],
+      "11": [0.09, 0.09, 0.09],
+      "12": [0.08, 0.09, 0.08]
+    }
+  },
+  "channelCostParams": {
+    "physical":  { "markupRate": 4.2, "discountRate": 0.90, "returnRate": 0.04, "sellThroughTarget": 0.82 },
+    "ecommerce": { "markupRate": 3.8, "discountRate": 0.78, "returnRate": 0.22, "sellThroughTarget": 0.75 },
+    "new_store": { "markupRate": 4.0, "discountRate": 0.88, "returnRate": 0.05, "sellThroughTarget": 0.78 }
+  },
+  "otbScenarioPresets": [
+    { "label": "保守版", "sellThroughRate": 0.70, "discountRate": 0.82, "returnRate": 0.10, "markupRate": 3.8 },
+    { "label": "标准版", "sellThroughRate": 0.80, "discountRate": 0.88, "returnRate": 0.07, "markupRate": 4.0 },
+    { "label": "乐观版", "sellThroughRate": 0.90, "discountRate": 0.92, "returnRate": 0.04, "markupRate": 4.2 }
+  ]
 }

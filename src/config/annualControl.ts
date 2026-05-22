@@ -1582,21 +1582,21 @@ const ANNUAL_CONTROL_TRANSITION_SEASON_WINDOWS: Record<DashboardSeason, {
     };
 }> = {
     Q1: {
-        fullLifecycleLabel: '12/10-5/27',
-        displayPlanRange: { start: 12.29, end: 17.84 },
-        displayActualRange: { start: 12.29, end: 17.84 },
+        fullLifecycleLabel: '12/10-5/31',
+        displayPlanRange: { start: 12.29, end: 17.99 },
+        displayActualRange: { start: 12.29, end: 17.99 },
         handoffPlan: { start: 15.18, end: 16.18 },
         handoffActual: { start: 15.28, end: 16.26 },
         windows: {
             launch: '12/10-2/10',
             mainSell: '2/11-3/31',
-            clearance: '4/1-5/27',
+            clearance: '4/1-5/31',
         },
     },
     Q2: {
         fullLifecycleLabel: '3/5-9/30',
-        displayPlanRange: { start: 3.13, end: 9.97 },
-        displayActualRange: { start: 3.13, end: 9.97 },
+        displayPlanRange: { start: 3.13, end: 9.99 },
+        displayActualRange: { start: 3.13, end: 9.99 },
         handoffPlan: { start: 6.72, end: 7.26 },
         handoffActual: { start: 6.84, end: 7.34 },
         windows: {
@@ -1606,31 +1606,89 @@ const ANNUAL_CONTROL_TRANSITION_SEASON_WINDOWS: Record<DashboardSeason, {
         },
     },
     Q3: {
-        fullLifecycleLabel: '6/25-12/2',
-        displayPlanRange: { start: 6.80, end: 12.03 },
-        displayActualRange: { start: 6.80, end: 12.03 },
+        fullLifecycleLabel: '6/25-11/30',
+        displayPlanRange: { start: 6.80, end: 11.99 },
+        displayActualRange: { start: 6.80, end: 11.99 },
         handoffPlan: { start: 9.96, end: 10.22 },
         handoffActual: { start: 10.04, end: 10.30 },
         windows: {
             launch: '6/25-7/31',
             mainSell: '8/1-10/10',
-            clearance: '10/11-12/2',
+            clearance: '10/11-11/30',
         },
     },
     Q4: {
-        fullLifecycleLabel: '9/30-次年4/1',
-        carryOutLabel: '延续至次年 4/1',
-        displayPlanRange: { start: 9.97, end: 16.00 },
-        displayActualRange: { start: 9.97, end: 16.00 },
+        fullLifecycleLabel: '9/30-次年3/31',
+        carryOutLabel: '延续至次年 3/31',
+        displayPlanRange: { start: 9.97, end: 15.99 },
+        displayActualRange: { start: 9.97, end: 15.99 },
         handoffPlan: { start: 12.36, end: 13.18 },
         handoffActual: { start: 12.28, end: 13.10 },
         windows: {
             launch: '9/30-11/10',
             mainSell: '11/11-12/25',
-            clearance: '12/26-次年4/1',
+            clearance: '12/26-次年3/31',
         },
     },
 };
+
+function getAnnualControlMonthEndDay(year: number, month: number) {
+    return new Date(year, month, 0).getDate();
+}
+
+function buildAnnualControlTransitionWindowLabels(season: DashboardSeason, year: number): {
+    fullLifecycleLabel: string;
+    carryOutLabel?: string;
+    windows: AnnualControlTransitionSeasonControl['windows'];
+} {
+    const springClearanceEnd = getAnnualControlMonthEndDay(year, 5);
+    const summerClearanceEnd = getAnnualControlMonthEndDay(year, 9);
+    const autumnClearanceEnd = getAnnualControlMonthEndDay(year, 11);
+    const winterClearanceEnd = getAnnualControlMonthEndDay(year + 1, 3);
+
+    if (season === 'Q1') {
+        return {
+            fullLifecycleLabel: `12/10-5/${springClearanceEnd}`,
+            windows: {
+                launch: '12/10-2/10',
+                mainSell: '2/11-3/31',
+                clearance: `4/1-5/${springClearanceEnd}`,
+            },
+        };
+    }
+
+    if (season === 'Q2') {
+        return {
+            fullLifecycleLabel: `3/5-9/${summerClearanceEnd}`,
+            windows: {
+                launch: '3/5-4/25',
+                mainSell: '4/26-7/31',
+                clearance: `8/1-9/${summerClearanceEnd}`,
+            },
+        };
+    }
+
+    if (season === 'Q3') {
+        return {
+            fullLifecycleLabel: `6/25-11/${autumnClearanceEnd}`,
+            windows: {
+                launch: '6/25-7/31',
+                mainSell: '8/1-10/10',
+                clearance: `10/11-11/${autumnClearanceEnd}`,
+            },
+        };
+    }
+
+    return {
+        fullLifecycleLabel: `9/30-次年3/${winterClearanceEnd}`,
+        carryOutLabel: `延续至次年 3/${winterClearanceEnd}`,
+        windows: {
+            launch: '9/30-11/10',
+            mainSell: '11/11-12/25',
+            clearance: `12/26-次年3/${winterClearanceEnd}`,
+        },
+    };
+}
 
 export const ANNUAL_CONTROL_TRANSITION_METRIC_CONFIG: AnnualControlTransitionMetricConfig = {
     defaults: {
@@ -1987,6 +2045,7 @@ function buildAnnualControlTransitionOutputs(params: {
 
 function buildAnnualControlTransitionControlModel(params: {
     months: AnnualControlMonthAxisItem[];
+    year: number;
     currentMonth: number;
     currentSeason: DashboardSeason;
     currentFocus: AnnualMerchandisingFocus | null;
@@ -2000,6 +2059,7 @@ function buildAnnualControlTransitionControlModel(params: {
 }): AnnualControlTransitionControlModel {
     const seasons: AnnualControlTransitionSeasonControl[] = SEASONAL_INVENTORY_TRANSITIONS.map((transition) => {
         const windowConfig = ANNUAL_CONTROL_TRANSITION_SEASON_WINDOWS[transition.season];
+        const windowLabels = buildAnnualControlTransitionWindowLabels(transition.season, params.year);
         const metrics = resolveAnnualControlTransitionMetricPlan({
             season: transition.season,
             market: params.market,
@@ -2038,11 +2098,11 @@ function buildAnnualControlTransitionControlModel(params: {
             seasonLabel: ANNUAL_CONTROL_SEASON_LABELS[transition.season],
             shortLabel: getAnnualControlTransitionShortLabel(transition.season),
             nextSeasonLabel: transition.nextSeasonLabel,
-            fullLifecycleLabel: windowConfig.fullLifecycleLabel,
+            fullLifecycleLabel: windowLabels.fullLifecycleLabel,
             carryInLabel: windowConfig.carryInLabel,
-            carryOutLabel: windowConfig.carryOutLabel,
+            carryOutLabel: windowLabels.carryOutLabel ?? windowConfig.carryOutLabel,
             carryInPreviewRange: windowConfig.carryInPreviewRange,
-            windows: windowConfig.windows,
+            windows: windowLabels.windows,
             handoffFocus: transition.handoffFocus,
             carryoverRisk: transition.carryoverRisk,
             discount: {
@@ -2131,6 +2191,7 @@ export function buildAnnualControlMasterView(
     const currentSceneLabel = currentFocus ? getAnnualControlScene(currentFocus.sceneId).label : '\u5e74\u5ea6\u7edf\u7b79';
     const transitionControl = buildAnnualControlTransitionControlModel({
         months: ANNUAL_CONTROL_MONTH_AXIS,
+        year: selectedYear,
         currentMonth,
         currentSeason,
         currentFocus,

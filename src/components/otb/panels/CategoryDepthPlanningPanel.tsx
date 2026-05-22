@@ -913,6 +913,7 @@ export default function CategoryDepthPlanningPanel({
     const [pasteResult, setPasteResult] = useState<string | null>(null);
     const [helpOpen, setHelpOpen] = useState(false);
     const [showAdvancedCols, setShowAdvancedCols] = useState(false);
+    const [capacityConstraintMode, setCapacityConstraintMode] = useState(false);
     const [batchPreview, setBatchPreview] = useState<{
         type: 'depth' | 'style';
         targetValue: number;
@@ -1042,6 +1043,7 @@ export default function CategoryDepthPlanningPanel({
             return acc;
         }, {})
     ), [waves]);
+
     const workingItemsWithWaveMeta = useMemo(() => (
         workingItems.map(item => {
             const meta = waveMetadataByKey[`${item.season}-${item.wave}`];
@@ -1186,6 +1188,15 @@ export default function CategoryDepthPlanningPanel({
             };
         });
     }, [channelCapacity, currentDate, currencyUnit, sizeGroups, sizeOverrides, waveOtbBudgets, waveSalesTargets, workingItemsWithWaveMeta]);
+
+    // 门店容量约束模式：每个波段的计划款数合计，用于计算品类款数占比
+    const styleCountByWave = useMemo(() => {
+        return allRows.reduce<Record<string, number>>((acc, row) => {
+            const key = `${row.season}-${row.wave}`;
+            acc[key] = (acc[key] ?? 0) + (row.plannedStyleCount ?? 0);
+            return acc;
+        }, {});
+    }, [allRows]);
 
     const globallyScopedRows = useMemo(() => {
         if (!filters) return allRows;
@@ -1801,6 +1812,13 @@ export default function CategoryDepthPlanningPanel({
                                     className={`text-xs px-2.5 py-1 rounded-lg border transition-colors ${showAdvancedCols ? 'border-sky-300 bg-sky-50 text-sky-700' : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'}`}>
                                     {showAdvancedCols ? '收起高级字段' : '高级字段 ▸'}
                                 </button>
+                                <button
+                                    onClick={() => setCapacityConstraintMode(prev => !prev)}
+                                    className={`text-xs px-2.5 py-1 rounded-lg border transition-colors ${capacityConstraintMode ? 'border-violet-300 bg-violet-50 text-violet-700' : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'}`}
+                                    title="启用后，可用款数 = 陈列上限 × 品类款数占比，款均深度 = OTB成本 ÷ 可用款数 ÷ 平均成本"
+                                >
+                                    {capacityConstraintMode ? '🏬 门店容量约束 ON' : '🏬 门店容量约束'}
+                                </button>
                             </div>
                         </div>
                         {batchPreview && (
@@ -1836,6 +1854,15 @@ export default function CategoryDepthPlanningPanel({
                                         </button>
                                     </div>
                                 </div>
+                            </div>
+                        )}
+                        {capacityConstraintMode && channelCapacity && (
+                            <div className="px-4 py-2.5 border-b border-violet-200 bg-violet-50/60 text-xs text-violet-800 flex flex-wrap gap-4">
+                                <span className="font-semibold">🏬 门店容量约束模式</span>
+                                <span>总陈列上限：<strong>{channelCapacity.totalSkuCapacity} SKU</strong></span>
+                                <span>门店数：<strong>{channelCapacity.storeCount}</strong></span>
+                                <span>单店均深：<strong>{channelCapacity.avgDisplayPairsPerSku} 双/SKU</strong></span>
+                                <span className="text-violet-600">可用款数 = 陈列上限 × 品类款数占比 · 款均深 = OTB成本 ÷ 可用款数 ÷ 均成本 · 款均深 &lt; 12双时告警</span>
                             </div>
                         )}
                         {showPasteBox && (
@@ -1882,6 +1909,12 @@ export default function CategoryDepthPlanningPanel({
                                         <th className="text-right py-2 px-2 text-slate-500 font-medium">计划色数</th>
                                         <th className="text-right py-2 px-2 text-slate-500 font-medium">SKU</th>
                                         <th className="text-right py-2 px-2 text-slate-500 font-medium">均深</th>
+                                        {capacityConstraintMode && (
+                                            <th className="text-right py-2 px-2 text-violet-600 font-medium bg-violet-50 whitespace-nowrap">约束款数</th>
+                                        )}
+                                        {capacityConstraintMode && (
+                                            <th className="text-right py-2 px-2 text-violet-600 font-medium bg-violet-50 whitespace-nowrap">约束均深</th>
+                                        )}
                                         {showAdvancedCols && <th className="text-right py-2 px-2 text-slate-500 font-medium whitespace-nowrap">投产双数</th>}
                                         <th className="text-right py-2 px-2 text-slate-500 font-medium whitespace-nowrap">投产金额</th>
                                         {showAdvancedCols && <th className="text-right py-2 px-2 text-slate-500 font-medium whitespace-nowrap">首铺需求</th>}
@@ -1999,6 +2032,34 @@ export default function CategoryDepthPlanningPanel({
                                                             title={waveDepthTarget ? `目标均深: ${waveDepthTarget}双` : undefined}
                                                             className={`w-16 text-right text-xs bg-sky-50 border border-sky-200 rounded px-1.5 py-1 focus:outline-none disabled:bg-slate-50 ${depthClass}`} />
                                                     </td>
+                                                    {/* 门店容量约束列 */}
+                                                    {capacityConstraintMode && (() => {
+                                                        const waveKey = `${row.season}-${row.wave}`;
+                                                        const totalStyles = styleCountByWave[waveKey] ?? 0;
+                                                        const styleRatio = totalStyles > 0 ? (row.plannedStyleCount ?? 0) / totalStyles : 0;
+                                                        const constrainedStyles = channelCapacity
+                                                            ? Math.round(channelCapacity.totalSkuCapacity * styleRatio)
+                                                            : null;
+                                                        const avgCost = row.costPrice && row.costPrice > 0 ? row.costPrice : null;
+                                                        const waveOtb = row.waveOtbBudget;
+                                                        const categoryOtbCost = waveOtb && styleRatio > 0 ? waveOtb * styleRatio : null;
+                                                        const constrainedDepth = categoryOtbCost && constrainedStyles && constrainedStyles > 0 && avgCost
+                                                            ? Math.round(categoryOtbCost / constrainedStyles / avgCost)
+                                                            : null;
+                                                        const isLowDepth = constrainedDepth !== null && constrainedDepth < 12;
+                                                        return (
+                                                            <>
+                                                                <td className="py-2 px-3 text-right text-violet-700 bg-violet-50/30 text-xs">
+                                                                    {constrainedStyles !== null ? constrainedStyles + '款' : '-'}
+                                                                </td>
+                                                                <td className={`py-2 px-3 text-right bg-violet-50/30 text-xs ${isLowDepth ? 'text-rose-600 font-bold' : 'text-violet-700'}`}
+                                                                    title={isLowDepth ? '款均深 < 12双，建议减少款数或增加预算' : undefined}>
+                                                                    {constrainedDepth !== null ? constrainedDepth + '双/款' : '-'}
+                                                                    {isLowDepth && ' ⚠'}
+                                                                </td>
+                                                            </>
+                                                        );
+                                                    })()}
                                                     {/* 高级字段：投产双数（独立） */}
                                                     {showAdvancedCols && (
                                                         <td className="py-2 px-3 text-right text-slate-700">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
 import type { DashboardCompareMeta } from '@/config/dashboardCompare';
 import {
@@ -28,7 +28,10 @@ import {
     type AnnualControlHealthTone,
 } from '@/config/annualControl';
 import { useResolvedThresholds } from '@/hooks/useResolvedThresholds';
+import { useBigMerchWorkflow } from '@/hooks/useBigMerchWorkflow';
 import AnnualControlMasterView from '@/components/dashboard/AnnualControlMasterView';
+import NodeDetailDrawer from '@/components/dashboard/workflow/NodeDetailDrawer';
+import { detectDefaultSeason, type WorkflowNodeDef } from '@/config/bigMerchWorkflow';
 
 type JumpTab = 'category' | 'planning' | 'otb' | 'channel' | 'inventory';
 type Tone = 'slate' | 'pink' | 'emerald' | 'amber' | 'rose' | 'sky';
@@ -272,9 +275,11 @@ export default function AnnualControlPanel({
     onJumpToDesignReview,
 }: AnnualControlPanelProps) {
     const THRESHOLDS = useResolvedThresholds();
+    const workflow = useBigMerchWorkflow();
     // 风险卡片状态管理
     const [riskStatuses, setRiskStatuses] = useState<Record<string, 'pending' | 'in_progress' | 'resolved'>>({});
-
+    const [selectedWorkflowNode, setSelectedWorkflowNode] = useState<WorkflowNodeDef | null>(null);
+    const [workflowDrawerOpen, setWorkflowDrawerOpen] = useState(false);
     const stage = useMemo(() => getAnnualControlStage(filters), [filters]);
     const focus = useMemo(() => getAnnualControlFocus(filters), [filters]);
     const transitions = useMemo(() => getAnnualControlTransitions(filters), [filters]);
@@ -296,6 +301,31 @@ export default function AnnualControlPanel({
             marginGapPp: kpis ? (kpis.avgMarginRate - mg) * 100 : null,
         });
     }, [filters, kpis, currentTransition, THRESHOLDS.marginRate.target, THRESHOLDS.sellThrough.target]);
+    const { setActiveSeason: setWorkflowActiveSeason, clearSimulatedDate: clearWorkflowSimulatedDate } = workflow;
+
+    // 季节由 dashboard filters 决定；模拟日期永远清空（管理真实流程不需要模拟）
+    useEffect(() => {
+        const now = new Date();
+        const followsRealTime =
+            filters.wave === 'all' &&
+            filters.season === 'all' &&
+            (filters.season_year === 'all' || masterView.year === now.getFullYear());
+        const targetDate = followsRealTime
+            ? now
+            : new Date(masterView.year, masterView.currentMonth - 1, Math.min(15, new Date(masterView.year, masterView.currentMonth, 0).getDate()));
+        const targetCycle = detectDefaultSeason(targetDate);
+
+        setWorkflowActiveSeason(targetCycle.season, targetCycle.year);
+        clearWorkflowSimulatedDate();
+    }, [
+        clearWorkflowSimulatedDate,
+        filters.season,
+        filters.season_year,
+        filters.wave,
+        masterView.currentMonth,
+        masterView.year,
+        setWorkflowActiveSeason,
+    ]);
     const designReviewInput = useMemo(
         () => buildAnnualControlDesignReviewInput({ filters, focus, transition: currentTransition, stage }),
         [currentTransition, filters, focus, stage],
@@ -304,6 +334,12 @@ export default function AnnualControlPanel({
         () => ANNUAL_CONTROL_ACTIONS.filter((item) => item.month === masterView.currentMonth).sort((a, b) => a.priority.localeCompare(b.priority)),
         [masterView.currentMonth],
     );
+    const selectedWorkflowRuntime = selectedWorkflowNode ? workflow.getNodeRuntime(selectedWorkflowNode.id) : null;
+
+    function handleSelectWorkflowNode(node: WorkflowNodeDef) {
+        setSelectedWorkflowNode(node);
+        setWorkflowDrawerOpen(true);
+    }
 
     const topActualCategories = useMemo(() => {
         const salesMap = new Map<string, number>();
@@ -783,7 +819,44 @@ export default function AnnualControlPanel({
 
     return (
         <div className="space-y-8">
-            <AnnualControlMasterView model={masterView} />
+            <AnnualControlMasterView
+                model={masterView}
+                workflow={{
+                    activeSeason: workflow.activeSeason,
+                    activeYear: workflow.activeYear,
+                    currentNodes: workflow.currentNodes,
+                    nodeStatuses: workflow.nodeStatuses,
+                    nodeRisks: workflow.nodeRisks,
+                    gateStatuses: workflow.gateStatuses,
+                    activeView: workflow.activeView,
+                    activeFilter: workflow.activeFilter,
+                    onSelectNode: handleSelectWorkflowNode,
+                    onSetView: workflow.setView,
+                    onSetFilter: workflow.setFilter,
+                    onPassGate: workflow.passGate,
+                }}
+            />
+            {selectedWorkflowNode && selectedWorkflowRuntime ? (
+                <NodeDetailDrawer
+                    open={workflowDrawerOpen}
+                    node={selectedWorkflowNode}
+                    runtime={selectedWorkflowRuntime}
+                    nodeStatus={workflow.nodeStatuses[selectedWorkflowNode.id] ?? '未开始'}
+                    nodeRisk={workflow.nodeRisks[selectedWorkflowNode.id] ?? '低'}
+                    activeSeason={workflow.activeSeason}
+                    activeYear={workflow.activeYear}
+                    isLocked={workflow.isGateLocked(selectedWorkflowNode.id)}
+                    onClose={() => setWorkflowDrawerOpen(false)}
+                    onUpdateActionPlan={(planId, update) => workflow.updateActionPlan(selectedWorkflowNode.id, planId, update)}
+                    onUpdateDeliverable={(delivId, status) => workflow.updateDeliverable(selectedWorkflowNode.id, delivId, status)}
+                    onAddBlocker={(blocker) => workflow.addBlocker(selectedWorkflowNode.id, blocker)}
+                    onResolveBlocker={(blockerId) => workflow.resolveBlocker(selectedWorkflowNode.id, blockerId)}
+                    onAddComment={(comment) => workflow.addComment(selectedWorkflowNode.id, comment)}
+                    onJumpToTab={(tab) => onJumpToTab(tab as JumpTab)}
+                    onUpdateFootwearValue={(key, value) => workflow.updateFootwearValue(selectedWorkflowNode.id, key, value)}
+                    onUpdateQuestionAnswered={(index, answered) => workflow.updateQuestionAnswered(selectedWorkflowNode.id, index, answered)}
+                />
+            ) : null}
 
             <section className="rounded-section border border-slate-200 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -1256,6 +1329,7 @@ export default function AnnualControlPanel({
                     })}
                 </div>
             </section>
+
         </div>
     );
 }

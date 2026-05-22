@@ -197,6 +197,9 @@ export interface CompetitorLaunchCalendarItem {
     heatChange: number;          // 热度变化
     impactOnOurBrand: string;    // 对本品影响
     suggestedResponse: RecommendedAction;
+    sellThroughRate?: number;    // 完成率 0-100，如 85 表示85%
+    promotionType?: string;      // 促销类型：'满减' | '折扣' | '买赠' | '限时特卖' | '无'
+    promotionStrength?: string;  // 促销力度描述，如 "7折" / "满500减80"
 }
 
 // ────────────────────────────────────────────────────────────
@@ -330,4 +333,84 @@ export interface CompetitorJumpToDesign {
     color?: string;
     material?: string;
     designKeywords?: string[];
+}
+
+// ────────────────────────────────────────────────────────────
+// 品类策略矩阵
+// ────────────────────────────────────────────────────────────
+
+/** 品类成熟度 */
+export type ShoeTypeMaturity = '成熟' | '成长' | '潜力' | '机会';
+
+/** 品类定位 */
+export type CoreMore = 'core' | 'more';
+
+/** 本品在该品类的当前位置 */
+export type OurPosition = '强势' | '持平' | '薄弱' | '未布局';
+
+/** 建议策略 */
+export type CategoryStrategy = '守住' | '跟进加码' | '小批切入' | '观望' | '退出';
+
+export interface CategoryStrategyMatrixCell {
+    id: string;
+    shoeType: string;               // 鞋型名称，如"厚底老爹鞋"
+    maturity: ShoeTypeMaturity;
+    coreMore: CoreMore;
+    topCompetitorBrands: string[];  // 该鞋型最强的竞品，最多3个
+    ourPosition: OurPosition;
+    strategy: CategoryStrategy;
+    strategyReason: string;         // 一句话理由，如"热度同比+38%，本品空缺"
+    keyEvidence: string;            // 支撑数据，如"NB 990v6 热度92分，SKU+15%"
+    seasonPriority: 'H' | 'M' | 'L'; // 本季优先级
+}
+
+// ────────────────────────────────────────────────────────────
+// 走访记录
+// ────────────────────────────────────────────────────────────
+export interface FieldVisitRecord {
+    id: string;
+    createdAt: string;             // ISO 日期字符串
+    visitDate: string;             // 实际调研日期，如 "2026-05-15"
+    researcher: string;            // 调研人姓名
+    city: string;                  // 城市
+    mall: string;                  // 商场/商圈名称
+    competitorBrand: string;       // 竞品品牌
+    windowDisplay: string;         // 橱窗主推：鞋型+颜色+材质
+    storeProducts: string;         // 店铺货品结构
+    colorMaterial: string;         // 主推色+材质
+    staffPushItem: string;         // 店员主推款名称或描述
+    staffPushKeywords: string;     // 店员主推卖点话术
+    keyPrice: string;              // 主推价格
+    promotionActivity: string;     // 促销活动
+    summary: string;               // 本次走访核心发现与对本品启发（2-4句）
+    tags: string[];                // 快速标签
+}
+
+// ────────────────────────────────────────────────────────────
+// 调研结论报告
+// ────────────────────────────────────────────────────────────
+export interface ResearchFinding {
+    id: string;
+    priority: number;              // 1=最重要
+    findingType: '机会' | '风险' | '趋势' | '竞品动向';
+    title: string;                 // 一句话标题
+    evidence: string;              // 支撑数据/事实
+    implication: string;           // 对本品的意义
+}
+
+export interface DepartmentGuidance {
+    department: '商品企划部' | '运营部' | '设计部' | '渠道部';
+    keyAction: string;             // 最重要的一个行动
+    details: string[];             // 2-3条具体建议
+}
+
+export interface ResearchConclusionReport {
+    reportPeriod: string;          // 如 "2026年春夏季（2026Q1-Q2）"
+    generatedAt: string;           // 生成日期
+    topFindings: ResearchFinding[]; // 核心发现，3-5条，按优先级排序
+    opportunityShoeTypes: string[]; // 机会鞋型，排序
+    opportunityPriceBands: string[]; // 机会价格带，排序
+    riskAlerts: string[];          // 风险提示，2-3条
+    departmentGuidance: DepartmentGuidance[]; // 各部门建议
+    nextResearchPlan: string;      // 下次调研建议（时间/地点/重点）
 }

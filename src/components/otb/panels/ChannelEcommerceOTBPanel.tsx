@@ -677,7 +677,11 @@ export default function ChannelEcommerceOTBPanel({ currencyUnit, filters, onJump
                                             </td>
                                             {/* 价格细节列 */}
                                             {showPriceDetail && <>
-                                                <td className="py-2 px-3 text-right text-slate-500">{row.markupRate.toFixed(1)}</td>
+                                                <td className="py-1.5 px-2">
+                                                    <input type="number" value={parseFloat(row.markupRate.toFixed(1))} step={0.1} min={1} max={10}
+                                                        onChange={e => update(globalIdx, 'markupRate', parseFloat(e.target.value) || 4.0)}
+                                                        className="w-14 text-right text-xs bg-violet-50 border border-violet-200 rounded px-1.5 py-1 focus:outline-none focus:border-violet-400" />
+                                                </td>
                                                 <td className="py-2 px-3 text-right text-slate-500">{row.averageRetailPrice}</td>
                                                 <td className="py-2 px-3 text-right text-slate-500">{row.averageCostPrice}</td>
                                                 <td className="py-2 px-3 text-right text-emerald-700">{formatQty(row.investmentPairs)}</td>
@@ -702,6 +706,18 @@ export default function ChannelEcommerceOTBPanel({ currencyUnit, filters, onJump
                                     <td className="py-2.5 px-3 text-right text-sky-700">{fc(summary.totalNetOTB)}</td>
                                     <td colSpan={showPriceDetail ? 9 : 1} />
                                 </tr>
+                                {showPriceDetail && (
+                                    <tr className="bg-violet-50/60 text-xs border-t border-violet-100">
+                                        <td className="py-2 px-3 text-violet-700 font-medium" colSpan={2}>加权平均倍率</td>
+                                        <td colSpan={10} />
+                                        <td className="py-2 px-3 text-right text-violet-700 font-bold">
+                                            {computed.length > 0
+                                                ? (computed.reduce((s, r) => s + r.markupRate * r.salesTarget, 0) / Math.max(1, computed.reduce((s, r) => s + r.salesTarget, 0))).toFixed(2) + 'x'
+                                                : '-'}
+                                        </td>
+                                        <td colSpan={5} />
+                                    </tr>
+                                )}
                             </tfoot>
                         </table>
                     </div>
