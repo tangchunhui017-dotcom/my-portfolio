@@ -1,6 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import MerchSectionDivider from './MerchSectionDivider';
+import FloatingModuleNav from '@/components/design-review-center/floating-module-nav';
+import { buildMerchModuleLinks } from '@/config/dashboard/merch-module-links';
 import type { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
 import type { DashboardCompareMeta } from '@/config/dashboardCompare';
 import {
@@ -262,6 +265,14 @@ function matchesFocusCategory(categoryName: string | undefined, focusCategory: s
     if (focusCategory === '户外/机能') return source.includes('户外') || source.includes('机能');
     return source.includes(focusCategory);
 }
+
+const ic = 'w-2.5 h-2.5';
+const ANNUAL_PAGE_SECTIONS = [
+  { anchor: '#annual-masterplan', label: '年度大图', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5" /><line x1="1" y1="7" x2="15" y2="7" /></svg>) },
+  { anchor: '#annual-kpi', label: '经营体征', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="9" width="3" height="6" rx="0.5" fill="currentColor" stroke="none" opacity="0.4" /><rect x="6" y="5" width="3" height="10" rx="0.5" fill="currentColor" stroke="none" opacity="0.7" /><rect x="11" y="1" width="3" height="14" rx="0.5" fill="currentColor" stroke="none" /></svg>) },
+  { anchor: '#annual-risk', label: '风险干预', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2L14 13H2L8 2z" /><line x1="8" y1="7" x2="8" y2="10" /><circle cx="8" cy="12" r="0.6" fill="currentColor" stroke="none" /></svg>) },
+  { anchor: '#annual-collab', label: '协作枢纽', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="3" cy="8" r="2" /><circle cx="13" cy="5" r="2" /><circle cx="13" cy="11" r="2" /><line x1="5" y1="7.5" x2="11" y2="5.5" /><line x1="5" y1="8.5" x2="11" y2="10.5" /></svg>) },
+];
 
 export default function AnnualControlPanel({
     filters,
@@ -819,6 +830,8 @@ export default function AnnualControlPanel({
 
     return (
         <div className="space-y-8">
+            <section id="annual-masterplan" className="scroll-mt-24">
+            <MerchSectionDivider label="A" title="年度总控大图" />
             <AnnualControlMasterView
                 model={masterView}
                 workflow={{
@@ -857,7 +870,10 @@ export default function AnnualControlPanel({
                     onUpdateQuestionAnswered={(index, answered) => workflow.updateQuestionAnswered(selectedWorkflowNode.id, index, answered)}
                 />
             ) : null}
+            </section>
 
+            <section id="annual-kpi" className="scroll-mt-24">
+            <MerchSectionDivider label="B" title="经营体征" />
             <section className="rounded-section border border-slate-200 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <SectionHeading
@@ -1024,7 +1040,10 @@ export default function AnnualControlPanel({
                     </div>
                 </div>
             </section>
+            </section>
 
+            <section id="annual-risk" className="scroll-mt-24">
+            <MerchSectionDivider label="C" title="风险干预中心" />
             <section className="rounded-section border border-slate-200 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
                 <SectionHeading
                     title="风险干预中心"
@@ -1221,7 +1240,10 @@ export default function AnnualControlPanel({
                     </div>
                 </div>
             </section>
+            </section>
 
+            <section id="annual-collab" className="scroll-mt-24">
+            <MerchSectionDivider label="D" title="协作枢纽" />
             <section className="rounded-section border border-slate-200 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
                 <div className="flex items-start justify-between gap-4">
                     <SectionHeading
@@ -1329,7 +1351,12 @@ export default function AnnualControlPanel({
                     })}
                 </div>
             </section>
+            </section>
 
+            <FloatingModuleNav
+                moduleLinks={buildMerchModuleLinks('annual-control')}
+                pageSections={ANNUAL_PAGE_SECTIONS}
+            />
         </div>
     );
 }

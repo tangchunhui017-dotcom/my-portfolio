@@ -2,6 +2,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import MerchSectionDivider from './MerchSectionDivider';
+import FloatingModuleNav from '@/components/design-review-center/floating-module-nav';
+import { buildMerchModuleLinks } from '@/config/dashboard/merch-module-links';
 import type { EChartsOption } from 'echarts';
 import ReactECharts from 'echarts-for-react';
 import { useCompetitorAnalysis, type CompetitorBubblePoint } from '@/hooks/useCompetitorAnalysis';
@@ -143,6 +146,14 @@ interface CompetitorTrendPanelProps {
     onJumpToChannel?: () => void;
     onJumpToSkuRisk?: () => void;
 }
+
+const ic = 'w-2.5 h-2.5';
+const COMPETITOR_PAGE_SECTIONS = [
+  { anchor: '#competitor-overview', label: '总览', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5" /><line x1="1" y1="7" x2="15" y2="7" /></svg>) },
+  { anchor: '#competitor-actions', label: '行动中心', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,8 6.5,12 14,4" /></svg>) },
+  { anchor: '#competitor-analysis', label: '竞品分析', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,12 5,8 8.5,10 12,5 14,7" /><polyline points="11,4 14,4 14,7" /></svg>) },
+  { anchor: '#competitor-links', label: '跨模块', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="3" cy="7" r="1.5" /><circle cx="11" cy="3" r="1.5" /><circle cx="11" cy="11" r="1.5" /><line x1="4.4" y1="6.2" x2="9.6" y2="3.8" /><line x1="4.4" y1="7.8" x2="9.6" y2="10.2" /></svg>) },
+];
 
 export default function CompetitorTrendPanel({
     compareMode = 'none',
@@ -613,6 +624,8 @@ export default function CompetitorTrendPanel({
 
     return (
         <div className="space-y-8">
+            <section id="competitor-overview" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="A" title="竞品趋势总览" />
 
             {/* ─────────────────────────────────────────────────────────────── */}
             {/* Page Header & Filters                                           */}
@@ -703,6 +716,10 @@ export default function CompetitorTrendPanel({
             </SectionCard>
 
             {/* ─────────────────────────────────────────────────────────────── */}
+            </section>
+
+            <section id="competitor-actions" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="B" title="趋势行动中心" />
             {/* 3. Action Center                                                */}
             {/* ─────────────────────────────────────────────────────────────── */}
             <SectionCard
@@ -721,6 +738,10 @@ export default function CompetitorTrendPanel({
             </SectionCard>
 
             {/* ─────────────────────────────────────────────────────────────── */}
+            </section>
+
+            <section id="competitor-analysis" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="C" title="竞品深度分析" />
             {/* 4. Price × SKU Heat Map (original ECharts section)             */}
             {/* ─────────────────────────────────────────────────────────────── */}
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
@@ -981,6 +1002,10 @@ export default function CompetitorTrendPanel({
             </SectionCard>
 
             {/* ─────────────────────────────────────────────────────────────── */}
+            </section>
+
+            <section id="competitor-links" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="D" title="实料与跨模块" />
             {/* 13. Competitor Material Gallery                                */}
             {/* ─────────────────────────────────────────────────────────────── */}
             <SectionCard
@@ -1026,7 +1051,12 @@ export default function CompetitorTrendPanel({
                     }}
                 />
             </SectionCard>
+            </section>
 
+            <FloatingModuleNav
+                moduleLinks={buildMerchModuleLinks('competitor')}
+                pageSections={COMPETITOR_PAGE_SECTIONS}
+            />
         </div>
     );
 }

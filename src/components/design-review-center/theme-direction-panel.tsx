@@ -1,8 +1,158 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import Image from 'next/image';
 import { SERIES_ROLE_LABELS } from '@/config/design-review-center/labels';
 import type { ThemeStrategyRecord } from '@/lib/design-review-center/types';
+import {
+  deriveWaveThemeBoardItems,
+  deriveSeasonThemeStrategySummary,
+  deriveMerchInputAlignments,
+  deriveSeriesRoleMatrix,
+  deriveDesignLanguageMatrix,
+  deriveThemeResourceAllocations,
+  deriveThemeRiskDecisions,
+  SEASON_THEME_BANNER,
+  CROSS_SERIES_COLOR_ALLOCATION,
+} from '@/lib/design-review-center/theme-strategy-mock-data';
+import ThemeSeasonSummary from './theme-season-summary';
+import ThemeMerchInput from './theme-merch-input';
+import ThemeSeriesRoles from './theme-series-roles';
+import ThemeWaveBoard from './theme-wave-board';
+import ThemeDesignLanguage from './theme-design-language';
+import ThemeResourceAllocation from './theme-resource-allocation';
+import SeasonThemeBannerComponent from './season-theme-banner';
+import CrossSeriesColorAllocation from './cross-series-color-allocation';
+import FloatingModuleNav from './floating-module-nav';
+import type { DesignPlanningRelatedModuleLink } from '@/lib/design-review-center/types';
+
+const themeNavIconClass = 'w-2.5 h-2.5';
+const THEME_PAGE_SECTIONS = [
+  {
+    anchor: '#theme-banner',
+    label: '主题宣言',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className={themeNavIconClass} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 3h12v8H2z" />
+        <path d="M2 11l3 3 3-3" />
+      </svg>
+    ),
+  },
+  {
+    anchor: '#theme-summary',
+    label: '策略摘要',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className={themeNavIconClass} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="2" width="12" height="12" rx="1.5" />
+        <line x1="5" y1="6" x2="11" y2="6" />
+        <line x1="5" y1="9" x2="11" y2="9" />
+        <line x1="5" y1="12" x2="9" y2="12" />
+      </svg>
+    ),
+  },
+  {
+    anchor: '#theme-roles',
+    label: '系列角色',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className={themeNavIconClass} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="5" cy="6" r="2" />
+        <circle cx="11" cy="6" r="2" />
+        <path d="M2 14a3 3 0 016 0M8 14a3 3 0 016 0" />
+      </svg>
+    ),
+  },
+  {
+    anchor: '#theme-color',
+    label: '色彩分配',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className={themeNavIconClass} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="5" cy="5" r="2" />
+        <circle cx="11" cy="5" r="2" />
+        <circle cx="5" cy="11" r="2" />
+        <circle cx="11" cy="11" r="2" />
+      </svg>
+    ),
+  },
+  {
+    anchor: '#theme-wave',
+    label: '波段推进',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className={themeNavIconClass} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M1 10 Q 4 4 7 10 T 13 10 T 15 10" />
+      </svg>
+    ),
+  },
+  {
+    anchor: '#theme-merch',
+    label: '上游输入',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className={themeNavIconClass} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="2,8 6.5,12 14,4" />
+      </svg>
+    ),
+  },
+  {
+    anchor: '#theme-language',
+    label: '设计语言',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className={themeNavIconClass} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 12V4a1 1 0 011-1h8a1 1 0 011 1v8a1 1 0 01-1 1H4a1 1 0 01-1-1z" />
+        <line x1="6" y1="6" x2="10" y2="6" />
+        <line x1="6" y1="9" x2="10" y2="9" />
+      </svg>
+    ),
+  },
+  {
+    anchor: '#theme-resource',
+    label: '资源约束',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className={themeNavIconClass} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="6" width="3" height="8" />
+        <rect x="6.5" y="3" width="3" height="11" />
+        <rect x="11" y="9" width="3" height="5" />
+      </svg>
+    ),
+  },
+];
+
+const THEME_MODULE_LINKS: DesignPlanningRelatedModuleLink[] = [
+  {
+    linkId: 'theme-overview',
+    label: '设计企划总览',
+    description: '回顾季度健康度与关键决策',
+    actionLabel: '查看总览',
+    relatedRoute: '/design-review-center?tab=overview',
+    category: 'internal',
+    icon: '📊',
+  },
+  {
+    linkId: 'theme-arch',
+    label: '产品架构',
+    description: '查看品类 / 系列 / 款型架构',
+    actionLabel: '查看架构',
+    relatedRoute: '/design-review-center?tab=productArchitecture',
+    category: 'internal',
+    icon: '🧱',
+  },
+  {
+    linkId: 'theme-dev-pool',
+    label: '开发任务池',
+    description: '查看单款设计 brief',
+    actionLabel: '查看任务',
+    relatedRoute: '/design-review-center?tab=developmentTaskPool',
+    category: 'internal',
+    icon: '📁',
+  },
+  {
+    linkId: 'theme-review',
+    label: '评审决议',
+    description: '系列主题决议归档',
+    actionLabel: '查看评审',
+    relatedRoute: '/design-review-center?tab=reviewDecisionCenter',
+    category: 'internal',
+    icon: '✅',
+  },
+];
 
 interface ThemeDirectionPanelProps {
   strategies: ThemeStrategyRecord[];
@@ -28,16 +178,23 @@ type DirectionBoardDefinition = {
   accent: string;
   glow: string;
   imageUrl?: string | null;
+  craftPriorities?: Record<string, 'P0' | 'P1' | 'P2'>;
 };
 
 function SectionEyebrow({ label }: { label: string }) {
   return <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">{label}</div>;
 }
 
-function ChipGroup({ items, tone = 'amber' }: { items: string[]; tone?: ChipTone }) {
+function ChipGroup({ items, tone = 'amber', craftPriorities }: { items: string[]; tone?: ChipTone; craftPriorities?: Record<string, 'P0' | 'P1' | 'P2'> }) {
   if (!items.length) {
     return <div className="text-sm text-slate-400">待补充</div>;
   }
+
+  const priorityMeta: Record<'P0' | 'P1' | 'P2', string> = {
+    P0: 'bg-red-500 text-white',
+    P1: 'bg-amber-400 text-white',
+    P2: 'bg-slate-300 text-slate-700',
+  };
 
   const getChipStyle = (item: string, defaultTone: ChipTone) => {
     // 自动判定是否为"技术参数/部件词"
@@ -57,12 +214,20 @@ function ChipGroup({ items, tone = 'amber' }: { items: string[]; tone?: ChipTone
 
   return (
     <div className="flex flex-wrap gap-2">
-      {items.map((item) => (
-        <span key={item} className={`rounded-full border px-3 py-1 flex items-center gap-1 text-xs font-medium ${getChipStyle(item, tone)}`}>
-          {item}
-          {isCostly(item) && <span className="text-[10px] font-bold text-rose-400">$$$</span>}
-        </span>
-      ))}
+      {items.map((item) => {
+        const priority = craftPriorities?.[item];
+        return (
+          <span key={item} className={`rounded-full border px-3 py-1 flex items-center gap-1 text-xs font-medium ${getChipStyle(item, tone)}`}>
+            {item}
+            {isCostly(item) && <span className="text-[10px] font-bold text-rose-400">$$$</span>}
+            {priority && (
+              <span className={`ml-0.5 rounded px-1 py-0.5 text-[9px] font-black ${priorityMeta[priority]}`}>
+                {priority}
+              </span>
+            )}
+          </span>
+        );
+      })}
     </div>
   );
 }
@@ -149,7 +314,7 @@ function getDirectionBoards(record: ThemeStrategyRecord): DirectionBoardDefiniti
       frame: 'border-emerald-400',
       accent: 'bg-emerald-300',
       glow: 'bg-emerald-100/70',
-      imageUrl: null,
+      imageUrl: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800',
     },
     {
       key: 'sole',
@@ -163,7 +328,7 @@ function getDirectionBoards(record: ThemeStrategyRecord): DirectionBoardDefiniti
       frame: 'border-blue-500',
       accent: 'bg-blue-300',
       glow: 'bg-blue-100/70',
-      imageUrl: null,
+      imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800',
     },
     {
       key: 'last',
@@ -177,7 +342,7 @@ function getDirectionBoards(record: ThemeStrategyRecord): DirectionBoardDefiniti
       frame: 'border-slate-400',
       accent: 'bg-slate-300',
       glow: 'bg-slate-100/80',
-      imageUrl: null,
+      imageUrl: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=800',
     },
     {
       key: 'craft',
@@ -191,7 +356,10 @@ function getDirectionBoards(record: ThemeStrategyRecord): DirectionBoardDefiniti
       frame: 'border-amber-400',
       accent: 'bg-amber-300',
       glow: 'bg-amber-100/80',
-      imageUrl: null,
+      imageUrl: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=800',
+      craftPriorities: Object.fromEntries(
+        record.designLanguages.slice(0, 3).map((lang, i) => [lang, (['P0', 'P1', 'P2'] as const)[i]])
+      ) as Record<string, 'P0' | 'P1' | 'P2'>,
     },
   ];
 }
@@ -204,28 +372,40 @@ function DirectionBoardShowcase({ board, relatedSole, relatedLast }: { board: Di
   };
 
   return (
-    <div className="relative overflow-hidden rounded-b-[30px] border border-slate-200/80 border-t-0 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfe_100%)]">
+    <div className="relative overflow-hidden rounded-b-xl border border-slate-200/80 border-t-0 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfe_100%)]">
       <div className="grid gap-0 xl:grid-cols-[1.3fr_0.7fr]">
-        <div className={`relative min-h-[560px] overflow-hidden ${board.imageUrl ? 'bg-slate-100' : board.canvasBg}`}>
+        <div className={`relative min-h-[300px] overflow-hidden lg:min-h-[360px] ${board.imageUrl ? 'bg-slate-100' : board.canvasBg}`}>
           {board.imageUrl ? (
-            <img src={board.imageUrl} alt={board.label} className="h-full w-full object-cover mix-blend-multiply opacity-90" />
+            <Image src={board.imageUrl} alt={board.label} fill unoptimized sizes="(min-width: 1280px) 60vw, 100vw" className="object-cover mix-blend-multiply opacity-90" />
           ) : (
             <>
-              <div className={`absolute left-14 top-14 h-11 w-11 rounded-full ${board.accent} opacity-55 saturate-150 blur-sm`} />
-              <div className={`absolute right-20 top-20 h-8 w-8 rounded-full ${board.accent} opacity-35 saturate-200 blur-sm`} />
-              <div className={`absolute bottom-16 left-12 h-[66%] w-[78%] rounded-[42px] border-[10px] border-dashed ${board.frame} opacity-85`} />
-              <div className={`absolute bottom-24 left-[16%] h-28 w-[54%] rounded-[999px] border-[8px] ${board.frame} opacity-95`} />
-              <div className={`absolute bottom-14 left-[28%] h-12 w-[34%] rounded-[999px] border-4 ${board.frame} opacity-55`} />
+              <div className={`absolute left-12 top-12 h-8 w-8 rounded-full ${board.accent} opacity-45 saturate-150 blur-sm`} />
+              <div className={`absolute right-16 top-16 h-6 w-6 rounded-full ${board.accent} opacity-30 saturate-200 blur-sm`} />
+              <div className={`absolute bottom-10 left-10 h-[58%] w-[76%] rounded-xl border-[6px] border-dashed ${board.frame} opacity-80`} />
+              <div className={`absolute bottom-16 left-[18%] h-20 w-[52%] rounded-full border-[5px] ${board.frame} opacity-90`} />
+              <div className={`absolute bottom-9 left-[30%] h-9 w-[30%] rounded-full border-2 ${board.frame} opacity-55`} />
+              {/* Upload CTA overlay */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/40 backdrop-blur-[2px]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-slate-300 bg-white/80">
+                  <svg className="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs font-bold text-slate-500">拖入参考图 / 粘贴图片 URL</p>
+                  <p className="mt-0.5 text-[10px] text-slate-400">JPG · PNG · WebP · SVG</p>
+                </div>
+              </div>
             </>
           )}
         </div>
 
-        <div className="flex h-full flex-col bg-white border-l border-slate-100 p-8 xl:p-10 relative">
+        <div className="relative flex h-full flex-col border-l border-slate-100 bg-white p-6 xl:p-8">
           {/* 决策印章区域 */}
           <div className="absolute right-8 top-8 z-10">
             <button
               onClick={cycleDecision}
-              className={`group flex items-center gap-2 rounded-2xl border p-1 pl-3 pr-4 text-[13px] font-bold tracking-wide transition-all duration-300 ${
+              className={`group flex items-center gap-2 rounded-xl border p-1 pl-3 pr-4 text-[13px] font-bold tracking-wide transition-all duration-300 ${
                 decision === 'pending'
                   ? 'border-slate-200 bg-white text-slate-500 shadow-[0_4px_16px_rgba(15,23,42,0.04)] hover:shadow-md'
                   : decision === 'revising'
@@ -244,22 +424,22 @@ function DirectionBoardShowcase({ board, relatedSole, relatedLast }: { board: Di
           </div>
 
           <SectionEyebrow label="板位详情" />
-          <h5 className="mt-3 text-3xl tracking-tight text-slate-900 font-black">
+          <h5 className="mt-3 text-2xl tracking-tight text-slate-900 font-black">
             {board.label.replace('方向板', '')}
             <span className="text-xl font-bold text-slate-400 ml-2 tracking-normal">方向板</span>
           </h5>
           <p className="mt-4 text-[15px] font-semibold text-indigo-900/60 leading-relaxed border-l-2 border-indigo-200 pl-3">{board.subtitle}</p>
-          <p className="mt-6 text-sm leading-8 text-slate-600">{board.summary}</p>
+          <p className="mt-5 text-sm leading-7 text-slate-600">{board.summary}</p>
 
-          <div className="mt-8 flex-1">
+          <div className="mt-6 flex-1">
             <div className="mb-4 flex items-center gap-2">
                <svg className={`h-4 w-4 ${board.accent.replace('bg-', 'text-')}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/></svg>
                <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">核对锚点</span>
             </div>
-            <ChipGroup items={board.items} tone={board.tone} />
+            <ChipGroup items={board.items} tone={board.tone} craftPriorities={board.craftPriorities} />
           </div>
 
-          <div className="mt-8 rounded-2xl overflow-hidden border border-rose-100 bg-gradient-to-br from-rose-50/50 to-orange-50/30 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,1)] relative">
+          <div className="relative mt-6 overflow-hidden rounded-xl border border-rose-100 bg-gradient-to-br from-rose-50/50 to-orange-50/30 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,1)]">
             <div className="absolute top-0 right-0 p-3 opacity-[0.03]">
                <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
             </div>
@@ -291,29 +471,28 @@ function DirectionBoardShowcase({ board, relatedSole, relatedLast }: { board: Di
   );
 }
 
+function ReviewStatusPill({ status }: { status: ThemeStrategyRecord['reviewDecisionStatus'] }) {
+  return (
+    <div className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold backdrop-blur-md ${
+      status === 'pending' ? 'border-slate-400/50 bg-slate-900/40 text-slate-300' :
+      status === 'in_progress' ? 'border-amber-400/50 bg-amber-900/40 text-amber-300' :
+      'border-emerald-400/50 bg-emerald-900/40 text-emerald-300'
+    }`}>
+      <span className={`h-1.5 w-1.5 rounded-full shadow-[0_0_8px_currentColor] ${status === 'pending' ? 'bg-slate-400' : status === 'in_progress' ? 'bg-amber-400' : 'bg-emerald-400'}`} />
+      {status === 'pending' ? '待评' : status === 'in_progress' ? '进行中' : '定案'}
+    </div>
+  );
+}
+
 function StrategyCard({ record }: { record: ThemeStrategyRecord }) {
   const directionBoards = getDirectionBoards(record);
   const [activeBoardKey, setActiveBoardKey] = useState<DirectionBoardDefinition['key']>(directionBoards[0]?.key ?? 'material');
   const activeBoard = directionBoards.find((board) => board.key === activeBoardKey) ?? directionBoards[0];
   const colorCards = record.colorDirections.slice(0, 5);
 
-  const StatusPill = () => {
-    const s = record.reviewDecisionStatus;
-    return (
-      <div className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold backdrop-blur-md ${
-        s === 'pending' ? 'border-slate-400/50 bg-slate-900/40 text-slate-300' :
-        s === 'in_progress' ? 'border-amber-400/50 bg-amber-900/40 text-amber-300' :
-        'border-emerald-400/50 bg-emerald-900/40 text-emerald-300'
-      }`}>
-        <span className={`h-1.5 w-1.5 rounded-full shadow-[0_0_8px_currentColor] ${s === 'pending' ? 'bg-slate-400' : s === 'in_progress' ? 'bg-amber-400' : 'bg-emerald-400'}`} />
-        {s === 'pending' ? '待评' : s === 'in_progress' ? '进行中' : '定案'}
-      </div>
-    );
-  };
-
   return (
     <article id={`series-${record.seriesId}`} className="space-y-6 pt-6">
-      <section className="overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-[0_4px_24px_rgba(15,23,42,0.04)]">
+      <section className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-[0_4px_24px_rgba(15,23,42,0.04)]">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-100">
           {/* Card 1 */}
           <div className="group relative flex items-center gap-4 p-5 transition-all hover:bg-slate-50/80">
@@ -360,13 +539,13 @@ function StrategyCard({ record }: { record: ThemeStrategyRecord }) {
           </div>
         </div>
       </section>
-      <section className="overflow-hidden rounded-[30px] border border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfe_100%)] shadow-[0_16px_36px_rgba(15,23,42,0.06)] [transform:translateZ(0)]">
+      <section className="overflow-hidden rounded-xl border border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfe_100%)] shadow-[0_12px_28px_rgba(15,23,42,0.05)] [transform:translateZ(0)]">
         <div className="grid gap-0 xl:grid-cols-[1.3fr_0.7fr]">
-          <div className="relative min-h-[460px] bg-slate-900 rounded-t-[30px] rounded-b-none xl:rounded-t-none xl:rounded-r-none xl:rounded-l-[30px]">
+          <div className="relative min-h-[360px] rounded-t-xl rounded-b-none bg-slate-900 xl:rounded-l-xl xl:rounded-r-none xl:rounded-t-none">
             {record.heroAsset ? (
-              <img src={record.heroAsset.imageUrl} alt={`${record.seriesName} 总情绪板`} className="h-full w-full object-cover opacity-90 mix-blend-luminosity hover:mix-blend-normal transition-all duration-700" />
+              <Image src={record.heroAsset.imageUrl} alt={`${record.seriesName} 总情绪板`} fill unoptimized sizes="(min-width: 1280px) 60vw, 100vw" className="object-cover opacity-90 mix-blend-luminosity transition-all duration-700 hover:mix-blend-normal" />
             ) : (
-              <div className="flex h-full min-h-[460px] items-center justify-center bg-slate-800 text-sm text-slate-500">
+              <div className="flex h-full min-h-[360px] items-center justify-center bg-slate-800 text-sm text-slate-500">
                 当前系列暂无总情绪板
               </div>
             )}
@@ -378,11 +557,11 @@ function StrategyCard({ record }: { record: ThemeStrategyRecord }) {
                   <span className="opacity-75 mr-1.5 uppercase font-medium text-[10px]">Board</span>
                   {record.seriesName}
                 </div>
-                <StatusPill />
+                <ReviewStatusPill status={record.reviewDecisionStatus} />
               </div>
               
               {record.costDriftAlert && (
-                <div className="flex items-center gap-1.5 rounded-full border border-rose-400/30 bg-rose-500/90 px-3 py-1.5 text-[11px] font-bold tracking-widest text-white backdrop-blur-xl shadow-[0_0_32px_rgba(225,29,72,0.8)] xl:translate-x-2">
+                <div className="flex items-center gap-1.5 rounded-full border border-rose-400/30 bg-rose-500/90 px-3 py-1.5 text-[11px] font-bold tracking-widest text-white backdrop-blur-xl shadow-[0_0_32px_rgba(225,29,72,0.8)]">
                   <span className="relative flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
@@ -428,7 +607,7 @@ function StrategyCard({ record }: { record: ThemeStrategyRecord }) {
           </div>
 
           {/* 右侧面板 */}
-          <div className="grid min-h-[460px] grid-rows-[auto_1fr] gap-0 border-t border-slate-200 xl:border-l xl:border-t-0 bg-white">
+          <div className="grid min-h-[360px] grid-rows-[auto_1fr] gap-0 border-t border-slate-200 bg-white xl:border-l xl:border-t-0">
             <div className="p-6 xl:p-8">
               <SectionEyebrow label="主打色卡 (Palette)" />
               {colorCards.length > 0 ? (
@@ -477,7 +656,7 @@ function StrategyCard({ record }: { record: ThemeStrategyRecord }) {
               
               {/* Benchmark 竞品/标杆对照区 */}
               {record.benchmarkReferences?.length > 0 && (
-                <div className="mt-2 flex flex-col gap-3 rounded-[20px] shadow-[inset_0_0_0_1px_rgba(99,102,241,0.15)] bg-gradient-to-br from-indigo-50/80 to-purple-50/40 p-5 backdrop-blur-sm relative overflow-hidden">
+                <div className="relative mt-2 flex flex-col gap-3 overflow-hidden rounded-xl bg-gradient-to-br from-indigo-50/80 to-purple-50/40 p-5 shadow-[inset_0_0_0_1px_rgba(99,102,241,0.15)] backdrop-blur-sm">
                   <div className="absolute top-0 right-0 p-4 opacity-10">
                      <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 22l10-3 10 3L12 2z"/></svg>
                   </div>
@@ -501,8 +680,8 @@ function StrategyCard({ record }: { record: ThemeStrategyRecord }) {
       </section>
 
       {/* 四块板展示区 - 带吸顶支持 */}
-      <section className="relative mt-8 shadow-[0_16px_36px_rgba(15,23,42,0.06)] rounded-[30px]">
-        <div className="sticky top-[56px] w-full z-20 rounded-t-[30px] bg-white/95 backdrop-blur-2xl border border-slate-200/80 border-b-slate-100 overflow-hidden">
+      <section className="relative mt-8 rounded-xl shadow-[0_12px_28px_rgba(15,23,42,0.05)]">
+        <div className="sticky top-[56px] z-20 w-full overflow-hidden rounded-t-xl border border-slate-200/80 border-b-slate-100 bg-white/95 backdrop-blur-2xl">
           <div className="grid gap-0 xl:grid-cols-[1.3fr_0.7fr]">
             <div className="flex items-center gap-4 text-left px-6 py-4 xl:px-8 xl:py-5 border-b border-slate-100 xl:border-b-0">
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,#ffffff_0%,#f1f5f9_100%)] shadow-sm border border-slate-100">
@@ -552,13 +731,13 @@ function StrategyCard({ record }: { record: ThemeStrategyRecord }) {
 }
 
 export default function ThemeDirectionPanel({ strategies }: ThemeDirectionPanelProps) {
-  if (!strategies.length) {
-    return (
-      <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center text-sm text-slate-500">
-        当前筛选条件下暂无主题与系列策略内容。
-      </div>
-    );
-  }
+  const waveItems = useMemo(() => deriveWaveThemeBoardItems(strategies), [strategies]);
+  const seasonSummary = useMemo(() => deriveSeasonThemeStrategySummary(strategies), [strategies]);
+  const merchInputs = useMemo(() => deriveMerchInputAlignments(strategies), [strategies]);
+  const seriesRoleRows = useMemo(() => deriveSeriesRoleMatrix(strategies), [strategies]);
+  const designLanguageRows = useMemo(() => deriveDesignLanguageMatrix(strategies), [strategies]);
+  const resourceRows = useMemo(() => deriveThemeResourceAllocations(strategies), [strategies]);
+  const riskRows = useMemo(() => deriveThemeRiskDecisions(strategies), [strategies]);
 
   const waveGroups = useMemo(() => {
     const groups = new Map<string, ThemeStrategyRecord[]>();
@@ -638,11 +817,16 @@ export default function ThemeDirectionPanel({ strategies }: ThemeDirectionPanelP
   }, [strategies]);
 
   const [activeWave, setActiveWave] = useState<string | null>(null);
-  const [isNavCollapsed, setIsNavCollapsed] = useState(false);
 
   const focusedGroup = useMemo(() => {
     return activeWave ? waveGroups.find(g => g.wave === activeWave) : null;
   }, [waveGroups, activeWave]);
+
+  useEffect(() => {
+    if (activeWave && !waveGroups.some((group) => group.wave === activeWave)) {
+      setActiveWave(null);
+    }
+  }, [activeWave, waveGroups]);
 
   useEffect(() => {
     if (activeWave) {
@@ -661,232 +845,66 @@ export default function ThemeDirectionPanel({ strategies }: ThemeDirectionPanelP
     return () => window.removeEventListener('keydown', handleEsc);
   }, []);
 
+  if (!strategies.length) {
+    return (
+      <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center text-sm text-slate-500">
+        当前筛选条件下暂无主题与系列策略内容。
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-12">
-      {waveGroups.length > 0 && (
-        <div className="relative flex items-start gap-8 xl:gap-12">
-          {/* 左侧主要波段抽屉区 (Main Left Timeline) */}
-          <div className="flex-1 min-w-0 pb-24">
-            <div className="mb-10">
-              <h2 className="text-[28px] font-black text-slate-950 tracking-tight">主题与系列策略</h2>
-              <p className="mt-2 text-sm text-slate-500 font-medium">从系列角色、目标人群、使用场景、材料颜色和底楦方向统一判断本季主题策略。</p>
-            </div>
-            {waveGroups.map((group) => {
-              // Determine Tone Colors
-              const toneBg = group.themeTone === 'emerald' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
-                             group.themeTone === 'amber' ? 'bg-amber-50 text-amber-800 border-amber-200' :
-                             group.themeTone === 'blue' ? 'bg-blue-50 text-blue-800 border-blue-200' :
-                             group.themeTone === 'purple' ? 'bg-purple-50 text-purple-800 border-purple-200' :
-                             group.themeTone === 'rose' ? 'bg-rose-50 text-rose-800 border-rose-200' :
-                             group.themeTone === 'indigo' ? 'bg-indigo-50 text-indigo-800 border-indigo-200' :
-                             'bg-slate-50 text-slate-800 border-slate-200';
-              
-              const toneDot = group.themeTone === 'emerald' ? 'bg-emerald-500' :
-                              group.themeTone === 'amber' ? 'bg-amber-500' :
-                              group.themeTone === 'blue' ? 'bg-blue-500' :
-                              group.themeTone === 'purple' ? 'bg-purple-500' :
-                              group.themeTone === 'rose' ? 'bg-rose-500' :
-                              group.themeTone === 'indigo' ? 'bg-indigo-500' :
-                              'bg-slate-500';
+    <div className="space-y-16">
+      {/* Module 0: 本季主题宣言横幅 + 趋势承接链路 */}
+      <section id="theme-banner" className="scroll-mt-24">
+        <ThemeSectionDivider label="A" title="本季主题宣言" />
+        <SeasonThemeBannerComponent data={SEASON_THEME_BANNER} />
+      </section>
 
-              return (
-                <div key={group.wave} id={`wave-${group.wave}`} className="relative transition-all duration-300 ease-in-out scroll-mt-24 mb-6">
-                  {/* 波段司令台 Header (Always Collapsed in Global View) */}
-                  <div 
-                     className="sticky top-[80px] z-30 -mx-6 px-6 lg:mx-0 lg:px-0 cursor-pointer"
-                     onDoubleClick={() => setActiveWave(group.wave)}
-                  >
-                    <div className="flex items-stretch overflow-hidden bg-white/95 shadow-[0_4px_20px_rgba(15,23,42,0.04)] backdrop-blur-xl transition-all duration-300 rounded-[20px] ring-1 ring-slate-200/60 hover:shadow-[0_12px_40px_rgba(15,23,42,0.08)]">
-                      {/* Color Accent Bar */}
-                      <div className={`w-3 flex-shrink-0 ${toneBg.replace('text-', 'bg-').replace('border-', '')} opacity-80`} />
-                      
-                      {/* Contents */}
-                      <div className="flex flex-1 items-center justify-between p-5 pr-6">
-                        <div className="flex items-center gap-6">
-                          <div>
-                            <div className="flex items-center gap-3">
-                              <h3 className="text-2xl font-extrabold tracking-tight text-slate-900">{group.wave} 波段</h3>
-                              <span className={`rounded-md px-2 py-1 text-[11px] font-bold uppercase tracking-widest ${toneBg}`}>
-                                核心主推盘
-                              </span>
-                            </div>
-                            <div className="mt-1.5 flex items-center gap-4 text-[13px] font-medium text-slate-500">
-                              <span className="flex items-center gap-1.5">
-                                <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                                包含 {group.strategies.length} 个系列 / 共 {group.skuTotal} 款式
-                              </span>
-                            </div>
-                          </div>
-                          
-                          {/* Cost Penetration Dashboard */}
-                          {group.avgTarget > 0 && (
-                            <div className="hidden h-10 w-px bg-slate-200 md:block" />
-                          )}
-                          {group.avgTarget > 0 && (
-                            <div className="hidden flex-col items-start md:flex w-[160px]">
-                              <div className="flex w-full justify-between items-end mb-1.5">
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">成本进度</span>
-                                {group.costSurplusPercent > 1 && (
-                                  <span className="text-[10px] font-bold text-rose-600">超额 {group.costSurplusPercent.toFixed(1)}%</span>
-                                )}
-                              </div>
-                              <div className="w-full h-1.5 bg-slate-100/80 rounded-full overflow-hidden relative ring-1 ring-inset ring-slate-200/50">
-                                <div className={`absolute left-0 top-0 h-full rounded-full transition-all duration-1000 ${group.costSurplusPercent > 1 ? 'bg-rose-500' : 'bg-emerald-400'}`} style={{ width: `${Math.min((group.avgQuote / group.avgTarget) * 100, 100)}%` }}></div>
-                                {group.costSurplusPercent > 1 && (
-                                   <div className="absolute right-0 top-0 h-full w-[10%] bg-rose-600"></div>
-                                )}
-                              </div>
-                              <div className="flex w-full justify-between items-center mt-1.5">
-                                <span className={`text-[11px] font-extrabold ${group.costSurplusPercent > 1 ? 'text-rose-600' : 'text-slate-700'}`}>¥{group.avgQuote}</span>
-                                <span className="text-[10px] text-slate-400 font-medium">额度 ¥{group.avgTarget}</span>
-                              </div>
-                            </div>
-                          )}
+      {/* Module 1: 本季主题策略摘要（含风险快览） */}
+      <section id="theme-summary" className="scroll-mt-24">
+        <ThemeSectionDivider label="B" title="主题策略摘要" />
+        <ThemeSeasonSummary data={seasonSummary} risks={riskRows} />
+      </section>
 
-                          {/* Radar Stats */}
-                          <div className="hidden h-10 w-px bg-slate-200 xl:block" />
-                          <div className="hidden flex-col items-start xl:flex w-[180px]">
-                            <div className="flex w-full justify-between items-end mb-1.5">
-                              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">状态分布</span>
-                            </div>
-                            <div className="flex w-full h-1.5 rounded-full overflow-hidden bg-slate-100 ring-1 ring-inset ring-slate-200/50">
-                               <div className="h-full bg-emerald-400 transition-all duration-1000" title="已定案" style={{ width: `${(group.stats.approved / group.stats.total) * 100}%` }}></div>
-                               <div className="h-full bg-amber-400 transition-all duration-1000" title="需修改" style={{ width: `${(group.stats.in_progress / group.stats.total) * 100}%` }}></div>
-                               <div className="h-full bg-slate-300 transition-all duration-1000" title="待评审" style={{ width: `${(group.stats.pending / group.stats.total) * 100}%` }}></div>
-                            </div>
-                            <div className="flex w-full justify-between items-center mt-1.5 text-[9px] font-bold text-slate-500">
-                               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>{group.stats.approved} 定案</span>
-                               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>{group.stats.in_progress} 退回</span>
-                               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>{group.stats.pending} 待审</span>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* Actions */}
-                        <div className="flex items-center gap-3">
-                          <button className="group hidden items-center justify-center rounded-xl bg-slate-50 p-2.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-indigo-600 sm:flex" title={`导出 ${group.wave} 企划案`} onClick={(e) => e.stopPropagation()}>
-                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                          </button>
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActiveWave(group.wave);
-                            }}
-                            className="group flex flex-col items-center justify-center rounded-xl bg-slate-100 p-2 text-slate-500 hover:bg-[#1e1b4b] hover:text-white hover:shadow-lg transition-all"
-                            title="进入全屏沉浸审查"
-                          >
-                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          
-          {/* 右侧树状电梯 (Tree-View Minimap) - 仅大屏显示 */}
-          <div className={`sticky top-[80px] hidden flex-shrink-0 xl:flex flex-col xl:self-start transition-all duration-500 ease-in-out ${isNavCollapsed ? 'w-12 items-end' : 'w-72'}`}>
-            {isNavCollapsed ? (
-              <button 
-                onClick={() => setIsNavCollapsed(false)}
-                className="group flex h-12 w-12 items-center justify-center rounded-2xl text-slate-400 hover:bg-slate-100 hover:text-indigo-600 transition-all duration-300"
-                title="展开控制台导航"
-              >
-                <svg className="h-5 w-5 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" /></svg>
-              </button>
-            ) : (
-              <div className="w-full relative shadow-[0_12px_40px_rgba(15,23,42,0.04)] bg-white/70 backdrop-blur-2xl rounded-[24px] p-5 border border-slate-100 ring-1 ring-white/50">
-                <div className="mb-6 flex items-center justify-between">
-                  <h5 className="text-[11px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" /></svg>
-                    控制台导航
-                  </h5>
-                  <div className="flex items-center gap-2">
-                     <button onClick={() => setActiveWave(null)} className={`text-[10px] font-bold transition-colors ${!activeWave ? 'text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`} title="返回大盘视图">大盘</button>
-                     <span className="text-slate-200">|</span>
-                     <button onClick={() => setIsNavCollapsed(true)} className="group flex h-6 w-6 items-center justify-center rounded-lg hover:bg-slate-100 transition-colors" title="收起控制台">
-                        <svg className="h-3.5 w-3.5 text-slate-400 group-hover:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                     </button>
-                  </div>
-                </div>
-                
-                <nav className="relative flex flex-col space-y-5">
-                  {waveGroups.map(group => {
-                    const textTone = group.themeTone === 'emerald' ? 'text-emerald-600' :
-                                   group.themeTone === 'amber' ? 'text-amber-600' :
-                                   group.themeTone === 'blue' ? 'text-blue-600' :
-                                   group.themeTone === 'purple' ? 'text-purple-600' :
-                                   group.themeTone === 'rose' ? 'text-rose-600' :
-                                   group.themeTone === 'indigo' ? 'text-indigo-600' :
-                                   'text-slate-600';
-                                   
-                    return (
-                      <div key={`tree-${group.wave}`} className="flex flex-col">
-                        {/* Folder Header */}
-                        <button 
-                          onClick={() => {
-                            if (activeWave !== group.wave) setActiveWave(group.wave);
-                            setTimeout(() => {
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }, 50);
-                          }}
-                          className={`group flex items-center gap-2 text-left mb-2 px-2 py-1.5 rounded-lg transition-colors ${activeWave === group.wave ? 'bg-indigo-50/80' : 'hover:bg-slate-50'}`}
-                        >
-                          <svg className={`h-4 w-4 transition-colors ${textTone}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>
-                          <span className={`text-sm font-extrabold transition-colors ${textTone}`}>{group.wave} 包含 {group.strategies.length} 个系列</span>
-                        </button>
-                        
-                        {/* Series Tree Nodes (Only show fully when active) */}
-                        {(activeWave === group.wave || !activeWave) && (
-                          <div className="relative flex flex-col pl-2 ml-3.5 border-l-2 border-slate-100/80 space-y-1">
-                            {group.strategies.map(record => {
-                              const hasAlert = !!record.costDriftAlert;
-                              const status = record.reviewDecisionStatus;
-                              return (
-                                <button
-                                  key={`tree-node-${record.seriesId}`}
-                                  onClick={() => {
-                                    if (activeWave !== group.wave) setActiveWave(group.wave);
-                                    setTimeout(() => {
-                                      const el = document.getElementById(`series-${record.seriesId}`);
-                                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                    }, 100);
-                                  }}
-                                  className="group flex flex-col items-start py-1.5 pl-3 pr-2 text-left hover:bg-white rounded-r-lg border-l-2 -ml-[2px] border-transparent hover:border-indigo-400 hover:shadow-sm transition-all"
-                                >
-                                <div className="flex items-center justify-between w-full">
-                                  <span className={`text-[12px] font-bold truncate pr-2 ${hasAlert ? 'text-rose-500' : 'text-slate-600 group-hover:text-slate-900'}`}>{record.seriesName}</span>
-                                  <div className="flex items-center gap-1.5 flex-shrink-0">
-                                    {hasAlert && <span className="h-1.5 w-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)] animate-pulse" title="成本预警" />}
-                                    {status === 'in_progress' ? <span className="h-1.5 w-1.5 rounded-full bg-amber-400" title="修改中" /> : 
-                                     status === 'approved' ? <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" title="已定案" /> : null}
-                                  </div>
-                                </div>
-                                <span className="text-[9px] font-medium text-slate-400 tracking-wider">SKU: {record.skuTarget}</span>
-                              </button>
-                            );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </nav>
-                
-                <div className="mt-8 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100/50 p-4 border border-slate-100">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">💡 操作提示</div>
-                  <p className="text-xs text-slate-500 leading-relaxed font-medium">
-                    波段按设定季度流转，多级横幅具备 <span className="text-slate-700 font-bold border-b border-indigo-200">物理推叠</span> 响应。<br/>
-                    带红点项建议<span className="text-rose-500 font-bold">优先决策</span>成本阻断点。
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Module 2: 系列角色与产品线分工 */}
+      <section id="theme-roles" className="scroll-mt-24">
+        <ThemeSectionDivider label="C" title="系列角色与产品线分工" />
+        <ThemeSeriesRoles rows={seriesRoleRows} />
+      </section>
+
+      {/* Module 3: 跨系列色彩分配矩阵 */}
+      <section id="theme-color" className="scroll-mt-24">
+        <ThemeSectionDivider label="D" title="跨系列色彩分配" />
+        <CrossSeriesColorAllocation colors={CROSS_SERIES_COLOR_ALLOCATION} />
+      </section>
+
+      {/* Module 4: 波段主题推进计划（含沉浸审查入口） */}
+      <section id="theme-wave" className="scroll-mt-24">
+        <ThemeSectionDivider label="E" title="波段主题推进" />
+        <ThemeWaveBoard waves={waveItems} onWaveClick={setActiveWave} />
+      </section>
+
+      {/* Module 5: 上游输入承接矩阵 */}
+      <section id="theme-merch" className="scroll-mt-24">
+        <ThemeSectionDivider label="F" title="上游输入承接" />
+        <ThemeMerchInput inputs={merchInputs} />
+      </section>
+
+      {/* Module 6: 设计语言拆解矩阵 */}
+      <section id="theme-language" className="scroll-mt-24">
+        <ThemeSectionDivider label="G" title="设计语言拆解" />
+        <ThemeDesignLanguage rows={designLanguageRows} />
+      </section>
+
+      {/* Module 7: 款数、新模、共底、OTB约束 */}
+      <section id="theme-resource" className="scroll-mt-24">
+        <ThemeSectionDivider label="H" title="资源约束与 OTB 校验" />
+        <ThemeResourceAllocation rows={resourceRows} />
+      </section>
+
+      <FloatingModuleNav moduleLinks={THEME_MODULE_LINKS} pageSections={THEME_PAGE_SECTIONS} />
+
       {/* 全屏沉浸式钻取视图 (Full Screen Drill-Down Modal) */}
       {activeWave && focusedGroup && (
         <div className="fixed inset-0 z-[150] bg-slate-50/95 backdrop-blur-3xl overflow-y-auto flex flex-col animate-in fade-in zoom-in-95 duration-300">
@@ -904,16 +922,15 @@ export default function ThemeDirectionPanel({ strategies }: ThemeDirectionPanelP
                    </div>
                  </div>
                </div>
-               
-               {/* Context Stats Summary */}
+
                {focusedGroup.avgTarget > 0 && (
                  <div className="pl-6 ml-2 border-l border-slate-200 hidden md:flex min-w-[200px]">
                    <div className="flex flex-col w-full">
                      <div className="flex justify-between items-center mb-1 text-[11px] font-bold uppercase tracking-widest text-slate-400">
-                       成本大盘 
-                       {focusedGroup.costSurplusPercent > 1 && <span className="text-rose-500 bg-rose-50 px-1.5 rounded-sm">超额 {(focusedGroup.costSurplusPercent - 1).toFixed(1)}%</span>}
+                       成本大盘
+                       {focusedGroup.costSurplusPercent > 0 && <span className="text-rose-500 bg-rose-50 px-1.5 rounded-sm">超额 {focusedGroup.costSurplusPercent.toFixed(1)}%</span>}
                      </div>
-                     <span className={`text-xl font-extrabold flex items-baseline gap-1 ${focusedGroup.costSurplusPercent > 1 ? 'text-rose-600' : 'text-slate-800'}`}>
+                     <span className={`text-xl font-extrabold flex items-baseline gap-1 ${focusedGroup.costSurplusPercent > 0 ? 'text-rose-600' : 'text-slate-800'}`}>
                         <span className="text-sm">¥</span>{focusedGroup.avgQuote} <span className="text-sm font-medium text-slate-400 ml-1">/ {focusedGroup.avgTarget} 额度</span>
                      </span>
                    </div>
@@ -921,8 +938,8 @@ export default function ThemeDirectionPanel({ strategies }: ThemeDirectionPanelP
                )}
             </div>
 
-            <button 
-              onClick={() => setActiveWave(null)} 
+            <button
+              onClick={() => setActiveWave(null)}
               className="group flex items-center gap-2 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 transition-colors px-5 py-3 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.05)] hover:shadow-none"
             >
                <span className="text-sm font-bold opacity-80 group-hover:opacity-100">退出沉浸模式 (Esc)</span>
@@ -930,23 +947,19 @@ export default function ThemeDirectionPanel({ strategies }: ThemeDirectionPanelP
             </button>
           </div>
 
-          {/* Modal Main Content Container */}
-          <div className="flex-1 w-full max-w-[1800px] mx-auto p-8 xl:px-12 xl:py-24 pb-32">
-             <div className="flex flex-col gap-28 xl:gap-36">
+          <div className="mx-auto w-full max-w-[1480px] flex-1 p-6 pb-24 xl:px-10 xl:pt-8 xl:pb-14">
+             <div className="flex flex-col gap-16 xl:gap-20">
                {focusedGroup.strategies.map((record, index) => (
                  <div key={`modal-series-${record.seriesId}`} id={`series-${record.seriesId}`} className="relative scroll-mt-[140px] animate-in slide-in-from-bottom-8 fade-in duration-700 fill-mode-both" style={{ animationDelay: `${index * 150}ms` }}>
-                   
-                   {/* 大号编辑级系列分割线 (Editorial Separator) */}
-                   <div className="absolute -top-14 xl:-top-20 left-0 right-0 flex items-center gap-6">
-                     <span className="text-6xl xl:text-7xl font-black italic tracking-tighter text-slate-200/50 pointer-events-none select-none">
+                   {index > 0 && <div className="absolute -top-10 xl:-top-12 left-0 right-0 flex items-center gap-6">
+                     <span className="pointer-events-none select-none text-4xl font-black italic tracking-tighter text-slate-200/60 xl:text-5xl">
                        {(index + 1).toString().padStart(2, '0')}
                      </span>
                      <div className="flex flex-col gap-2 w-full mt-2">
                        <h6 className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-400">Series Breakdown</h6>
                        <div className="h-[1px] w-full bg-gradient-to-r from-slate-200 via-slate-200/40 to-transparent"></div>
                      </div>
-                   </div>
-
+                   </div>}
                    <StrategyCard record={record} />
                  </div>
                ))}
@@ -958,10 +971,14 @@ export default function ThemeDirectionPanel({ strategies }: ThemeDirectionPanelP
   );
 }
 
-
-
-
-
-
-
-
+function ThemeSectionDivider({ label, title }: { label: string; title: string }) {
+  return (
+    <div className="mb-5 flex items-center gap-3">
+      <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+        {label}
+      </span>
+      <h3 className="text-base font-semibold text-slate-900">{title}</h3>
+      <div className="flex-1 border-t border-slate-100" />
+    </div>
+  );
+}

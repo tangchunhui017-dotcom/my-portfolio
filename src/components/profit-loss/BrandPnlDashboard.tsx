@@ -452,24 +452,10 @@ export default function BrandPnlDashboard({ onGoToStore }: Props) {
 
     return (
         <div className="space-y-6">
-            {/* 锚点导航 + 导出 + 对比模式 */}
-            <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm py-2 -mx-1 px-1 border-b border-slate-100">
-                <div className="flex items-center gap-2 flex-wrap">
-                    <div className="flex gap-1 flex-wrap flex-1">
-                        {SECTIONS.map(s => (
-                            <a key={s.anchor} href={`#${s.anchor}`}
-                                className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${
-                                    activeAnchor === s.anchor
-                                        ? 'bg-sky-500 text-white shadow-sm'
-                                        : 'bg-white border border-slate-200 text-slate-500 hover:border-sky-300 hover:text-sky-600'
-                                }`}>
-                                {s.label}
-                            </a>
-                        ))}
-                    </div>
-                    <CompareModeSwitcher mode={compareMode} onChange={setCompareMode} />
-                    <ExportMenu />
-                </div>
+            {/* 导出 + 对比模式（导航已迁至右侧悬浮 nav） */}
+            <div className="flex items-center justify-end gap-2 flex-wrap">
+                <CompareModeSwitcher mode={compareMode} onChange={setCompareMode} />
+                <ExportMenu />
             </div>
 
             {/* S0 决策摘要1屏卡 */}

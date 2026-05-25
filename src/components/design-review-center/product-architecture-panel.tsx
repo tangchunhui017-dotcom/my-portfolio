@@ -1,8 +1,12 @@
+'use client';
+
+import { useState } from 'react';
 import type { ArchitectureRoleKey, ProductArchitectureView } from '@/lib/design-review-center/types';
 
 interface ProductArchitecturePanelProps {
   architecture: ProductArchitectureView;
   pyramidFilter?: string | null;
+  onCategoryClick?: (categoryName: string) => void;
 }
 
 const PYRAMID_ROLE_MAP: Record<string, ArchitectureRoleKey[]> = {
@@ -27,7 +31,16 @@ function sum(values: number[]) {
   return values.reduce((total, current) => total + current, 0);
 }
 
-export default function ProductArchitecturePanel({ architecture, pyramidFilter }: ProductArchitecturePanelProps) {
+export default function ProductArchitecturePanel({ architecture, pyramidFilter, onCategoryClick }: ProductArchitecturePanelProps) {
+  const [activeDimensionKey, setActiveDimensionKey] = useState<string | null>(
+    architecture.matrix.rows[0]?.key ?? null
+  );
+  const [expandedAll, setExpandedAll] = useState(false);
+
+  const visibleRows = expandedAll
+    ? architecture.matrix.rows
+    : architecture.matrix.rows.filter((r) => r.key === activeDimensionKey);
+
   if (!architecture.inputs.length || !architecture.matrix.columns.length) {
     return (
       <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center text-sm text-slate-500">
@@ -171,16 +184,6 @@ export default function ProductArchitecturePanel({ architecture, pyramidFilter }
             <div>当前矩阵按一级品类展开，横向支持后续由真实 OTB 内容动态变化。</div>
           </div>
         </div>
-
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {summaryCards.map((card) => (
-            <article key={card.label} className="rounded-[22px] border border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-4 shadow-[0_10px_22px_rgba(15,23,42,0.04)]">
-              <div className="text-sm text-slate-500">{card.label}</div>
-              <div className="mt-3 text-3xl font-semibold text-slate-950">{card.value}</div>
-              <div className="mt-2 text-xs leading-5 text-slate-500">{card.sub}</div>
-            </article>
-          ))}
-        </div>
       </section>
 
       <section className="overflow-hidden rounded-[30px] border border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfe_100%)] shadow-[0_16px_36px_rgba(15,23,42,0.06)]">
@@ -201,13 +204,60 @@ export default function ProductArchitecturePanel({ architecture, pyramidFilter }
           </div>
         </div>
 
+        <div className="border-b border-slate-200/80 px-6 py-4 bg-white">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap gap-1.5">
+              {architecture.matrix.rows.map((row) => {
+                const isActive = !expandedAll && row.key === activeDimensionKey;
+                return (
+                  <button
+                    key={row.key}
+                    type="button"
+                    onClick={() => {
+                      setActiveDimensionKey(row.key);
+                      setExpandedAll(false);
+                    }}
+                    className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                      isActive
+                        ? 'bg-slate-900 text-white shadow-sm'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {row.label}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              onClick={() => setExpandedAll((v) => !v)}
+              className={`ml-auto rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                expandedAll
+                  ? 'border-indigo-300 bg-indigo-50 text-indigo-700'
+                  : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              {expandedAll ? '× 收起为单维度' : '展开全部维度'}
+            </button>
+          </div>
+          {!expandedAll && activeDimensionKey && (
+            <p className="mt-3 text-xs leading-5 text-slate-500">
+              {architecture.matrix.rows.find((r) => r.key === activeDimensionKey)?.helperText}
+            </p>
+          )}
+        </div>
+
         <div className="overflow-x-auto drc-matrix-scroll">
           <table className="min-w-[1240px] w-full border-collapse">
             <thead className="bg-white sticky top-0 z-20 shadow-[0_1px_0_rgba(0,0,0,0.06)]">
               <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-400">
-                <th className="w-[220px] drc-column-sticky border-b border-slate-200/80 px-5 py-4 z-30">结构维度</th>
+                <th className={`drc-column-sticky border-b border-slate-200/80 px-5 py-4 z-30 ${expandedAll ? 'w-[220px]' : 'w-[120px]'}`}>结构维度</th>
                 {architecture.matrix.columns.map((column) => (
-                  <th key={column.categoryName} className="min-w-[220px] border-b border-l border-slate-200/80 px-5 py-4 align-top">
+                  <th
+                    key={column.categoryName}
+                    className={`min-w-[220px] border-b border-l border-slate-200/80 px-5 py-4 align-top ${onCategoryClick ? 'cursor-pointer hover:bg-slate-50/40' : ''}`}
+                    onClick={() => onCategoryClick?.(column.categoryName)}
+                  >
                     <div className="text-sm font-semibold text-slate-900">{column.categoryName}</div>
                     <div className="mt-2 text-[11px] leading-5 text-slate-500">{column.waves.join(' / ')} · {column.priceBands.join(' / ')}</div>
                     <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-medium text-slate-500">
@@ -219,7 +269,7 @@ export default function ProductArchitecturePanel({ architecture, pyramidFilter }
               </tr>
             </thead>
             <tbody>
-              {architecture.matrix.rows.map((row) => {
+              {visibleRows.map((row) => {
                 // 定义跨列共享插槽以实现绝对的像素级对齐
                 const GLOBAL_LABEL_ORDER = [
                   '基本款', '主推款', '形象款', '引流款', '功能款',

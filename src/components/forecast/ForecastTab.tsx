@@ -1,4 +1,7 @@
 'use client';
+import MerchSectionDivider from '@/components/dashboard/MerchSectionDivider';
+import FloatingModuleNav from '@/components/design-review-center/floating-module-nav';
+import { buildMerchModuleLinks } from '@/config/dashboard/merch-module-links';
 /**
  * ForecastTab.tsx — V9 销售预测决策工作台
  * 四个子视图：全渠道总控 / 实体店预测 / 电商预测 / 新店预测
@@ -577,6 +580,12 @@ interface Props {
   onJumpToTab?: (tab: string) => void;
 }
 
+const ic = 'w-2.5 h-2.5';
+const FORECAST_PAGE_SECTIONS = [
+  { anchor: '#forecast-nav', label: '预测视图', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5" /><line x1="1" y1="7" x2="15" y2="7" /></svg>) },
+  { anchor: '#forecast-content', label: '预测内容', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,12 5,8 8.5,10 12,5 14,7" /><polyline points="11,4 14,4 14,7" /></svg>) },
+];
+
 export default function ForecastTab({ onJumpToTab }: Props) {
   const [activeView, setActiveView] = useState<ForecastView>('omni');
   const [activeScenarios, setActiveScenarios] = useState<ForecastScenario[]>(['base']);
@@ -601,6 +610,8 @@ export default function ForecastTab({ onJumpToTab }: Props) {
 
   return (
     <div className="space-y-5">
+      <section id="forecast-nav" className="scroll-mt-24">
+      <MerchSectionDivider label="A" title="预测视图切换" />
       {/* ── 子视图导航 ──────────────────────────────────────────────────────── */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="flex items-center border-b border-slate-100 overflow-x-auto scrollbar-hide">
@@ -651,7 +662,10 @@ export default function ForecastTab({ onJumpToTab }: Props) {
           </div>
         </div>
       </div>
+      </section>
 
+      <section id="forecast-content" className="scroll-mt-24">
+      <MerchSectionDivider label="B" title="预测内容" />
       {/* ── 子视图内容 ──────────────────────────────────────────────────────── */}
       {activeView === 'omni' && (
         <OmniView
@@ -683,6 +697,12 @@ export default function ForecastTab({ onJumpToTab }: Props) {
           onJumpToTab={handleJumpToTab}
         />
       )}
+      </section>
+
+      <FloatingModuleNav
+        moduleLinks={buildMerchModuleLinks('forecast')}
+        pageSections={FORECAST_PAGE_SECTIONS}
+      />
     </div>
   );
 }

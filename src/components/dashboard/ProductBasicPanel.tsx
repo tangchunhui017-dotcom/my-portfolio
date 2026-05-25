@@ -1,6 +1,9 @@
 ﻿'use client';
 
 import { useMemo, useState } from 'react';
+import MerchSectionDivider from './MerchSectionDivider';
+import FloatingModuleNav from '@/components/design-review-center/floating-module-nav';
+import { buildMerchModuleLinks } from '@/config/dashboard/merch-module-links';
 import type { EChartsOption } from 'echarts';
 import ReactECharts from 'echarts-for-react';
 import type { DashboardFilters } from '@/hooks/useDashboardFilter';
@@ -344,6 +347,14 @@ function getHeatColor(value: number, min: number, max: number, metric: AgeHeatMe
 }
 
 // ── 组件主体 ──────────────────────────────────────────────────────────────────
+const ic = 'w-2.5 h-2.5';
+const CONSUMER_PAGE_SECTIONS = [
+  { anchor: '#consumer-overview', label: '洞察总览', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5" /><line x1="1" y1="7" x2="15" y2="7" /></svg>) },
+  { anchor: '#consumer-summary', label: '决策摘要', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="4" x2="13" y2="4" /><line x1="3" y1="8" x2="11" y2="8" /><line x1="3" y1="12" x2="9" y2="12" /></svg>) },
+  { anchor: '#consumer-actions', label: '行动中心', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,8 6.5,12 14,4" /></svg>) },
+  { anchor: '#consumer-persona', label: '人群画像', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="5.5" cy="5.5" r="2.5" /><circle cx="11" cy="5.5" r="2.5" /><path d="M1 14c0-2.5 2-4.5 4.5-4.5h5c2.5 0 4.5 2 4.5 4.5" /></svg>) },
+];
+
 export default function ProductBasicPanel({
     filters,
     setFilters,
@@ -702,6 +713,8 @@ export default function ProductBasicPanel({
 
     return (
         <div className="space-y-5">
+            <section id="consumer-overview" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="A" title="消费者洞察总览" />
 
             {/* ── 0. 页头 ─────────────────────────────────────────────────────── */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
@@ -748,6 +761,10 @@ export default function ProductBasicPanel({
                     ))}
                 </div>
             </section>
+            </section>
+
+            <section id="consumer-summary" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="B" title="决策摘要" />
 
             {/* ── 1.5 本页决策摘要 ────────────────────────────────────────── */}
             <section className="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-5 shadow-sm">
@@ -776,6 +793,10 @@ export default function ProductBasicPanel({
                     ))}
                 </div>
             </section>
+            </section>
+
+            <section id="consumer-actions" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="C" title="消费者行动中心" />
 
             {/* ── 2. 消费者行动中心 ────────────────────────────────────────── */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
@@ -828,6 +849,10 @@ export default function ProductBasicPanel({
                     ))}
                 </div>
             </section>
+            </section>
+
+            <section id="consumer-persona" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="D" title="人群画像" />
 
             {/* ── 3. 核心人群 Persona 卡 ────────────────────────────────────── */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
@@ -1433,9 +1458,12 @@ export default function ProductBasicPanel({
                     </>
                 )}
             </section>
+            </section>
 
-            {/* ─── 消费者偏好雷达 ─── */}
-            <ConsumerPreferenceRadar />
+            <FloatingModuleNav
+                moduleLinks={buildMerchModuleLinks('consumer')}
+                pageSections={CONSUMER_PAGE_SECTIONS}
+            />
         </div>
     );
 }

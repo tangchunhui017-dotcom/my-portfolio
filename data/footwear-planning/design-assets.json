@@ -7,19 +7,19 @@
       "assetType": "concept_sketch",
       "imageUrl": "/assets/effect-stages/sketch.svg",
       "materialPlan": [
-        "????",
-        "???"
+        "反绒牛皮",
+        "网眼布"
       ],
       "colorPlan": [
-        "???",
-        "??"
+        "经典黑",
+        "米白"
       ],
-      "outsole": "?? cupsole",
-      "last": "?????",
+      "outsole": "厚底 cupsole",
+      "last": "圆头宽前掌",
       "uploadedAt": "2026-03-08T10:00:00+08:00",
       "isLatest": false,
-      "summary": "???????????????????",
-      "deltaNote": "????????????"
+      "summary": "街头机能廓形成立，鞋头包覆和大底比例需继续验证。",
+      "deltaNote": "初版概念偏视觉表达，后续补强舒适性。"
     },
     {
       "assetId": "da-002",
@@ -28,21 +28,21 @@
       "assetType": "effect_render",
       "imageUrl": "/assets/effect-stages/render.svg",
       "materialPlan": [
-        "????",
-        "?????",
-        "TPU ???"
+        "反绒牛皮",
+        "网眼布",
+        "TPU 支撑片"
       ],
       "colorPlan": [
-        "???",
-        "??",
-        "???"
+        "经典黑",
+        "米白",
+        "荧光绿"
       ],
-      "outsole": "?? cupsole",
-      "last": "?????",
+      "outsole": "厚底 cupsole",
+      "last": "圆头宽前掌",
       "uploadedAt": "2026-03-20T15:00:00+08:00",
       "isLatest": true,
-      "summary": "??????????????????",
-      "deltaNote": "??????????????????"
+      "summary": "V2 强化大底侧墙和 TPU 支撑，街头运动识别度提升。",
+      "deltaNote": "增加荧光绿点缀，调整鞋舌文字和补强片比例。"
     },
     {
       "assetId": "da-003",
@@ -51,19 +51,19 @@
       "assetType": "material_board",
       "imageUrl": "/assets/effect-stages/render.svg",
       "materialPlan": [
-        "????",
-        "?????",
-        "TPU ???"
+        "反绒牛皮",
+        "网眼布",
+        "TPU 支撑片"
       ],
       "colorPlan": [
-        "???",
-        "??"
+        "经典黑",
+        "荧光绿"
       ],
-      "outsole": "?? cupsole",
-      "last": "?????",
+      "outsole": "厚底 cupsole",
+      "last": "圆头宽前掌",
       "uploadedAt": "2026-03-21T10:00:00+08:00",
       "isLatest": true,
-      "summary": "????????????????????",
+      "summary": "材料板确认主材和 TPU 支撑片，需复核补强布热压工艺。",
       "deltaNote": null
     },
     {
@@ -73,20 +73,20 @@
       "assetType": "effect_render",
       "imageUrl": "/assets/effect-stages/render.svg",
       "materialPlan": [
-        "????",
-        "???"
+        "头层牛皮",
+        "网眼布"
       ],
       "colorPlan": [
-        "??",
-        "??",
-        "??"
+        "白色",
+        "米白",
+        "深蓝"
       ],
-      "outsole": "?? cupsole",
-      "last": "?????",
+      "outsole": "厚底 cupsole",
+      "last": "圆头宽前掌",
       "uploadedAt": "2026-03-18T17:30:00+08:00",
       "isLatest": true,
-      "summary": "??????????????????",
-      "deltaNote": "???????????????"
+      "summary": "白米色主调与 st001 形成差异，但低帮比例仍需打样验证。",
+      "deltaNote": "从黑色系调整为米色系，弱化同波段视觉内卷。"
     },
     {
       "assetId": "da-005",
@@ -95,19 +95,19 @@
       "assetType": "color_board",
       "imageUrl": "/assets/effect-stages/render.svg",
       "materialPlan": [
-        "????",
-        "???"
+        "头层牛皮",
+        "网眼布"
       ],
       "colorPlan": [
-        "??",
-        "??",
-        "??"
+        "白色",
+        "米白",
+        "深蓝"
       ],
-      "outsole": "?? cupsole",
-      "last": "?????",
+      "outsole": "厚底 cupsole",
+      "last": "圆头宽前掌",
       "uploadedAt": "2026-03-19T09:00:00+08:00",
       "isLatest": true,
-      "summary": "????????????",
+      "summary": "颜色板确认白米色主调和深蓝辅助色。",
       "deltaNote": null
     },
     {
@@ -117,19 +117,19 @@
       "assetType": "concept_sketch",
       "imageUrl": "/assets/effect-stages/sketch.svg",
       "materialPlan": [
-        "??",
-        "????"
+        "帆布",
+        "反绒牛皮"
       ],
       "colorPlan": [
-        "???",
-        "???",
-        "??"
+        "经典黑",
+        "荧光绿",
+        "米白"
       ],
-      "outsole": "????????",
-      "last": "?????",
+      "outsole": "复用街头厚底外底",
+      "last": "基础板鞋楦",
       "uploadedAt": "2026-03-19T15:00:00+08:00",
       "isLatest": true,
-      "summary": "???????????????????",
+      "summary": "板鞋引流款方向明确，重点看撞色比例和成本控制。",
       "deltaNote": null
     },
     {
@@ -139,19 +139,19 @@
       "assetType": "first_sample_photo",
       "imageUrl": "/assets/effect-stages/first-sample.svg",
       "materialPlan": [
-        "???????",
-        "????"
+        "防水膜复合面料",
+        "耐磨橡胶"
       ],
       "colorPlan": [
-        "??",
-        "??"
+        "深灰",
+        "橙色"
       ],
-      "outsole": "?????",
-      "last": "????",
+      "outsole": "多齿防滑底",
+      "last": "户外宽楦",
       "uploadedAt": "2026-03-22T09:00:00+08:00",
       "isLatest": true,
-      "summary": "???????????????????",
-      "deltaNote": "?? render ??????????"
+      "summary": "首样结构合理，后跟 TPU 支撑片厚度需校正。",
+      "deltaNote": "相比 render，实物更强调防水包覆和户外抓地。"
     },
     {
       "assetId": "da-008",
@@ -160,16 +160,16 @@
       "assetType": "outsole_board",
       "imageUrl": "/assets/effect-stages/first-sample.svg",
       "materialPlan": [
-        "????"
+        "耐磨橡胶"
       ],
       "colorPlan": [
-        "??"
+        "深灰"
       ],
-      "outsole": "?????",
-      "last": "????",
+      "outsole": "多齿防滑底",
+      "last": "户外宽楦",
       "uploadedAt": "2026-03-20T13:20:00+08:00",
       "isLatest": true,
-      "summary": "?????????????????",
+      "summary": "外底齿纹抓地逻辑清晰，需验证湿地防滑表现。",
       "deltaNote": null
     },
     {
@@ -179,18 +179,18 @@
       "assetType": "effect_render",
       "imageUrl": "/assets/effect-stages/render.svg",
       "materialPlan": [
-        "???????",
-        "????"
+        "防水膜复合面料",
+        "橡胶大底"
       ],
       "colorPlan": [
-        "???",
-        "??"
+        "经典黑",
+        "深灰"
       ],
-      "outsole": "?????",
-      "last": "????",
+      "outsole": "多齿防滑底",
+      "last": "户外宽楦",
       "uploadedAt": "2026-03-20T16:10:00+08:00",
       "isLatest": true,
-      "summary": "??????????????????",
+      "summary": "全黑通勤机能方向成立，内衬贴合度需要试穿确认。",
       "deltaNote": null
     },
     {
@@ -200,19 +200,19 @@
       "assetType": "concept_sketch",
       "imageUrl": "/assets/effect-stages/sketch.svg",
       "materialPlan": [
-        "??",
-        "??"
+        "尼龙",
+        "橡胶"
       ],
       "colorPlan": [
-        "??",
-        "??",
-        "??"
+        "军绿",
+        "深灰",
+        "黑色"
       ],
-      "outsole": "???????",
-      "last": "????",
+      "outsole": "城市徒步延展底",
+      "last": "户外宽楦",
       "uploadedAt": "2026-03-18T18:30:00+08:00",
       "isLatest": true,
-      "summary": "??????????",
+      "summary": "平台延展款，以军绿户外配色承接 W1 尾盘节奏。",
       "deltaNote": null
     },
     {
@@ -222,18 +222,18 @@
       "assetType": "concept_sketch",
       "imageUrl": "/assets/effect-stages/sketch.svg",
       "materialPlan": [
-        "????",
-        "?????"
+        "头层牛皮",
+        "记忆棉鞋垫"
       ],
       "colorPlan": [
-        "?????",
-        "???"
+        "深棕商务色",
+        "经典黑"
       ],
-      "outsole": "?????",
-      "last": "????",
+      "outsole": "商务轻量底",
+      "last": "商务圆楦",
       "uploadedAt": "2026-03-18T11:10:00+08:00",
       "isLatest": true,
-      "summary": "?????????????????",
+      "summary": "德比鞋精工通勤路线成立，需验证后跟稳定性。",
       "deltaNote": null
     },
     {
@@ -243,16 +243,16 @@
       "assetType": "last_board",
       "imageUrl": "/assets/effect-stages/sketch.svg",
       "materialPlan": [
-        "????"
+        "头层牛皮"
       ],
       "colorPlan": [
-        "?????"
+        "深棕商务色"
       ],
-      "outsole": "?????",
-      "last": "????",
+      "outsole": "商务轻量底",
+      "last": "商务圆楦",
       "uploadedAt": "2026-03-19T10:20:00+08:00",
       "isLatest": true,
-      "summary": "????????????????",
+      "summary": "楦型强调商务脚感，后跟收窄需穿着验证。",
       "deltaNote": null
     },
     {
@@ -262,18 +262,18 @@
       "assetType": "concept_sketch",
       "imageUrl": "/assets/effect-stages/sketch.svg",
       "materialPlan": [
-        "????",
-        "????"
+        "软面牛皮",
+        "弹性内里"
       ],
       "colorPlan": [
-        "???",
-        "??"
+        "经典黑",
+        "深蓝"
       ],
-      "outsole": "?????",
-      "last": "?????",
+      "outsole": "商务平台底",
+      "last": "商务舒适楦",
       "uploadedAt": "2026-03-15T10:00:00+08:00",
       "isLatest": true,
-      "summary": "?????????????????",
+      "summary": "乐福鞋一脚蹬比例待确认，适合作为 W2 基础款。",
       "deltaNote": null
     },
     {
@@ -283,20 +283,20 @@
       "assetType": "effect_render",
       "imageUrl": "/assets/effect-stages/render.svg",
       "materialPlan": [
-        "????",
-        "???",
-        "EVA ??"
+        "软面牛皮",
+        "弹力布",
+        "EVA 中底"
       ],
       "colorPlan": [
-        "???",
-        "??"
+        "经典黑",
+        "灰色"
       ],
-      "outsole": "?? EVA ?",
-      "last": "????",
+      "outsole": "舒适 EVA 底",
+      "last": "舒适宽楦",
       "uploadedAt": "2026-03-21T14:00:00+08:00",
       "isLatest": true,
-      "summary": "????????????????",
-      "deltaNote": "?????????????"
+      "summary": "舒适乐福方向明确，但 EVA 中底和供应商能力存在阻塞。",
+      "deltaNote": "需补充替代材料和备选工厂方案。"
     },
     {
       "assetId": "da-015",
@@ -305,19 +305,19 @@
       "assetType": "material_board",
       "imageUrl": "/assets/effect-stages/render.svg",
       "materialPlan": [
-        "????",
-        "???",
-        "EVA ??"
+        "软面牛皮",
+        "弹力布",
+        "EVA 中底"
       ],
       "colorPlan": [
-        "???",
-        "??"
+        "经典黑",
+        "灰色"
       ],
-      "outsole": "?? EVA ?",
-      "last": "????",
+      "outsole": "舒适 EVA 底",
+      "last": "舒适宽楦",
       "uploadedAt": "2026-03-22T08:30:00+08:00",
       "isLatest": true,
-      "summary": "????????????????",
+      "summary": "材料板需重新确认 EVA 中底密度、胶水和长周期材料交期。",
       "deltaNote": null
     },
     {
@@ -327,18 +327,18 @@
       "assetType": "concept_sketch",
       "imageUrl": "/assets/effect-stages/sketch.svg",
       "materialPlan": [
-        "??",
-        "???"
+        "帆布",
+        "弹力布"
       ],
       "colorPlan": [
-        "??",
-        "??"
+        "驼色",
+        "米白"
       ],
-      "outsole": "?????",
-      "last": "?????",
+      "outsole": "舒适通勤底",
+      "last": "返单优化楦",
       "uploadedAt": "2026-03-16T13:20:00+08:00",
       "isLatest": true,
-      "summary": "???????????????",
+      "summary": "返单优化款，需明确改动范围和成本边界。",
       "deltaNote": null
     },
     {
@@ -348,19 +348,19 @@
       "assetType": "final_sample_photo",
       "imageUrl": "/assets/effect-stages/final-sample.svg",
       "materialPlan": [
-        "????",
-        "?????"
+        "软面牛皮",
+        "记忆棉鞋垫"
       ],
       "colorPlan": [
-        "??",
-        "??"
+        "米白",
+        "驼色"
       ],
-      "outsole": "?????",
-      "last": "?????",
+      "outsole": "商务平台底",
+      "last": "商务舒适楦",
       "uploadedAt": "2026-03-20T09:00:00+08:00",
       "isLatest": true,
-      "summary": "????????????????",
-      "deltaNote": "?????????????????"
+      "summary": "最终样通过，版型、材料和成本均已锁定。",
+      "deltaNote": "补齐拍摄样、陈列样和上市资料包。"
     },
     {
       "assetId": "da-018",
@@ -369,17 +369,17 @@
       "assetType": "color_board",
       "imageUrl": "/assets/effect-stages/final-sample.svg",
       "materialPlan": [
-        "????"
+        "软面牛皮"
       ],
       "colorPlan": [
-        "??",
-        "??"
+        "米白",
+        "驼色"
       ],
-      "outsole": "?????",
-      "last": "?????",
+      "outsole": "商务平台底",
+      "last": "商务舒适楦",
       "uploadedAt": "2026-03-20T09:10:00+08:00",
       "isLatest": true,
-      "summary": "????????????????",
+      "summary": "米白和驼色确认用于首单上市配色。",
       "deltaNote": null
     }
   ]

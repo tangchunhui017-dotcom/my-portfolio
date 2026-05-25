@@ -1,4 +1,7 @@
 ﻿'use client';
+import MerchSectionDivider from '@/components/dashboard/MerchSectionDivider';
+import FloatingModuleNav from '@/components/design-review-center/floating-module-nav';
+import { buildMerchModuleLinks } from '@/config/dashboard/merch-module-links';
 /**
  * src/components/otb/CashflowPanel.tsx
  * 现金流决策工作台 V4.0 — 鞋类品牌商品企划现金决策工作台
@@ -398,6 +401,14 @@ interface CashflowPanelProps {
   onJumpToTab?: (tab: string) => void;
 }
 
+const ic = 'w-2.5 h-2.5';
+const CASH_PAGE_SECTIONS = [
+  { anchor: '#cash-overview', label: '现金总览', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5" /><line x1="1" y1="7" x2="15" y2="7" /></svg>) },
+  { anchor: '#cash-actions', label: '行动中心', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,8 6.5,12 14,4" /></svg>) },
+  { anchor: '#cash-monthly', label: '月度预测', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,12 5,8 8.5,10 12,5 14,7" /><polyline points="11,4 14,4 14,7" /></svg>) },
+  { anchor: '#cash-scenario', label: '情景模拟', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="8" r="3" /><circle cx="12" cy="5" r="2" opacity="0.5" /><circle cx="12" cy="11" r="2" opacity="0.5" /></svg>) },
+];
+
 export default function CashflowPanel({ onJumpToTab }: CashflowPanelProps) {
   const [safetyThreshold, setSafetyThreshold] = useState(5000000);
   const [actionStatuses, setActionStatuses] = useState<Record<string, CashAction['status']>>({});
@@ -424,7 +435,8 @@ export default function CashflowPanel({ onJumpToTab }: CashflowPanelProps) {
 
   return (
     <div className="space-y-5 pb-20">
-
+      <section id="cash-overview" className="scroll-mt-24">
+      <MerchSectionDivider label="A" title="现金安全总览" />
       {/* 现金安全首屏判断条 */}
       <div className={`rounded-2xl border px-5 py-4 flex items-start gap-4 ${isDanger ? 'bg-rose-50 border-rose-200' : breachCount > 0 ? 'bg-amber-50 border-amber-200' : 'bg-emerald-50 border-emerald-200'}`}>
         <div className={`text-2xl mt-0.5 ${isDanger ? 'text-rose-600' : breachCount > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
@@ -477,6 +489,10 @@ export default function CashflowPanel({ onJumpToTab }: CashflowPanelProps) {
         </div>
       </div>
 
+      </section>
+
+      <section id="cash-actions" className="scroll-mt-24">
+      <MerchSectionDivider label="B" title="现金预警与行动中心" />
       {/* 3. 现金预警与行动中心 */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <SectionHeader icon="🎯" title="现金预警与行动中心" subtitle={`${MOCK_ACTIONS.length} 条高优先级行动建议`} badge={`${MOCK_ACTIONS.filter(a => a.priority === 'P1').length} 个P1`} />
@@ -525,6 +541,10 @@ export default function CashflowPanel({ onJumpToTab }: CashflowPanelProps) {
         </div>
       </div>
 
+      </section>
+
+      <section id="cash-monthly" className="scroll-mt-24">
+      <MerchSectionDivider label="C" title="月度预测与分析" />
       {/* 4. 月度现金预测 */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <SectionHeader icon="📊" title="月度现金预测" subtitle="现金流入 / 流出 / 期末 / 安全线" />
@@ -767,6 +787,10 @@ export default function CashflowPanel({ onJumpToTab }: CashflowPanelProps) {
         </div>
       </div>
 
+      </section>
+
+      <section id="cash-scenario" className="scroll-mt-24">
+      <MerchSectionDivider label="D" title="情景模拟与跨模块" />
       {/* 11. 情景模拟 */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <SectionHeader icon="⚙️" title="现金情景模拟" subtitle="6 个预设场景 · 9 个可调参数 · 实时输出" />
@@ -841,7 +865,12 @@ export default function CashflowPanel({ onJumpToTab }: CashflowPanelProps) {
           ))}
         </div>
       </div>
+      </section>
 
+      <FloatingModuleNav
+        moduleLinks={buildMerchModuleLinks('cashflow')}
+        pageSections={CASH_PAGE_SECTIONS}
+      />
     </div>
   );
 }

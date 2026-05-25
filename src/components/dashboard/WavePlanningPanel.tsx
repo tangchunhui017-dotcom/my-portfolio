@@ -1,4 +1,7 @@
 ﻿'use client';
+import MerchSectionDivider from './MerchSectionDivider';
+import FloatingModuleNav from '@/components/design-review-center/floating-module-nav';
+import { buildMerchModuleLinks } from '@/config/dashboard/merch-module-links';
 /**
  * WavePlanningPanel.tsx — V7.0 波段企划决策工作台（鞋类专版）
  * 三层布局：L1决策层 → L2验证层 → L3钻取层
@@ -2348,6 +2351,15 @@ function StyleDetails({ wave }: { wave: WaveSummary }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
+const ic = 'w-2.5 h-2.5';
+const WAVE_PAGE_SECTIONS = [
+  { anchor: '#wave-overview', label: '波段摘要', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5" /><line x1="1" y1="7" x2="15" y2="7" /></svg>) },
+  { anchor: '#wave-timeline', label: '波段时序', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><line x1="1" y1="8" x2="15" y2="8" /><circle cx="4" cy="8" r="1.5" fill="currentColor" stroke="none" /><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none" /><circle cx="12" cy="8" r="1.5" fill="currentColor" stroke="none" /></svg>) },
+  { anchor: '#wave-structure', label: '品类结构', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="9" width="3" height="6" rx="0.5" fill="currentColor" stroke="none" opacity="0.4" /><rect x="6" y="5" width="3" height="10" rx="0.5" fill="currentColor" stroke="none" opacity="0.7" /><rect x="11" y="1" width="3" height="14" rx="0.5" fill="currentColor" stroke="none" /></svg>) },
+  { anchor: '#wave-execution', label: '执行跨模', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,8 6.5,12 14,4" /></svg>) },
+  { anchor: '#wave-links', label: '跨模块', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="3" cy="8" r="2" /><circle cx="13" cy="5" r="2" /><circle cx="13" cy="11" r="2" /><line x1="5" y1="7.5" x2="11" y2="5.5" /><line x1="5" y1="8.5" x2="11" y2="10.5" /></svg>) },
+];
+
 export default function WavePlanningPanel({ compareMode='none', filters, onJumpToOtb, onJumpToSkuRisk, onJumpToExecution, onJumpToForecast, onJumpToInventory, onJumpToCashflow, onJumpToProfitLoss, onJumpToChannel, onJumpToCategory }: WavePlanningPanelProps) {
     void compareMode; void onJumpToSkuRisk;
 
@@ -2462,7 +2474,8 @@ export default function WavePlanningPanel({ compareMode='none', filters, onJumpT
 
     return (
         <div className="space-y-4 pb-16">
-
+            <section id="wave-overview" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="A" title="波段決策总览" />
             {/* 1. Page Header */}
             <PageHeader activeWave={activeWave} autoWaveId={autoWaveId} riskActions={generalRisks} footwearRisks={footwearRisks} onJumpToOtb={onJumpToOtb} />
 
@@ -2472,9 +2485,17 @@ export default function WavePlanningPanel({ compareMode='none', filters, onJumpT
             {/* 2.5. Wave Decision Summary */}
             <WaveDecisionSummaryCard wave={activeWave} master={activeMaster} devProgressMap={devProgressMap} today={today} footwearRisks={footwearRisks} onJumpToOtb={onJumpToOtb} />
 
+            </section>
+
+            <section id="wave-timeline" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="B" title="波段时序" />
             {/* 3. Wave Timeline */}
             <WaveTimeline waves={waveSummaries} masterMap={masterMap} activeId={effectiveWaveId} autoId={autoWaveId} today={today} onSelect={setSelectedWaveId} />
 
+            </section>
+
+            <section id="wave-structure" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="C" title="企划结构与设计方向" />
             {/* 4. Wave Positioning */}
             <WavePositioningPanel master={activeMaster} brief={activeBrief} />
 
@@ -2488,6 +2509,10 @@ export default function WavePlanningPanel({ compareMode='none', filters, onJumpT
             <CategoryMatrix wave={activeWave} view={matrixView} onViewChange={setMatrixView} />
             <SkuStructureV7 wave={activeWave} master={activeMaster} brief={activeBrief} sizeCurves={sizeCurves} returnRates={returnRates} />
 
+            </section>
+
+            <section id="wave-execution" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="D" title="执行跨模" />
             {/* 8. Sales Forecast & OTB Fit */}
             <ForecastOtbFitPanel wave={activeWave} master={activeMaster} onJumpToOtb={onJumpToOtb} onJumpToForecast={onJumpToForecast} />
 
@@ -2500,6 +2525,10 @@ export default function WavePlanningPanel({ compareMode='none', filters, onJumpT
             {/* 11. Wave Action Center */}
             <WaveActionCenter wave={activeWave} master={activeMaster} today={today} onJumpToOtb={onJumpToOtb} onJumpToForecast={onJumpToForecast} onJumpToInventory={onJumpToInventory} />
 
+            </section>
+
+            <section id="wave-links" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="E" title="SKU列表与跨模块" />
             {/* 12. SKU Line List */}
             <WaveSkuLineList wave={activeWave} master={activeMaster} />
 
@@ -2514,7 +2543,12 @@ export default function WavePlanningPanel({ compareMode='none', filters, onJumpT
                 <div className="p-5"><AnnualSalesVsOtb waveSummaries={waveSummaries} masterMap={masterMap} /></div>
             </CollapsibleSection>
             <LaunchCalendar wavesByQ={wavesByQ} masterMap={masterMap} today={today} activeId={effectiveWaveId} onSelect={setSelectedWaveId} />
+            </section>
 
+            <FloatingModuleNav
+                moduleLinks={buildMerchModuleLinks('planning')}
+                pageSections={WAVE_PAGE_SECTIONS}
+            />
         </div>
     );
 }

@@ -1,6 +1,9 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
+import MerchSectionDivider from './MerchSectionDivider';
+import FloatingModuleNav from '@/components/design-review-center/floating-module-nav';
+import { buildMerchModuleLinks } from '@/config/dashboard/merch-module-links';
 import type { EChartsOption } from 'echarts';
 import ReactECharts from 'echarts-for-react';
 import type { CompareMode, DashboardFilters } from '@/hooks/useDashboardFilter';
@@ -215,6 +218,14 @@ const SELL_SHIP_HEALTH_MIN = 0.35;
 const SELL_SHIP_HEALTH_MAX = 0.75;
 const SKU_UTILIZATION_RISK = 0.55;
 const SKU_UTILIZATION_GOOD = 0.85;
+
+const ic = 'w-2.5 h-2.5';
+const CATEGORY_PAGE_SECTIONS = [
+  { anchor: '#category-overview', label: '总览摘要', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5" /><line x1="1" y1="7" x2="15" y2="7" /></svg>) },
+  { anchor: '#category-kpi', label: '经营KPI', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="9" width="3" height="6" rx="0.5" fill="currentColor" stroke="none" opacity="0.4" /><rect x="6" y="5" width="3" height="10" rx="0.5" fill="currentColor" stroke="none" opacity="0.7" /><rect x="11" y="1" width="3" height="14" rx="0.5" fill="currentColor" stroke="none" /></svg>) },
+  { anchor: '#category-structure', label: '品类结构', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="3" /><line x1="8" y1="1" x2="8" y2="5" /><line x1="8" y1="11" x2="8" y2="15" /><line x1="1" y1="8" x2="5" y2="8" /><line x1="11" y1="8" x2="15" y2="8" /></svg>) },
+  { anchor: '#category-ops', label: '运营诊断', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,12 5,8 8.5,10 12,5 14,7" /><polyline points="11,4 14,4 14,7" /></svg>) },
+];
 
 export default function CategoryOpsPanel({
     filters,
@@ -1719,6 +1730,8 @@ export default function CategoryOpsPanel({
 
     return (
         <div className="space-y-5">
+            <section id="category-overview" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="A" title="品类总览与决策摘要" />
             {/* 0. Page Header */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1880,7 +1893,10 @@ export default function CategoryOpsPanel({
                     </div>
                 </div>
             </section>
+            </section>
 
+            <section id="category-kpi" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="B" title="经营KPI与行动" />
             {/* 2. 品类经营 KPI */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
                 <div className="mb-3 flex items-center justify-between">
@@ -2107,7 +2123,10 @@ export default function CategoryOpsPanel({
                     </div>
                 </div>
             </section>
+            </section>
 
+            <section id="category-structure" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="C" title="品类结构诊断" />
             {/* 3. 品类角色矩阵 */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
                 <div className="mb-3">
@@ -2344,7 +2363,10 @@ export default function CategoryOpsPanel({
                     })}
                 </div>
             </section>
+            </section>
 
+            <section id="category-ops" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="D" title="运营诊断与跨模块" />
             {/* 6. 渠道适配诊断 */}
             <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
                 <div className="mb-3">
@@ -2957,6 +2979,12 @@ export default function CategoryOpsPanel({
                     </div>
                 </div>
             </section>
+            </section>
+
+            <FloatingModuleNav
+                moduleLinks={buildMerchModuleLinks('category')}
+                pageSections={CATEGORY_PAGE_SECTIONS}
+            />
         </div>
     );
 }

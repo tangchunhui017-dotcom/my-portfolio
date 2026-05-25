@@ -17,6 +17,7 @@ import CategoryFeedbackBanner from '@/components/dashboard/CategoryFeedbackBanne
 import WavePlanningPanel from '@/components/dashboard/WavePlanningPanel';
 import ChannelAnalysisPanel from '@/components/dashboard/ChannelAnalysisPanel';
 import CompetitorTrendPanel from '@/components/dashboard/CompetitorTrendPanel';
+import TrendInsightPanel from '@/components/dashboard/TrendInsightPanel';
 import MonthlyAchievementPanel from '@/components/dashboard/MonthlyAchievementPanel';
 import ChannelInventoryPanel from '@/components/dashboard/ChannelInventoryPanel';
 import AssortmentHealthBar from '@/components/dashboard/AssortmentHealthBar';
@@ -24,7 +25,6 @@ import SizeHealthPanel from '@/components/dashboard/SizeHealthPanel';
 import WaveExecutionPanel from '@/components/dashboard/WaveExecutionPanel';
 import LifecycleAssortmentPanel from '@/components/dashboard/LifecycleAssortmentPanel';
 import ClearancePacePanel from '@/components/dashboard/ClearancePacePanel';
-import { resolveDashboardLifecycleLabel, type DashboardLifecycleLabel } from '@/config/dashboardLifecycle';
 import DiagnosisActionPanel from '@/components/dashboard/DiagnosisActionPanel';
 import OtbBudgetStrip from '@/components/dashboard/OtbBudgetStrip';
 import InventoryHealth from '@/components/dashboard/InventoryHealth';
@@ -39,14 +39,18 @@ import CashflowPanel from '@/components/otb/CashflowPanel';
 import ChartCard from '@/components/charts/ChartCard';
 import MetricChips, { type MetricChipItem } from '@/components/charts/MetricChips';
 import { FOOTWEAR_ANALYSIS_MODULES } from '@/config/footwearLanguage';
-import { useState, useRef, useMemo, useEffect } from 'react';
+import { useState, useRef, useMemo, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import FloatingModuleNav from '@/components/design-review-center/floating-module-nav';
+import MerchSectionDivider from '@/components/dashboard/MerchSectionDivider';
+import { buildMerchModuleLinks } from '@/config/dashboard/merch-module-links';
 import { formatMoneyCny } from '@/config/numberFormat';
 import { THRESHOLDS } from '@/config/thresholds';
 import { GlobalConfigProvider, useGlobalConfig } from '@/context/GlobalConfigContext';
 import { MerchConfigProvider } from '@/context/MerchConfigContext';
 import GlobalConfigDrawer from '@/components/config/GlobalConfigDrawer';
 
-type DashboardTab = 'overview' | 'annual-control' | 'brand-positioning' | 'consumer' | 'category' | 'channel' | 'planning' | 'otb' | 'cashflow' | 'forecast' | 'profit-loss' | 'competitor' | 'inventory';
+type DashboardTab = 'overview' | 'annual-control' | 'brand-positioning' | 'consumer' | 'category' | 'channel' | 'planning' | 'otb' | 'cashflow' | 'forecast' | 'profit-loss' | 'competitor' | 'inventory' | 'trend';
 type DashboardRecord = ReturnType<typeof useDashboardFilter>['filteredRecords'][number];
 type DashboardFilterWindow = Window & { __openDashboardFilterBar?: () => void };
 
@@ -84,18 +88,26 @@ function persistStoredOtbNavigationContext(context: OtbNavigationContext | null)
 }
 
 const TABS: { key: DashboardTab; label: string; icon: string }[] = [
+    // ① 仪表入口
     { key: 'overview', label: '总览', icon: '📊' },
-    { key: 'annual-control', label: '年度总控', icon: '🗺️' },
+    // ② 市场战略输入
     { key: 'brand-positioning', label: '品牌定位', icon: '🧬' },
     { key: 'consumer', label: '消费者画像', icon: '🧑‍🤝‍🧑' },
+    { key: 'trend', label: '流行趋势', icon: '✨' },
     { key: 'competitor', label: '竞品&趋势', icon: '🧭' },
-    { key: 'channel', label: '区域&门店', icon: '🏪' },
+    // ③ 年度顶层目标
+    { key: 'annual-control', label: '年度总控', icon: '🗺️' },
+    // ④ 结构拆解（品类 → 渠道 → 波段）
     { key: 'category', label: '品类运营', icon: '📋' },
+    { key: 'channel', label: '区域&门店', icon: '🏪' },
     { key: 'planning', label: '波段企划', icon: '📅' },
+    // ⑤ 预测 + 预算
     { key: 'forecast', label: '销售预测', icon: '📈' },
     { key: 'otb', label: 'OTB预算', icon: '💰' },
+    // ⑥ 财务结果
     { key: 'profit-loss', label: '损益', icon: '💹' },
     { key: 'cashflow', label: '现金流', icon: '💧' },
+    // ⑦ 执行监控
     { key: 'inventory', label: '库存健康', icon: '📦' },
 ];
 
@@ -133,17 +145,70 @@ export default function DashboardPage() {
     return (
         <MerchConfigProvider>
             <GlobalConfigProvider>
-                <DashboardPageInner />
+                <Suspense>
+                    <DashboardPageInner />
+                </Suspense>
             </GlobalConfigProvider>
         </MerchConfigProvider>
     );
 }
 
+const OVERVIEW_SECTIONS = [
+  {
+    anchor: '#overview-kpi',
+    label: '经营结果',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className="w-2.5 h-2.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="1" y="9" width="3" height="6" rx="0.5" fill="currentColor" stroke="none" opacity="0.4" />
+        <rect x="6" y="5" width="3" height="10" rx="0.5" fill="currentColor" stroke="none" opacity="0.7" />
+        <rect x="11" y="1" width="3" height="14" rx="0.5" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    anchor: '#overview-assortment',
+    label: '货盘节奏',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className="w-2.5 h-2.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M1 10 Q 4 4 7 10 T 13 10 T 15 10" />
+        <circle cx="4" cy="8" r="0.8" fill="currentColor" stroke="none" />
+        <circle cx="10" cy="8" r="0.8" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    anchor: '#overview-risk',
+    label: '风险动作',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className="w-2.5 h-2.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M8 1.5 14.5 13.5H1.5L8 1.5z" />
+        <line x1="8" y1="6" x2="8" y2="9.5" />
+        <circle cx="8" cy="11.5" r="0.6" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    anchor: '#overview-sku',
+    label: 'SKU 排行',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className="w-2.5 h-2.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="2" y1="4" x2="14" y2="4" />
+        <line x1="2" y1="8" x2="14" y2="8" />
+        <line x1="2" y1="12" x2="14" y2="12" />
+      </svg>
+    ),
+  },
+];
+
 function DashboardPageInner() {
+    const searchParams = useSearchParams();
+    const urlTab = searchParams?.get('tab');
     const [configOpen, setConfigOpen] = useState(false);
     const { config } = useGlobalConfig();
     const [compareMode, setCompareMode] = useState<CompareMode>('none');
-    const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
+    const [activeTab, setActiveTab] = useState<DashboardTab>(
+        (urlTab as DashboardTab) ?? 'overview'
+    );
     const [otbNavigationContext, setOtbNavigationContext] = useState<OtbNavigationContext | null>(() => readStoredOtbNavigationContext());
     // forecast / profit-loss 不参与比对模式，退化为 overview context
     const compareContext = (activeTab === 'forecast' || activeTab === 'profit-loss')
@@ -170,58 +235,31 @@ function DashboardPageInner() {
             window.removeEventListener('storage', handleStorageChange);
         };
     }, []);
+
+    useEffect(() => {
+        if (urlTab && urlTab !== activeTab) {
+            setActiveTab(urlTab as DashboardTab);
+            window.scrollTo({ top: 0 });
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [urlTab]);
+
+    // 首次进入页面时强制滚到顶部（关掉浏览器自动恢复历史位置），但保留 anchor 跳转
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        if ('scrollRestoration' in window.history) {
+            window.history.scrollRestoration = 'manual';
+        }
+        if (!window.location.hash) {
+            window.scrollTo({ top: 0, left: 0 });
+        }
+    }, []);
     
     const effectiveCompareMode: CompareMode =
         (compareMode === 'mom' && !compareMeta.momAvailable) ||
             (compareMode === 'plan' && !compareMeta.planAvailable)
             ? 'none'
             : compareMode;
-
-    const skuWosData = useMemo<Array<{
-        skuId: string;
-        name: string;
-        category: string;
-        wos: number;
-        onHandUnits: number;
-        sellThrough: number;
-        lifecycle: DashboardLifecycleLabel | '-';
-        msrp: number;
-    }>>(() => {
-        if (!filteredRecords || filteredRecords.length === 0) return [];
-        const skuAgg: Record<string, { onHand: number; weeklyByWeek: Record<number, number>; week: number; st: number }> = {};
-        filteredRecords.forEach((r: DashboardRecord) => {
-            if (!skuAgg[r.sku_id]) {
-                skuAgg[r.sku_id] = { onHand: 0, weeklyByWeek: {}, week: 0, st: 0 };
-            }
-            const entry = skuAgg[r.sku_id];
-            entry.weeklyByWeek[r.week_num] = (entry.weeklyByWeek[r.week_num] ?? 0) + r.unit_sold;
-            if (r.week_num > entry.week) {
-                entry.onHand = r.on_hand_unit;
-                entry.week = r.week_num;
-                entry.st = r.cumulative_sell_through;
-            }
-        });
-        return Object.entries(skuAgg).map(([skuId, d]) => {
-            const sku = skuMap[skuId];
-            // 近 4 周滚动均值
-            const sortedWeeks = Object.keys(d.weeklyByWeek).map(Number).sort((a, b) => b - a);
-            const rolling4 = sortedWeeks.slice(0, 4);
-            const avgWeekly = rolling4.length > 0
-                ? rolling4.reduce((s, w) => s + d.weeklyByWeek[w], 0) / rolling4.length
-                : 0;
-            const wos = avgWeekly > 0 ? Math.round((d.onHand / avgWeekly) * 10) / 10 : 0;
-            return {
-                skuId,
-                name: sku?.sku_name || skuId,
-                category: sku?.category_name || '-',
-                wos,
-                onHandUnits: d.onHand,
-                sellThrough: d.st,
-                lifecycle: sku ? resolveDashboardLifecycleLabel(filters, sku) : '-',
-                msrp: sku?.msrp || 0,
-            };
-        });
-    }, [filteredRecords, skuMap, filters]);
 
     const lineChartRef = useRef<HTMLDivElement>(null);
     const pieChartRef = useRef<HTMLDivElement>(null);
@@ -528,13 +566,8 @@ function DashboardPageInner() {
 
 
                     {activeTab === 'overview' && kpis && (
-                        <>
-                            <OverviewSectionHeading
-                                label="01 Business Result"
-                                title="经营结果"
-                                description="先看全年经营是否达成：销售、售罄、毛利、库存和节奏是否偏离目标。"
-                                className="mb-3"
-                            />
+                        <section id="overview-kpi" className="scroll-mt-24">
+                            <MerchSectionDivider label="A" title="经营结果" />
                             <OverviewKpiBar
                                 kpis={kpis}
                                 compareMode={effectiveCompareMode}
@@ -547,7 +580,7 @@ function DashboardPageInner() {
                                     else if (kpiKey === 'inventory') scrollToSection(skuListRef);
                                 }}
                             />
-                        </>
+                        </section>
                     )}
                     {activeTab === 'annual-control' && (
                         <AnnualControlPanel
@@ -641,6 +674,9 @@ function DashboardPageInner() {
                             <ProfitLossTab />
                         </>
                     )}
+                    {activeTab === 'trend' && (
+                        <TrendInsightPanel filters={filters} onJumpToTab={(tab) => jumpToTab(tab as DashboardTab)} />
+                    )}
                     {activeTab === 'competitor' && (
                         <CompetitorTrendPanel
                             compareMode={effectiveCompareMode}
@@ -695,12 +731,8 @@ function DashboardPageInner() {
                                 </div>
                             </div>
 
-                            <OverviewSectionHeading
-                                label="02 Assortment & Pace"
-                                title="货盘与节奏"
-                                description="再判断货盘结构、尺码深度、月度达成、波段到货和清货节奏是否支撑经营。"
-                                className="mb-3"
-                            />
+                            <section id="overview-assortment" className="scroll-mt-24">
+                            <MerchSectionDivider label="B" title="货盘与节奏" />
 
                             <OtbBudgetStrip filters={filters} />
 
@@ -761,13 +793,10 @@ function DashboardPageInner() {
                                     <DashboardChart title="" type="bar" kpis={kpis} />
                                 </ChartCard>
                             </div>
+                            </section>
 
-                            <OverviewSectionHeading
-                                label="03 Risk & Action"
-                                title="风险与动作"
-                                description="最后锁定断货、积压、渠道错配和清退风险，并形成补货、调拨、降折、清退与下季调整动作。"
-                                className="mt-8 mb-3"
-                            />
+                            <section id="overview-risk" className="scroll-mt-24">
+                            <MerchSectionDivider label="C" title="风险与动作" />
 
                             <div className="mt-6 space-y-6">
                                 <LifecycleAssortmentPanel
@@ -799,6 +828,8 @@ function DashboardPageInner() {
                                 />
                             </div>
 
+                            <section id="overview-sku" className="scroll-mt-24">
+                            <MerchSectionDivider label="D" title="SKU 排行 · 风险列表" />
                             <div className="mt-6 space-y-6" ref={skuListRef}>
                                 {/* 畅销/滞销 红黑榜 */}
                                 {(topBottomSkus.top.length > 0 || topBottomSkus.bottom.length > 0) && (
@@ -877,6 +908,12 @@ function DashboardPageInner() {
                                     </div>
                                 </div>
                             </div>
+                            </section>
+                            </section>
+                            <FloatingModuleNav
+                                moduleLinks={buildMerchModuleLinks('overview')}
+                                pageSections={OVERVIEW_SECTIONS}
+                            />
                         </div>)}
                 </div>
                 <SkuDetailModal sku={selectedSku} onClose={() => setSelectedSku(null)} />

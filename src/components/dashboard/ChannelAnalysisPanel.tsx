@@ -1,4 +1,11 @@
+'use client';
+
+
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import MerchSectionDivider from './MerchSectionDivider';
+import FloatingModuleNav from '@/components/design-review-center/floating-module-nav';
+import { buildMerchModuleLinks } from '@/config/dashboard/merch-module-links';
 import {
     ComposedChart,
     Bar,
@@ -254,6 +261,13 @@ function getAxisRange(
     }
     return { min, max };
 }
+
+const ic = 'w-2.5 h-2.5';
+const CHANNEL_PAGE_SECTIONS = [
+  { anchor: '#channel-cockpit', label: '决策驾驶舱', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5" /><line x1="1" y1="7" x2="15" y2="7" /></svg>) },
+  { anchor: '#channel-region', label: '区域分析', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="7" r="5" /><line x1="8" y1="1" x2="8" y2="15" /><path d="M3.5 4C5 5.5 6 7 8 7s3-1.5 4.5-3" /><path d="M3 10.5C5 9 6.5 8.5 8 8.5s3 .5 5 2" /></svg>) },
+  { anchor: '#channel-actions', label: '执行闭环', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,8 6.5,12 14,4" /></svg>) },
+];
 
 export default function ChannelAnalysisPanel({
     filters,
@@ -1726,6 +1740,8 @@ export default function ChannelAnalysisPanel({
 
     return (
         <div className="flex flex-col gap-6">
+            <section id="channel-cockpit" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="A" title="渠道决策驾驶舱" />
 
             {/* V17 配置驱动 — 区域门店相关阈值/维度 */}
             <ConfigDrivenThresholdsBar tabKey="region-store" />
@@ -2045,6 +2061,10 @@ export default function ChannelAnalysisPanel({
                 </div>
             </div>
 
+            </section>
+
+            <section id="channel-region" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="B" title="区域多维钒取" />
             {/* ─── L2 区域 × 气候适配 ─── */}
             <TemperatureMatrixPanel />
 
@@ -2653,6 +2673,10 @@ export default function ChannelAnalysisPanel({
                 )}
             />
 
+            </section>
+
+            <section id="channel-actions" className="scroll-mt-24 space-y-5">
+            <MerchSectionDivider label="C" title="执行闭环与联动" />
             {/* ─── L4 鞋类试穿转化漏斗 ─── */}
             <FittingFunnelChart />
 
@@ -2664,6 +2688,12 @@ export default function ChannelAnalysisPanel({
 
             {/* ─── Footer 跨模块联动 ─── */}
             <RelatedModuleLinksPanel />
+            </section>
+
+            <FloatingModuleNav
+                moduleLinks={buildMerchModuleLinks('channel')}
+                pageSections={CHANNEL_PAGE_SECTIONS}
+            />
         </div>
     );
 }

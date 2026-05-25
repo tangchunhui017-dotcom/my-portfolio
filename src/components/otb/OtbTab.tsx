@@ -1,4 +1,7 @@
 'use client';
+import MerchSectionDivider from '@/components/dashboard/MerchSectionDivider';
+import FloatingModuleNav from '@/components/design-review-center/floating-module-nav';
+import { buildMerchModuleLinks } from '@/config/dashboard/merch-module-links';
 /**
  * src/components/otb/OtbTab.tsx
  * 鞋类品牌商品企划采购预算决策工作台 — V7.0
@@ -56,6 +59,13 @@ interface OtbTabProps {
     /** 跳转到 Dashboard 其他主模块（cashflow / forecast / inventory / profit-loss 等） */
     onJumpToTab?: OtbJumpHandler;
 }
+
+const ic = 'w-2.5 h-2.5';
+const OTB_PAGE_SECTIONS = [
+  { anchor: '#otb-nav', label: 'OTB导航', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5" /><line x1="1" y1="7" x2="15" y2="7" /></svg>) },
+  { anchor: '#otb-console', label: '控制台', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="2" width="14" height="12" rx="1.5" /><line x1="4" y1="6" x2="12" y2="6" /><line x1="4" y1="9" x2="9" y2="9" /></svg>) },
+  { anchor: '#otb-content', label: '计划内容', icon: (<svg viewBox="0 0 16 16" fill="none" className={ic} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,12 5,8 8.5,10 12,5 14,7" /></svg>) },
+];
 
 export default function OtbTab({ filters, compareMode = 'none', onJumpToTab }: OtbTabProps) {
     const [subView, setSubView]     = useState<OtbSubView>('annual');
@@ -182,6 +192,8 @@ export default function OtbTab({ filters, compareMode = 'none', onJumpToTab }: O
 
     return (
         <div className="space-y-3">
+            <section id="otb-nav" className="scroll-mt-24">
+            <MerchSectionDivider label="A" title="OTB子视图切换" />
             {/* 顶部标题与轻量级子导航 */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-3">
                 <h2 className="text-lg font-bold text-slate-800 tracking-tight">鞋类品牌商品企划采购预算决策工作台</h2>
@@ -203,6 +215,10 @@ export default function OtbTab({ filters, compareMode = 'none', onJumpToTab }: O
                 </div>
             </div>
 
+            </section>
+
+            <section id="otb-console" className="scroll-mt-24">
+            <MerchSectionDivider label="B" title="控制台与治理" />
             {/* 统一的 OTB 顶部控制台 */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-4">
                 <OTBContextSummary
@@ -237,6 +253,10 @@ export default function OtbTab({ filters, compareMode = 'none', onJumpToTab }: O
 
 
 
+            </section>
+
+            <section id="otb-content" className="scroll-mt-24">
+            <MerchSectionDivider label="C" title="计划内容" />
             {/* 面板内容区 */}
             {subView === 'annual' && (
                 <AnnualOTBControlPanel
@@ -345,6 +365,12 @@ export default function OtbTab({ filters, compareMode = 'none', onJumpToTab }: O
                     ))}
                 </div>
             )}
+            </section>
+
+            <FloatingModuleNav
+                moduleLinks={buildMerchModuleLinks('otb')}
+                pageSections={OTB_PAGE_SECTIONS}
+            />
         </div>
     );
 }

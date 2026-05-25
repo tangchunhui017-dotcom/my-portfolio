@@ -59,6 +59,10 @@ export interface ReviewDecisionCenterSummary {
   dueThisWeekReviewCount: number;
   dueThisWeekActionCount: number;
   overdueActionCount: number;
+  launchBlockingCount: number;
+  costRiskDecisionCount: number;
+  rejectedStyleCount: number;
+  cancelledOrMergedCount: number;
 }
 
 export function getLatestReviewByStyle(styleId: string, reviewRecords: ReviewRecord[]) {
@@ -182,5 +186,11 @@ export function summarizeReviewDecisionCenter(reviewRows: ReviewDecisionRow[], a
     dueThisWeekReviewCount: reviewRows.filter((row) => row.dueThisWeek).length,
     dueThisWeekActionCount: actionRows.filter((row) => row.dueThisWeek).length,
     overdueActionCount: actionRows.filter((row) => row.overdue).length,
+    launchBlockingCount: reviewRows.filter((row) => row.blocked && !row.closed).length,
+    costRiskDecisionCount: reviewRows.filter((row) => row.conclusion === 'cost_down' && !row.closed).length,
+    rejectedStyleCount: new Set(reviewRows.filter((row) => row.conclusion === 'cancel').map((row) => row.styleId)).size,
+    cancelledOrMergedCount: new Set(
+      reviewRows.filter((row) => row.conclusion === 'hold' || row.conclusion === 'cancel').map((row) => row.styleId),
+    ).size,
   };
 }

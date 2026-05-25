@@ -1,24 +1,46 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
-import CategoryBreakdownPanel from '@/components/design-review-center/category-breakdown-panel';
+import { useMemo, useState } from 'react';
+import TaskPoolWorkbench from '@/components/design-review-center/task-pool-workbench';
+import BusinessInputTargetsPanel from '@/components/design-review-center/business-input-targets';
+import CostMarginHealthPanel from '@/components/design-review-center/cost-margin-health';
+import DesignPlanningWorkflowPanel from '@/components/design-review-center/design-planning-workflow';
 import DevelopmentWaveTable from '@/components/design-review-center/development-wave-table';
 import EffectPreviewPanel from '@/components/design-review-center/effect-preview-panel';
+import EngineeringFeasibilityPanel from '@/components/design-review-center/engineering-feasibility';
 import FilterBar, { type FilterState } from '@/components/design-review-center/filter-bar';
-import PlatformTopology from '@/components/design-review-center/PlatformTopology';
-import PriceGapAnalysis from '@/components/design-review-center/PriceGapAnalysis';
-import ProductArchitecturePanel from '@/components/design-review-center/product-architecture-panel';
-import ProductPyramid from '@/components/design-review-center/ProductPyramid';
-import RiskPanel from '@/components/design-review-center/risk-panel';
-import SeasonHealthCard from '@/components/design-review-center/SeasonHealthCard';
-import SeasonOverviewCards from '@/components/design-review-center/season-overview-cards';
-import TaskPanel from '@/components/design-review-center/task-panel';
+import KeyRisksBlockersPanel from '@/components/design-review-center/key-risks-blockers';
+import PlanningExecutiveCardsPanel from '@/components/design-review-center/planning-executive-cards';
+
+import SeasonDesignStrategyPanel from '@/components/design-review-center/season-design-strategy';
+import SkuArchitectureMatrix from '@/components/design-review-center/sku-architecture-matrix';
 import ThemeDirectionPanel from '@/components/design-review-center/theme-direction-panel';
+import ProductArchitectureWorkbench from '@/components/design-review-center/product-architecture-workbench';
+import ReviewDecisionWorkbench from '@/components/design-review-center/review-decision-workbench';
 import WorkflowTabs from '@/components/design-review-center/workflow-tabs';
+import TrendDirectionSnapshotPanel from '@/components/design-review-center/trend-direction-snapshot';
+import NewCarryoverSummaryPanel from '@/components/design-review-center/new-carryover-summary';
+import ProtoStatusSnapshotPanel from '@/components/design-review-center/proto-status-snapshot';
+import MaterialStrategySnapshotPanel from '@/components/design-review-center/material-strategy-snapshot';
+import FloatingModuleNav from '@/components/design-review-center/floating-module-nav';
 import { WORKFLOW_TABS, type WorkflowTabKey } from '@/config/design-review-center/workflow-tabs';
 import type { DesignReviewCenterData } from '@/lib/design-review-center/assembler';
-import { formatDate } from '@/lib/design-review-center/helpers/date';
-import { ExportButton } from '@/lib/design-review-center/ExportEngine';
+import {
+  buildSeasonDesignStrategies,
+  buildCostMarginRows,
+  buildDesignRiskBlockers,
+  buildSkuArchitectureRows,
+  deriveBusinessInputTargets,
+  deriveEngineeringFeasibilityData,
+  derivePlanningExecutiveSummaryCards,
+  deriveNewCarryoverSummary,
+  DESIGN_PLANNING_WORKFLOW_NODES,
+  RELATED_MODULE_LINKS,
+  WEEKLY_DECISION_ITEMS,
+  TREND_DIRECTION_SNAPSHOT,
+  MATERIAL_STRATEGY_SNAPSHOT,
+  PROTO_STATUS_MOCK,
+} from '@/lib/design-review-center/overview-mock-data';
 import { createDesignVersionChains } from '@/lib/design-review-center/selectors/assets';
 import { DEFAULT_DESIGN_REVIEW_FILTERS, filterDesignReviewCenterData } from '@/lib/design-review-center/selectors/filters';
 import { createGateWaveGroups } from '@/lib/design-review-center/selectors/gates';
@@ -28,29 +50,60 @@ interface DesignReviewCenterClientProps {
   data: DesignReviewCenterData;
 }
 
+function SectionDivider({ label, title }: { label: string; title: string }) {
+  return (
+    <div className="mt-12 mb-5 flex items-center gap-3">
+      <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+        {label}
+      </span>
+      <h3 className="text-base font-semibold text-slate-900">{title}</h3>
+      <div className="flex-1 border-t border-slate-100" />
+    </div>
+  );
+}
+
 export default function DesignReviewCenterClient({ data }: DesignReviewCenterClientProps) {
   const defaultYear = data.projects[0]?.year ?? data.derived.filterOptions.years[0]?.value ?? '';
   const [activeTab, setActiveTab] = useState<WorkflowTabKey>('overview');
   const [filters, setFilters] = useState<FilterState>({ ...DEFAULT_DESIGN_REVIEW_FILTERS, year: defaultYear });
-  const [pyramidLayer, setPyramidLayer] = useState<string | null>(null);
-  const architectureRef = useRef<HTMLDivElement>(null);
 
   const filtered = useMemo(() => filterDesignReviewCenterData(data, filters), [data, filters]);
   const taskRows = filtered.styles.map((aggregate) => aggregate.taskRow);
   const themeStrategies = filtered.series.map((aggregate) => aggregate.themeStrategy);
-  const mustDecide = filtered.overview.mustDecide.slice(0, 4);
-  const blockers = filtered.overview.blockers.slice(0, 4);
-  const gateGroups = useMemo(() => createGateWaveGroups(filtered.styles), [filtered.styles]);
+  const blockers = filtered.overview.blockers.slice(0, 6);
+  const gateGroups = useMemo(() => createGateWaveGroups(filtered.styles, data.referenceDate), [filtered.styles, data.referenceDate]);
   const versionChains = useMemo(() => createDesignVersionChains(filtered.styles), [filtered.styles]);
   const reviewRows = useMemo(() => createReviewDecisionRows(filtered.styles, data.referenceDate), [data.referenceDate, filtered.styles]);
   const actionRows = useMemo(() => createReviewActionRows(filtered.styles, data.referenceDate), [data.referenceDate, filtered.styles]);
   const reviewSummary = useMemo(() => summarizeReviewDecisionCenter(reviewRows, actionRows), [actionRows, reviewRows]);
 
-  const designTrackCards = [
-    { title: '设计轨摘要', body: filtered.overview.designTrackSummary },
-    { title: '成本轨摘要', body: filtered.overview.costTrackSummary },
-    { title: '开发轨摘要', body: filtered.overview.developmentTrackSummary },
-  ];
+  // 设计企划总控数据
+  const skuArchitectureRows = useMemo(() => buildSkuArchitectureRows(filtered.series), [filtered.series]);
+  const businessInputTargets = useMemo(() => deriveBusinessInputTargets(skuArchitectureRows), [skuArchitectureRows]);
+  const costMarginRows = useMemo(() => buildCostMarginRows(filtered.series), [filtered.series]);
+  const engineeringFeasibilityData = useMemo(() => deriveEngineeringFeasibilityData(skuArchitectureRows), [skuArchitectureRows]);
+  const designRiskBlockers = useMemo(
+    () => buildDesignRiskBlockers(skuArchitectureRows, data.referenceDate),
+    [data.referenceDate, skuArchitectureRows],
+  );
+  const planningCards = useMemo(
+    () => derivePlanningExecutiveSummaryCards(
+      filtered.overview,
+      skuArchitectureRows,
+      WEEKLY_DECISION_ITEMS,
+      costMarginRows,
+      data.referenceDate,
+    ),
+    [costMarginRows, data.referenceDate, filtered.overview, skuArchitectureRows],
+  );
+  const seasonStrategies = useMemo(
+    () => buildSeasonDesignStrategies(themeStrategies, skuArchitectureRows, businessInputTargets),
+    [businessInputTargets, skuArchitectureRows, themeStrategies],
+  );
+  const newCarryoverSummary = useMemo(
+    () => deriveNewCarryoverSummary(skuArchitectureRows),
+    [skuArchitectureRows],
+  );
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,#fbfcfe_0%,#f5f7fb_55%,#f3f6fb_100%)]">
@@ -73,7 +126,7 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
         <header className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">设计企划</h1>
-            <p className="mt-1 text-sm text-slate-500">围绕系列策略、产品架构、Gate、版本和评审闭环统一查看设计开发进度 · 数据时间 {data.referenceDate}</p>
+            <p className="mt-1 text-sm text-slate-500">围绕主题策略、产品架构、开发任务、波段研发节点、设计版本和评审决议统一查看设计开发进度 · 数据时间 {data.referenceDate}</p>
           </div>
 
           <div className="ml-4 flex flex-shrink-0 items-center gap-1">
@@ -102,57 +155,67 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
         <WorkflowTabs tabs={WORKFLOW_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
         {activeTab === 'overview' ? (
-          <div className="mt-8 space-y-8">
-            <SeasonHealthCard overview={filtered.overview} />
-            <SeasonOverviewCards overview={filtered.overview} />
+          <div className="mt-8">
+            {/* ── A · 状态感知 ─────────────────────────────────── */}
+            <div id="section-status" className="scroll-mt-24">
+              <SectionDivider label="A" title="状态感知" />
+              <div className="space-y-4">
+                <PlanningExecutiveCardsPanel cards={planningCards} />
+              </div>
+            </div>
 
-            <section className="grid gap-6 xl:grid-cols-[1fr_1fr_1fr]">
-              <article className="rounded-[28px] border border-slate-200/80 bg-white p-6 shadow-[0_12px_28px_rgba(15,23,42,0.05)]">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">本周必须拍板</div>
-                <div className="mt-4 space-y-4">
-                  {mustDecide.length === 0 ? (
-                    <div className="rounded-2xl border border-slate-200/80 bg-slate-50 px-4 py-6 text-sm text-slate-500">当前筛选范围内暂无本周必须拍板事项。</div>
-                  ) : (
-                    mustDecide.map((item) => (
-                      <div key={item.styleId} className="rounded-[24px] border border-slate-200/75 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfe_100%)] p-4">
-                        <div className="font-medium text-slate-900">{item.title}</div>
-                        <div className="mt-2 text-sm leading-6 text-slate-600">{item.reason}</div>
-                        <div className="mt-3 text-xs text-slate-500">负责人 {item.owner} / 截止 {formatDate(item.dueDate)}</div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </article>
+            {/* ── B · 市场与方向 ──────────────────────────────── */}
+            <div id="section-market" className="scroll-mt-24">
+              <SectionDivider label="B" title="市场与方向" />
+              <div className="space-y-4">
+                <TrendDirectionSnapshotPanel data={TREND_DIRECTION_SNAPSHOT} />
+                <BusinessInputTargetsPanel targets={businessInputTargets} />
+              </div>
+            </div>
 
-              <article className="rounded-[28px] border border-slate-200/80 bg-white p-6 shadow-[0_12px_28px_rgba(15,23,42,0.05)]">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">当前阻塞点</div>
-                <div className="mt-4 space-y-4">
-                  {blockers.length === 0 ? (
-                    <div className="rounded-2xl border border-slate-200/80 bg-slate-50 px-4 py-6 text-sm text-slate-500">当前筛选范围内暂无硬阻塞，开发节奏可按计划推进。</div>
-                  ) : (
-                    blockers.map((item) => (
-                      <div key={item.styleId} className="rounded-[24px] border border-rose-200 bg-[linear-gradient(180deg,#fff8f9_0%,#fff5f7_100%)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
-                        <div className="font-medium text-slate-900">{item.title}</div>
-                        <div className="mt-2 text-sm leading-6 text-slate-600">{item.reason}</div>
-                        <div className="mt-3 text-xs text-slate-500">责任人 {item.owner} / 截止 {formatDate(item.dueDate)}</div>
-                      </div>
-                    ))
-                  )}
+            {/* ── C · 产品结构 ──────────────────────────────────── */}
+            <div id="section-product" className="scroll-mt-24">
+              <SectionDivider label="C" title="产品结构" />
+              <div className="space-y-4">
+                <div className="grid gap-4 xl:grid-cols-[1fr_280px]">
+                  <SeasonDesignStrategyPanel strategies={seasonStrategies} />
+                  <NewCarryoverSummaryPanel data={newCarryoverSummary} />
                 </div>
-              </article>
+                <SkuArchitectureMatrix rows={skuArchitectureRows} />
+              </div>
+            </div>
 
-              <article className="rounded-[28px] border border-slate-200/80 bg-white p-6 shadow-[0_12px_28px_rgba(15,23,42,0.05)]">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">三轨摘要</div>
-                <div className="mt-4 space-y-4">
-                  {designTrackCards.map((card) => (
-                    <div key={card.title} className="rounded-[22px] border border-slate-200/70 bg-slate-50/80 p-4">
-                      <div className="font-medium text-slate-900">{card.title}</div>
-                      <div className="mt-2 text-sm leading-6 text-slate-600">{card.body}</div>
-                    </div>
-                  ))}
+            {/* ── D · 开发链路 ──────────────────────────────────── */}
+            <div id="section-dev" className="scroll-mt-24">
+              <SectionDivider label="D" title="开发链路" />
+              <div className="space-y-4">
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <MaterialStrategySnapshotPanel data={MATERIAL_STRATEGY_SNAPSHOT} />
+                  <ProtoStatusSnapshotPanel data={PROTO_STATUS_MOCK} />
                 </div>
-              </article>
-            </section>
+                <EngineeringFeasibilityPanel data={engineeringFeasibilityData} />
+              </div>
+            </div>
+
+            {/* ── E · 财务健康 ──────────────────────────────────── */}
+            <div id="section-finance" className="scroll-mt-24">
+              <SectionDivider label="E" title="财务健康" />
+              <div className="space-y-4">
+                <CostMarginHealthPanel rows={costMarginRows} />
+              </div>
+            </div>
+
+            {/* ── F · 进度与风险 ────────────────────────────────── */}
+            <div id="section-risk" className="scroll-mt-24">
+              <SectionDivider label="F" title="进度与风险" />
+              <div className="space-y-4">
+                <DesignPlanningWorkflowPanel nodes={DESIGN_PLANNING_WORKFLOW_NODES} />
+                <KeyRisksBlockersPanel risks={designRiskBlockers} blockers={blockers} />
+              </div>
+            </div>
+
+            {/* Floating side nav (always visible) */}
+            <FloatingModuleNav moduleLinks={RELATED_MODULE_LINKS} />
           </div>
         ) : null}
 
@@ -163,75 +226,43 @@ export default function DesignReviewCenterClient({ data }: DesignReviewCenterCli
         ) : null}
 
         {activeTab === 'productArchitecture' ? (
-          <div ref={architectureRef} className="mt-8 space-y-6">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <h2 className="text-3xl font-semibold text-slate-950">产品架构</h2>
-                <p className="mt-2 text-sm text-slate-500">用 OTB 转译结果驱动鞋类品类、风格角色、底楦结构、开发属性与平台策略，再向开发任务池下发约束。</p>
-              </div>
-              <ExportButton
-                targetRef={architectureRef}
-                config={{ filenamePrefix: '产品架构企划书', headerText: `${filtered.architecture.profileLabel} · 产品架构企划书` }}
-              />
-            </div>
-            <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
-              <ProductPyramid architecture={filtered.architecture} activeLayer={pyramidLayer} onLayerClick={setPyramidLayer} />
-              <PriceGapAnalysis architecture={filtered.architecture} />
-            </div>
-            <PlatformTopology architecture={filtered.architecture} />
-            <ProductArchitecturePanel architecture={filtered.architecture} pyramidFilter={pyramidLayer} />
+          <div className="mt-8">
+            <ProductArchitectureWorkbench filtered={filtered} onNavigateTab={(tab) => setActiveTab(tab)} />
           </div>
         ) : null}
 
         {activeTab === 'developmentTaskPool' ? (
-          <div className="mt-8 space-y-4">
+          <div className="mt-8 space-y-8">
             <div>
               <h2 className="text-3xl font-semibold text-slate-950">开发任务池</h2>
-              <p className="mt-2 text-sm text-slate-500">围绕单款推进中心跟踪设计、样鞋、材料、成本、技术与动作闭环，适合周会直接使用。</p>
+              <p className="mt-2 text-sm text-slate-500">承接产品架构、波段研发节点、评审决议和商品企划输入，管理设计、样鞋、材料、成本、BOM 和技术任务。</p>
             </div>
-            <CategoryBreakdownPanel rows={taskRows} />
+            <TaskPoolWorkbench rows={taskRows} referenceDate={data.referenceDate} />
           </div>
         ) : null}
 
         {activeTab === 'developmentGateTable' ? (
           <div className="mt-8 space-y-4">
             <div>
-              <h2 className="text-3xl font-semibold text-slate-950">波段与研发 Gate 表</h2>
-              <p className="mt-2 text-sm text-slate-500">按标准 Gate 管理企划、设计、开发、成本和上市承接节点，统一跟踪计划、实际、风险和责任人。</p>
+              <h2 className="text-3xl font-semibold text-slate-950">波段研发节点</h2>
+              <p className="mt-2 text-sm text-slate-500">按波段管控研发节点、关键路径、延期阻塞、责任人、SLA 和上市影响。</p>
             </div>
-            <DevelopmentWaveTable groups={gateGroups} />
+            <DevelopmentWaveTable groups={gateGroups} referenceDate={data.referenceDate} />
           </div>
         ) : null}
 
         {activeTab === 'designVersionPreview' ? (
           <div className="mt-8 space-y-4">
             <div>
-              <h2 className="text-3xl font-semibold text-slate-950">设计版本预览</h2>
-              <p className="mt-2 text-sm text-slate-500">用单款版本链把材料、配色、底台、楦型、成本和评审结论放到同一视图里判断。</p>
+              <h2 className="text-3xl font-semibold text-slate-950">设计版本</h2>
+              <p className="mt-2 text-sm text-slate-500">管理款式版本链、版本对比、素材完整度、商品企划匹配和提交评审准备。</p>
             </div>
             <EffectPreviewPanel chains={versionChains} />
           </div>
         ) : null}
 
         {activeTab === 'reviewDecisionCenter' ? (
-          <div className="mt-8 space-y-6">
-            <div>
-              <h2 className="text-3xl font-semibold text-slate-950">评审决议中心</h2>
-              <p className="mt-2 text-sm text-slate-500">以 ReviewRecord + ActionItem 作为闭环出口，统一推进未关闭动作、本周待复审和阻塞项。</p>
-            </div>
-
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="text-sm text-slate-500">未关闭评审</div><div className="mt-3 text-3xl font-semibold text-slate-950">{reviewSummary.openReviewCount}</div></article>
-              <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="text-sm text-slate-500">未关闭动作</div><div className="mt-3 text-3xl font-semibold text-slate-950">{reviewSummary.openActionCount}</div></article>
-              <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="text-sm text-slate-500">本周待复审</div><div className="mt-3 text-3xl font-semibold text-amber-600">{reviewSummary.dueThisWeekReviewCount + reviewSummary.dueThisWeekActionCount}</div></article>
-              <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="text-sm text-slate-500">阻塞 / 逾期</div><div className="mt-3 text-3xl font-semibold text-rose-600">{reviewSummary.blockedCount + reviewSummary.overdueActionCount}</div></article>
-            </section>
-
-            <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
-              <RiskPanel reviews={reviewRows} />
-              <TaskPanel actions={actionRows} />
-            </section>
-          </div>
+          <ReviewDecisionWorkbench reviews={reviewRows} actions={actionRows} summary={reviewSummary} />
         ) : null}
       </div>
     </div>
